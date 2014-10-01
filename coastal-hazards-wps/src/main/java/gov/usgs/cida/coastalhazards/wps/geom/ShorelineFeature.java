@@ -1,9 +1,11 @@
 package gov.usgs.cida.coastalhazards.wps.geom;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.index.strtree.STRtree;
 import gov.usgs.cida.coastalhazards.util.AttributeGetter;
+import java.util.LinkedList;
+import java.util.List;
 import org.opengis.feature.simple.SimpleFeature;
 
 /**

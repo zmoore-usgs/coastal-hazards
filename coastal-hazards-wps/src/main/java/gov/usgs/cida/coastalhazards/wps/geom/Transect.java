@@ -47,7 +47,6 @@ package gov.usgs.cida.coastalhazards.wps.geom;
 
 import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
@@ -56,7 +55,9 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import gov.usgs.cida.coastalhazards.util.AttributeGetter;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
+
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
+
 import gov.usgs.cida.coastalhazards.util.Constants.Orientation;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -84,13 +85,14 @@ public class Transect {
     private int transectId;
     private String baselineId;
     private double baselineDistance;
+    private ProxyDatumBias bias;
     private static final GeometryFactory gf;
 
     static {
         gf = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
     }
     
-    Transect(Coordinate coord, double angle, Orientation orientation, int transectId, String baselineId, double baselineDistance) {
+    Transect(Coordinate coord, double angle, Orientation orientation, int transectId, String baselineId, double baselineDistance, ProxyDatumBias bias) {
         this.cartesianCoord = coord;
         this.angle = angle;
         this.length = 1.0;
@@ -98,10 +100,11 @@ public class Transect {
         this.transectId = transectId;
         this.baselineId = baselineId;
         this.baselineDistance = baselineDistance;
+        this.bias = bias;
     }
     
-    Transect(double x, double y, double angle, Orientation orientation, int transectId, String baselineId, double baselineDistance) {
-        this(new Coordinate(x, y), angle, orientation, transectId, baselineId, baselineDistance);
+    Transect(double x, double y, double angle, Orientation orientation, int transectId, String baselineId, double baselineDistance, ProxyDatumBias bias) {
+        this(new Coordinate(x, y), angle, orientation, transectId, baselineId, baselineDistance, bias);
     }
 
     public void setLength(double length) {
@@ -143,9 +146,17 @@ public class Transect {
     public int getId() {
         return transectId;
     }
-    
+
     public double getBaselineDistance() {
         return baselineDistance;
+    }
+
+    public ProxyDatumBias getBias() {
+        return bias;
+    }
+
+    public void setBias(ProxyDatumBias bias) {
+        this.bias = bias;
     }
 
     public void rotate180Deg() {
@@ -153,7 +164,7 @@ public class Transect {
     }
     
     public Transect subTransect(double startDistance, double length) {
-        Transect subTransect = new Transect(cartesianCoord, angle, orientation, transectId, baselineId, baselineDistance);
+        Transect subTransect = new Transect(cartesianCoord, angle, orientation, transectId, baselineId, baselineDistance, bias);
         subTransect.setLength(startDistance);
         subTransect.cartesianCoord = subTransect.getLineString().getEndPoint().getCoordinate();
         subTransect.setLength(length);
@@ -167,6 +178,8 @@ public class Transect {
             String baselineId,
             double baselineDistance,
             int direction) {
+        // Don't worry about the bias for the vector transect, add it when trimming
+        ProxyDatumBias bias = null;
         double angle;
         switch (direction) {
             case Angle.CLOCKWISE:
@@ -178,7 +191,7 @@ public class Transect {
             default:
                 throw new IllegalStateException("Must be either clockwise or counterclockwise");
         }
-        return new Transect(origin, angle, orientation, transectId, baselineId, baselineDistance);
+        return new Transect(origin, angle, orientation, transectId, baselineId, baselineDistance, bias);
     }
     
     public static Transect fromFeature(SimpleFeature feature) {
@@ -191,12 +204,10 @@ public class Transect {
         Orientation orient = Orientation.fromAttr(orientVal);
         int id = (Integer)getter.getValue(TRANSECT_ID_ATTR, feature);
         String baselineId = (String)getter.getValue(BASELINE_ID_ATTR, feature);
-        Double baseDist = (Double)getter.getValue(BASELINE_DIST_ATTR, feature);
-        if (baseDist == null) {
-            baseDist = -1.0;
-        }
+        double baseDist = getter.getDoubleValue(BASELINE_DIST_ATTR, feature);
+        ProxyDatumBias bias = ProxyDatumBias.fromFeature(feature);
         
-        Transect transect = new Transect(segment.p0, segment.angle(), orient, id, baselineId, baseDist);
+        Transect transect = new Transect(segment.p0, segment.angle(), orient, id, baselineId, baseDist, bias);
         transect.length = segment.p0.distance(segment.p1);
         
         return transect;
@@ -213,21 +224,32 @@ public class Transect {
         }
     }
     
-    public static SimpleFeatureType buildFeatureType(CoordinateReferenceSystem crs) {
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName("Transects");
-        builder.add("geom", LineString.class, crs);
-        builder.add(TRANSECT_ID_ATTR, Integer.class);
-        builder.add(BASELINE_ORIENTATION_ATTR, String.class);
-        builder.add(BASELINE_ID_ATTR, String.class);
-        builder.add(BASELINE_DIST_ATTR, Double.class);
-        return builder.buildFeatureType();
-    }
-    
+	public static SimpleFeatureType buildFeatureType(CoordinateReferenceSystem crs) {
+		SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+		builder.setName("Transects");
+		builder.add("geom", LineString.class, crs);
+		builder.add(TRANSECT_ID_ATTR, Integer.class);
+		builder.add(BASELINE_ORIENTATION_ATTR, String.class);
+		builder.add(BASELINE_ID_ATTR, String.class);
+		builder.add(BASELINE_DIST_ATTR, Double.class);
+		builder.add(AVG_SLOPE_ATTR, Double.class);
+		builder.add(BIAS_ATTR, Double.class);
+		builder.add(BIAS_UNCY_ATTR, Double.class);
+		return builder.buildFeatureType();
+	}
+
     public SimpleFeature createFeature(SimpleFeatureType type) {
         LineString line = this.getLineString();
+        Double avgSlope = null;
+        Double biasVal = null;
+        Double biasUncy = null;
+        if (bias != null) {
+            avgSlope = bias.getAvgSlope();
+            biasVal = bias.getBias();
+            biasUncy = bias.getUncyb();
+        }
         SimpleFeature feature = SimpleFeatureBuilder.build(type,
-                new Object[]{line, new Integer(transectId), orientation.getValue(), baselineId, baselineDistance}, null);
+                new Object[]{line,transectId, orientation.getValue(), baselineId, baselineDistance, avgSlope, biasVal, biasUncy}, null);
         return feature;
     }
 }
