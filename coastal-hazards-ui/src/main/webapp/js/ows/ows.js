@@ -566,7 +566,6 @@ var OWS = function(endpoint) {
            
             return wps;
         },
-        
         createResultsRasterSLD : function(args) {
             var argss = args || {};
             var attribute = argss.attribute || 'LRR';
@@ -638,7 +637,6 @@ var OWS = function(endpoint) {
                 context : args.context || this
             });
         },
-        
         createUpdateTransectsAndIntersectionsWPSXML : function(args) {
             var transects = args.transects;
             var intersections = args.intersections;

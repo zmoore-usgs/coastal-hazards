@@ -3,15 +3,24 @@
 var Shorelines = {
 	stage: 'shorelines',
 	suffixes: ['_shorelines'],
-	mandatoryColumns: ['the_geom', 'Date_', 'uncy'],
+	mandatoryColumns: ['Date_', 'uncy'],
 	defaultingColumns: [
 		{attr: 'MHW', defaultValue: "0"}
 	],
 	groupingColumn: 'Date_',
-	uploadEndpoint: 'stage-shoreline',
-	uploadExtraParams : {
-		'action' : 'stage'
-	}, 
+	uploadRequest: {
+		'endpoint': 'service/stage-shoreline',
+		'paramsInBody': false,
+		'forceMultipart': false,
+		params: {
+			'response.encoding': 'json',
+			'filename.param': 'qqfile',
+			'action': 'stage'
+		}
+	},
+	uploadExtraParams: {
+		'action': 'stage'
+	},
 	description: {
 		'stage': '<p>Shorelines are geospatial polylines which represent the location of the shoreline and various points in time</p> <p>Add shorelines to your workspace with the selection box above or upload your own zipped shapefile containing shoreline polylines within the Manage tab.</p><p>Use the map to investigate the selected shorelines, clicking to enable/disable for DSASweb processing.</p><hr />View and select existing published shorelines, or upload your own. Shorelines represent snap-shots of the coastline at various points in time.',
 		'view-tab': 'Select a published collection of shorelines to add to the workspace.',
@@ -578,7 +587,7 @@ var Shorelines = {
 		// Check to see if we need to create a wildcard column by seeing if there's anything to wildcard
 		var ignoredColumns = ['id', 'date_'];
 		var featureKeys = Object.keys(event.object.describedFeatures[0].attributes).filter(function (key) {
-			return ignoredColumns.indexOf(key.toLowerCase()) === -1
+			return ignoredColumns.indexOf(key.toLowerCase()) === -1;
 		});
 		if (featureKeys.length) {
 			$('#shoreline-table-navtabs').find('li a[href="#' + layerName + '"]').
@@ -883,5 +892,129 @@ var Shorelines = {
 		return $('#shorelines-list').children(':selected').map(function (i, v) {
 			return v.value;
 		}).toArray();
+	},
+	uploadCallbacks: {
+		onComplete: function (id, fileName, responseJSON) {
+			CONFIG.ui.hideSpinner();
+			$('#application-alert').alert('close');
+
+			var success = responseJSON.success;
+			if (success === 'true') {
+				var token = responseJSON.token;
+				Shorelines.getShorelineHeaderColumnNames({
+					token: token,
+					callbacks: {
+						success: function (data) {
+							var success = data.success,
+								headers = data.headers,
+								layerColumns = Object.extended(),
+								foundAll = true;
+
+							if (success === 'true') {
+								headers = headers.split(',');
+								
+								if (headers.length < Shorelines.mandatoryColumns.length) {
+									LOG.warn('Shorelines.js::addShorelines: There are not enough attributes in the selected shapefile to constitute a valid shoreline. Will be deleted. Needed: ' + Shorelines.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
+//										Shorelines.removeResource();
+									CONFIG.ui.showAlert({
+										message: 'Not enough attributes in upload - Check Logs',
+										caller: Shorelines,
+										displayTime: 7000,
+										style: {
+											classes: ['alert-error']
+										}
+									});
+								} else {
+									// User needs to tell me which is uncy
+									for (var hIdx = 0; hIdx < headers.length; hIdx++) {
+										layerColumns[headers[hIdx]] = '';
+									}
+									layerColumns = Util.createLayerUnionAttributeMap({
+										caller: Shorelines,
+										layerColumns: layerColumns
+									});
+
+									Shorelines.mandatoryColumns.each(function (mc) {
+										if (layerColumns.values().indexOf(mc) === -1) {
+											foundAll = false;
+										}
+									});
+
+									Shorelines.defaultingColumns.each(function (col) {
+										if (layerColumns.values().indexOf(col.attr) === -1) {
+											foundAll = false;
+										}
+									});
+
+									if (!foundAll) {
+										CONFIG.ui.buildColumnMatchingModalWindow({
+											layerName: token,
+											columns: layerColumns,
+											caller: Shorelines,
+											updateCallback: function () {
+												$.ajax(Shorelines.uploadRequest.endpoint, {
+													type : 'POST',
+													data : {
+														action : 'update-columns',
+														token : token,
+														workspace : CONFIG.tempSession.session.id,
+														columns : JSON.stringify(layerColumns)
+													},
+													success : function (data) {
+														debugger;
+													},
+													error : function () {
+														debugger;
+													}
+												});
+											}
+										});
+									} else {
+										// Ready to add to map
+//											Shorelines.addLayerToMap({
+//												layer: layer,
+//												describeFeaturetypeRespone: describeFeaturetypeRespone
+//											});
+									}
+								}
+							}
+						},
+						error: function () {
+							debugger;
+						}
+					}
+				});
+			} else {
+				var exception = responseJSON.exception;
+				LOG.warn('UI.js::Uploader Error Callback: Import incomplete.');
+				CONFIG.ui.showAlert({
+					message: 'Import incomplete. ' + (exception ? exception : ''),
+					caller: Shorelines,
+					displayTime: 3000,
+					style: {
+						classes: ['alert-error']
+					}
+				});
+			}
+		}
+	},
+	getShorelineHeaderColumnNames: function (args) {
+		args = args || {};
+		var token = args.token,
+			callbacks = args.callbacks || {
+				success: function () {
+				},
+				error: function () {
+				}
+			};
+
+		$.ajax(Shorelines.uploadRequest.endpoint, {
+			'data': {
+				'action': 'read-dbf',
+				'token': token
+			},
+			success: callbacks.success,
+			error: callbacks.error
+		});
 	}
 };

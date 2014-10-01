@@ -205,6 +205,10 @@
 			<param-name>application.name</param-name>
 			<param-value>coastal-hazards</param-value>
 		</init-param>
+		<init-param>
+			<param-name>jdbc.name</param-name>
+			<param-value>dsas</param-value>
+		</init-param>
 	</servlet>
 	<!-- MAPPING -->
 	<servlet-mapping>

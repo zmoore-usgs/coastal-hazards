@@ -1,5 +1,5 @@
 var Util =  {
-    
+    noopFunction : function() {},
     getRandomColor : function(args) {
         args = args || {};
         var randomColor = '';
@@ -110,13 +110,17 @@ var Util =  {
     createLayerUnionAttributeMap : function(args) {
         var caller = args.caller;
         var attributes = args.attributes;
-        var layerColumns = Object.extended();
-        attributes.map(function(property) {
-            return property.name;
-        })
-        .each(function(property) {
-            layerColumns[property] = '';
-        });
+        var layerColumns = args.layerColumns;
+		
+		if (!layerColumns) {
+			layerColumns = Object.extended();
+			attributes.map(function(property) {
+				return property.name;
+			})
+			.each(function(property) {
+				layerColumns[property] = '';
+			});
+		}
                 
         layerColumns.keys(function(columnName) {
             var eqColName = caller.mandatoryColumns.find(function(column) {
