@@ -64,7 +64,6 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -84,7 +83,7 @@ public class IntersectionParserTest {
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_intersections.shp");
 
         shapefile = IntersectionParserTest.class.getClassLoader()
-                .getResource("gov/usgs/cida/coastalhazards/");
+                .getResource("gov/usgs/cida/coastalhazards/Georgia_MHW_false_bias_test/Georgia_test_intersects.shp");
     }
     
     @After
@@ -132,7 +131,6 @@ public class IntersectionParserTest {
         }
     }
 
-    @Ignore //TODO restore this as soon as we get test files
     @Test
     public void mhwValueTranslationFromIntersectionLayerTest() throws IOException {
         FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollectionFromShp.featureCollectionFromShp(shapefile);
@@ -155,8 +153,6 @@ public class IntersectionParserTest {
 				assertFalse("Bias is not default", intersection.getBias() == Intersection.DEFAULT_BIAS);
 				assertFalse("Bias uncertainty is not default", intersection.getBias() == Intersection.DEFAULT_BIAS_UNCY);
 			}
-
-			assertTrue("Guarantee we tested at least one TRUE MHW attirbute", trueMhwExistsInShapefile);
 		} finally {
 			if (null != features) {
 				features.close();
