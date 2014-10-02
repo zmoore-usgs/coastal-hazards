@@ -83,7 +83,7 @@ public class IntersectionParserTest {
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_intersections.shp");
 
         shapefile = IntersectionParserTest.class.getClassLoader()
-                .getResource("gov/usgs/cida/coastalhazards/Georgia_test_MHW_true/Georgia_test_intersections.shp");
+                .getResource("gov/usgs/cida/coastalhazards/Georgia_MHW_false_bias_test/Georgia_test_intersects.shp");
     }
     
     @After
@@ -153,8 +153,6 @@ public class IntersectionParserTest {
 				assertFalse("Bias is not default", intersection.getBias() == Intersection.DEFAULT_BIAS);
 				assertFalse("Bias uncertainty is not default", intersection.getBias() == Intersection.DEFAULT_BIAS_UNCY);
 			}
-
-			assertTrue("Guarantee we tested at least one TRUE MHW attirbute", trueMhwExistsInShapefile);
 		} finally {
 			if (null != features) {
 				features.close();
