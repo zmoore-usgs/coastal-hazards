@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+	<changeSet id="" author="">
+		<tagDatabase tag="initialTag" />
+	</changeSet>
 	<changeSet author="jiwalker" id="add_shoreline_tables">
 		<createTable tableName="shorelines">
-			<column name="id" type="BIGSERIAL">
-				<constraints nullable="false"/>
-			</column>
+			<column name="id" type="BIGSERIAL" />
 			<column name="date" type="DATE" />
 			<column name="mhw" type="BOOLEAN" />
-			<column name="workspace" type="VARCHAR(31)" />
+			<column name="workspace" type="VARCHAR(40)" />
 			<column name="source" type="VARCHAR(255)" />
-			<column name="orientation" type="VARCHAR(15)" />
+			<column name="shoreline_type" type="VARCHAR(31)" />
 			<column name="auxillary_name" type="VARCHAR(31)" />
 		</createTable>
 		<addPrimaryKey tableName="shorelines" columnNames="id" />
 		
 		<createTable tableName="shoreline_points">
-			<column name="id" type="BIGSERIAL">
-				<constraints nullable="false" />
-			</column>
+			<column name="id" type="BIGSERIAL" />
 			<column name="shoreline_id" type="BIGINT" />
 			<column name="segment_id" type="BIGINT" />
 			<column name="geom" type="GEOMETRY" />
@@ -33,9 +32,7 @@
 				 relativeToChangelogFile="true"/>
 
 		<createTable tableName="shoreline_auxillary_attrs">
-			<column name="id" type="BIGSERIAL">
-				<constraints nullable="false" />
-			</column>
+			<column name="id" type="BIGSERIAL" />
 			<column name="shoreline_id" type="BIGINT" />
 			<column name="attr_name" type="VARCHAR(31)" />
 			<column name="value" type="VARCHAR(127)" />
@@ -58,9 +55,9 @@
 	</changeSet>
 	<changeSet author="jiwalker" id="add_workspace_view">
 		<createProcedure>
-			CREATE FUNCTION create_workspace_view(workspace VARCHAR(31), OUT viewname varchar) AS $BODY$
+			CREATE FUNCTION create_workspace_view(workspace VARCHAR(40), OUT viewname varchar) AS $BODY$
 			BEGIN
-				viewname := CAST('shorelines_' || $1 || '_view' AS VARCHAR(47));
+				viewname := CAST('shorelines_' || $1 || '_view' AS VARCHAR(56));
 				EXECUTE 'CREATE OR REPLACE VIEW ' || viewname || ' AS (' ||
 					'SELECT s.id, p.shoreline_id, p.geom, p.uncy, p.segment_id, ' ||
 						's.date, s.mhw, s.workspace, s.source, s.orientation, s.auxillary_name, ' ||
@@ -76,6 +73,6 @@
 			END;
 			$BODY$ LANGUAGE plpgsql;
 		</createProcedure>
-		<rollback>DROP FUNCTION create_workspace_view(workspace VARCHAR(31));</rollback>
+		<rollback>DROP FUNCTION create_workspace_view(workspace VARCHAR(40));</rollback>
 	</changeSet>
 </databaseChangeLog>
