@@ -54,7 +54,6 @@ import gov.usgs.cida.coastalhazards.util.Constants;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
 
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -78,12 +77,15 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class Intersection {
-
+	public static final double DEFAULT_BIAS = 0.0d;
+	public static final double DEFAULT_BIAS_UNCY = 0.0d;
+	
 	private Point point;
 	private double distance;
 	private int transectId;
 	private DateTime date;
 	private double uncy;
+	private ProxyDatumBias bias;
 	private AttributeGetter attGet;
 	private boolean isMeanHighWater = Constants.DEFAULT_MHW_VALUE;
 	private static DateTimeFormatter inputFormat;
@@ -118,24 +120,32 @@ public class Intersection {
 	 * @param dist distance from reference (negative for seaward baselines)
 	 * @param shoreline
 	 * @param uncy
+	 * @param bias
 	 * @param transectId
-	 * @param getter
+	 * @param intersectionGetter
+	 * @param shorelineGetter
 	 */
-	public Intersection(Point point, double dist, SimpleFeature shoreline, double uncy, int transectId, AttributeGetter getter) {
+	public Intersection(Point point, double dist, SimpleFeature shoreline, double uncy, ProxyDatumBias bias,
+			int transectId, AttributeGetter intersectionGetter, AttributeGetter shorelineGetter) {
 		this.point = point;
 		this.distance = dist;
-
 		this.transectId = transectId;
-		this.attGet = getter;
-		this.date = parseDate(attGet.getValue(DATE_ATTR, shoreline));
+		this.attGet = intersectionGetter;
+		this.date = parseDate(shorelineGetter.getValue(DATE_ATTR, shoreline));
 		this.uncy = uncy;
-		this.isMeanHighWater = attGet.getBooleanFromMhwAttribute(shoreline); 
+		this.isMeanHighWater = shorelineGetter.getBooleanFromMhwAttribute(shoreline);
+		if (bias != null && !isMeanHighWater) {
+			this.bias = bias;
+		} else {
+			this.bias = new ProxyDatumBias(Double.NaN, DEFAULT_BIAS, DEFAULT_BIAS_UNCY);
+		}
 	}
 
 	/**
 	 * Get an intersection object from Intersection Feature Type
 	 *
 	 * @param intersectionFeature
+	 * @param getter
 	 */
 	public Intersection(SimpleFeature intersectionFeature, AttributeGetter getter) {
 		this.point = (Point) intersectionFeature.getDefaultGeometry();
@@ -145,6 +155,19 @@ public class Intersection {
 		this.isMeanHighWater = attGet.getBooleanFromMhwAttribute(intersectionFeature);
 		this.date = parseDate(attGet.getValue(DATE_ATTR, intersectionFeature));
 		this.uncy = parseUncertainty(attGet.getValue(UNCY_ATTR, intersectionFeature));
+
+		double biasVal = DEFAULT_BIAS;
+		double uncybVal = DEFAULT_BIAS_UNCY;
+		
+		if(attGet.getValue(BIAS_ATTR, intersectionFeature) != null) {
+			biasVal = attGet.getDoubleValue(BIAS_ATTR, intersectionFeature);
+		}
+		
+		if(attGet.getValue(BIAS_UNCY_ATTR, intersectionFeature) != null) {
+			uncybVal = attGet.getDoubleValue(BIAS_UNCY_ATTR, intersectionFeature);
+		}
+		
+		this.bias = new ProxyDatumBias(Double.NaN, biasVal, uncybVal);
 	}
 	
 	public DateTime getDate() {
@@ -153,6 +176,14 @@ public class Intersection {
 	
 	public double getUncertainty() {
 		return this.uncy;
+	}
+	
+	public double getBias() {
+		return this.bias.getBias();
+	}
+	
+	public double getBiasUncertainty() {
+		return this.bias.getUncyb();
 	}
 
     /**
@@ -165,8 +196,6 @@ public class Intersection {
 //    }
 	public static SimpleFeatureType buildSimpleFeatureType(SimpleFeatureCollection collection, CoordinateReferenceSystem crs) {
 		SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-		SimpleFeatureType schema = collection.getSchema();
-		List<AttributeType> types = schema.getTypes();
 
 		builder.setName("Intersections");
 		builder.add("geom", Point.class, crs);
@@ -175,6 +204,8 @@ public class Intersection {
 		builder.add(MHW_ATTR, Boolean.class);
 		builder.add(DATE_ATTR, Date.class);
 		builder.add(UNCY_ATTR, Double.class);
+		builder.add(BIAS_ATTR, Double.class);
+		builder.add(BIAS_UNCY_ATTR, Double.class);
 
 		return builder.buildFeatureType();
 	}
@@ -196,6 +227,10 @@ public class Intersection {
 				featureObjectArr[i] = date.toDate();
 			} else if (attGet.matches(attrType.getName(), UNCY_ATTR)) {
 				featureObjectArr[i] = uncy;
+			} else if (attGet.matches(attrType.getName(), BIAS_ATTR)) {
+				featureObjectArr[i] = bias.getBias();
+			} else if (attGet.matches(attrType.getName(), BIAS_UNCY_ATTR)) {
+				featureObjectArr[i] = bias.getUncyb();
 			}
 		}
 		return SimpleFeatureBuilder.build(type, featureObjectArr, null);
@@ -256,11 +291,19 @@ public class Intersection {
         return maxVal;
     }
 
-    public static Map<DateTime, Intersection> calculateIntersections(Transect transect, STRtree strTree, boolean useFarthest, AttributeGetter getter) {
-        Map<DateTime, Intersection> allIntersections = new HashMap<DateTime, Intersection>();
+    public static Map<DateTime, Intersection> calculateIntersections(Transect transect, STRtree strTree, boolean useFarthest, AttributeGetter intersectionGetter) {
+        Map<DateTime, Intersection> allIntersections = new HashMap<>();
         LineString line = transect.getLineString();
-        List<ShorelineFeature> possibleIntersects = strTree.query(line.getEnvelopeInternal());
+        AttributeGetter shorelineGetter = null;
+        
+        @SuppressWarnings("unchecked")
+		List<ShorelineFeature> possibleIntersects = strTree.query(line.getEnvelopeInternal());
+        
         for (ShorelineFeature shoreline : possibleIntersects) {
+            if (shorelineGetter == null) {
+                // featuretype should be the same across all features
+                shorelineGetter = new AttributeGetter(shoreline.feature1.getFeatureType());
+            }
             LineString segment = shoreline.segment;
             if (segment.intersects(line)) {
                 // must be a point
@@ -270,8 +313,9 @@ public class Intersection {
                         * transect.getOriginCoord()
                         .distance(crossPoint.getCoordinate());
                 // use feature1 to get the date and MHW attribute (can't change within shoreline)
+                double interpolatedUncy = shoreline.interpolate(crossPoint, UNCY_ATTR, shorelineGetter);
                 Intersection intersection = new Intersection(crossPoint, distance, shoreline.feature1,
-                        shoreline.interpolate(crossPoint, UNCY_ATTR, getter), transect.getId(), getter);
+                        interpolatedUncy, transect.getBias(), transect.getId(), intersectionGetter, shorelineGetter);
                 DateTime date = intersection.getDate();
                 if (allIntersections.containsKey(date)) {  // use closest/farthest intersection
                     Intersection thatIntersection = allIntersections.get(date);
@@ -319,7 +363,10 @@ public class Intersection {
     public String toString() {
         String time = outputFormat.print(getDate());
         double uncertainty = getUncertainty();
-        String str = time + "\t" + distance + "\t" + uncertainty;
+        double bias = getBias();
+        double biasUncertainty = getBiasUncertainty();
+        String str = 
+        		time + "\t" + distance + "\t" + uncertainty + "\t" + bias + "\t" + biasUncertainty;
         return str;
     }
     

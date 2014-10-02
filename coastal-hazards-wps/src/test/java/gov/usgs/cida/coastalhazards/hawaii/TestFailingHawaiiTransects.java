@@ -14,8 +14,11 @@ import gov.usgs.cida.coastalhazards.wps.*;
 import java.io.File;
 import java.net.URL;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.store.EmptyFeatureCollection;
 import org.geotools.feature.FeatureCollection;
+
 import static org.junit.Assert.*;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
@@ -26,6 +29,8 @@ import org.opengis.feature.simple.SimpleFeatureType;
  * @author jiwalker
  */
 public class TestFailingHawaiiTransects {
+	
+	private SimpleFeatureCollection biasfc = FeatureCollectionFromShp.getEmptyFeatureCollection();
     
     /**
      * Test of execute method, of class CreateTransectsAndIntersectionsProcess.
@@ -67,9 +72,10 @@ public class TestFailingHawaiiTransects {
         FeatureCollection<SimpleFeatureType, SimpleFeature> baselinefc =
                 FeatureCollectionFromShp.getFeatureCollectionFromShp(baselineShapefile);
         FeatureCollection<SimpleFeatureType, SimpleFeature> shorelinefc =
-                FeatureCollectionFromShp.getFeatureCollectionFromShp(shorelineShapefile);
+                FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
+        
         CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(), new DummyCatalog());
-        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 100.0d, 0d, Boolean.FALSE, null, null, null, null);
+        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, biasfc, 100.0d, 0d, Boolean.FALSE, null, null, null, null);
     }
     
     /*
@@ -88,6 +94,6 @@ public class TestFailingHawaiiTransects {
         SimpleFeatureCollection shorelinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.getFeatureCollectionFromShp(shorelineShapefile);
         CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(shpfile), new DummyCatalog());
-        generate.execute(shorelinefc, baselinefc, 100.0d, 0d, Boolean.FALSE, null, null, null, null);
+        generate.execute(shorelinefc, baselinefc, biasfc, 100.0d, 0d, Boolean.FALSE, null, null, null, null);
     }
 }

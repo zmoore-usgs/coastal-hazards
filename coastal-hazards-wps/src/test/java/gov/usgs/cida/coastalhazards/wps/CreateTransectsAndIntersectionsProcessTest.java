@@ -81,7 +81,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
         FeatureCollection<SimpleFeatureType, SimpleFeature> shorelinefc =
                 FeatureCollectionFromShp.getFeatureCollectionFromShp(shorelineShapefile);
         CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(), new DummyCatalog());
-        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, 0d, Boolean.FALSE, null, null, null, null);
+        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, null, 50.0d, 0d, Boolean.FALSE, null, null, null, null);
     }
     
     /*
@@ -100,7 +100,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
         SimpleFeatureCollection shorelinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.getFeatureCollectionFromShp(shorelineShapefile);
         CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(shpfile), new DummyCatalog());
-        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, 0d, Boolean.FALSE, null, null, null, null);
+        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, null, 50.0d, 0d, Boolean.FALSE, null, null, null, null);
     }
     
         
