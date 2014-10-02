@@ -12,6 +12,7 @@ import gov.usgs.cida.owsutils.commons.shapefile.utils.XploderMultiLineHandler;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -148,18 +149,17 @@ public class Xploder {
 		int ptCt = 0;
 		MultiLineString shape = (MultiLineString) sap.record.shape();
 		int recordNum = sap.record.number;
-
 		int numGeom = shape.getNumGeometries();
 
-		for (int geometryIndex = 0; geometryIndex < numGeom; geometryIndex++) {
-			Geometry geometry = shape.getGeometryN(geometryIndex);
+		for (int segmentIndex = 0; segmentIndex < numGeom; segmentIndex++) {
+			Geometry geometry = shape.getGeometryN(segmentIndex);
 
 			PointIterator pIterator = new PointIterator(geometry);
 			while (pIterator.hasNext()) {
 				Point p = pIterator.next();
 
 				// write new point-thing-with-uncertainty
-				writePoint(p, sap.row, uncertainty, recordNum, geometryIndex + 1);
+				writePoint(p, sap.row, uncertainty, recordNum, segmentIndex + 1);
 
 				ptCt++;
 
@@ -170,7 +170,7 @@ public class Xploder {
 
 	}
 
-	public void writePoint(Point p, DbaseFileReader.Row row, double uncy, int recordId, int geometryId) throws Exception {
+	public void writePoint(Point p, DbaseFileReader.Row row, double uncy, int recordId, int segmentId) throws Exception {
 
 		SimpleFeature writeFeature = featureWriter.next();
 
@@ -191,7 +191,7 @@ public class Xploder {
 		}
 		// Add record attribute
 		writeFeature.setAttribute(i + 1, recordId);
-		writeFeature.setAttribute(i + 2, geometryId);
+		writeFeature.setAttribute(i + 2, segmentId);
 
 		featureWriter.write();
 	}
@@ -218,8 +218,8 @@ public class Xploder {
 			}
 			idx++;
 		}
-		typeBuilder.add("recordId", Number.class);
-		typeBuilder.add("geometryId", Number.class);
+		typeBuilder.add("recordId", Integer.class);
+		typeBuilder.add("segmentId", Integer.class);
 		SimpleFeatureType outputFeatureType = typeBuilder.buildFeatureType();
 
 		logger.debug("Output feature type is {}", outputFeatureType);

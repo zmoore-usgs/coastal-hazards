@@ -955,7 +955,7 @@ var Shorelines = {
 												$.ajax(Shorelines.uploadRequest.endpoint, {
 													type : 'POST',
 													data : {
-														action : 'update-columns',
+														action : 'import',
 														token : token,
 														workspace : CONFIG.tempSession.session.id,
 														columns : JSON.stringify(layerColumns)

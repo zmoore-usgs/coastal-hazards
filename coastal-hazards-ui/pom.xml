@@ -146,7 +146,7 @@
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-shapefile</artifactId>
-			<version>9.3</version>
+			<version>11.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>xercesImpl</artifactId>
@@ -167,7 +167,25 @@
 			<groupId>gov.usgs.cida.owsutils</groupId>
 			<artifactId>cida-owsutils-commons</artifactId>
 		</dependency>
-		<dependency>
+	 <dependency>
+	  <groupId>commons-collections</groupId>
+	  <artifactId>commons-collections</artifactId>
+	  <version>3.2.1</version>
+	  <type>jar</type>
+	 </dependency>
+	 <dependency>
+	  <groupId>org.postgis</groupId>
+	  <artifactId>postgis-jdbc</artifactId>
+	  <version>2.0.1</version>
+	  <type>jar</type>
+	 </dependency>
+	 <dependency>
+	  <groupId>commons-dbcp</groupId>
+	  <artifactId>commons-dbcp</artifactId>
+	  <version>1.4</version>
+	  <type>jar</type>
+	 </dependency>
+	 <dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
 			<scope>provided</scope>
