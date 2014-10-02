@@ -113,6 +113,88 @@ $(document).ready(function () {
 			}
 		});
 	};
+	
+	var getPublishedLayers = function(){
+		CONFIG.ows.getWMSCapabilities({
+			namespace: CONFIG.name.published,
+			callbacks: {
+				success: [
+					function () {
+						LOG.debug('OnReady.js:: WMS Capabilities retrieved for published workspace');
+						interrogateSessionResources();
+						CONFIG.ui.precacheImages();
+						setupAjaxError();
+					}
+				],
+				error: [
+					function (responseObj) {
+						if (responseObj.data.status === 404) {
+							CONFIG.ui.createModalWindow({
+								headerHtml: 'Unable to interrogate OWS server',
+								bodyHtml: 'The application could not interrogate the OWS server to get published layers.'
+							});
+							interrogateSessionResources();
+							CONFIG.ui.precacheImages();
+						} else {
+						}
+					}
+				]
+			}
+		});
+	};
+	
+	var getPublishedLayers = function(){
+		CONFIG.ows.getWMSCapabilities({
+			namespace: CONFIG.name.published,
+			callbacks: {
+				success: [
+					function () {
+						LOG.debug('OnReady.js:: WMS Capabilities retrieved for ' + CONFIG.name.published + ' workspace');
+						interrogateSessionResources();
+						CONFIG.ui.precacheImages();
+						setupAjaxError();
+					}
+				],
+				error: [
+					function (responseObj) {
+						if (responseObj.data.status === 404) {
+							CONFIG.ui.createModalWindow({
+								headerHtml: 'Unable to interrogate OWS server',
+								bodyHtml: 'The application could not interrogate the OWS server to get published layers.'
+							});
+							interrogateSessionResources();
+							CONFIG.ui.precacheImages();
+						} else {
+						}
+					}
+				]
+			}
+		});
+	};
+	
+	var checkBiasWorkspace = function() {
+		CONFIG.ows.getWMSCapabilities({
+			namespace: CONFIG.name.proxydatumbias,
+			callbacks: {
+				success: [
+					function () {
+						LOG.debug('OnReady.js:: WMS Capabilities retrieved for ' + CONFIG.name.proxydatumbias + ' workspace');
+						getPublishedLayers();
+					}
+				],
+				error: [
+					function (responseObj) {
+						if (responseObj.data.status === 404) {
+							CONFIG.ui.createModalWindow({
+								headerHtml: 'Unable to interrogate OWS server',
+								bodyHtml: 'The application could not interrogate the OWS server to get ' + CONFIG.name.proxydatumbias + ' layers.'
+							});
+						} 
+					}
+				]
+			}
+		});
+	};
 
 	CONFIG.ows.getWFSCapabilities({
 		callbacks: {
@@ -122,33 +204,7 @@ $(document).ready(function () {
 
 					LOG.info('OnReady.js:: Preparing call to OWS GetCapabilities');
 					splashUpdate("Interrogating OWS server...");
-					CONFIG.ows.getWMSCapabilities({
-						namespace: CONFIG.name.published,
-						callbacks: {
-							success: [
-								function () {
-									LOG.debug('OnReady.js:: WMS Capabilities retrieved for published workspace');
-									interrogateSessionResources();
-									CONFIG.ui.precacheImages();
-									setupAjaxError();
-								}
-							],
-							error: [
-								function (responseObj) {
-									if (responseObj.data.status === 404) {
-										CONFIG.ui.createModalWindow({
-											headerHtml: 'Unable to interrogate OWS server',
-											bodyHtml: 'The application could not interrogate the OWS server to get published layers.'
-										});
-										interrogateSessionResources();
-										CONFIG.ui.precacheImages();
-									} else {
-									}
-								}
-							]
-						}
-					});
-
+					checkBiasWorkspace();
 					splashUpdate("Starting Application...");
 				}
 			],

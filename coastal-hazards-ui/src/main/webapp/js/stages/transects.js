@@ -721,6 +721,7 @@ var Transects = {
                 });
 
                 var baseline = $('#baseline-list :selected')[0].value;
+                var biasRef = $('#bias-list :selected')[0].value || $('#bias-list option.session-layer')[0].value; //selected or default to first one
                 var spacing = $('#create-transects-input-spacing').val() || 0;
                 var layerName = $('#create-transects-input-name').val();
                 var farthest = $('#create-intersections-nearestfarthest-list').val();
@@ -733,6 +734,7 @@ var Transects = {
 
                 var request = Transects.createWPScreateTransectsAndIntersectionsRequest({
                     shorelines: visibleShorelines,
+                    biasRef: biasRef,
                     baseline: baseline,
                     spacing: spacing,
                     farthest: farthest,
@@ -853,6 +855,7 @@ var Transects = {
             createWPScreateTransectsAndIntersectionsRequest: function(args) {
                 var shorelines = args.shorelines;
                 var baseline = args.baseline;
+                var biasRef = args.biasRef;
                 var spacing = args.spacing ? args.spacing : Transects.defaultSpacing;
                 var smoothing = args.smoothing || 0.0;
                 var layer = args.layer;
@@ -909,6 +912,19 @@ var Transects = {
                             '</wps:Reference>' +
                             '</wps:Input>';
                 })
+                
+                if(biasRef) {
+	                request += '<wps:Input>' +
+	                        '<ows:Identifier>biasRef</ows:Identifier>' +
+	                        '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' +
+	                        '<wps:Body>' +
+	                        '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:' + biasRef.split(':')[0] + '="' + CONFIG.namespace.proxydatumbias + '">' +
+	                        '<wfs:Query typeName="' + biasRef + '" srsName="EPSG:4326" />' +
+	                        '</wfs:GetFeature>' +
+	                        '</wps:Body>' +
+	                        '</wps:Reference>' +
+	                        '</wps:Input>';
+                }
 
                 request += '<wps:Input>' +
                         '<ows:Identifier>baseline</ows:Identifier>' +

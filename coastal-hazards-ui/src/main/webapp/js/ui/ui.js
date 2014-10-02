@@ -227,8 +227,8 @@ var UI = function() {
                         'response.encoding': 'json',
                         'filename.param': 'qqfile',
                         'overwrite.existing.layer': 'true',
-                        'workspace': CONFIG.tempSession.getCurrentSessionKey(),
-                        'store': 'ch-input',
+                        'workspace': caller.overrideWorkspace || CONFIG.tempSession.getCurrentSessionKey(),
+                        'store': caller.overrideStore || 'ch-input',
                         'srs': CONFIG.map.getMap().getProjection(),
                         'use.crs.failover': 'true',
                         'projection.policy': 'reproject',
@@ -289,12 +289,12 @@ var UI = function() {
                         var success = responseJSON.success;
                         var layerName = responseJSON.name;
                         var workspace = responseJSON.workspace;
-
+                        
                         if (success === 'true') {
                             LOG.info("UI.js::initializeUploader: Upload complete");
                             LOG.info('UI.js::initializeUploader: Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
                             CONFIG.ows.getWMSCapabilities({
-                                namespace: CONFIG.tempSession.getCurrentSessionKey(),
+                                namespace: workspace,
                                 layerName: layerName,
                                 callbacks: {
                                     success: [
@@ -311,6 +311,7 @@ var UI = function() {
                                             CONFIG.ui.populateFeaturesList({
                                                 caller: caller
                                             });
+
                                             $('a[href="#' + caller.stage + '-view-tab"]').tab('show');
                                             $('#' + caller.stage + '-list')
                                                     .val(layerName)
@@ -377,9 +378,9 @@ var UI = function() {
                     var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
                     var title = layer.title;
             
-                    // Add the option to the list only if it's from the published namespace or
+                    // Add the option to the list only if it's from the published/proxydatumbias namespace or
                     // if it's from the input namespace and in the current session
-                    if (layerNS === CONFIG.name.published || layerNS === currentSessionKey) {
+                    if (layerNS === CONFIG.name.published || layerNS === CONFIG.name.proxydatumbias || layerNS === currentSessionKey) {
                         var type = title.substr(title.lastIndexOf('_'));
                         if (suffixes.length === 0 || suffixes.indexOf(type.toLowerCase()) !== -1) {
                             LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title);
@@ -755,16 +756,17 @@ var UI = function() {
                                 columns.push(key + '|' + mapping[key]);
                             }
                         });
+                        var workspace = caller.overrideWorkspace || CONFIG.tempSession.getCurrentSessionKey()
                         CONFIG.ows.renameColumns({
                             layer : layerName,
-                            workspace : CONFIG.tempSession.getCurrentSessionKey(),
-                            store : 'ch-input',
+                            workspace: workspace,
+                            store: caller.overrideStore || 'ch-input',
                             columns : columns.filter(function(c) {
                                 return !c.endsWith('|');
                             }),
                             callbacks : [
                             function() {
-                                $("#"+caller.stage+"-list").val(CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName);
+                                $("#"+caller.stage+"-list").val(workspace + ':' + layerName);
                                 $("#"+caller.stage+"-list").trigger('change');    
                             }
                             ]
