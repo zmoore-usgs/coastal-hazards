@@ -40,11 +40,13 @@ import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.crs.ReprojectFeatureResults;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -242,43 +244,55 @@ public class ShorelineStagingService extends HttpServlet {
 		pointsShapefile = xploder.explode(shpFile.getParent() + File.separator + FilenameUtils.getBaseName(shpFile.getName()));
 		try (Connection connection = getConnection()) {
 			FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollectionFromShp.getFeatureCollectionFromShp(pointsShapefile.toURI().toURL());
+			Class<?> dateType = fc.getSchema().getDescriptor(dateFieldName).getType().getBinding();
+			Class<?> uncertaintyType = fc.getSchema().getDescriptor(uncertaintyFieldName).getType().getBinding();
 
 			if (!fc.isEmpty()) {
-				connection.setAutoCommit(false);
-				SimpleFeature sf = fc.features().next();
-				Class<?> dateType = sf.getAttribute(dateFieldName).getClass();
-				Class<?> uncertaintyType = sf.getAttribute(uncertaintyFieldName).getClass();
-
-				// First enter the shoreline
-				boolean mhw = false;
-				Date date = getDateFromFC(dateFieldName, sf, dateType);
-				String source = getSourceFromFC(sf);
-				if (StringUtils.isNotBlank(mhwFieldName)) {
-					mhw = getMHWFromFC(mhwFieldName, sf, dateType);
-				}
-
-				long shorelineId;
-				int insertedPoints;
+				ReprojectFeatureResults rfc = new ReprojectFeatureResults(fc, DefaultGeographicCRS.WGS84);
+				SimpleFeatureIterator iter = null;
 				try {
-					shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, orientation, mhwFieldName);
-					insertedPoints = insertPointIntoShorelinePointsTable(connection, shorelineId, fc, uncertaintyFieldName, uncertaintyType);
-				} catch (IOException | SQLException | NoSuchElementException | NamingException | SchemaException | FactoryException | TransformException ex) {
+					iter = rfc.features();
+					connection.setAutoCommit(false);
+					long lastShorelineId = 0;
+					while (iter.hasNext()) {
+						SimpleFeature sf = iter.next();
+						boolean mhw = false;
+						Date date = getDateFromFC(dateFieldName, sf, dateType);
+						String source = getSourceFromFC(sf);
+						if (StringUtils.isNotBlank(mhwFieldName)) {
+							mhw = getMHWFromFC(mhwFieldName, sf, dateType);
+						}
+
+						long shorelineId = getRecordIdFromFC("recordId", sf);
+						if (lastShorelineId != shorelineId) {
+							lastShorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, orientation, mhwFieldName);
+						}
+						insertPointIntoShorelinePointsTable(connection, shorelineId, sf, uncertaintyFieldName, uncertaintyType);
+					}
+					connection.commit();
+				} catch (NamingException | NoSuchElementException | ParseException | SQLException ex) {
 					connection.rollback();
 					throw ex;
+				} finally {
+					if (null != iter) {
+						try {
+							iter.close();
+						} catch (Exception ex) {
+							LOGGER.warn("Could not close feature iterator", ex);
+						}
+					}
 				}
+
 				
-				connection.commit();
+
 			}
 		}
 	}
 
-	private long insertToShorelinesTable(Connection connection, String workspace, Date date, boolean mhw, String source, String orientation, String auxillaryName) throws NamingException, SQLException {
+	private long insertToShorelinesTable(Connection connection, String workspace, Date date, boolean mhw, String source, String shorelineType, String auxillaryName) throws NamingException, SQLException {
 		String sql = "INSERT INTO shorelines "
-				+ "(id, date, mhw, workspace, source, orientation, auxillary_name) "
-				+ "VALUES (1,?,?,?,?,?,?)";
-//		String sql = "INSERT INTO shorelines "
-//				+ "(date, mhw, workspace, source, orientation, auxillary_name) "
-//				+ "VALUES (?,?,?,?,?,?)";
+				+ "(date, mhw, workspace, source, shoreline_type, auxillary_name) "
+				+ "VALUES (?,?,?,?,?,?)";
 
 		long createdId;
 
@@ -287,7 +301,7 @@ public class ShorelineStagingService extends HttpServlet {
 			ps.setBoolean(2, mhw);
 			ps.setString(3, workspace);
 			ps.setString(4, source);
-			ps.setString(5, orientation);
+			ps.setString(5, shorelineType);
 			ps.setString(6, auxillaryName);
 
 			int affectedRows = ps.executeUpdate();
@@ -307,33 +321,20 @@ public class ShorelineStagingService extends HttpServlet {
 		return createdId;
 	}
 
-	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, FeatureCollection<SimpleFeatureType, SimpleFeature> fc, String uncertaintyFieldName, Class<?> uncertaintyType) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
-		int insertCount = 0;
-		ReprojectFeatureResults reprojectedFc = new ReprojectFeatureResults(fc, DefaultGeographicCRS.WGS84);
-		Iterator<SimpleFeature> iter = reprojectedFc.iterator();
-		int count = 1;
-		while (iter.hasNext()) {
-			SimpleFeature sf = iter.next();
-			double x = reprojectedFc.getBounds().getMaxX();
-			double y = reprojectedFc.getBounds().getMaxY();
+	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
+			double x = sf.getBounds().getMaxX();
+			double y = sf.getBounds().getMaxY();
 			double uncertainty = getUncertaintyFromFC(uncertaintyFieldName, sf, uncertaintyType);
 			int segmentId = getSegmentIdFromFC("segmentId", sf);
-			
-			String sql = "INSERT INTO shoreline_points " +
-					"(id, shoreline_id, segment_id, geom, uncy) " +
-					"VALUES ("+ count +",?,?,?,?)";
-			
-			try (PreparedStatement ps = connection.prepareStatement(sql)) {
-				ps.setLong(1, shorelineId);
-				ps.setInt(2, segmentId);
-				ps.setObject(3, new PGgeometry(new Point(x,y)));
-				ps.setDouble(4, uncertainty);
-				insertCount += ps.executeUpdate();
-				count++;
-			}
 
-		}
-		return insertCount;
+			String sql = "INSERT INTO shoreline_points "
+					+ "(shoreline_id, segment_id, geom, uncy) "
+					+ "VALUES (" + shorelineId + "," + segmentId + "," + "ST_GeomFromText('POINT(" + x + " " + y + ")',4326)" + "," + uncertainty + ")";
+			if (connection.createStatement().execute(sql)) {
+				return 1;
+			} else {
+				return 0;
+			}
 	}
 
 	private Connection getConnection() {
@@ -343,8 +344,8 @@ public class ShorelineStagingService extends HttpServlet {
 			Context envCtx = (Context) initCtx.lookup("java:comp/env");
 			DataSource ds = (DataSource) envCtx.lookup(jndiDbConnName);
 			con = ds.getConnection();
-			((org.postgresql.PGConnection)con).addDataType("geometry", Class.forName("org.postgis.PGeometry"));
-		} catch (SQLException | NamingException | ClassNotFoundException ex) {
+//			((org.postgresql.PGConnection) con).addDataType("geometry", org.postgis.PGgeometry.class);
+		} catch (SQLException | NamingException ex) {
 			LOGGER.error("Could not create database connection", ex);
 		}
 		return con;
@@ -355,6 +356,7 @@ public class ShorelineStagingService extends HttpServlet {
 
 		if (fromType == java.lang.String.class) {
 			String dateString = (String) sf.getAttribute(dateFieldName);
+
 			try {
 				result = new SimpleDateFormat("MM/dd/yyyy").parse(dateString);
 			} catch (ParseException ex) {
@@ -373,8 +375,10 @@ public class ShorelineStagingService extends HttpServlet {
 
 	private double getUncertaintyFromFC(String uncyFieldName, SimpleFeature sf, Class<?> fromType) {
 		Object uncy = sf.getAttribute(uncyFieldName);
+
 		if (fromType == java.lang.String.class) {
-			return Double.parseDouble((String) uncy);
+			return Double.parseDouble(
+					(String) uncy);
 		} else if (uncy instanceof java.lang.Number) {
 			return (double) uncy;
 		}
@@ -382,10 +386,16 @@ public class ShorelineStagingService extends HttpServlet {
 		throw new NumberFormatException("Could not parse uncertainty into double");
 	}
 
+	private int getRecordIdFromFC(String recordIdFieldName, SimpleFeature sf) {
+		return (int) sf.getAttribute(recordIdFieldName);
+	}
+
 	private boolean getMHWFromFC(String mhwFieldName, SimpleFeature sf, Class<?> fromType) throws ParseException {
 		Object mhw = sf.getAttribute(mhwFieldName);
+
 		if (fromType == java.lang.String.class) {
-			return Boolean.parseBoolean((String) mhw);
+			return Boolean.parseBoolean(
+					(String) mhw);
 		} else if (fromType == java.lang.Boolean.class) {
 			return (boolean) mhw;
 		}
@@ -402,7 +412,7 @@ public class ShorelineStagingService extends HttpServlet {
 		}
 		return source;
 	}
-	
+
 	private int getSegmentIdFromFC(String segmentIdName, SimpleFeature sf) {
 		return (int) sf.getAttribute(segmentIdName);
 	}
