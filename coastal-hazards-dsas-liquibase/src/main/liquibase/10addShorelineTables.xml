@@ -65,7 +65,7 @@
 					'FROM shorelines s ' ||
 					'JOIN shoreline_points p ON s.id = p.shoreline_id ' ||
 						'and s.workspace =' || quote_literal($1) ||
-					'JOIN shoreline_auxillary_attrs a ON s.id = a.shoreline_id ' ||
+					'LEFT JOIN shoreline_auxillary_attrs a ON s.id = a.shoreline_id ' ||
 						'and s.auxillary_name = a.attr_name);';
 				EXECUTE 'ALTER TABLE ' || viewname || ' OWNER TO coastal_hazards;';
 				EXECUTE 'GRANT ALL ON TABLE ' || viewname || ' TO coastal_hazards;';
