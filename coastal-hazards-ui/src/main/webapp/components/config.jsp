@@ -27,11 +27,13 @@
 	CONFIG.n52Endpoint = '<%=n52Endpoint%>';
 	CONFIG.popupHoverDelay = 1500;
 	CONFIG.namespace = Object.extended();
+	CONFIG.namespace.proxydatumbias = 'gov.usgs.cida.ch.bias';
 	CONFIG.namespace.published = 'gov.usgs.cida.ch.published';
 	CONFIG.namespace.input = 'gov.usgs.cida.ch.input';
 	CONFIG.namespace.output = 'gov.usgs.cida.ch.output';
 	CONFIG.name = {};
 	CONFIG.name.published = 'published';
+	CONFIG.name.proxydatumbias = 'proxydatumbias';
 	CONFIG.dateFormat = {
 		padded: '{MM}/{dd}/{yyyy}',
 		nonPadded: '{M}/{d}/{yyyy}'

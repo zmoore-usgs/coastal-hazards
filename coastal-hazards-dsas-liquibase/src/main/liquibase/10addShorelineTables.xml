@@ -55,12 +55,12 @@
 	</changeSet>
 	<changeSet author="jiwalker" id="add_workspace_view">
 		<createProcedure>
-			CREATE FUNCTION create_workspace_view(workspace VARCHAR(40), OUT viewname varchar) AS $BODY$
+			CREATE OR REPLACE FUNCTION create_workspace_view(workspace VARCHAR(40), OUT viewname varchar) AS $BODY$
 			BEGIN
 				viewname := CAST('shorelines_' || $1 || '_view' AS VARCHAR(56));
 				EXECUTE 'CREATE OR REPLACE VIEW ' || viewname || ' AS (' ||
 					'SELECT s.id, p.shoreline_id, p.geom, p.uncy, p.segment_id, ' ||
-						's.date, s.mhw, s.workspace, s.source, s.orientation, s.auxillary_name, ' ||
+						's.date, s.mhw, s.workspace, s.source, s.shoreline_type, s.auxillary_name, ' ||
 						'a.value as auxillary_value ' ||
 					'FROM shorelines s ' ||
 					'JOIN shoreline_points p ON s.id = p.shoreline_id ' ||

@@ -106,8 +106,8 @@ public class AttributeGetter {
 	
 	public int getIntValue(String attribute, SimpleFeature feature) {
 		Object value = getValue(attribute, feature);
-		if (value instanceof Integer) {
-			return (int)value;
+		if (value instanceof Number) {
+			return ((Number)value).intValue();
 		} else {
 			throw new ClassCastException("This attribute is not an Integer");
 		}
@@ -115,8 +115,8 @@ public class AttributeGetter {
 	
 	public double getDoubleValue(String attribute, SimpleFeature feature) {
 		Object value = getValue(attribute, feature);
-		if (value instanceof Float || value instanceof Double) {
-			return (Double)value;
+		if (value instanceof Number) {
+			return ((Number)value).doubleValue();
 		} else {
 			throw new ClassCastException("This attribute is not a floating point value");
 		}

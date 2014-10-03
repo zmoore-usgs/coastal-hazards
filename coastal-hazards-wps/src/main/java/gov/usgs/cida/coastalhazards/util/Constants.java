@@ -75,7 +75,7 @@ public class Constants {
     public static final String EPR_ATTR = "EPR";
     public static final String MHW_ATTR = "MHW";
 
-    public static final String AVG_SLOPE_ATTR = "avgSlope";
+    public static final String AVG_SLOPE_ATTR = "avg_slope";
     public static final String BIAS_ATTR = "BIAS";
     public static final String BIAS_UNCY_ATTR = "UNCYB";
 

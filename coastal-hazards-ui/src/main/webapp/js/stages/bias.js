@@ -1,6 +1,8 @@
 /* global LOG */ 
 /* global CONFIG */ 
 var ProxyDatumBias = {
+		overrideWorkspace : CONFIG.name.proxydatumbias,
+		overrideStore : "Uploads",
 		stage : 'bias',
 		suffixes : ['_bias'],
 		mandatoryColumns : ['the_geom', 'segment_id', 'bias', 'avg_slope', 'uncyb'],
@@ -224,7 +226,7 @@ var ProxyDatumBias = {
 					});
 					layerInfos.push(layer);
 					stage.viewing.push(layerFullName);
-					if (layerFullName.has(CONFIG.tempSession.getCurrentSessionKey())) {
+					if (layerFullName.has(CONFIG.name.proxydatumbias)) {
 						ProxyDatumBias.enableRemoveButton();
 					}
 				});
@@ -235,7 +237,7 @@ var ProxyDatumBias = {
 			var derivedName = '';
 			var selectedLayers = stage.viewing;
 			var getSeries = function(series) {
-				var skey = CONFIG.tempSession.getCurrentSessionKey();
+				var skey = CONFIG.name.proxydatumbias;
 				var startPoint = series.has(skey) ? skey.length : 0;
 				return series.substr(startPoint, series.lastIndexOf('_') - startPoint);
 			};
@@ -296,7 +298,7 @@ var ProxyDatumBias = {
 			                                    	})
 
 			                                    	CONFIG.ows.getWMSCapabilities({
-			                                    		namespace : CONFIG.tempSession.getCurrentSessionKey(),
+			                                    		namespace : CONFIG.name.proxydatumbias,
 			                                    		callbacks : {
 			                                    			success : [
 			                                    			           function() {

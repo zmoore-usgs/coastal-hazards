@@ -325,6 +325,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
 
                     for (Intersection intersection : allIntersections.values()) {
                         // do I need to worry about order?
+                    	intersection.setBias(biasCorrection);
                         intersectionFeatures.add(intersection.createFeature(intersectionFeatureType));
                     }
                 }
