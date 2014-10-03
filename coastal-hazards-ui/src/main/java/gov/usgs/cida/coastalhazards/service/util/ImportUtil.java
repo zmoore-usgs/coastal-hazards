@@ -1,11 +1,16 @@
 package gov.usgs.cida.coastalhazards.service.util;
 
+import gov.usgs.cida.coastalhazards.service.exception.LidarFileFormatException;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse;
 import gov.usgs.cida.owsutils.commons.io.FileHelper;
+import gov.usgs.cida.owsutils.commons.io.exception.ShapefileFormatException;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -30,10 +35,13 @@ public class ImportUtil {
 	 * @return
 	 * @throws IOException
 	 * @throws FileUploadException
+	 * @throws ShapefileFormatException 
+	 * @throws LidarFileFormatException 
 	 */
-	public static File saveShapefileFromRequest(HttpServletRequest request, String defaultFileParam, String workDir, boolean overwrite) throws IOException, FileUploadException {
+	public static File saveShorelineFileFromRequest(HttpServletRequest request, String defaultFileParam, String workDir, boolean overwrite) throws IOException, FileUploadException, ShapefileFormatException, LidarFileFormatException {
 		String filenameParam = defaultFileParam;
 		String fnReqParam = request.getParameter("filename.param");
+		String extension = ".shp";
 		if (StringUtils.isNotBlank(fnReqParam)) {
 			filenameParam = fnReqParam;
 		}
@@ -44,8 +52,8 @@ public class ImportUtil {
 		if (filenameParam.equals(zipFileName)) {
 			LOGGER.debug("(No change)");
 		}
-		String shapefileName = zipFileName.substring(0, zipFileName.lastIndexOf("."));
-		File saveDirectory = new File(workDir + File.separator + shapefileName);
+		String shorelineFileName = zipFileName.substring(0, zipFileName.lastIndexOf("."));
+		File saveDirectory = new File(workDir + File.separator + shorelineFileName);
 		if (!saveDirectory.exists()) {
 			FileUtils.forceMkdir(saveDirectory);
 		}
@@ -57,26 +65,34 @@ public class ImportUtil {
 			}
 			LOGGER.debug("File already existed on server. Deleted before re-saving.");
 		}
-		File shapeZipFile = new File(saveDirectory, zipFileName);
-		LOGGER.debug("Temporary file set to {}", shapeZipFile.getAbsolutePath());
+		File shorelineZipFile = new File(saveDirectory, zipFileName);
+		LOGGER.debug("Temporary file set to {}", shorelineZipFile.getAbsolutePath());
 		try {
-			RequestResponse.saveFileFromRequest(request, shapeZipFile, filenameParam);
-			LOGGER.debug("Shapefile saved");
-			FileHelper.flattenZipFile(shapeZipFile.getAbsolutePath());
-			LOGGER.debug("Shapefile zip structure flattened");
-			FileHelper.validateShapefileZip(shapeZipFile);
-			LOGGER.debug("Shapefile verified");
-			gov.usgs.cida.utilities.file.FileHelper.unzipFile(saveDirectory.getAbsolutePath(), shapeZipFile);
-			LOGGER.debug("Shapefile unzipped");
-			if (shapeZipFile.delete()) {
+			RequestResponse.saveFileFromRequest(request, shorelineZipFile, filenameParam);
+			LOGGER.debug("Shoreline saved");
+			FileHelper.flattenZipFile(shorelineZipFile.getAbsolutePath());
+			LOGGER.debug("Shoreline zip structure flattened");
+			
+			if(LidarFileUtils.isLidar(shorelineZipFile)) {
+				LidarFileUtils.validateLidarFileZip(shorelineZipFile);
+				LOGGER.debug("Lidar file verified");
+				extension = ".csv";
+			} else {
+				FileHelper.validateShapefileZip(shorelineZipFile);
+				LOGGER.debug("Shapefile verified");
+				extension = ".shp";
+			}
+			gov.usgs.cida.utilities.file.FileHelper.unzipFile(saveDirectory.getAbsolutePath(), shorelineZipFile);
+			LOGGER.debug("Shoreline unzipped");
+			if (shorelineZipFile.delete()) {
 				LOGGER.debug("Deleted zipped shapefile");
 			} else {
-				LOGGER.debug("Could not delete shapefile zip at {}", shapeZipFile.getAbsolutePath());
+				LOGGER.debug("Could not delete shoreline zip at {}", shorelineZipFile.getAbsolutePath());
 			}
 			Collection<File> shapeFileParts = FileUtils.listFiles(saveDirectory, HiddenFileFilter.VISIBLE, null);
 			for (File file : shapeFileParts) {
 				String oldFilename = file.getName();
-				String newFilename = shapefileName + "." + FilenameUtils.getExtension(file.getName());
+				String newFilename = shorelineFileName + "." + FilenameUtils.getExtension(file.getName());
 				gov.usgs.cida.utilities.file.FileHelper.renameFile(file, newFilename);
 				LOGGER.debug("Renamed {} to {}", oldFilename, newFilename);
 			}
@@ -84,7 +100,7 @@ public class ImportUtil {
 			FileUtils.deleteQuietly(saveDirectory);
 			throw ex;
 		}
-		return new File(saveDirectory, shapefileName + ".shp");
+		return new File(saveDirectory, shorelineFileName + extension);
 	}
 
 	/**
