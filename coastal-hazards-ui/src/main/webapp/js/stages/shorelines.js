@@ -961,7 +961,9 @@ var Shorelines = {
 														columns : JSON.stringify(layerColumns)
 													},
 													success : function (data) {
-														debugger;
+														CONFIG.ui.populateFeaturesList({
+															caller: Shorelines
+														});
 													},
 													error : function () {
 														debugger;
