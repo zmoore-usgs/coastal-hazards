@@ -22,7 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -40,7 +39,6 @@ import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.lang.StringUtils;
@@ -55,8 +53,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
-import org.postgis.PGgeometry;
-import org.postgis.Point;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -78,6 +74,8 @@ public class ShorelineStagingService extends HttpServlet {
 	private static final String DIRECTORY_UPLOAD_PARAM_CONFIG_KEY = ".files.directory.upload";
 	private static final String DIRECTORY_WORK_PARAM_CONFIG_KEY = ".files.directory.work";
 	private final static String TOKEN_STRING = "token";
+	private final static String STAGE_ACTION_STRING = "stage";
+	private final static String IMPORT_ACTION_STRING = "import";
 	private String applicationName = null;
 	private Integer maxFileSize;
 	private String propertyBasedFilenameParam;
@@ -137,23 +135,22 @@ public class ShorelineStagingService extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Map<String, String> responseMap = new HashMap<>();
 		boolean success = false;
-
+		Map<String, String> responseMap = new HashMap<>();
 		ResponseType responseType = ServiceHelper.getResponseType(request);
 
 		String action = request.getParameter("action");
 
 		if (StringUtils.isBlank(action)) {
 			ServiceHelper.sendNotEnoughParametersError(response, new String[]{"action"}, responseType);
-		} else if (action.equalsIgnoreCase("stage")) {
+		} else if (action.equalsIgnoreCase(STAGE_ACTION_STRING)) {
 			try {
 				responseMap = stageFile(request, propertyBasedFilenameParam, uploadDirectory.getAbsolutePath());
 				success = true;
 			} catch (FileUploadException ex) {
 				sendExceptionalError(response, "Could not stage shapefile", ex, responseType);
 			}
-		} else if (action.equalsIgnoreCase("import")) {
+		} else if (action.equalsIgnoreCase(IMPORT_ACTION_STRING)) {
 			String token = request.getParameter(TOKEN_STRING);
 			if (StringUtils.isBlank(token)) {
 				ServiceHelper.sendNotEnoughParametersError(response, new String[]{TOKEN_STRING}, responseType);
@@ -194,7 +191,7 @@ public class ShorelineStagingService extends HttpServlet {
 				}
 			}
 		} else {
-			ServiceHelper.sendNotEnoughParametersError(response, new String[]{"stage"}, responseType);
+			ServiceHelper.sendNotEnoughParametersError(response, new String[]{STAGE_ACTION_STRING, IMPORT_ACTION_STRING}, responseType);
 		}
 
 		if (success) {
@@ -267,7 +264,7 @@ public class ShorelineStagingService extends HttpServlet {
 						if (lastShorelineId != shorelineId) {
 							lastShorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, orientation, mhwFieldName);
 						}
-						insertPointIntoShorelinePointsTable(connection, shorelineId, sf, uncertaintyFieldName, uncertaintyType);
+						insertPointIntoShorelinePointsTable(connection, lastShorelineId, sf, uncertaintyFieldName, uncertaintyType);
 					}
 					connection.commit();
 				} catch (NamingException | NoSuchElementException | ParseException | SQLException ex) {
@@ -282,8 +279,6 @@ public class ShorelineStagingService extends HttpServlet {
 						}
 					}
 				}
-
-				
 
 			}
 		}
@@ -322,19 +317,19 @@ public class ShorelineStagingService extends HttpServlet {
 	}
 
 	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
-			double x = sf.getBounds().getMaxX();
-			double y = sf.getBounds().getMaxY();
-			double uncertainty = getUncertaintyFromFC(uncertaintyFieldName, sf, uncertaintyType);
-			int segmentId = getSegmentIdFromFC("segmentId", sf);
+		double x = sf.getBounds().getMaxX();
+		double y = sf.getBounds().getMaxY();
+		double uncertainty = getUncertaintyFromFC(uncertaintyFieldName, sf, uncertaintyType);
+		int segmentId = getSegmentIdFromFC("segmentId", sf);
 
-			String sql = "INSERT INTO shoreline_points "
-					+ "(shoreline_id, segment_id, geom, uncy) "
-					+ "VALUES (" + shorelineId + "," + segmentId + "," + "ST_GeomFromText('POINT(" + x + " " + y + ")',4326)" + "," + uncertainty + ")";
-			if (connection.createStatement().execute(sql)) {
-				return 1;
-			} else {
-				return 0;
-			}
+		String sql = "INSERT INTO shoreline_points "
+				+ "(shoreline_id, segment_id, geom, uncy) "
+				+ "VALUES (" + shorelineId + "," + segmentId + "," + "ST_GeomFromText('POINT(" + x + " " + y + ")',4326)" + "," + uncertainty + ")";
+		if (connection.createStatement().execute(sql)) {
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 
 	private Connection getConnection() {
