@@ -1,11 +1,10 @@
 package gov.usgs.cida.coastalhazards.util;
 
 import gov.usgs.cida.coastalhazards.wps.AutoImportProcess;
-import gov.usgs.cida.coastalhazards.wps.NormalizeLayerColumnNamesProcessTest;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
 import org.apache.commons.io.FileUtils;
@@ -21,7 +20,8 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.process.ProcessException;
 import org.junit.After;
 import org.junit.AfterClass;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -74,7 +74,7 @@ public class GeoserverUtilsTest extends WPSTestSupport {
 	public void testReplaceLayerWhenImportFails() throws IOException, URISyntaxException {
 		System.out.println("testReplaceLayerWhenImportFails");
 		
-		SimpleFeatureCollection mixedCaseFeatureCollection = (SimpleFeatureCollection) FeatureCollectionFromShp.featureCollectionFromShp(mixedCaseShapefile.toURI().toURL());
+		SimpleFeatureCollection mixedCaseFeatureCollection = (SimpleFeatureCollection) FeatureCollectionFromShp.getFeatureCollectionFromShp(mixedCaseShapefile.toURI().toURL());
 		String layer = importer.importLayer(mixedCaseFeatureCollection, WORKSPACE_NAME, STORE_NAME, LAYER_NAME, mixedCaseFeatureCollection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
 		layer = layer.split(":")[1];
 		

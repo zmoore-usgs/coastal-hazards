@@ -294,13 +294,18 @@
 			<dependency>
 				<groupId>gov.usgs.cida.owsutils</groupId>
 				<artifactId>cida-owsutils-geoserver</artifactId>
-				<version>1.0.4</version>
+				<version>1.0.6-SNAPSHOT</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>commons-lang</artifactId>
 						<groupId>commons-lang</groupId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>gov.usgs.cida.owsutils</groupId>
+				<artifactId>cida-owsutils-commons</artifactId>
+				<version>1.0.6-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openid4java</groupId>
@@ -404,7 +409,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.5.1</version>
+				<version>3.1</version>
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>

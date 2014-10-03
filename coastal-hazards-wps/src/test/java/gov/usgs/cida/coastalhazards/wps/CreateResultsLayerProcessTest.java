@@ -1,7 +1,7 @@
 package gov.usgs.cida.coastalhazards.wps;
 
 import gov.usgs.cida.coastalhazards.util.Constants;
-import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -60,9 +60,9 @@ public class CreateResultsLayerProcessTest {
         }
         IOUtils.closeQuietly(reader);
         SimpleFeatureCollection transectfc = (SimpleFeatureCollection)
-                FeatureCollectionFromShp.featureCollectionFromShp(transects);
+                FeatureCollectionFromShp.getFeatureCollectionFromShp(transects);
         SimpleFeatureCollection intersectfc = (SimpleFeatureCollection)
-                FeatureCollectionFromShp.featureCollectionFromShp(intersects);
+                FeatureCollectionFromShp.getFeatureCollectionFromShp(intersects);
         // need to get the matching transect layer to run against
         CreateResultsLayerProcess createResultsLayerProcess = new CreateResultsLayerProcess(new DummyImportProcess(outTest), new DummyCatalog());
         createResultsLayerProcess.execute(buffer, transectfc, intersectfc, null, null, null);
@@ -72,7 +72,7 @@ public class CreateResultsLayerProcessTest {
     
     private void validateNSD(File shapefile) throws MalformedURLException, IOException {
         SimpleFeatureCollection resultsFC = (SimpleFeatureCollection)
-                FeatureCollectionFromShp.featureCollectionFromShp(shapefile.toURI().toURL());
+                FeatureCollectionFromShp.getFeatureCollectionFromShp(shapefile.toURI().toURL());
         
         SimpleFeatureType resultsFT = resultsFC.getSchema();
         AttributeDescriptor nsdAD = resultsFT.getDescriptor(Constants.NSD_ATTR);

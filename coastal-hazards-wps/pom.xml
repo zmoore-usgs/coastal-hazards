@@ -99,6 +99,11 @@
 			<artifactId>hamcrest-all</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>gov.usgs.cida.owsutils</groupId>
+			<artifactId>cida-owsutils-commons</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	
 	<build>

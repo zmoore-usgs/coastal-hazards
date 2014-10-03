@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.service;
 
 import gov.usgs.cida.coastalhazards.uncy.Xploder;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,9 +15,8 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
-import org.geotools.data.shapefile.ShpFileType;
-import org.geotools.data.shapefile.ShpFiles;
+import org.geotools.data.shapefile.files.ShpFileType;
+import org.geotools.data.shapefile.files.ShpFiles;
 
 public class ZipInterpolator {
 
@@ -32,9 +30,9 @@ public class ZipInterpolator {
 		// unpack
 		File tmpDir = Files.createTempDirectory("xplode").toFile();
 		File shpFile = unpack(tmpDir,uploadDestinationFile);
-		
+		String shapefileWithoutSuffix = shpFile.getAbsolutePath().replace(".shp", "");
 		Xploder x = new Xploder();
-		File ptFile = x.explode(shpFile.getAbsolutePath());
+		File ptFile = x.explode(shapefileWithoutSuffix);
 		
 		File newZip = repack(tmpDir,ptFile);
 		return newZip;

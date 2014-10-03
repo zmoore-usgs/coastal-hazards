@@ -458,8 +458,10 @@ var Results = {
                         },
                         function() {
                             var selectionControl = CONFIG.map.getMap().getControlsBy('id','results-select-control')[0];
-                            selectionControl.unselectAll();
-                            $(this).removeClass('warning');
+							if (selectionControl) {
+								selectionControl.unselectAll();
+								$(this).removeClass('warning');
+							}
                         });
                 }
                 ],

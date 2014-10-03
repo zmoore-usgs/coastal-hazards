@@ -1,0 +1,600 @@
+package gov.usgs.cida.coastalhazards.service;
+
+import com.google.gson.Gson;
+import gov.usgs.cida.coastalhazards.service.util.ImportUtil;
+import gov.usgs.cida.coastalhazards.uncy.Xploder;
+import gov.usgs.cida.config.DynamicReadOnlyProperties;
+import gov.usgs.cida.owsutils.commons.communication.RequestResponse;
+import gov.usgs.cida.owsutils.commons.communication.RequestResponse.ResponseType;
+import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
+import gov.usgs.cida.utilities.communication.GeoserverHandler;
+import gov.usgs.cida.utilities.service.ServiceHelper;
+import it.geosolutions.geoserver.rest.GeoServerRESTManager;
+import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
+import org.apache.commons.collections.BidiMap;
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.PrefixFileFilter;
+import org.apache.commons.lang.StringUtils;
+import org.geotools.data.crs.ReprojectFeatureResults;
+import org.geotools.data.shapefile.dbf.DbaseFileHeader;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.SchemaException;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Receives a shapefile from the client, reads the featuretype from it and sends
+ * back a file token which will later be used to read in the shoreline file,
+ * rename columns and finally import it into the geospatial server as a resource
+ *
+ * @author isuftin
+ */
+public class ShorelineStagingService extends HttpServlet {
+
+	private static final long serialVersionUID = 2377995353146379768L;
+	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineStagingService.class);
+	private static final Integer defaultMaxFileSize = Integer.MAX_VALUE;
+	private static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
+	private static final String defaultFilenameParam = "qqfile";
+	private static Map<String, String> tokenMap = new HashMap<>();
+	private static final String DIRECTORY_BASE_PARAM_CONFIG_KEY = ".files.directory.base";
+	private static final String DIRECTORY_UPLOAD_PARAM_CONFIG_KEY = ".files.directory.upload";
+	private static final String DIRECTORY_WORK_PARAM_CONFIG_KEY = ".files.directory.work";
+	private static final String GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY = ".geoserver.endpoint";
+	private static final String GEOSERVER_USER_PARAM_CONFIG_KEY = ".geoserver.username";
+	private static final String GEOSERVER_PASS_PARAM_CONFIG_KEY = ".geoserver.password";
+	private final static String TOKEN_STRING = "token";
+	private final static String ACTION_STRING = "action";
+	private final static String SUCCESS_STRING = "success";
+	private final static String ERROR_STRING = "error";
+	private final static String STAGE_ACTION_STRING = "stage";
+	private final static String IMPORT_ACTION_STRING = "import";
+	private final static String READDBF_ACTION_STRING = "read-dbf";
+	private String geoserverEndpoint = null;
+	private String geoserverUsername = null;
+	private String geoserverPassword = null;
+	private String applicationName = null;
+	private Integer maxFileSize;
+	private String propertyBasedFilenameParam;
+	private File baseDirectory;
+	private File uploadDirectory;
+	private File workDirectory;
+	private String jndiDbConnName;
+	private transient GeoserverHandler geoserverHandler = null;
+	private transient GeoServerRESTManager gsrm = null;
+
+	@Override
+	public void init(ServletConfig servletConfig) throws ServletException {
+		super.init();
+
+		applicationName = servletConfig.getInitParameter("application.name");
+
+		// The maximum upload file size allowd by this server, 0 = Integer.MAX_VALUE
+		String mfsJndiProp = props.getProperty(applicationName + ".max.upload.file.size");
+		if (StringUtils.isNotBlank(mfsJndiProp)) {
+			maxFileSize = Integer.parseInt(mfsJndiProp);
+		} else {
+			maxFileSize = defaultMaxFileSize;
+		}
+		if (maxFileSize == 0) {
+			maxFileSize = defaultMaxFileSize;
+		}
+		LOGGER.debug("Maximum allowable file size set to: " + maxFileSize + " bytes");
+
+		String fnInitParam = servletConfig.getInitParameter("filename.param");
+		String fnJndiProp = props.getProperty(applicationName + ".filename.param");
+		if (StringUtils.isNotBlank(fnInitParam)) {
+			propertyBasedFilenameParam = fnInitParam;
+		} else if (StringUtils.isNotBlank(fnJndiProp)) {
+			propertyBasedFilenameParam = fnJndiProp;
+		} else {
+			propertyBasedFilenameParam = defaultFilenameParam;
+		}
+
+		String jndiDbInitParam = servletConfig.getInitParameter("jndi.dbconn.name.param");
+		if (StringUtils.isNotBlank(jndiDbInitParam)) {
+			jndiDbConnName = "jdbc/" + jndiDbInitParam;
+		} else {
+			jndiDbConnName = "jdbc/dsas";
+		}
+
+		// Base directory should be pulled from JNDI or set to the system temp directory
+		baseDirectory = new File(props.getProperty(applicationName + DIRECTORY_BASE_PARAM_CONFIG_KEY, System.getProperty("java.io.tmpdir")));
+		uploadDirectory = new File(baseDirectory, props.getProperty(applicationName + DIRECTORY_UPLOAD_PARAM_CONFIG_KEY));
+		workDirectory = new File(baseDirectory, props.getProperty(applicationName + DIRECTORY_WORK_PARAM_CONFIG_KEY));
+
+		// Set up Geoserver manager
+		geoserverEndpoint = props.getProperty(applicationName + GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY);
+		geoserverUsername = props.getProperty(applicationName + GEOSERVER_USER_PARAM_CONFIG_KEY);
+		geoserverPassword = props.getProperty(applicationName + GEOSERVER_PASS_PARAM_CONFIG_KEY);
+		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
+		try {
+			gsrm = new GeoServerRESTManager(new URL(geoserverEndpoint), geoserverUsername, geoserverPassword);
+		} catch (MalformedURLException ex) {
+			LOGGER.error("Could not initialize Geoserver REST Manager. Application will not be able to handle shapefile uploads", ex);
+		}
+	}
+
+	/**
+	 * Handles the HTTP <code>POST</code> method.
+	 *
+	 * @param request servlet request
+	 * @param response servlet response
+	 * @throws ServletException if a servlet-specific error occurs
+	 */
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		boolean success = false;
+		Map<String, String> responseMap = new HashMap<>();
+		ResponseType responseType = ServiceHelper.getResponseType(request);
+
+		String action = request.getParameter(ACTION_STRING);
+
+		if (StringUtils.isBlank(action)) {
+			ServiceHelper.sendNotEnoughParametersError(response, new String[]{ACTION_STRING}, responseType);
+		} else if (action.equalsIgnoreCase(STAGE_ACTION_STRING)) {
+			// Client is uploading a file. I want to stage the file and return a token
+			try {
+				String savedFilePath = stageFile(request, propertyBasedFilenameParam, uploadDirectory.getAbsolutePath());
+				responseMap.put(TOKEN_STRING, savedFilePath);
+				success = true;
+			} catch (FileUploadException | IOException ex) {
+				sendException(response, "Could not stage file", ex, responseType);
+			}
+		} else if (action.equalsIgnoreCase(IMPORT_ACTION_STRING)) {
+			// Client is requesting to import a file associated with a token
+			String token = request.getParameter(TOKEN_STRING);
+			if (StringUtils.isNotBlank(token)) {
+				try {
+					String workspace = importShapefile(request);
+					if (!createWorkspaceInGeoserver(workspace)) {
+						throw new IOException("Could not create workspace");
+					}
+
+					if (!createDatastoreInGeoserver(workspace)) {
+						throw new IOException("Could not create data store");
+					}
+					success = true;
+				} catch (FileNotFoundException ex) {
+					responseMap.put("serverCode", "404");
+					responseMap.put(ERROR_STRING, "File not found. Try re-staging file");
+					responseMap.put(SUCCESS_STRING, "false");
+					RequestResponse.sendErrorResponse(response, responseMap, responseType);
+				} catch (Exception ex) {
+					responseMap.put(ERROR_STRING, ex.getMessage());
+					responseMap.put(SUCCESS_STRING, "false");
+					RequestResponse.sendErrorResponse(response, responseMap, responseType);
+				} finally {
+					deleteFileUsingToken(token);
+				}
+			} else {
+				ServiceHelper.sendNotEnoughParametersError(response, new String[]{TOKEN_STRING}, responseType);
+			}
+		} else {
+			ServiceHelper.sendNotEnoughParametersError(response, new String[]{STAGE_ACTION_STRING, IMPORT_ACTION_STRING}, responseType);
+		}
+
+		if (success) {
+			RequestResponse.sendSuccessResponse(response, responseMap, responseType);
+		}
+	}
+
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		ResponseType responseType = ServiceHelper.getResponseType(request);
+		Map<String, String> responseMap = new HashMap<>();
+		boolean success = false;
+
+		String action = request.getParameter(ACTION_STRING);
+		if (StringUtils.isBlank(action)) {
+			ServiceHelper.sendNotEnoughParametersError(response, new String[]{ACTION_STRING}, responseType);
+		} else if (action.equalsIgnoreCase(READDBF_ACTION_STRING)) {
+			String token = request.getParameter(TOKEN_STRING);
+			if (StringUtils.isBlank(token)) {
+				ServiceHelper.sendNotEnoughParametersError(response, new String[]{TOKEN_STRING}, responseType);
+			} else {
+				responseMap = getShapefileHeadersStringUsingToken(token);
+				success = true;
+			}
+		} else {
+			ServiceHelper.sendNotEnoughParametersError(response, new String[]{READDBF_ACTION_STRING}, responseType);
+		}
+
+		if (success) {
+			RequestResponse.sendSuccessResponse(response, responseMap, responseType);
+		} else {
+			RequestResponse.sendErrorResponse(response, responseMap, responseType);
+		}
+	}
+
+	private boolean createWorkspaceInGeoserver(String workspace) throws URISyntaxException {
+		return gsrm.getPublisher().createWorkspace(workspace);
+	}
+
+	private boolean createDatastoreInGeoserver(String workspace) {
+		GSPostGISDatastoreEncoder pg = new GSPostGISDatastoreEncoder(workspace);
+		pg.setJndiReferenceName("dsas");
+		return gsrm.getStoreManager().create(workspace, pg);
+	}
+
+	private String importShapefile(HttpServletRequest request) throws NamingException, ParseException, SQLException, IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, Exception {
+		String token = request.getParameter(TOKEN_STRING);
+		File shpFile = getFileFromToken(token, tokenMap);
+		if (null == shpFile) {
+			throw new FileNotFoundException();
+		}
+		String columnsString = request.getParameter("columns");
+		String workspace = request.getParameter("workspace");
+		Map<String, String> columns = new HashMap<>();
+		if (StringUtils.isNotBlank(columnsString)) {
+			columns = (Map<String, String>) new Gson().fromJson(columnsString, Map.class);
+		}
+		BidiMap bm = new DualHashBidiMap(columns);
+		String dateFieldName = (String) bm.getKey("Date_");
+		String uncertaintyFieldName = (String) bm.getKey("uncy");
+		String mhwFieldName = (String) bm.getKey("MHW");
+		String orientation = "";
+
+		// First delete any previously exploded point files
+		deleteExistingPointFiles(shpFile.getParentFile());
+
+		// Explode the shapefile to a points file
+		File pointsShapefile;
+		Xploder xploder = new Xploder(uncertaintyFieldName, Double.class);
+		pointsShapefile = xploder.explode(shpFile.getParent() + File.separator + FilenameUtils.getBaseName(shpFile.getName()));
+		try (Connection connection = getConnection()) {
+			FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollectionFromShp.getFeatureCollectionFromShp(pointsShapefile.toURI().toURL());
+			Class<?> dateType = fc.getSchema().getDescriptor(dateFieldName).getType().getBinding();
+			Class<?> uncertaintyType = fc.getSchema().getDescriptor(uncertaintyFieldName).getType().getBinding();
+
+			if (!fc.isEmpty()) {
+				ReprojectFeatureResults rfc = new ReprojectFeatureResults(fc, DefaultGeographicCRS.WGS84);
+				SimpleFeatureIterator iter = null;
+				try {
+					iter = rfc.features();
+					connection.setAutoCommit(false);
+					long lastShorelineId = 0;
+					while (iter.hasNext()) {
+						SimpleFeature sf = iter.next();
+						boolean mhw = false;
+						Date date = getDateFromFC(dateFieldName, sf, dateType);
+						String source = getSourceFromFC(sf);
+						if (StringUtils.isNotBlank(mhwFieldName)) {
+							mhw = getMHWFromFC(mhwFieldName, sf, dateType);
+						}
+
+						long shorelineId = getRecordIdFromFC("recordId", sf);
+						if (lastShorelineId != shorelineId) {
+							lastShorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, orientation, mhwFieldName);
+						}
+						insertPointIntoShorelinePointsTable(connection, lastShorelineId, sf, uncertaintyFieldName, uncertaintyType);
+					}
+
+					createViewAgainstWorkspace(connection, workspace);
+
+					connection.commit();
+				} catch (NamingException | NoSuchElementException | ParseException | SQLException ex) {
+					connection.rollback();
+					throw ex;
+				} finally {
+					if (null != iter) {
+						try {
+							iter.close();
+						} catch (Exception ex) {
+							LOGGER.warn("Could not close feature iterator", ex);
+						}
+					}
+				}
+
+			}
+		}
+
+		return workspace;
+	}
+
+	private boolean createViewAgainstWorkspace(Connection connection, String workspace) throws SQLException {
+		String sql = "SELECT * FROM CREATE_WORKSPACE_VIEW(?)";
+
+		try (PreparedStatement ps = connection.prepareStatement(sql)) {
+			ps.setString(1, workspace);
+			try (ResultSet rs = ps.executeQuery()) {
+				return rs.next();
+			}
+		}
+	}
+
+	private long insertToShorelinesTable(Connection connection, String workspace, Date date, boolean mhw, String source, String shorelineType, String auxillaryName) throws NamingException, SQLException {
+		String sql = "INSERT INTO shorelines "
+				+ "(date, mhw, workspace, source, shoreline_type, auxillary_name) "
+				+ "VALUES (?,?,?,?,?,?)";
+
+		long createdId;
+
+		try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+			ps.setDate(1, new java.sql.Date(date.getTime()));
+			ps.setBoolean(2, mhw);
+			ps.setString(3, workspace);
+			ps.setString(4, source);
+			ps.setString(5, shorelineType);
+			ps.setString(6, auxillaryName);
+
+			int affectedRows = ps.executeUpdate();
+			if (affectedRows == 0) {
+				throw new SQLException("Inserting a shoreline row failed. No rows affected");
+			}
+
+			try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+				if (generatedKeys.next()) {
+					createdId = generatedKeys.getLong(1);
+				} else {
+					throw new SQLException("Inserting a shoreline row failed. No ID obtained");
+				}
+			}
+		}
+
+		return createdId;
+	}
+
+	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
+		double x = sf.getBounds().getMaxX();
+		double y = sf.getBounds().getMaxY();
+		double uncertainty = getUncertaintyFromFC(uncertaintyFieldName, sf, uncertaintyType);
+		int segmentId = getSegmentIdFromFC("segmentId", sf);
+
+		String sql = "INSERT INTO shoreline_points "
+				+ "(shoreline_id, segment_id, geom, uncy) "
+				+ "VALUES (" + shorelineId + "," + segmentId + "," + "ST_GeomFromText('POINT(" + x + " " + y + ")',4326)" + "," + uncertainty + ")";
+		if (connection.createStatement().execute(sql)) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	private Connection getConnection() {
+		Connection con = null;
+		try {
+			Context initCtx = new InitialContext();
+			Context envCtx = (Context) initCtx.lookup("java:comp/env");
+			DataSource ds = (DataSource) envCtx.lookup(jndiDbConnName);
+			con = ds.getConnection();
+		} catch (SQLException | NamingException ex) {
+			LOGGER.error("Could not create database connection", ex);
+		}
+		return con;
+	}
+
+	private Date getDateFromFC(String dateFieldName, SimpleFeature sf, Class<?> fromType) throws ParseException {
+		Date result = null;
+
+		if (fromType == java.lang.String.class) {
+			String dateString = (String) sf.getAttribute(dateFieldName);
+
+			try {
+				result = new SimpleDateFormat("MM/dd/yyyy").parse(dateString);
+			} catch (ParseException ex) {
+				LOGGER.debug("Could not parse date in format 'MM/dd/yyyy' - Will try non-padded", ex);
+			}
+
+			if (null == result) {
+				result = new SimpleDateFormat("M/d/yyyy").parse(dateString);
+			}
+		} else if (fromType == java.util.Date.class) {
+			result = (Date) sf.getAttribute(dateFieldName);
+		}
+
+		return result;
+	}
+
+	private double getUncertaintyFromFC(String uncyFieldName, SimpleFeature sf, Class<?> fromType) {
+		Object uncy = sf.getAttribute(uncyFieldName);
+
+		if (fromType == java.lang.String.class) {
+			return Double.parseDouble(
+					(String) uncy);
+		} else if (uncy instanceof java.lang.Number) {
+			return (double) uncy;
+		}
+
+		throw new NumberFormatException("Could not parse uncertainty into double");
+	}
+
+	private int getRecordIdFromFC(String recordIdFieldName, SimpleFeature sf) {
+		return (int) sf.getAttribute(recordIdFieldName);
+	}
+
+	private boolean getMHWFromFC(String mhwFieldName, SimpleFeature sf, Class<?> fromType) throws ParseException {
+		Object mhw = sf.getAttribute(mhwFieldName);
+
+		if (fromType == java.lang.String.class) {
+			return Boolean.parseBoolean(
+					(String) mhw);
+		} else if (fromType == java.lang.Boolean.class) {
+			return (boolean) mhw;
+		}
+
+		throw new ParseException("Could not parse MHW field " + mhwFieldName + " into boolean", 0);
+	}
+
+	private String getSourceFromFC(SimpleFeature sf) {
+		String source = "";
+		for (AttributeDescriptor d : sf.getFeatureType().getAttributeDescriptors()) {
+			if ("source".equalsIgnoreCase(d.getLocalName()) || ("src".equalsIgnoreCase(d.getLocalName()))) {
+				return (String) sf.getAttribute(d.getLocalName());
+			}
+		}
+		return source;
+	}
+
+	private int getSegmentIdFromFC(String segmentIdName, SimpleFeature sf) {
+		return (int) sf.getAttribute(segmentIdName);
+	}
+
+	private Collection<File> deleteExistingPointFiles(File directory) {
+		Collection<File> existingPointFiles = FileUtils.listFiles(directory, new PrefixFileFilter("*_pts"), null);
+		for (File existingPtFile : existingPointFiles) {
+			existingPtFile.delete();
+		}
+		return existingPointFiles;
+	}
+
+	private Map<String, String> getShapefileHeadersStringUsingToken(String token) {
+		Map<String, String> responseMap = new HashMap<>();
+		File shapefile = getFileFromToken(token, tokenMap);
+
+		if (null != shapefile && shapefile.exists()) {
+			// Create a new directory within the work directory
+			IterableShapefileReader reader = new IterableShapefileReader(shapefile);
+			DbaseFileHeader dbfHeader = reader.getDbfHeader();
+			int fieldCount = dbfHeader.getNumFields();
+			StringBuilder headers = new StringBuilder();
+			for (int headerIndex = 0; headerIndex < fieldCount; headerIndex++) {
+				headers.append(dbfHeader.getFieldName(headerIndex)).append(",");
+			}
+			headers.deleteCharAt(headers.length() - 1);
+			responseMap.put("headers", headers.toString());
+			responseMap.put("success", "true");
+		} else {
+			tokenMap.remove(token);
+			responseMap.put("error", "File not found. Try re-staging shapefile");
+			responseMap.put("serverCode", "404");
+			responseMap.put("success", "false");
+		}
+		return responseMap;
+	}
+
+	private void deleteFileUsingToken(String token) {
+		File file = new File(tokenMap.get(token));
+		if (FileUtils.deleteQuietly(file)) {
+			LOGGER.info("Delete file " + file.getAbsolutePath() + " for token " + token);
+		} else {
+			LOGGER.info("Could not delete file " + file.getAbsolutePath() + " for token " + token);
+		}
+		tokenMap.remove(token);
+	}
+
+	private void sendException(HttpServletResponse response, String error, Throwable t, ResponseType responseType) {
+		Map<String, String> responseMap = new HashMap<>(1);
+		responseMap.put("error", error);
+		RequestResponse.sendErrorResponse(response, responseMap, responseType);
+		LOGGER.warn(t.getMessage());
+	}
+
+	private String stageFile(HttpServletRequest request, String propertyBasedFilenameParam, String workDir) throws IOException, FileUploadException {
+		File shapefile = ImportUtil.saveShapefileFromRequest(request, propertyBasedFilenameParam, workDir, true);
+		String shapefilePathString = shapefile.getAbsolutePath();
+		LOGGER.debug("File saved from request to {}", shapefilePathString);
+
+		String fileToken = "";
+		for (String uuid : tokenMap.keySet()) {
+			if (tokenMap.get(uuid).equals(shapefilePathString)) {
+				fileToken = uuid;
+			}
+		}
+
+		if (StringUtils.isBlank(fileToken)) {
+			fileToken = UUID.randomUUID().toString();
+		}
+
+		tokenMap.put(fileToken, shapefilePathString);
+
+		return fileToken;
+	}
+
+	/**
+	 * Given a map of token to file path string lookups, returns a File object
+	 *
+	 * @param token
+	 * @param tokenToFileMap
+	 * @return null if file or token does not exist
+	 */
+	private File getFileFromToken(String token, Map<String, String> tokenToFileMap) {
+		File result = null;
+		if (tokenToFileMap.containsKey(token)) {
+			File resultFile = new File(tokenToFileMap.get(token));
+			if (resultFile.exists()) {
+				result = resultFile;
+			}
+		}
+		return result;
+
+	}
+
+	/**
+	 * Returns a short description of the servlet.
+	 *
+	 * @return a String containing servlet description
+	 */
+	@Override
+	public String getServletInfo() {
+		return " * Receives a shapefile from the client, reads the featuretype from it and sends"
+				+ " * back a file token which will later be used to read in the shoreline file, rename"
+				+ " * columns and finally import it into the geospatial server as a resource";
+	}
+
+	private File createTempLocation() throws IOException {
+		File tempLocation = new File(workDirectory, String.valueOf(new Date().getTime()));
+		FileUtils.forceMkdir(tempLocation);
+		tempLocation.deleteOnExit();
+		return tempLocation;
+	}
+
+	/**
+	 * Will try to delete files in token map on server shutdown
+	 */
+	@Override
+	public void destroy() {
+		for (String filePath : tokenMap.values()) {
+			File deleteMe = new File(filePath);
+			if (deleteMe.exists()) {
+				try {
+					FileUtils.forceDelete(deleteMe);
+					LOGGER.debug("Shutting down, deleted {} ", filePath);
+				} catch (IOException ex) {
+					LOGGER.debug("Shutting down but could not delete file " + filePath, ex);
+				}
+			}
+		}
+	}
+
+}
