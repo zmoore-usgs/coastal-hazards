@@ -1,6 +1,7 @@
 package gov.usgs.cida.coastalhazards.service;
 
 import com.google.gson.Gson;
+import gov.usgs.cida.coastalhazards.service.util.ImportUtil;
 import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse;
@@ -8,10 +9,17 @@ import gov.usgs.cida.owsutils.commons.communication.RequestResponse.ResponseType
 import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
-import gov.usgs.cida.utilities.file.FileHelper;
+import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.service.ServiceHelper;
+import it.geosolutions.geoserver.rest.GeoServerRESTManager;
+import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,7 +47,6 @@ import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.HiddenFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.crs.ReprojectFeatureResults;
@@ -73,9 +80,19 @@ public class ShorelineStagingService extends HttpServlet {
 	private static final String DIRECTORY_BASE_PARAM_CONFIG_KEY = ".files.directory.base";
 	private static final String DIRECTORY_UPLOAD_PARAM_CONFIG_KEY = ".files.directory.upload";
 	private static final String DIRECTORY_WORK_PARAM_CONFIG_KEY = ".files.directory.work";
+	private static final String GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY = ".geoserver.endpoint";
+	private static final String GEOSERVER_USER_PARAM_CONFIG_KEY = ".geoserver.username";
+	private static final String GEOSERVER_PASS_PARAM_CONFIG_KEY = ".geoserver.password";
 	private final static String TOKEN_STRING = "token";
+	private final static String ACTION_STRING = "action";
+	private final static String SUCCESS_STRING = "success";
+	private final static String ERROR_STRING = "error";
 	private final static String STAGE_ACTION_STRING = "stage";
 	private final static String IMPORT_ACTION_STRING = "import";
+	private final static String READDBF_ACTION_STRING = "read-dbf";
+	private String geoserverEndpoint = null;
+	private String geoserverUsername = null;
+	private String geoserverPassword = null;
 	private String applicationName = null;
 	private Integer maxFileSize;
 	private String propertyBasedFilenameParam;
@@ -83,6 +100,8 @@ public class ShorelineStagingService extends HttpServlet {
 	private File uploadDirectory;
 	private File workDirectory;
 	private String jndiDbConnName;
+	private transient GeoserverHandler geoserverHandler = null;
+	private transient GeoServerRESTManager gsrm = null;
 
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {
@@ -123,6 +142,17 @@ public class ShorelineStagingService extends HttpServlet {
 		baseDirectory = new File(props.getProperty(applicationName + DIRECTORY_BASE_PARAM_CONFIG_KEY, System.getProperty("java.io.tmpdir")));
 		uploadDirectory = new File(baseDirectory, props.getProperty(applicationName + DIRECTORY_UPLOAD_PARAM_CONFIG_KEY));
 		workDirectory = new File(baseDirectory, props.getProperty(applicationName + DIRECTORY_WORK_PARAM_CONFIG_KEY));
+
+		// Set up Geoserver manager
+		geoserverEndpoint = props.getProperty(applicationName + GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY);
+		geoserverUsername = props.getProperty(applicationName + GEOSERVER_USER_PARAM_CONFIG_KEY);
+		geoserverPassword = props.getProperty(applicationName + GEOSERVER_PASS_PARAM_CONFIG_KEY);
+		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
+		try {
+			gsrm = new GeoServerRESTManager(new URL(geoserverEndpoint), geoserverUsername, geoserverPassword);
+		} catch (MalformedURLException ex) {
+			LOGGER.error("Could not initialize Geoserver REST Manager. Application will not be able to handle shapefile uploads", ex);
+		}
 	}
 
 	/**
@@ -131,64 +161,54 @@ public class ShorelineStagingService extends HttpServlet {
 	 * @param request servlet request
 	 * @param response servlet response
 	 * @throws ServletException if a servlet-specific error occurs
-	 * @throws IOException if an I/O error occurs
 	 */
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		boolean success = false;
 		Map<String, String> responseMap = new HashMap<>();
 		ResponseType responseType = ServiceHelper.getResponseType(request);
 
-		String action = request.getParameter("action");
+		String action = request.getParameter(ACTION_STRING);
 
 		if (StringUtils.isBlank(action)) {
-			ServiceHelper.sendNotEnoughParametersError(response, new String[]{"action"}, responseType);
+			ServiceHelper.sendNotEnoughParametersError(response, new String[]{ACTION_STRING}, responseType);
 		} else if (action.equalsIgnoreCase(STAGE_ACTION_STRING)) {
+			// Client is uploading a file. I want to stage the file and return a token
 			try {
-				responseMap = stageFile(request, propertyBasedFilenameParam, uploadDirectory.getAbsolutePath());
+				String savedFilePath = stageFile(request, propertyBasedFilenameParam, uploadDirectory.getAbsolutePath());
+				responseMap.put(TOKEN_STRING, savedFilePath);
 				success = true;
-			} catch (FileUploadException ex) {
-				sendExceptionalError(response, "Could not stage shapefile", ex, responseType);
+			} catch (FileUploadException | IOException ex) {
+				sendException(response, "Could not stage file", ex, responseType);
 			}
 		} else if (action.equalsIgnoreCase(IMPORT_ACTION_STRING)) {
+			// Client is requesting to import a file associated with a token
 			String token = request.getParameter(TOKEN_STRING);
-			if (StringUtils.isBlank(token)) {
-				ServiceHelper.sendNotEnoughParametersError(response, new String[]{TOKEN_STRING}, responseType);
-			} else {
-				File shapeFile = getFileFromToken(token, tokenMap);
-				if (shapeFile == null) {
-					tokenMap.remove(token);
-					responseMap.put("error", "File not found. Try re-staging shapefile");
-					responseMap.put("serverCode", "404");
-					responseMap.put("success", "false");
-				} else {
-					String columnsString = request.getParameter("columns");
-					String workspace = request.getParameter("workspace");
-					Map<String, String> columns = new HashMap<>();
-					if (StringUtils.isNotBlank(columnsString)) {
-						columns = (Map<String, String>) new Gson().fromJson(columnsString, Map.class);
+			if (StringUtils.isNotBlank(token)) {
+				try {
+					String workspace = importShapefile(request);
+					if (!createWorkspaceInGeoserver(workspace)) {
+						throw new IOException("Could not create workspace");
 					}
 
-					try {
-						importShapefile(shapeFile, workspace, columns);
-					} catch (ParseException |
-							SQLException |
-							SchemaException |
-							TransformException |
-							NoSuchElementException |
-							FactoryException ex) {
-						responseMap.put("error", ex.getMessage());
-						RequestResponse.sendErrorResponse(response, responseMap, responseType);
-					} catch (Exception ex) {
-						responseMap.put("error", ex.getMessage());
-						RequestResponse.sendErrorResponse(response, responseMap, responseType);
-					} finally {
-						deleteExistingPointFiles(shapeFile.getParentFile());
+					if (!createDatastoreInGeoserver(workspace)) {
+						throw new IOException("Could not create data store");
 					}
-
 					success = true;
-
+				} catch (FileNotFoundException ex) {
+					responseMap.put("serverCode", "404");
+					responseMap.put(ERROR_STRING, "File not found. Try re-staging file");
+					responseMap.put(SUCCESS_STRING, "false");
+					RequestResponse.sendErrorResponse(response, responseMap, responseType);
+				} catch (Exception ex) {
+					responseMap.put(ERROR_STRING, ex.getMessage());
+					responseMap.put(SUCCESS_STRING, "false");
+					RequestResponse.sendErrorResponse(response, responseMap, responseType);
+				} finally {
+					deleteFileUsingToken(token);
 				}
+			} else {
+				ServiceHelper.sendNotEnoughParametersError(response, new String[]{TOKEN_STRING}, responseType);
 			}
 		} else {
 			ServiceHelper.sendNotEnoughParametersError(response, new String[]{STAGE_ACTION_STRING, IMPORT_ACTION_STRING}, responseType);
@@ -203,30 +223,53 @@ public class ShorelineStagingService extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		ResponseType responseType = ServiceHelper.getResponseType(request);
 		Map<String, String> responseMap = new HashMap<>();
-		String action = request.getParameter("action");
+		boolean success = false;
 
+		String action = request.getParameter(ACTION_STRING);
 		if (StringUtils.isBlank(action)) {
-			ServiceHelper.sendNotEnoughParametersError(response, new String[]{"action"}, responseType);
-		} else if (action.equalsIgnoreCase("read-dbf")) {
+			ServiceHelper.sendNotEnoughParametersError(response, new String[]{ACTION_STRING}, responseType);
+		} else if (action.equalsIgnoreCase(READDBF_ACTION_STRING)) {
 			String token = request.getParameter(TOKEN_STRING);
 			if (StringUtils.isBlank(token)) {
 				ServiceHelper.sendNotEnoughParametersError(response, new String[]{TOKEN_STRING}, responseType);
 			} else {
 				responseMap = getShapefileHeadersStringUsingToken(token);
+				success = true;
 			}
 		} else {
-			ServiceHelper.sendNotEnoughParametersError(response, new String[]{"read-dbf"}, responseType);
+			ServiceHelper.sendNotEnoughParametersError(response, new String[]{READDBF_ACTION_STRING}, responseType);
 		}
 
-		if (Boolean.valueOf(responseMap.get("success"))) {
+		if (success) {
 			RequestResponse.sendSuccessResponse(response, responseMap, responseType);
 		} else {
 			RequestResponse.sendErrorResponse(response, responseMap, responseType);
 		}
 	}
 
-	private void importShapefile(File shpFile, String workspace, Map<String, String> columnRenames) throws NamingException, ParseException, SQLException, IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, Exception {
-		BidiMap bm = new DualHashBidiMap(columnRenames);
+	private boolean createWorkspaceInGeoserver(String workspace) throws URISyntaxException {
+		return gsrm.getPublisher().createWorkspace(workspace);
+	}
+
+	private boolean createDatastoreInGeoserver(String workspace) {
+		GSPostGISDatastoreEncoder pg = new GSPostGISDatastoreEncoder(workspace);
+		pg.setJndiReferenceName("dsas");
+		return gsrm.getStoreManager().create(workspace, pg);
+	}
+
+	private String importShapefile(HttpServletRequest request) throws NamingException, ParseException, SQLException, IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, Exception {
+		String token = request.getParameter(TOKEN_STRING);
+		File shpFile = getFileFromToken(token, tokenMap);
+		if (null == shpFile) {
+			throw new FileNotFoundException();
+		}
+		String columnsString = request.getParameter("columns");
+		String workspace = request.getParameter("workspace");
+		Map<String, String> columns = new HashMap<>();
+		if (StringUtils.isNotBlank(columnsString)) {
+			columns = (Map<String, String>) new Gson().fromJson(columnsString, Map.class);
+		}
+		BidiMap bm = new DualHashBidiMap(columns);
 		String dateFieldName = (String) bm.getKey("Date_");
 		String uncertaintyFieldName = (String) bm.getKey("uncy");
 		String mhwFieldName = (String) bm.getKey("MHW");
@@ -266,6 +309,9 @@ public class ShorelineStagingService extends HttpServlet {
 						}
 						insertPointIntoShorelinePointsTable(connection, lastShorelineId, sf, uncertaintyFieldName, uncertaintyType);
 					}
+
+					createViewAgainstWorkspace(connection, workspace);
+
 					connection.commit();
 				} catch (NamingException | NoSuchElementException | ParseException | SQLException ex) {
 					connection.rollback();
@@ -280,6 +326,19 @@ public class ShorelineStagingService extends HttpServlet {
 					}
 				}
 
+			}
+		}
+
+		return workspace;
+	}
+
+	private boolean createViewAgainstWorkspace(Connection connection, String workspace) throws SQLException {
+		String sql = "SELECT * FROM CREATE_WORKSPACE_VIEW(?)";
+
+		try (PreparedStatement ps = connection.prepareStatement(sql)) {
+			ps.setString(1, workspace);
+			try (ResultSet rs = ps.executeQuery()) {
+				return rs.next();
 			}
 		}
 	}
@@ -339,7 +398,6 @@ public class ShorelineStagingService extends HttpServlet {
 			Context envCtx = (Context) initCtx.lookup("java:comp/env");
 			DataSource ds = (DataSource) envCtx.lookup(jndiDbConnName);
 			con = ds.getConnection();
-//			((org.postgresql.PGConnection) con).addDataType("geometry", org.postgis.PGgeometry.class);
 		} catch (SQLException | NamingException ex) {
 			LOGGER.error("Could not create database connection", ex);
 		}
@@ -455,19 +513,19 @@ public class ShorelineStagingService extends HttpServlet {
 		tokenMap.remove(token);
 	}
 
-	private void sendExceptionalError(HttpServletResponse response, String error, Throwable t, ResponseType responseType) {
+	private void sendException(HttpServletResponse response, String error, Throwable t, ResponseType responseType) {
 		Map<String, String> responseMap = new HashMap<>(1);
 		responseMap.put("error", error);
 		RequestResponse.sendErrorResponse(response, responseMap, responseType);
 		LOGGER.warn(t.getMessage());
 	}
 
-	private Map<String, String> stageFile(HttpServletRequest request, String propertyBasedFilenameParam, String workDir) throws IOException, FileUploadException {
-		Map<String, String> responseMap = new HashMap<>(1);
-		File shapefile = saveShapefileFromRequest(request, propertyBasedFilenameParam, workDir, true);
+	private String stageFile(HttpServletRequest request, String propertyBasedFilenameParam, String workDir) throws IOException, FileUploadException {
+		File shapefile = ImportUtil.saveShapefileFromRequest(request, propertyBasedFilenameParam, workDir, true);
 		String shapefilePathString = shapefile.getAbsolutePath();
-		String fileToken = "";
+		LOGGER.debug("File saved from request to {}", shapefilePathString);
 
+		String fileToken = "";
 		for (String uuid : tokenMap.keySet()) {
 			if (tokenMap.get(uuid).equals(shapefilePathString)) {
 				fileToken = uuid;
@@ -478,13 +536,9 @@ public class ShorelineStagingService extends HttpServlet {
 			fileToken = UUID.randomUUID().toString();
 		}
 
-		if (StringUtils.isNotBlank(fileToken)) {
-			responseMap.put(TOKEN_STRING, fileToken);
-			tokenMap.put(responseMap.get(TOKEN_STRING), shapefilePathString);
-		} else {
-			throw new IOException("Could not create file token.");
-		}
-		return responseMap;
+		tokenMap.put(fileToken, shapefilePathString);
+
+		return fileToken;
 	}
 
 	/**
@@ -504,97 +558,6 @@ public class ShorelineStagingService extends HttpServlet {
 		}
 		return result;
 
-	}
-
-	private File saveShapefileFromRequest(HttpServletRequest request, String defaultFileParam, String workDir, boolean overwrite) throws IOException, FileUploadException {
-		// The key to search for in the upload form post to find the file
-		String filenameParam = defaultFileParam;
-		String fnReqParam = request.getParameter("filename.param");
-		if (StringUtils.isNotBlank(fnReqParam)) {
-			filenameParam = fnReqParam;
-		}
-		LOGGER.debug("Filename parameter set to: {}", filenameParam);
-
-		LOGGER.debug("Cleaning file name.\nWas: {}", filenameParam);
-		String zipFileName = cleanFileName(request.getParameter(filenameParam));
-		LOGGER.debug("Is: {}", zipFileName);
-		if (filenameParam.equals(zipFileName)) {
-			LOGGER.debug("(No change)");
-		}
-
-		// Create a subdirectory inside the work directory where this shapefile
-		// will be saved to
-		String shapefileName = zipFileName.substring(0, zipFileName.lastIndexOf("."));
-		File saveDirectory = new File(workDir + File.separator + shapefileName);
-		if (!saveDirectory.exists()) {
-			FileUtils.forceMkdir(saveDirectory);
-		}
-
-		if (overwrite) {
-			try {
-				FileUtils.cleanDirectory(saveDirectory);
-			} catch (IOException ex) {
-				LOGGER.debug("Could not clean save directory at " + saveDirectory.getAbsolutePath(), ex);
-			}
-			LOGGER.debug("File already existed on server. Deleted before re-saving.");
-		}
-
-		File shapeZipFile = new File(saveDirectory, zipFileName);
-		LOGGER.debug("Temporary file set to {}", shapeZipFile.getAbsolutePath());
-
-		try {
-			// Save and unzip the file
-			RequestResponse.saveFileFromRequest(request, shapeZipFile, filenameParam);
-			LOGGER.debug("Shapefile saved");
-
-			gov.usgs.cida.owsutils.commons.io.FileHelper.flattenZipFile(shapeZipFile.getAbsolutePath());
-			LOGGER.debug("Shapefile zip structure flattened");
-
-			gov.usgs.cida.owsutils.commons.io.FileHelper.validateShapefileZip(shapeZipFile);
-			LOGGER.debug("Shapefile verified");
-
-			FileHelper.unzipFile(saveDirectory.getAbsolutePath(), shapeZipFile);
-			LOGGER.debug("Shapefile unzipped");
-
-			// Delete the zip file
-			if (shapeZipFile.delete()) {
-				LOGGER.debug("Deleted zipped shapefile");
-			} else {
-				LOGGER.debug("Could not delete shapefile zip at {}", shapeZipFile.getAbsolutePath());
-			}
-
-			Collection<File> shapeFileParts = FileUtils.listFiles(saveDirectory, HiddenFileFilter.VISIBLE, null);
-			for (File file : shapeFileParts) {
-				String oldFilename = file.getName();
-				String newFilename = shapefileName + "." + FilenameUtils.getExtension(file.getName());
-				FileHelper.renameFile(file, newFilename);
-				LOGGER.debug("Renamed {} to {}", oldFilename, newFilename);
-			}
-		} catch (FileUploadException | IOException ex) {
-			FileUtils.deleteQuietly(saveDirectory);
-			throw ex;
-		}
-
-		return new File(saveDirectory, shapefileName + ".shp");
-	}
-
-	private String cleanFileName(String input) {
-		String updated = input;
-
-		// Test the first character and if numeric, prepend with underscore
-		if (input.substring(0, 1).matches("[0-9]")) {
-			updated = "_" + input;
-		}
-
-		// Test the rest of the characters and replace anything that's not a 
-		// letter, digit or period with an underscore
-		char[] inputArr = updated.toCharArray();
-		for (int cInd = 0; cInd < inputArr.length; cInd++) {
-			if (!Character.isLetterOrDigit(inputArr[cInd]) && !(inputArr[cInd] == '.')) {
-				inputArr[cInd] = '_';
-			}
-		}
-		return String.valueOf(inputArr);
 	}
 
 	/**

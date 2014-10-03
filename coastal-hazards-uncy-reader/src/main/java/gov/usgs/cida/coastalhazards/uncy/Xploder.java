@@ -12,7 +12,6 @@ import gov.usgs.cida.owsutils.commons.shapefile.utils.XploderMultiLineHandler;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
