@@ -1,12 +1,14 @@
 package gov.usgs.cida.coastalhazards.pdbc;
 
-import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
+import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
 import gov.usgs.cida.coastalhazards.wps.CreateTransectsAndIntersectionsProcess;
 import gov.usgs.cida.coastalhazards.wps.CreateTransectsAndIntersectionsProcessTest;
 import gov.usgs.cida.coastalhazards.wps.DummyCatalog;
 import gov.usgs.cida.coastalhazards.wps.DummyImportProcess;
+
 import java.io.File;
 import java.net.URL;
+
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.junit.Test;
@@ -29,11 +31,11 @@ public class TestPDBC {
 		URL biasRefShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
 				.getResource("gov/usgs/cida/coastalhazards/Georgia_MHW_false_bias_test/GA_bias_new_bias.shp");
 		FeatureCollection<SimpleFeatureType, SimpleFeature> baselinefc =
-				FeatureCollectionFromShp.getFeatureCollectionFromShp(baselineShapefile);
+				FeatureCollectionFromShp.featureCollectionFromShp(baselineShapefile);
 		FeatureCollection<SimpleFeatureType, SimpleFeature> shorelinefc =
-				FeatureCollectionFromShp.getFeatureCollectionFromShp(shorelineShapefile);
+				FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
 		FeatureCollection<SimpleFeatureType, SimpleFeature> biasReffc =
-				FeatureCollectionFromShp.getFeatureCollectionFromShp(biasRefShapefile);
+				FeatureCollectionFromShp.featureCollectionFromShp(biasRefShapefile);
 		CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(shpfile), new DummyCatalog());
 		generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, (SimpleFeatureCollection)biasReffc, 50.0d, 0d, Boolean.FALSE, null, null, null, null);
 	}
