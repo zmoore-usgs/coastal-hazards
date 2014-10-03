@@ -5,8 +5,10 @@ import gov.usgs.cida.coastalhazards.wps.CreateTransectsAndIntersectionsProcess;
 import gov.usgs.cida.coastalhazards.wps.CreateTransectsAndIntersectionsProcessTest;
 import gov.usgs.cida.coastalhazards.wps.DummyCatalog;
 import gov.usgs.cida.coastalhazards.wps.DummyImportProcess;
+
 import java.io.File;
 import java.net.URL;
+
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.junit.Test;
@@ -27,7 +29,7 @@ public class TestPDBC {
 		URL shorelineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
 				.getResource("gov/usgs/cida/coastalhazards/pdbc/GA1971_1973.shp");
 		URL biasRefShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
-				.getResource("gov/usgs/cida/coastalhazards/pdbc/PDB_reference_points.shp");
+				.getResource("gov/usgs/cida/coastalhazards/Georgia_MHW_false_bias_test/GA_bias_new_bias.shp");
 		FeatureCollection<SimpleFeatureType, SimpleFeature> baselinefc =
 				FeatureCollectionFromShp.featureCollectionFromShp(baselineShapefile);
 		FeatureCollection<SimpleFeatureType, SimpleFeature> shorelinefc =
