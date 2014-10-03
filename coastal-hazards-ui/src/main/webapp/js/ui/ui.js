@@ -331,7 +331,7 @@ var UI = function () {
 				.append($("<option />")
 					.attr("value", '')
 					.text(''));
-
+				
 			wmsCapabilities.keys().each(function (layerNS) {
 				var cap = wmsCapabilities[layerNS];
 				var layers = cap.capability.layers;
@@ -341,7 +341,6 @@ var UI = function () {
 				layers.each(function (layer) {
 					var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
 					var title = layer.title;
-
 					// Add the option to the list only if it's from the published namespace or
 					// if it's from the input namespace and in the current session
 					if (layerNS === CONFIG.name.published || layerNS === CONFIG.name.proxydatumbias || layerNS === currentSessionKey) {

@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
@@ -298,7 +297,7 @@ public class ShorelineStagingService extends HttpServlet {
 			// If this is sent in its normal case, Geoserver <-> Postgres errors aplenty
 			// I've since changed the session to be all lowercase anyway, but keeping
 			// this here as a mark of shame against Geoserver. FOR SHAME!
-			fte.setName("shorelines_"+workspace.toLowerCase()+"_view");
+			fte.setName(workspace.toLowerCase() + "_view_shorelines");
 
 			GSLayerEncoder le = new GSLayerEncoder();
 			le.setEnabled(true);
@@ -390,7 +389,6 @@ public class ShorelineStagingService extends HttpServlet {
 						}
 					}
 				}
-
 			}
 		}
 
@@ -449,11 +447,14 @@ public class ShorelineStagingService extends HttpServlet {
 		String sql = "INSERT INTO shoreline_points "
 				+ "(shoreline_id, segment_id, geom, uncy) "
 				+ "VALUES (" + shorelineId + "," + segmentId + "," + "ST_GeomFromText('POINT(" + x + " " + y + ")',4326)" + "," + uncertainty + ")";
-		if (connection.createStatement().execute(sql)) {
-			return 1;
-		} else {
-			return 0;
+		try (Statement st = connection.createStatement()) {
+			if (st.execute(sql)) {
+				return 1;
+			} else {
+				return 0;
+			}
 		}
+
 	}
 
 	private Connection getConnection() {
