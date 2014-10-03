@@ -569,7 +569,7 @@ public class ShorelineStagingService extends HttpServlet {
 			responseMap.put("success", "true");
 		} else {
 			tokenMap.remove(token);
-			responseMap.put("error", "File not found. Try re-staging shapefile");
+			responseMap.put("error", "File not found. Try re-staging shoreline file");
 			responseMap.put("serverCode", "404");
 			responseMap.put("success", "false");
 		}

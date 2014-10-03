@@ -945,6 +945,24 @@ var Shorelines = {
 											foundAll = false;
 										}
 									});
+									
+									var doUpload = function() {
+										$.ajax(Shorelines.uploadRequest.endpoint, {
+											type : 'POST',
+											data : {
+												action : 'import',
+												token : token,
+												workspace : CONFIG.tempSession.session.id,
+												columns : JSON.stringify(layerColumns)
+											},
+											success : function (data) {
+												debugger;
+											},
+											error : function () {
+												debugger;
+											}
+										});
+									};
 
 									if (!foundAll) {
 										CONFIG.ui.buildColumnMatchingModalWindow({
@@ -952,29 +970,12 @@ var Shorelines = {
 											columns: layerColumns,
 											caller: Shorelines,
 											updateCallback: function () {
-												$.ajax(Shorelines.uploadRequest.endpoint, {
-													type : 'POST',
-													data : {
-														action : 'import',
-														token : token,
-														workspace : CONFIG.tempSession.session.id,
-														columns : JSON.stringify(layerColumns)
-													},
-													success : function (data) {
-														debugger;
-													},
-													error : function () {
-														debugger;
-													}
-												});
+												doUpload();
 											}
 										});
 									} else {
 										// Ready to add to map
-//											Shorelines.addLayerToMap({
-//												layer: layer,
-//												describeFeaturetypeRespone: describeFeaturetypeRespone
-//											});
+										doUpload();
 									}
 								}
 							}
