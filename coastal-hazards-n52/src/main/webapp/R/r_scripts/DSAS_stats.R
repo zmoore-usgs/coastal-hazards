@@ -4,8 +4,11 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
+numPar = 4
+num_c = 5 # num of cols in file
+
 localRun <- FALSE
-# comment this out for WPS!!!
+
 if (localRun){
   Rprof("DSAS_profiler.txt")
   ci <- 0.95
@@ -38,6 +41,8 @@ c <- file(fileN,"r") #
 t_i = 1 # time index
 d_i = 2 # distance index
 u_i = 3 # uncertainty index
+b_i = 4 # bias index
+bu_i = 5 # bias uncertainty
 
 fileLines <- readLines(c)
 close(c)
@@ -118,9 +123,10 @@ EPR <-  rep(NA,numBlck)
 
 getDSAS <- function(blockText){  
   splitsTxt <- unlist(strsplit(blockText,delim))
-  dates <- as(as.Date(splitsTxt[seq(t_i,length(splitsTxt),3)],format="%Y-%m-%d"),"numeric")
-  dist  <- as(splitsTxt[seq(d_i,length(splitsTxt),3)],"numeric")
-  uncy  <- as(splitsTxt[seq(u_i,length(splitsTxt),3)],"numeric")
+  dates <- as(as.Date(splitsTxt[seq(t_i,length(splitsTxt),num_c)],format="%Y-%m-%d"),"numeric")
+  # distance is additive: dist + bias_distance
+  dist  <- as(splitsTxt[seq(d_i,length(splitsTxt),num_c)],"numeric") + as(splitsTxt[seq(b_i,length(splitsTxt),num_c)],"numeric")
+  uncy  <- sqrt(as(splitsTxt[seq(u_i,length(splitsTxt),num_c)],"numeric")^2 +as(splitsTxt[seq(bu_i,length(splitsTxt),num_c)],"numeric")^2)#
   uncy[uncy<zRepV] <- zRepV
   
   useI  <- which(!is.na(dates)) & which(!is.na(dist)) & which(!is.na(uncy))
@@ -135,7 +141,7 @@ getDSAS <- function(blockText){
 }
 
 
-numPar = 4
+
 numInEach = ceiling(numBlck/numPar)
 endI = seq(0, numBlck, numInEach)
 if(endI[length(endI)] != numBlck){
