@@ -12,7 +12,10 @@ import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.service.ServiceHelper;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
+import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
+import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
+import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -191,9 +194,14 @@ public class ShorelineStagingService extends HttpServlet {
 						throw new IOException("Could not create workspace");
 					}
 
-					if (!createDatastoreInGeoserver(workspace)) {
+					if (!createDatastoreInGeoserver(workspace, workspace)) {
 						throw new IOException("Could not create data store");
 					}
+
+					if (!createLayerInGeoserver(workspace, workspace)) {
+						throw new IOException("Could not create data store");
+					}
+
 					success = true;
 				} catch (FileNotFoundException ex) {
 					responseMap.put("serverCode", "404");
@@ -248,13 +256,44 @@ public class ShorelineStagingService extends HttpServlet {
 	}
 
 	private boolean createWorkspaceInGeoserver(String workspace) throws URISyntaxException {
-		return gsrm.getPublisher().createWorkspace(workspace);
+		if (!gsrm.getReader().getWorkspaceNames().contains(workspace)) {
+			return gsrm.getPublisher().createWorkspace(workspace);
+		}
+		return true;
 	}
 
-	private boolean createDatastoreInGeoserver(String workspace) {
-		GSPostGISDatastoreEncoder pg = new GSPostGISDatastoreEncoder(workspace);
-		pg.setJndiReferenceName("dsas");
-		return gsrm.getStoreManager().create(workspace, pg);
+	private boolean createDatastoreInGeoserver(String workspace, String storeName) {
+		if (gsrm.getReader().getDatastore(workspace, storeName) == null) {
+			GSPostGISDatastoreEncoder pg = new GSPostGISDatastoreEncoder(workspace);
+			pg.setNamespace("gov.usgs.cida.ch." + workspace);
+			pg.setExposePrimaryKeys(false);
+			pg.setSchema("public");
+			pg.setJndiReferenceName("java:comp/env/jdbc/dsas");
+			return gsrm.getStoreManager().create(workspace, pg);
+		}
+		return true;
+	}
+
+	private boolean createLayerInGeoserver(String workspace, String storename) {
+		if (gsrm.getReader().getLayer(workspace, storename) == null) {
+			GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
+			fte.setSRS("EPSG:4326");
+			fte.setNativeCRS("EPSG:4326");
+			fte.setEnabled(true);
+			fte.setProjectionPolicy(GSResourceEncoder.ProjectionPolicy.FORCE_DECLARED);
+			// Why is this lower-cased you might ask?
+			// http://permalink.gmane.org/gmane.comp.gis.geoserver.user/29227
+			// If this is sent in its normal case, Geoserver <-> Postgres errors aplenty
+			// I've since changed the session to be all lowercase anyway, but keeping
+			// this here as a mark of shame against Geoserver. FOR SHAME!
+			fte.setName("shorelines_"+workspace.toLowerCase()+"_view");
+
+			GSLayerEncoder le = new GSLayerEncoder();
+			le.setEnabled(true);
+			le.setQueryable(Boolean.TRUE);
+			return gsrm.getPublisher().publishDBLayer(workspace, storename, fte, le);
+		}
+		return true;
 	}
 
 	private String importShapefile(HttpServletRequest request) throws NamingException, ParseException, SQLException, IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, Exception {
