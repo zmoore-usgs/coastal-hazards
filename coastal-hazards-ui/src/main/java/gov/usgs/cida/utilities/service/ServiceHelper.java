@@ -35,6 +35,15 @@ public class ServiceHelper {
 		}
 		RequestResponse.sendErrorResponse(response, responseMap, responseType);
 	}
+	
+	public static void sendServiceError(HttpServletResponse response, String[] errors, RequestResponse.ResponseType responseType) {
+		Map<String, String> responseMap = new HashMap<>(errors.length + 1);
+		for (String err : errors) {
+			responseMap.put("error", err);
+			responseMap.put("serverCode", "400");
+		}
+		RequestResponse.sendErrorResponse(response, responseMap, responseType);
+	}
 
 	private ServiceHelper() {
 	}

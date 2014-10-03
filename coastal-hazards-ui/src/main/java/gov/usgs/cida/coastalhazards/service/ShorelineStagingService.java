@@ -1,11 +1,15 @@
 package gov.usgs.cida.coastalhazards.service;
 
 import com.google.gson.Gson;
+
+import gov.usgs.cida.coastalhazards.service.exception.LidarFileFormatException;
 import gov.usgs.cida.coastalhazards.service.util.ImportUtil;
+import gov.usgs.cida.coastalhazards.service.util.LidarFileUtils;
 import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse.ResponseType;
+import gov.usgs.cida.owsutils.commons.io.exception.ShapefileFormatException;
 import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
@@ -13,6 +17,7 @@ import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.service.ServiceHelper;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -42,6 +48,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.fileupload.FileUploadException;
@@ -90,6 +97,12 @@ public class ShorelineStagingService extends HttpServlet {
 	private final static String STAGE_ACTION_STRING = "stage";
 	private final static String IMPORT_ACTION_STRING = "import";
 	private final static String READDBF_ACTION_STRING = "read-dbf";
+	/**
+	 * Used for lidar read-dbf call, we always fake that a lidar file is a valid shape file
+	 */
+	private final static String[] EXPECTED_SHAPEFILE_ATTRS = new String[] {
+		"Date_", "Uncy", "MHW"
+	};
 	private String geoserverEndpoint = null;
 	private String geoserverUsername = null;
 	private String geoserverPassword = null;
@@ -178,7 +191,7 @@ public class ShorelineStagingService extends HttpServlet {
 				String savedFilePath = stageFile(request, propertyBasedFilenameParam, uploadDirectory.getAbsolutePath());
 				responseMap.put(TOKEN_STRING, savedFilePath);
 				success = true;
-			} catch (FileUploadException | IOException ex) {
+			} catch (FileUploadException | IOException | ShapefileFormatException | LidarFileFormatException ex) {
 				sendException(response, "Could not stage file", ex, responseType);
 			}
 		} else if (action.equalsIgnoreCase(IMPORT_ACTION_STRING)) {
@@ -186,7 +199,7 @@ public class ShorelineStagingService extends HttpServlet {
 			String token = request.getParameter(TOKEN_STRING);
 			if (StringUtils.isNotBlank(token)) {
 				try {
-					String workspace = importShapefile(request);
+					String workspace = importShorelineFile(request);
 					if (!createWorkspaceInGeoserver(workspace)) {
 						throw new IOException("Could not create workspace");
 					}
@@ -220,7 +233,7 @@ public class ShorelineStagingService extends HttpServlet {
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ResponseType responseType = ServiceHelper.getResponseType(request);
 		Map<String, String> responseMap = new HashMap<>();
 		boolean success = false;
@@ -233,7 +246,7 @@ public class ShorelineStagingService extends HttpServlet {
 			if (StringUtils.isBlank(token)) {
 				ServiceHelper.sendNotEnoughParametersError(response, new String[]{TOKEN_STRING}, responseType);
 			} else {
-				responseMap = getShapefileHeadersStringUsingToken(token);
+				responseMap = getShorelineFileHeadersStringUsingToken(token);
 				success = true;
 			}
 		} else {
@@ -257,12 +270,26 @@ public class ShorelineStagingService extends HttpServlet {
 		return gsrm.getStoreManager().create(workspace, pg);
 	}
 
-	private String importShapefile(HttpServletRequest request) throws NamingException, ParseException, SQLException, IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, Exception {
+	private String importShorelineFile(HttpServletRequest request) throws NamingException, ParseException, SQLException, IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, Exception {
 		String token = request.getParameter(TOKEN_STRING);
-		File shpFile = getFileFromToken(token, tokenMap);
-		if (null == shpFile) {
+		File shorelineFile = getFileFromToken(token, tokenMap);
+		if (null == shorelineFile) {
 			throw new FileNotFoundException();
 		}
+		
+		if(LidarFileUtils.isLidar(shorelineFile)) {
+			return importLidarfile(request, shorelineFile);
+		} else {
+			return importShapefile(request, shorelineFile);
+		}
+	}
+	
+	private String importLidarfile(HttpServletRequest request, File lidarFile) throws NamingException, ParseException, SQLException, IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, Exception {
+		throw new RuntimeException("Lidar not finished yet");
+	}
+	
+	private String importShapefile(HttpServletRequest request, File shpFile) throws NamingException, ParseException, SQLException, IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, Exception {
+
 		String columnsString = request.getParameter("columns");
 		String workspace = request.getParameter("workspace");
 		Map<String, String> columns = new HashMap<>();
@@ -478,13 +505,21 @@ public class ShorelineStagingService extends HttpServlet {
 		return existingPointFiles;
 	}
 
-	private Map<String, String> getShapefileHeadersStringUsingToken(String token) {
+	private Map<String, String> getShorelineFileHeadersStringUsingToken(String token) throws IOException {
 		Map<String, String> responseMap = new HashMap<>();
-		File shapefile = getFileFromToken(token, tokenMap);
+		File shorelineFile = getFileFromToken(token, tokenMap);
 
-		if (null != shapefile && shapefile.exists()) {
+		if(LidarFileUtils.isLidar(shorelineFile)) { //if lidar file found, fake that we found expected shapefile attrs
+			StringBuilder headers = new StringBuilder();
+			for (String c : EXPECTED_SHAPEFILE_ATTRS) {
+				headers.append(c).append(",");
+			}
+			headers.deleteCharAt(headers.length() - 1);
+			responseMap.put("headers", headers.toString());
+			responseMap.put("success", "true");
+		} else if (null != shorelineFile && shorelineFile.exists()) {
 			// Create a new directory within the work directory
-			IterableShapefileReader reader = new IterableShapefileReader(shapefile);
+			IterableShapefileReader reader = new IterableShapefileReader(shorelineFile);
 			DbaseFileHeader dbfHeader = reader.getDbfHeader();
 			int fieldCount = dbfHeader.getNumFields();
 			StringBuilder headers = new StringBuilder();
@@ -520,14 +555,15 @@ public class ShorelineStagingService extends HttpServlet {
 		LOGGER.warn(t.getMessage());
 	}
 
-	private String stageFile(HttpServletRequest request, String propertyBasedFilenameParam, String workDir) throws IOException, FileUploadException {
-		File shapefile = ImportUtil.saveShapefileFromRequest(request, propertyBasedFilenameParam, workDir, true);
-		String shapefilePathString = shapefile.getAbsolutePath();
-		LOGGER.debug("File saved from request to {}", shapefilePathString);
+	private String stageFile(HttpServletRequest request, String propertyBasedFilenameParam, String workDir) throws IOException, FileUploadException, ShapefileFormatException, LidarFileFormatException {
+		File shorelinefile = ImportUtil.saveShorelineFileFromRequest(request, propertyBasedFilenameParam, workDir, true);
+		
+		String shorelineFilePathString = shorelinefile.getAbsolutePath();
+		LOGGER.debug("File saved from request to {}", shorelineFilePathString);
 
 		String fileToken = "";
 		for (String uuid : tokenMap.keySet()) {
-			if (tokenMap.get(uuid).equals(shapefilePathString)) {
+			if (tokenMap.get(uuid).equals(shorelineFilePathString)) {
 				fileToken = uuid;
 			}
 		}
@@ -536,7 +572,7 @@ public class ShorelineStagingService extends HttpServlet {
 			fileToken = UUID.randomUUID().toString();
 		}
 
-		tokenMap.put(fileToken, shapefilePathString);
+		tokenMap.put(fileToken, shorelineFilePathString);
 
 		return fileToken;
 	}
