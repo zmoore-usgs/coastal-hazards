@@ -73,15 +73,16 @@ public class ImportUtil {
 			FileHelper.flattenZipFile(shorelineZipFile.getAbsolutePath());
 			LOGGER.debug("Shoreline zip structure flattened");
 			
-			if(LidarFileUtils.isLidar(shorelineZipFile)) {
+			try {
 				LidarFileUtils.validateLidarFileZip(shorelineZipFile);
 				LOGGER.debug("Lidar file verified");
 				extension = ".csv";
-			} else {
+			} catch(LidarFileFormatException ex) {
+				LOGGER.debug("failed lidar validation, try shapefile");
 				FileHelper.validateShapefileZip(shorelineZipFile);
 				LOGGER.debug("Shapefile verified");
 				extension = ".shp";
-			}
+			} 
 			gov.usgs.cida.utilities.file.FileHelper.unzipFile(saveDirectory.getAbsolutePath(), shorelineZipFile);
 			LOGGER.debug("Shoreline unzipped");
 			if (shorelineZipFile.delete()) {

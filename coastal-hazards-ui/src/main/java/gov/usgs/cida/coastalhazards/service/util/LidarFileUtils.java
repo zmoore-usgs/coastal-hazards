@@ -87,4 +87,31 @@ public class LidarFileUtils {
 			FileHelper.forceDelete(temporaryDirectory);
 		}
 	}
+	
+	public static void validateHeaderRow(String[] headerRow) throws LidarFileFormatException {
+		if(headerRow.length != 5) {
+			throw new LidarFileFormatException("Lidar csv file has wrong number of header columns");
+		}
+		if(!headerRow[0].equalsIgnoreCase("segment_id")) {
+			throw new LidarFileFormatException("Lidar csv does not have segment_id as first column");
+		}
+		if(!headerRow[1].equalsIgnoreCase("x")) {
+			throw new LidarFileFormatException("Lidar csv does not have x as second column");
+		}
+		if(!headerRow[2].equalsIgnoreCase("y")) {
+			throw new LidarFileFormatException("Lidar csv does not have y as third column");
+		}
+		if(!headerRow[3].equalsIgnoreCase("uncy_")) {
+			throw new LidarFileFormatException("Lidar csv does not have uncy_ as fourth column");
+		}
+		if(!headerRow[4].equalsIgnoreCase("Date_")) {
+			throw new LidarFileFormatException("Lidar csv does not have Date_ as fifth column");
+		}
+	}
+	
+	public static void validateDataRow(String[] dataRow) throws LidarFileFormatException {
+		if(dataRow.length != 5) {
+			throw new LidarFileFormatException("Lidar csv file has wrong number of columns in one of the rows");
+		}
+	}
 }

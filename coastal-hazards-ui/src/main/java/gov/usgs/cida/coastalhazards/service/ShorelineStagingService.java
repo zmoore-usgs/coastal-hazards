@@ -22,8 +22,11 @@ import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
 import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -36,6 +39,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -111,8 +115,11 @@ public class ShorelineStagingService extends HttpServlet {
 	 * Used for lidar read-dbf call, we always fake that a lidar file is a valid
 	 * shape file
 	 */
-	private final static String[] EXPECTED_SHAPEFILE_ATTRS = new String[]{
-		"date", "uncy", "MHW"
+	private final static String DATE_FIELD_NAME = "Date_";
+	private final static String UNCY_FIELD_NAME = "Uncy";
+	private final static String MHW_FIELD_NAME = "MHW";
+	private final static String[] EXPECTED_SHAPEFILE_ATTRS = new String[] {
+		DATE_FIELD_NAME, UNCY_FIELD_NAME, MHW_FIELD_NAME
 	};
 	private String geoserverEndpoint = null;
 	private String geoserverUsername = null;
@@ -354,7 +361,63 @@ public class ShorelineStagingService extends HttpServlet {
 	}
 
 	private String importLidarfile(HttpServletRequest request, File lidarFile) throws NamingException, ParseException, SQLException, IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, Exception {
-		throw new RuntimeException("Lidar not finished yet");
+		String workspace = request.getParameter("workspace");
+		HashMap<String, Long> shorelineDateToIdMap = new HashMap<>();
+		SimpleDateFormat dtFormat = new SimpleDateFormat("MM/dd/yyyy");
+		
+		String projection = "4326"; //TODO can we get this from the prj file?
+		
+		try (
+				Connection connection = getConnection();
+				BufferedReader br = new BufferedReader(new FileReader(lidarFile))) {
+
+			String line = "";
+			int row = 0;
+			while ((line = br.readLine()) != null) {
+				row++;
+				
+				// use comma as separator
+				String[] point = line.split(",");
+
+				//validation
+				if(row == 1) {
+					LidarFileUtils.validateHeaderRow(point);
+					continue;
+				} else {
+					LidarFileUtils.validateDataRow(point);
+				}
+				
+				//shorline id
+				long shorelineId;
+				String shorelineDate = point[4];
+				if(!shorelineDateToIdMap.keySet().contains(shorelineDate)) { //if we have not used this shoreline date yet, go ahead create new shoreline record
+					shorelineId = insertToShorelinesTable(
+							connection, 
+							workspace, 
+							dtFormat.parse(shorelineDate), 
+							true, //lidar always has MHW = true 
+							lidarFile.getName(), 
+							"", 
+							MHW_FIELD_NAME);
+					shorelineDateToIdMap.put(shorelineDate, shorelineId);
+				} else {
+					shorelineId = shorelineDateToIdMap.get(shorelineDate);
+				}
+				
+				insertPointIntoShorelinePointsTable(
+						connection, 
+						shorelineId, 
+						Integer.valueOf(point[0]), 
+						Double.valueOf(point[1]), 
+						Double.valueOf(point[2]), 
+						Double.valueOf(point[3]),
+						projection
+						);
+			}
+
+		}
+
+		return workspace;
 	}
 
 	private String importShapefile(HttpServletRequest request, File shpFile) throws NamingException, ParseException, SQLException, IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, Exception {
@@ -370,6 +433,8 @@ public class ShorelineStagingService extends HttpServlet {
 		String uncertaintyFieldName = (String) bm.getKey("uncy");
 		String mhwFieldName = (String) bm.getKey("MHW");
 		String orientation = "";
+		
+		String projection  = "4326"; //TODO can we get this from the prj file?
 
 		// First delete any previously exploded point files
 		deleteExistingPointFiles(shpFile.getParentFile());
@@ -403,7 +468,7 @@ public class ShorelineStagingService extends HttpServlet {
 						if (lastShorelineId != shorelineId) {
 							lastShorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, orientation, mhwFieldName);
 						}
-						insertPointIntoShorelinePointsTable(connection, lastShorelineId, sf, uncertaintyFieldName, uncertaintyType);
+						insertPointIntoShorelinePointsTable(connection, lastShorelineId, sf, uncertaintyFieldName, uncertaintyType, projection);
 					}
 
 					createViewAgainstWorkspace(connection, workspace);
@@ -423,9 +488,9 @@ public class ShorelineStagingService extends HttpServlet {
 				}
 			}
 		}
-
 		return workspace;
 	}
+	
 
 	private boolean createViewAgainstWorkspace(Connection connection, String workspace) throws SQLException {
 		String sql = "SELECT * FROM CREATE_WORKSPACE_VIEW(?)";
@@ -470,7 +535,7 @@ public class ShorelineStagingService extends HttpServlet {
 		return createdId;
 	}
 
-	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
+	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType, String projection) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
 		double x = sf.getBounds().getMaxX();
 		double y = sf.getBounds().getMaxY();
 		double uncertainty = getUncertaintyFromFC(uncertaintyFieldName, sf, uncertaintyType);
@@ -478,7 +543,7 @@ public class ShorelineStagingService extends HttpServlet {
 
 		String sql = "INSERT INTO shoreline_points "
 				+ "(shoreline_id, segment_id, geom, uncy) "
-				+ "VALUES (" + shorelineId + "," + segmentId + "," + "ST_GeomFromText('POINT(" + x + " " + y + ")',4326)" + "," + uncertainty + ")";
+				+ "VALUES (" + shorelineId + "," + segmentId + "," + "ST_GeomFromText('POINT(" + x + " " + y + ")'," + projection + ")" + "," + uncertainty + ")";
 		try (Statement st = connection.createStatement()) {
 			if (st.execute(sql)) {
 				return 1;
@@ -487,6 +552,21 @@ public class ShorelineStagingService extends HttpServlet {
 			}
 		}
 
+	}
+	
+	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, 
+			int segmentId, double x, double y, double uncertainty, String projection) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
+
+		String sql = "INSERT INTO shoreline_points "
+				+ "(shoreline_id, segment_id, geom, uncy) "
+				+ "VALUES (" + shorelineId + "," + segmentId + "," + "ST_GeomFromText('POINT(" + x + " " + y + ")'," + projection + ")" + "," + uncertainty + ")";
+		try (Statement st = connection.createStatement()) {
+			if (st.execute(sql)) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
 	}
 
 	private Connection getConnection() {
@@ -602,7 +682,7 @@ public class ShorelineStagingService extends HttpServlet {
 			responseMap.put("success", "true");
 		} else {
 			tokenMap.remove(token);
-			responseMap.put("error", "File not found. Try re-staging shapefile");
+			responseMap.put("error", "File not found. Try re-staging shoreline file");
 			responseMap.put("serverCode", "404");
 			responseMap.put("success", "false");
 		}

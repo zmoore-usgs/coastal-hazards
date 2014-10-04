@@ -52,21 +52,6 @@ public class Xploder {
 	public static final String PTS_SUFFIX = "_pts";
 	private static final Logger logger = LoggerFactory.getLogger(Xploder.class);
 	private static final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
-
-	public static int locateField(DbaseFileHeader hdr, String nm, Class<?> expected) {
-		int idx = locateField(hdr, nm);
-		
-		if (idx < 0) {
-			throw new RuntimeException("did not find column named " + nm);
-		}
-
-		Class<?> idClass = hdr.getFieldClass(idx);
-		if (!expected.isAssignableFrom(idClass)) {
-			throw new RuntimeException("Actual class " + idClass + " is not assignable to expected " + expected);
-		}
-
-		return idx;
-	}
 	
 	public static int locateField(DbaseFileHeader hdr, String nm) {
 		int idx = -1;
@@ -143,7 +128,7 @@ public class Xploder {
 
 	public int processShape(ShapeAndAttributes sap) throws Exception {
 
-		Double uncertainty = (Double) sap.row.read(uncertaintyIdIdx);
+		Double uncertainty = ((Number) sap.row.read(uncertaintyIdIdx)).doubleValue();
 
 		int ptCt = 0;
 		MultiLineString shape = (MultiLineString) sap.record.shape();
@@ -276,7 +261,7 @@ public class Xploder {
 		IterableShapefileReader rdr = new IterableShapefileReader(fn, mlh);
 
 		dbfHdr = rdr.getDbfHeader();
-		uncertaintyIdIdx = locateField(dbfHdr, uncyColumnName, uncyColumnClassType);
+		uncertaintyIdIdx = locateField(dbfHdr, uncyColumnName);
 		return rdr;
 	}
 }
