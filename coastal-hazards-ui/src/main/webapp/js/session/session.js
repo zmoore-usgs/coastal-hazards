@@ -8,7 +8,7 @@ CCH.Session = function (name, isPerm) {
 		shorelines: Object.extended({
 			layers: [],
 			viewing: [],
-			groupingColumn: 'date_',
+			groupingColumn: 'date',
 			dateFormat: '',
 			view: Object.extended({
 				layer: Object.extended({

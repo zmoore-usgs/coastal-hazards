@@ -750,7 +750,7 @@ var Results = {
         '<wfs:Query typeName="'+intersects+'" />' + 
         '<ogc:PropertyName>TransectID</ogc:PropertyName>' + 
         '<ogc:PropertyName>Distance</ogc:PropertyName>' + 
-        '<ogc:PropertyName>Date_</ogc:PropertyName>' + 
+        '<ogc:PropertyName>date</ogc:PropertyName>' + 
         '<ogc:PropertyName>Uncy</ogc:PropertyName>' + 
         '</wfs:GetFeature>' + 
         '</wps:Body>' + 

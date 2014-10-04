@@ -16,6 +16,8 @@ import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.service.ServiceHelper;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
+import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
+import it.geosolutions.geoserver.rest.HTTPUtils;
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
@@ -24,6 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
@@ -39,6 +42,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -57,6 +62,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.geotools.data.crs.ReprojectFeatureResults;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -99,10 +108,11 @@ public class ShorelineStagingService extends HttpServlet {
 	private final static String IMPORT_ACTION_STRING = "import";
 	private final static String READDBF_ACTION_STRING = "read-dbf";
 	/**
-	 * Used for lidar read-dbf call, we always fake that a lidar file is a valid shape file
+	 * Used for lidar read-dbf call, we always fake that a lidar file is a valid
+	 * shape file
 	 */
-	private final static String[] EXPECTED_SHAPEFILE_ATTRS = new String[] {
-		"Date_", "Uncy", "MHW"
+	private final static String[] EXPECTED_SHAPEFILE_ATTRS = new String[]{
+		"date", "uncy", "MHW"
 	};
 	private String geoserverEndpoint = null;
 	private String geoserverUsername = null;
@@ -213,6 +223,8 @@ public class ShorelineStagingService extends HttpServlet {
 						throw new IOException("Could not create data store");
 					}
 
+					touchWorkspace(workspace);
+
 					success = true;
 				} catch (FileNotFoundException ex) {
 					responseMap.put("serverCode", "404");
@@ -268,7 +280,7 @@ public class ShorelineStagingService extends HttpServlet {
 
 	private boolean createWorkspaceInGeoserver(String workspace) throws URISyntaxException {
 		if (!gsrm.getReader().getWorkspaceNames().contains(workspace)) {
-			return gsrm.getPublisher().createWorkspace(workspace);
+			return gsrm.getPublisher().createWorkspace(workspace, new URI("gov.usgs.cida.ch" + workspace));
 		}
 		return true;
 	}
@@ -307,24 +319,44 @@ public class ShorelineStagingService extends HttpServlet {
 		return true;
 	}
 
+	private boolean reloadStore(String workspace, String storename) {
+		boolean reloaded = false;
+		try {
+			reloaded = gsrm.getPublisher().reloadStore(workspace, storename, GeoServerRESTPublisher.StoreType.DATASTORES);
+		} catch (IllegalArgumentException | MalformedURLException ex) {
+			LOGGER.info("Could not reload Geoserver store", ex);
+		}
+		return reloaded;
+	}
+
+	/**
+	 * When creating 
+	 * @param workspace
+	 * @return 
+	 */
+	private boolean touchWorkspace(String workspace) {
+		String content = "<workspace><name>"+workspace+"</name></workspace>";
+		return "".equals(HTTPUtils.putXml(geoserverEndpoint + "/rest/workspaces/" + workspace, content, geoserverUsername, geoserverPassword));
+	}
+
 	private String importShorelineFile(HttpServletRequest request) throws NamingException, ParseException, SQLException, IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, Exception {
 		String token = request.getParameter(TOKEN_STRING);
 		File shorelineFile = getFileFromToken(token, tokenMap);
 		if (null == shorelineFile) {
 			throw new FileNotFoundException();
 		}
-		
-		if(LidarFileUtils.isLidar(shorelineFile)) {
+
+		if (LidarFileUtils.isLidar(shorelineFile)) {
 			return importLidarfile(request, shorelineFile);
 		} else {
 			return importShapefile(request, shorelineFile);
 		}
 	}
-	
+
 	private String importLidarfile(HttpServletRequest request, File lidarFile) throws NamingException, ParseException, SQLException, IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, Exception {
 		throw new RuntimeException("Lidar not finished yet");
 	}
-	
+
 	private String importShapefile(HttpServletRequest request, File shpFile) throws NamingException, ParseException, SQLException, IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, Exception {
 
 		String columnsString = request.getParameter("columns");
@@ -334,7 +366,7 @@ public class ShorelineStagingService extends HttpServlet {
 			columns = (Map<String, String>) new Gson().fromJson(columnsString, Map.class);
 		}
 		BidiMap bm = new DualHashBidiMap(columns);
-		String dateFieldName = (String) bm.getKey("Date_");
+		String dateFieldName = (String) bm.getKey("date");
 		String uncertaintyFieldName = (String) bm.getKey("uncy");
 		String mhwFieldName = (String) bm.getKey("MHW");
 		String orientation = "";
@@ -548,7 +580,7 @@ public class ShorelineStagingService extends HttpServlet {
 		Map<String, String> responseMap = new HashMap<>();
 		File shorelineFile = getFileFromToken(token, tokenMap);
 
-		if(LidarFileUtils.isLidar(shorelineFile)) { //if lidar file found, fake that we found expected shapefile attrs
+		if (LidarFileUtils.isLidar(shorelineFile)) { //if lidar file found, fake that we found expected shapefile attrs
 			StringBuilder headers = new StringBuilder();
 			for (String c : EXPECTED_SHAPEFILE_ATTRS) {
 				headers.append(c).append(",");
@@ -596,7 +628,7 @@ public class ShorelineStagingService extends HttpServlet {
 
 	private String stageFile(HttpServletRequest request, String propertyBasedFilenameParam, String workDir) throws IOException, FileUploadException, ShapefileFormatException, LidarFileFormatException {
 		File shorelinefile = ImportUtil.saveShorelineFileFromRequest(request, propertyBasedFilenameParam, workDir, true);
-		
+
 		String shorelineFilePathString = shorelinefile.getAbsolutePath();
 		LOGGER.debug("File saved from request to {}", shorelineFilePathString);
 

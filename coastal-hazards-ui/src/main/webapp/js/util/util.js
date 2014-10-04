@@ -253,7 +253,7 @@ var Util = {
 
 		// First check the months
 		featureArray.each(function (l) {
-			if (l.data[groupingColumn].substring(0, 1) === '0' || l.data[groupingColumn].split('/')[1].substring(0, 1) === '0') {
+			if (l.data[groupingColumn].substring(0, 1) === '0' || l.data[groupingColumn].split('-')[1].substring(0, 1) === '0') {
 				dateFormat = CONFIG.dateFormat.padded;
 			}
 		});

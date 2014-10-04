@@ -3,11 +3,11 @@
 var Shorelines = {
 	stage: 'shorelines',
 	suffixes: ['_shorelines'],
-	mandatoryColumns: ['Date_', 'uncy'],
+	mandatoryColumns: ['date', 'uncy'],
 	defaultingColumns: [
 		{attr: 'MHW', defaultValue: "0"}
 	],
-	groupingColumn: 'Date_',
+	groupingColumn: 'date',
 	uploadRequest: {
 		'endpoint': 'service/stage-shoreline',
 		'paramsInBody': false,
@@ -585,7 +585,7 @@ var Shorelines = {
 		$('#' + layerName + ' .switch').bootstrapSwitch();
 
 		// Check to see if we need to create a wildcard column by seeing if there's anything to wildcard
-		var ignoredColumns = ['id', 'date_'];
+		var ignoredColumns = ['id', 'date'];
 		var featureKeys = Object.keys(event.object.describedFeatures[0].attributes).filter(function (key) {
 			return ignoredColumns.indexOf(key.toLowerCase()) === -1;
 		});
@@ -651,7 +651,7 @@ var Shorelines = {
 										$('<th />').
 										html(selectedVal));
 									var dateAttr = Object.keys(layerObj[0].data).find(function (k) {
-										return k.toLowerCase() === 'date_';
+										return k.toLowerCase() === 'date';
 									});
 									layerObj.unique(function (l) {
 										return l.data[dateAttr];
