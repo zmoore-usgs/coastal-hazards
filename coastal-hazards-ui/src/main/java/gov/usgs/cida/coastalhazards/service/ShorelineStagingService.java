@@ -115,9 +115,9 @@ public class ShorelineStagingService extends HttpServlet {
 	 * Used for lidar read-dbf call, we always fake that a lidar file is a valid
 	 * shape file
 	 */
-	private final static String DATE_FIELD_NAME = "Date_";
-	private final static String UNCY_FIELD_NAME = "Uncy";
-	private final static String MHW_FIELD_NAME = "MHW";
+	private final static String DATE_FIELD_NAME = "date";
+	private final static String UNCY_FIELD_NAME = "uncy";
+	private final static String MHW_FIELD_NAME = "mhw";
 	private final static String[] EXPECTED_SHAPEFILE_ATTRS = new String[] {
 		DATE_FIELD_NAME, UNCY_FIELD_NAME, MHW_FIELD_NAME
 	};
