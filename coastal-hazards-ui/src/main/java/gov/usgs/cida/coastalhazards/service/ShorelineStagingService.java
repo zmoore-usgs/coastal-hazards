@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.service;
 
 import com.google.gson.Gson;
-
 import gov.usgs.cida.coastalhazards.service.exception.LidarFileFormatException;
 import gov.usgs.cida.coastalhazards.service.util.ImportUtil;
 import gov.usgs.cida.coastalhazards.service.util.LidarFileUtils;
@@ -22,7 +21,6 @@ import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
 import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,16 +37,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -58,7 +52,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.fileupload.FileUploadException;
@@ -66,10 +59,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.geotools.data.crs.ReprojectFeatureResults;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -131,7 +120,6 @@ public class ShorelineStagingService extends HttpServlet {
 	private File uploadDirectory;
 	private File workDirectory;
 	private String jndiDbConnName;
-	private transient GeoserverHandler geoserverHandler = null;
 	private transient GeoServerRESTManager gsrm = null;
 
 	@Override
@@ -178,7 +166,6 @@ public class ShorelineStagingService extends HttpServlet {
 		geoserverEndpoint = props.getProperty(applicationName + GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY);
 		geoserverUsername = props.getProperty(applicationName + GEOSERVER_USER_PARAM_CONFIG_KEY);
 		geoserverPassword = props.getProperty(applicationName + GEOSERVER_PASS_PARAM_CONFIG_KEY);
-		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
 		try {
 			gsrm = new GeoServerRESTManager(new URL(geoserverEndpoint), geoserverUsername, geoserverPassword);
 		} catch (MalformedURLException ex) {
