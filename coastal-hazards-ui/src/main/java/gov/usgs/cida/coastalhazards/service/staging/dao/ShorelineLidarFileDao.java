@@ -1,8 +1,16 @@
 package gov.usgs.cida.coastalhazards.service.staging.dao;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.geom.impl.PackedCoordinateSequence;
+import com.vividsolutions.jts.io.WKTReader;
 import gov.usgs.cida.coastalhazards.service.exception.LidarFileFormatException;
 import gov.usgs.cida.coastalhazards.service.exception.ShorelineFileFormatException;
 import gov.usgs.cida.coastalhazards.service.util.LidarFileUtils;
+import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,9 +22,19 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
 import org.geotools.feature.SchemaException;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.geotools.referencing.CRS;
+import org.geotools.resources.CRSUtilities;
+import org.opengis.geometry.DirectPosition;
+import org.opengis.geometry.Geometry;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 /**
@@ -44,6 +62,7 @@ public class ShorelineLidarFileDao extends ShorelineFileDao {
 		if (cleanedEPSGCode.contains(":")) {
 			cleanedEPSGCode = cleanedEPSGCode.split(":")[1];
 		}
+		String viewName;
 		try (
 				Connection connection = getConnection();
 				BufferedReader br = new BufferedReader(new FileReader(shorelineFile))) {
@@ -85,18 +104,36 @@ public class ShorelineLidarFileDao extends ShorelineFileDao {
 					shorelineId = shorelineDateToIdMap.get(shorelineDate);
 				}
 
+				Double originalX = Double.valueOf(point[1]);
+				Double originalY = Double.valueOf(point[2]);
+				CoordinateReferenceSystem sourceCRS = CRS.decode(EPSGCode);
+				CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
+				MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, false);
+				GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+				WKTReader reader = new WKTReader(geometryFactory);
+				Point pt;
+				try {
+					pt = (Point) reader.read("POINT (" + originalX + " " + originalY + ")");
+				} catch (com.vividsolutions.jts.io.ParseException ex) {
+					throw new TransformException(ex.getMessage());
+				}
+				com.vividsolutions.jts.geom.Geometry transformedPt = JTS.transform(pt, transform);
+				Double reprojectedX = transformedPt.getCentroid().getX();
+				Double reprojectedY = transformedPt.getCentroid().getY();
+
 				insertPointIntoShorelinePointsTable(
 						connection,
 						shorelineId,
 						Integer.valueOf(point[0]),
-						Double.valueOf(point[1]),
-						Double.valueOf(point[2]),
+						reprojectedX,
+						reprojectedY,
 						Double.valueOf(point[3]),
 						cleanedEPSGCode
 				);
 			}
+			viewName = createViewAgainstWorkspace(connection, workspace);
 		}
-		return workspace;
+		return viewName;
 	}
 
 }
