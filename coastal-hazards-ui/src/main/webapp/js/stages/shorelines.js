@@ -1,5 +1,6 @@
 /* global LOG */
 /* global CONFIG */
+/* global OpenLayers */
 var Shorelines = {
 	stage: 'shorelines',
 	suffixes: ['_shorelines'],
@@ -15,8 +16,8 @@ var Shorelines = {
 		params: {
 			'response.encoding': 'json',
 			'filename.param': 'qqfile',
-			'action': 'stage'
-			
+			'action': 'stage',
+			'workspace' : 'added during app init'
 		}
 	},
 	uploadExtraParams: {
@@ -449,10 +450,12 @@ var Shorelines = {
 					mlBbox,
 					lbbox;
 				if (mapLayer) {
-					mlBbox = mapLayer.bbox['EPSG:3857'] ? mapLayer.bbox['EPSG:3857'] : mapLayer.bbox['EPSG:900913'];
+					mlBbox = mapLayer.bbox['EPSG:4326'];
+					
 					if (mlBbox) {
 						lbbox = mlBbox.bbox;
-						bounds.extend(new OpenLayers.Bounds(lbbox));
+						bounds.extend(new OpenLayers.Bounds(lbbox[1], lbbox[0], lbbox[3], lbbox[2]).
+							transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")));
 
 						if (layer.events.listeners.loadend.length) {
 							layer.events.unregister('added', layer, Shorelines.zoomToLayer);
@@ -465,7 +468,7 @@ var Shorelines = {
 		});
 
 		if (bounds.left && bounds.right && bounds.top && bounds.bottom) {
-			CONFIG.map.getMap().zoomToExtent(bounds, true);
+			CONFIG.map.getMap().zoomToExtent(bounds, false);
 		}
 	},
 	createFeatureTable: function (event) {
