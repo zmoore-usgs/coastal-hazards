@@ -16,6 +16,7 @@ var Shorelines = {
 			'response.encoding': 'json',
 			'filename.param': 'qqfile',
 			'action': 'stage'
+			
 		}
 	},
 	uploadExtraParams: {

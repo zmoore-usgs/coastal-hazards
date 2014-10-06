@@ -52,7 +52,7 @@ public class Xploder {
 	public static final String PTS_SUFFIX = "_pts";
 	private static final Logger logger = LoggerFactory.getLogger(Xploder.class);
 	private static final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
-	
+
 	public static int locateField(DbaseFileHeader hdr, String nm) {
 		int idx = -1;
 
@@ -62,7 +62,7 @@ public class Xploder {
 				idx = x;
 			}
 		}
-		
+
 		return idx;
 	}
 
@@ -116,13 +116,12 @@ public class Xploder {
 	private int uncertaintyIdIdx;
 
 	public Xploder() {
-		this("uncy", Double.class);
+		this("uncy");
 	}
 
-	public Xploder(String uncyColumnName, Class<?> uncyColumnClassType) {
+	public Xploder(String uncyColumnName) {
 		if (StringUtils.isNotBlank(uncyColumnName)) {
 			this.uncyColumnName = uncyColumnName;
-			this.uncyColumnClassType = uncyColumnClassType;
 		}
 	}
 
@@ -228,7 +227,7 @@ public class Xploder {
 
 	public File explode(String fn) throws Exception {
 		File ptFile;
-		
+
 		try (IterableShapefileReader rdr = initReader(fn)) {
 			logger.debug("Input files from {}\n{}", fn, shapefileNames(rdr.getShpFiles()));
 			tx = new DefaultTransaction("create");
@@ -249,7 +248,16 @@ public class Xploder {
 			}
 
 			tx.commit();
+
 			logger.info("Wrote {} points in {} shapes", ptTotal, shpCt);
+		} finally {
+			if (null != featureWriter) {
+				try {
+					featureWriter.close();
+				} catch (IOException ex) {
+					logger.info("Could not close feature writer", ex);
+				}
+			}
 		}
 		return ptFile;
 	}

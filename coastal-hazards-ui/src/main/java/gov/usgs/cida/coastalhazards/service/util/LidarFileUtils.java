@@ -2,7 +2,6 @@ package gov.usgs.cida.coastalhazards.service.util;
 
 import gov.usgs.cida.coastalhazards.service.exception.LidarFileFormatException;
 import gov.usgs.cida.owsutils.commons.io.FileHelper;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import org.apache.commons.io.IOUtils;
 
 public class LidarFileUtils {
@@ -34,6 +32,8 @@ public class LidarFileUtils {
 	 * A lidar file has csv files, a prj file, and NO shp files.
 	 * 
 	 * returns true if a structurally correct lidar zip file is found
+	 * @param lidarZipFile
+	 * @throws gov.usgs.cida.coastalhazards.service.exception.LidarFileFormatException
 	 * @throws IOException 
 	 */
 	public static void validateLidarFileZip(File lidarZipFile) throws LidarFileFormatException, IOException {
