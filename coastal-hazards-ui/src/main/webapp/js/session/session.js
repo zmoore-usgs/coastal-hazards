@@ -8,7 +8,7 @@ CCH.Session = function (name, isPerm) {
 		shorelines: Object.extended({
 			layers: [],
 			viewing: [],
-			groupingColumn: 'date_',
+			groupingColumn: 'date',
 			dateFormat: '',
 			view: Object.extended({
 				layer: Object.extended({
@@ -47,8 +47,7 @@ CCH.Session = function (name, isPerm) {
 
 		// - Because the session is used in the namespace for WFS-T, it needs to 
 		// not have a number at the head of it so add a random letter
-		var randID = String.fromCharCode(97 + Math.round(Math.random() * 25)) + Util.randomUUID();
-
+		var randID = String.fromCharCode(97 + Math.round(Math.random() * 25)) + Util.randomUUID().remove(/-/g).toLowerCase();
 		// Prepare the session on the OWS server
 		$.ajax('service/session?action=prepare&workspace=' + randID,
 			{

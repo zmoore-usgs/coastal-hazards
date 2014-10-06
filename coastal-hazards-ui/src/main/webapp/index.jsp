@@ -50,9 +50,19 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="<%= development %>" />
         </jsp:include>
-		<script type="text/javascript" src="webjars/jquery/1.8.3/jquery<%= development ?  "" : ".min" %>.js"></script>
+		<script type="text/javascript" src="webjars/jquery/2.1.1/jquery<%= development ?  "" : ".min" %>.js"></script>
+		<script type="text/javascript">
+			/* This application does not support <IE9 - Stop early if <IE9*/
+			if (navigator.appName === 'Microsoft Internet Explorer') {
+				var ua = navigator.userAgent;
+				if (ua.toLowerCase().indexOf('msie 6') !== -1 || ua.toLowerCase().indexOf('msie 7') !== -1 || ua.toLowerCase().indexOf('msie 8') !== -1) {
+					alert("We apologize, but this application does not support Internet Explorer versions lower than 9.0.\n\nOther supported browsers are Firefox, Chrome and Safari.");
+					window.open('http://windows.microsoft.com/en-us/internet-explorer/downloads/ie-9/worldwide-languages');
+				}
+			}
+		</script>
     </head>
-    
+
     <body>
         <%-- Loads during application startup, fades out when application is built --%>
         <jsp:include page="components/application-overlay.jsp"></jsp:include>
@@ -456,13 +466,13 @@
 	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap-responsive<%= development ? "" : ".min"%>.css" />
 	<link type="text/css" rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
 	<script type="text/javascript" src="webjars/bootstrap/2.3.2/js/bootstrap<%= development ?  "" : ".min" %>.js"></script>
-    <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.2.1/css/font-awesome<%= development ?  "" : ".min" %>.css" />
+    <link type="text/css" rel="stylesheet" href="webjars/font-awesome/4.0.3/css/font-awesome<%= development ?  "" : ".min" %>.css" />
 
     <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
     <script type="text/javascript" src="webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : "" %>.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading JS Utilities...");</script>
-    <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min" %>.js"></script>
+    <script type="text/javascript" src="webjars/sugar/1.4.1/sugar-full<%= development ? ".development" : ".min" %>.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading Upload Management...");</script>
     <jsp:include page="js/fineuploader/fineuploader.jsp">

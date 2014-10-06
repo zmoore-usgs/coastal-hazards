@@ -2,13 +2,14 @@ package gov.usgs.cida.coastalhazards.util;
 
 import com.vividsolutions.jts.geom.MultiLineString;
 import gov.usgs.cida.coastalhazards.wps.CreateTransectsAndIntersectionsProcessTest;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import java.io.IOException;
 import java.net.URL;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -28,7 +29,7 @@ public class CRSUtilsTest {
         URL baselineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_baseline.shp");
         FeatureCollection<SimpleFeatureType, SimpleFeature> baselinefc =
-                FeatureCollectionFromShp.featureCollectionFromShp(baselineShapefile);
+                FeatureCollectionFromShp.getFeatureCollectionFromShp(baselineShapefile);
         MultiLineString expResult = null;
         MultiLineString result = CRSUtils.getLinesFromFeatureCollection((SimpleFeatureCollection)baselinefc);
         assertEquals(expResult, result);

@@ -17,6 +17,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -45,29 +46,32 @@ import org.xml.sax.InputSource;
  * @author rhayes
  */
 public class ShapefileImportService extends HttpServlet {
-
-    private static final String PTS_SUFFIX = gov.usgs.cida.coastalhazards.uncy.Xploder.PTS_SUFFIX;
-    
-	private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ShapefileImportService.class);
-    private static DynamicReadOnlyProperties props = null;
-    private static String uploadDirectory = null;
-    private static String geoserverEndpoint = null;
-    private static String geoserverUsername = null;
-    private static String geoserverPassword = null;
-    private static String geoserverDataDir = null;
-    private static String DIRECTORY_BASE_PARAM_CONFIG_KEY = "coastal-hazards.files.directory.base";
-    private static String DIRECTORY_UPLOAD_PARAM_CONFIG_KEY = "coastal-hazards.files.directory.upload";
-    private static String GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.endpoint";
-    private static String GEOSERVER_USER_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.username";
-    private static String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
-    private static String GEOSERVER_DATA_DIR_KEY = "coastal-hazards.geoserver.datadir";
-    private static GeoserverHandler geoserverHandler = null;
-    private static GeoServerRESTManager gsrm = null;
+	private static final long serialVersionUID = -4228098450640162920L;
+	private static final String DIRECTORY_BASE_PARAM_CONFIG_KEY = "coastal-hazards.files.directory.base";
+    private static final String DIRECTORY_UPLOAD_PARAM_CONFIG_KEY = "coastal-hazards.files.directory.upload";
+    private static final String GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.endpoint";
+    private static final String GEOSERVER_USER_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.username";
+    private static final String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
+    private static final String GEOSERVER_DATA_DIR_KEY = "coastal-hazards.geoserver.datadir";
+	private static final String PTS_SUFFIX = gov.usgs.cida.coastalhazards.uncy.Xploder.PTS_SUFFIX;
+	private static DynamicReadOnlyProperties props = null;
+    private String uploadDirectory = null;
+    private String geoserverEndpoint = null;
+    private String geoserverUsername = null;
+    private String geoserverPassword = null;
+    private String geoserverDataDir = null;
+	// GeoserverHandler and GeoServerRESTManager are non-serializable. This means
+	// that if this servlet is serialized (if this application is clustered), this
+	// mioght become a problem
+    private transient GeoserverHandler geoserverHandler = null;
+	private transient GeoServerRESTManager gsrm = null;
+	
 
     @Override
     public void init() throws ServletException {
         super.init();
+		LOG.info("Initializing ShapefileImportService servlet");
         props = JNDISingleton.getInstance();
         uploadDirectory = props.getProperty(DIRECTORY_BASE_PARAM_CONFIG_KEY) + props.getProperty(DIRECTORY_UPLOAD_PARAM_CONFIG_KEY);
         geoserverEndpoint = props.getProperty(GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY);
@@ -78,12 +82,11 @@ public class ShapefileImportService extends HttpServlet {
         try {
             gsrm = new GeoServerRESTManager(new URL(geoserverEndpoint), geoserverUsername, geoserverPassword);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(ShapefileImportService.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error("Could not initialize Geoserver REST Manager. Application will not be able to handle shapefile uploads", ex);
         }
     }
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, IllegalArgumentException {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, IllegalArgumentException {
         String fileToken = request.getParameter("file-token");
         String featureName = request.getParameter("feature-name");
         String workspace = request.getParameter("workspace");
@@ -92,9 +95,9 @@ public class ShapefileImportService extends HttpServlet {
 
         File shapeFile;
         String name;
-        Map<String, String> responseMap = new HashMap<String, String>();
+        Map<String, String> responseMap = new HashMap<>();
 
-        List<GeoserverHandler.DBaseColumn> dbcList = new ArrayList<GeoserverHandler.DBaseColumn>();
+        List<GeoserverHandler.DBaseColumn> dbcList = new ArrayList<>();
 
         if (extraColumns != null) {
             for (String extraColumn : extraColumns) {
@@ -182,11 +185,7 @@ public class ShapefileImportService extends HttpServlet {
         }
         try {
             geoserverHandler.prepareWorkspace(geoserverDataDir, workspace);
-        } catch (MalformedURLException ex) {
-            responseMap.put("error", "Could not create workspace: " + ex.getMessage());
-            RequestResponseHelper.sendErrorResponse(response, responseMap);
-            return;
-        } catch (URISyntaxException ex) {
+        } catch (MalformedURLException | URISyntaxException ex) {
             responseMap.put("error", "Could not create workspace: " + ex.getMessage());
             RequestResponseHelper.sendErrorResponse(response, responseMap);
             return;
@@ -222,7 +221,7 @@ public class ShapefileImportService extends HttpServlet {
             HttpResponse pts_importResponse = geoserverHandler.importFeaturesFromFile(pts_File, workspace, store, pts_name);
             String pts_responseText = IOUtils.toString(pts_importResponse.getEntity().getContent());
 
-            if (!pts_responseText.toLowerCase().contains("ows:exception")) {
+            if (!pts_responseText.toLowerCase(Locale.getDefault()).contains("ows:exception")) {
                 responseMap.put("pts_feature", pts_responseText);
             } else {
                 InputSource source = new InputSource(new StringReader(pts_responseText));
@@ -243,7 +242,7 @@ public class ShapefileImportService extends HttpServlet {
         HttpResponse importResponse = geoserverHandler.importFeaturesFromFile(shapeFile, workspace, store, name);
         String responseText = IOUtils.toString(importResponse.getEntity().getContent());
 
-        if (!responseText.toLowerCase().contains("ows:exception")) {
+        if (!responseText.toLowerCase(Locale.getDefault()).contains("ows:exception")) {
             responseMap.put("feature", responseText);
             RequestResponseHelper.sendSuccessResponse(response, responseMap);
         } else {
@@ -262,12 +261,6 @@ public class ShapefileImportService extends HttpServlet {
             RequestResponseHelper.sendErrorResponse(response, responseMap);
         }
         
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
     }
 
     @Override
