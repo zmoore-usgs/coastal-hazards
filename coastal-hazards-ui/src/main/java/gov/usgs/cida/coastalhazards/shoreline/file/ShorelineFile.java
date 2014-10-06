@@ -1,8 +1,8 @@
 package gov.usgs.cida.coastalhazards.shoreline.file;
 
 import com.google.gson.Gson;
-import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
+import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
 import gov.usgs.cida.owsutils.commons.shapefile.ProjectionUtils;
@@ -172,7 +172,7 @@ public abstract class ShorelineFile implements IShorelineFile {
 		}
 
 		if (!geoserverHandler.createShorelineLayerInGeoserver(workspace, workspace, viewname)) {
-			throw new IOException("Could not create data store");
+			throw new IOException("Could not create shoreline layer");
 		}
 
 		if (geoserverHandler.touchWorkspace(workspace)) {
