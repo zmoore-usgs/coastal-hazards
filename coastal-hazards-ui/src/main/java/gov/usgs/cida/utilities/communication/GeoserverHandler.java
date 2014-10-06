@@ -1,7 +1,6 @@
 package gov.usgs.cida.utilities.communication;
 
 import com.vividsolutions.jts.geom.Envelope;
-import gov.usgs.cida.coastalhazards.service.ShorelineStagingService;
 import gov.usgs.cida.utilities.xml.XMLUtils;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
@@ -28,8 +27,6 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.xpath.XPathExpressionException;
@@ -704,11 +701,12 @@ public class GeoserverHandler {
 			GSPostGISDatastoreEncoder pg = new GSPostGISDatastoreEncoder(workspace);
 			String _nameSpace = nameSpace;
 			if (StringUtils.isBlank(_nameSpace)) {
-				_nameSpace = "gov.usgs.cida.ch." + workspace;
+				_nameSpace = "gov.usgs.cida.ch." + workspace + '.' + storeName;
 			}
 			pg.setNamespace(_nameSpace);
 			pg.setExposePrimaryKeys(false);
 			pg.setSchema(schemaName);
+			pg.setName(storeName);
 			pg.setJndiReferenceName("java:comp/env/jdbc/" + jndiName);
 			return gsrm.getStoreManager().create(workspace, pg);
 		}
@@ -750,7 +748,7 @@ public class GeoserverHandler {
 	 */
 	public boolean touchWorkspace(String workspace) {
 		String content = "<workspace><name>" + workspace + "</name></workspace>";
-		return "".equals(HTTPUtils.putXml(this.url + "/rest/workspaces/" + workspace, content, this.user, this.password));
+		return "".equals(HTTPUtils.putXml(this.url + "rest/workspaces/" + workspace, content, this.user, this.password));
 	}
 
 	/**
@@ -889,12 +887,14 @@ public class GeoserverHandler {
 	}
 
 	public boolean removeLayer(String geoserverDataDir, String workspace, String store, String layer) throws IllegalArgumentException, MalformedURLException {
-		GeoServerRESTManager gsrm = new GeoServerRESTManager(new URL(this.url), this.user, this.password);
 		GeoServerRESTPublisher publisher = gsrm.getPublisher();
+		
 		boolean success = publisher.unpublishFeatureType(workspace, store, layer);
+		publisher.removeLayer(workspace, layer);
 		if (success) {
 			publisher.reloadStore(workspace, store, GeoServerRESTPublisher.StoreType.DATASTORES);
 		}
+		publisher.reload();
 		return success;
 	}
 }
