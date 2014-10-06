@@ -9,9 +9,7 @@ import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse.ResponseType;
 import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
-import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.service.ServiceHelper;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -26,7 +24,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.feature.SchemaException;
 import org.opengis.referencing.FactoryException;
@@ -130,6 +127,8 @@ public class ShorelineStagingService extends HttpServlet {
 					}
 					String viewName = shorelineFile.importToDatabase(request);
 					shorelineFile.importToGeoserver(viewName);
+					responseMap.put("layer", viewName);
+					responseMap.put("workspace", shorelineFile.getWorkspace());
 					success = true;
 				} catch (FileNotFoundException ex) {
 					responseMap.put("serverCode", "404");
