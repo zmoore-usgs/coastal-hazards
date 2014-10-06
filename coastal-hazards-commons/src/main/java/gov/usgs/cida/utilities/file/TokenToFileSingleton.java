@@ -66,17 +66,21 @@ public class TokenToFileSingleton {
 	 * @param token
 	 * @param deleteFile should the file that may be mapped to the token also be
 	 * deleted?
+	 * @return if deleteFile parameter is true and all files were deleted
 	 */
-	public static void removeToken(String token, boolean deleteFile) {
+	public static boolean removeToken(String token, boolean deleteFile) {
+		boolean allFilesDeleted = deleteFile;
 		if (StringUtils.isNotBlank(token) && tokenToFileMap.containsKey(token)) {
 			File file = tokenToFileMap.get(token);
 			tokenToFileMap.remove(token);
 			if (deleteFile && null != file && file.exists()) {
 				if (!FileUtils.deleteQuietly(file)) {
 					LOGGER.info("Could not delete file " + file.getAbsolutePath() + " for token " + token);
+					allFilesDeleted = false;
 				}
 			}
 		}
+		return allFilesDeleted;
 	}
 
 	private TokenToFileSingleton() {
