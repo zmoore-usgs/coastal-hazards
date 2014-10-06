@@ -1,10 +1,10 @@
-package gov.usgs.cida.coastalhazards.service.staging.file;
+package gov.usgs.cida.coastalhazards.shoreline.file;
 
-import gov.usgs.cida.coastalhazards.service.exception.LidarFileFormatException;
-import gov.usgs.cida.coastalhazards.service.exception.ShorelineFileFormatException;
-import gov.usgs.cida.coastalhazards.service.staging.dao.ShorelineLidarFileDao;
-import gov.usgs.cida.coastalhazards.service.staging.dao.ShorelineShapefileDAO;
-import gov.usgs.cida.coastalhazards.service.staging.file.ShorelineFile.ShorelineType;
+import gov.usgs.cida.coastalhazards.shoreline.exception.LidarFileFormatException;
+import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
+import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineLidarFileDao;
+import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineShapefileDAO;
+import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile.ShorelineType;
 import gov.usgs.cida.coastalhazards.service.util.ImportUtil;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse;

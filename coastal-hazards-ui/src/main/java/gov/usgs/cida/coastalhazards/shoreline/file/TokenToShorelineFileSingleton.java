@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.service.staging.file;
+package gov.usgs.cida.coastalhazards.shoreline.file;
 
 import java.util.Collections;
 import java.util.HashMap;

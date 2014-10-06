@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.service.exception;
+package gov.usgs.cida.coastalhazards.shoreline.exception;
 
 /**
  * Exception gets thrown when a file does not meet expected format for DSAS

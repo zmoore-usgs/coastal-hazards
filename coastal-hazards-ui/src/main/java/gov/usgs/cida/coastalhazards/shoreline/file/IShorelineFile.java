@@ -1,6 +1,6 @@
-package gov.usgs.cida.coastalhazards.service.staging.file;
+package gov.usgs.cida.coastalhazards.shoreline.file;
 
-import gov.usgs.cida.coastalhazards.service.exception.ShorelineFileFormatException;
+import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -70,7 +70,7 @@ public interface IShorelineFile {
 	 * @param request
 	 * @return
 	 * @throws
-	 * gov.usgs.cida.coastalhazards.service.exception.ShorelineFileFormatException
+	 * gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException
 	 * @throws java.sql.SQLException
 	 * @throws javax.naming.NamingException
 	 * @throws java.text.ParseException

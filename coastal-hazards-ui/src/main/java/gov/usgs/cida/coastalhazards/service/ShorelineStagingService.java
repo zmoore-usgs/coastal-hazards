@@ -1,10 +1,10 @@
 package gov.usgs.cida.coastalhazards.service;
 
-import gov.usgs.cida.coastalhazards.service.exception.ShorelineFileFormatException;
-import gov.usgs.cida.coastalhazards.service.staging.file.IShorelineFile;
-import gov.usgs.cida.coastalhazards.service.staging.file.ShorelineFile;
-import gov.usgs.cida.coastalhazards.service.staging.file.ShorelineFileFactory;
-import gov.usgs.cida.coastalhazards.service.staging.file.TokenToShorelineFileSingleton;
+import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
+import gov.usgs.cida.coastalhazards.shoreline.file.IShorelineFile;
+import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile;
+import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFileFactory;
+import gov.usgs.cida.coastalhazards.shoreline.file.TokenToShorelineFileSingleton;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse.ResponseType;

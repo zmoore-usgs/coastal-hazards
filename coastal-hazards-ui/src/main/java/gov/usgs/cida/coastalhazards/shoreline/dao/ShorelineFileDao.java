@@ -1,6 +1,6 @@
-package gov.usgs.cida.coastalhazards.service.staging.dao;
+package gov.usgs.cida.coastalhazards.shoreline.dao;
 
-import gov.usgs.cida.coastalhazards.service.exception.ShorelineFileFormatException;
+import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;

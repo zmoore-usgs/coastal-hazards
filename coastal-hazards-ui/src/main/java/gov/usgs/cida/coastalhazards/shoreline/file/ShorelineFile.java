@@ -1,8 +1,8 @@
-package gov.usgs.cida.coastalhazards.service.staging.file;
+package gov.usgs.cida.coastalhazards.shoreline.file;
 
 import com.google.gson.Gson;
-import gov.usgs.cida.coastalhazards.service.exception.ShorelineFileFormatException;
-import gov.usgs.cida.coastalhazards.service.staging.dao.ShorelineFileDao;
+import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
+import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
 import gov.usgs.cida.owsutils.commons.shapefile.ProjectionUtils;

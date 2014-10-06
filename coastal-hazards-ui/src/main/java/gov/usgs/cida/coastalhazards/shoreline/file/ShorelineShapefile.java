@@ -1,7 +1,7 @@
-package gov.usgs.cida.coastalhazards.service.staging.file;
+package gov.usgs.cida.coastalhazards.shoreline.file;
 
-import gov.usgs.cida.coastalhazards.service.exception.ShorelineFileFormatException;
-import gov.usgs.cida.coastalhazards.service.staging.dao.ShorelineFileDao;
+import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
+import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
 import gov.usgs.cida.owsutils.commons.io.FileHelper;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;

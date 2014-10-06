@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.service.staging.dao;
+package gov.usgs.cida.coastalhazards.shoreline.dao;
 
 import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;

@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.service.staging.dao;
+package gov.usgs.cida.coastalhazards.shoreline.dao;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -7,8 +7,8 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.impl.PackedCoordinateSequence;
 import com.vividsolutions.jts.io.WKTReader;
-import gov.usgs.cida.coastalhazards.service.exception.LidarFileFormatException;
-import gov.usgs.cida.coastalhazards.service.exception.ShorelineFileFormatException;
+import gov.usgs.cida.coastalhazards.shoreline.exception.LidarFileFormatException;
+import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.coastalhazards.service.util.LidarFileUtils;
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;

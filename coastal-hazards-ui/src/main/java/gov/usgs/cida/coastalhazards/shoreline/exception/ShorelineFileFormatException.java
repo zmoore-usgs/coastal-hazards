@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.service.exception;
+package gov.usgs.cida.coastalhazards.shoreline.exception;
 
 /**
  *
