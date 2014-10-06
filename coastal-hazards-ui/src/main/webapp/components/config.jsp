@@ -35,8 +35,8 @@
 	CONFIG.name.published = 'published';
 	CONFIG.name.proxydatumbias = 'proxydatumbias';
 	CONFIG.dateFormat = {
-		padded: '{yyyy}/{MM}/{dd}',
-		nonPadded: '{yyyy}/{M}/{d}'
+		padded: '{yyyy}-{MM}-{dd}',
+		nonPadded: '{yyyy}-{M}-{d}'
 	};
 	CONFIG.alertQueue = {
 		application: [],

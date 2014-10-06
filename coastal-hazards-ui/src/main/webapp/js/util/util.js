@@ -250,7 +250,7 @@ var Util = {
 		var featureArray = args.featureArray;
 		var groupingColumn = args.groupingColumn;
 		var dateFormat = CONFIG.dateFormat.nonPadded;
-
+		
 		// First check the months
 		featureArray.each(function (l) {
 			if (l.data[groupingColumn].substring(0, 1) === '0' || l.data[groupingColumn].split('-')[1].substring(0, 1) === '0') {

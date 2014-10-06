@@ -5,7 +5,7 @@ var Shorelines = {
 	suffixes: ['_shorelines'],
 	mandatoryColumns: ['date', 'uncy'],
 	defaultingColumns: [
-		{attr: 'MHW', defaultValue: "0"}
+		{attr: 'mhw', defaultValue: "0"}
 	],
 	groupingColumn: 'date',
 	uploadRequest: {
@@ -230,6 +230,7 @@ var Shorelines = {
 
 							LOG.trace('Shorelines.js::addLayerToMap: Saving grouping column to session');
 							stage.groupingColumn = groupingColumn;
+
 							stage.dateFormat = Util.getLayerDateFormatFromFeaturesArray({
 								featureArray: features,
 								groupingColumn: groupingColumn
@@ -315,8 +316,19 @@ var Shorelines = {
 		var groupColumn = args.groupColumn;
 		var layer = args.layer;
 		var layerName = args.layerName || layer.prefix + ':' + layer.name;
-		var stage = CONFIG.tempSession.getStage(Shorelines.stage);
-
+		var scaleDenominatorFunction = '<ogc:Function name="min">' + 
+                  '<ogc:Literal>6</ogc:Literal>' + 
+                  '<ogc:Function name="max">' + 
+                    '<ogc:Literal>2</ogc:Literal>' + 
+                    '<ogc:Div>' + 
+                      '<ogc:Literal>1000000</ogc:Literal>' + 
+                      '<ogc:Function name="env">' + 
+                        '<ogc:Literal>wms_scale_denominator</ogc:Literal>' + 
+                      '</ogc:Function>' + 
+                    '</ogc:Div>' + 
+                  '</ogc:Function>' + 
+                '</ogc:Function>';
+			
 		if (!isNaN(colorDatePairings[0][1])) {
 			LOG.info('Shorelines.js::?: Grouping will be done by number');
 			// Need to first find out about the featuretype
@@ -330,6 +342,7 @@ var Shorelines = {
 					fromDefinedColors: true
 				}).capitalize(true) + '</ogc:Literal>';
 			};
+			
 			sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>' +
 				'<StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
 				'<NamedLayer>' +
@@ -337,7 +350,13 @@ var Shorelines = {
 				'<UserStyle>' +
 				'<FeatureTypeStyle>' +
 				'<Rule>' +
-				'<LineSymbolizer>' +
+				'<PointSymbolizer>' +
+				'<Graphic>' +
+				'<Mark>' +
+				'<WellKnownName>circle</WellKnownName>' +
+				'<Fill>' + 
+				'<CssParameter name="fill">#FF0000</CssParameter>' + 
+				'</Fill>' + 
 				'<Stroke>' +
 				'<CssParameter name="stroke">' +
 				'<ogc:Function name="Categorize">' +
@@ -348,7 +367,10 @@ var Shorelines = {
 				'<CssParameter name="stroke-opacity">1</CssParameter>' +
 				'<CssParameter name="stroke-width">1</CssParameter>' +
 				'</Stroke>' +
-				'</LineSymbolizer>' +
+				'</Mark>' +
+				'<Size>'+scaleDenominatorFunction+'</Size>' + 
+				'</Graphic>' +
+				'</PointSymbolizer>' +
 				'</Rule>' +
 				'</FeatureTypeStyle>' +
 				'</UserStyle>' +
@@ -361,6 +383,8 @@ var Shorelines = {
 			LOG.debug('Shorelines.js::?: Geoserver date column is actually a string');
 			createRuleSets = function (colorLimitPairs) {
 				var html = '';
+				
+				  
 				for (var lpIndex = 0; lpIndex < colorLimitPairs.length; lpIndex++) {
 					var date = colorLimitPairs[lpIndex][1];
 					var disabledDates = CONFIG.tempSession.getDisabledDatesForShoreline(layerName);
@@ -370,19 +394,24 @@ var Shorelines = {
 						html += '</ogc:PropertyName>';
 						html += '<ogc:Literal>';
 						html += colorLimitPairs[lpIndex][1];
-						html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">';
+						html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name="fill">#FFFFFF</CssParameter></Fill><Stroke><CssParameter name="stroke">';
 						html += colorLimitPairs[lpIndex][0];
-						html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>';
+						html += '</CssParameter></Stroke></Mark><Size>'+scaleDenominatorFunction+'</Size></Graphic></PointSymbolizer></Rule>';
 					}
 				}
 
 				// default rule 
 				html += '<Rule><ElseFilter />';
-				html += '<LineSymbolizer>';
+				html += '<PointSymbolizer>';
+				html += '<Graphic>';
+				html += '<Mark>';
+				html += '<WellKnownName>circle</WellKnownName>';
 				html += '<Stroke>';
 				html += '<CssParameter name="stroke-opacity">0</CssParameter>';
 				html += '</Stroke>';
-				html += '</LineSymbolizer>';
+				html += '</Mark>';
+				html += '</Graphic>';
+				html += '</PointSymbolizer>';
 				html += '</Rule>';
 
 				return html;
@@ -840,7 +869,7 @@ var Shorelines = {
 		"use strict";
 		args = args || {};
 		var layer = args.layer || $('#shorelines-list option:selected')[0].text;
-		var store = args.store || 'ch-input';
+		var store = args.store || 'shorelines';
 		var callbacks = args.callbacks || [
 			function (data, textStatus, jqXHR) {
 				CONFIG.ui.showAlert({
@@ -850,8 +879,7 @@ var Shorelines = {
 					style: {
 						classes: ['alert-success']
 					}
-				})
-					;
+				});
 				CONFIG.ows.getWMSCapabilities({
 					namespace: CONFIG.tempSession.getCurrentSessionKey(),
 					callbacks: {
@@ -909,14 +937,14 @@ var Shorelines = {
 							var success = data.success,
 								headers = data.headers,
 								layerColumns = Object.extended(),
-								foundAll = true;
+								foundAllRequiredColumns = true;
 
 							if (success === 'true') {
 								headers = headers.split(',');
 								
 								if (headers.length < Shorelines.mandatoryColumns.length) {
 									LOG.warn('Shorelines.js::addShorelines: There are not enough attributes in the selected shapefile to constitute a valid shoreline. Will be deleted. Needed: ' + Shorelines.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
-//										Shorelines.removeResource();
+									Shorelines.removeResource();
 									CONFIG.ui.showAlert({
 										message: 'Not enough attributes in upload - Check Logs',
 										caller: Shorelines,
@@ -937,13 +965,13 @@ var Shorelines = {
 
 									Shorelines.mandatoryColumns.each(function (mc) {
 										if (layerColumns.values().indexOf(mc) === -1) {
-											foundAll = false;
+											foundAllRequiredColumns = false;
 										}
 									});
 
 									Shorelines.defaultingColumns.each(function (col) {
 										if (layerColumns.values().indexOf(col.attr) === -1) {
-											foundAll = false;
+											foundAllRequiredColumns = false;
 										}
 									});
 									
@@ -957,17 +985,50 @@ var Shorelines = {
 												columns : JSON.stringify(layerColumns)
 											},
 											success : function (data) {
-												CONFIG.ui.populateFeaturesList({
-													caller: Shorelines
+												var layerName = data.layer,
+													workspace = CONFIG.tempSession.session.id;
+												
+												CONFIG.ows.getWMSCapabilities({
+													namespace: workspace,
+													layerName : layerName,
+													callbacks: {
+														success: [
+															function (args) {
+																CONFIG.ui.showAlert({
+																	message: 'Upload Successful',
+																	caller: Shorelines,
+																	displayTime: 3000,
+																	style: {
+																		classes: ['alert-success']
+																	}
+																});
+																CONFIG.tempSession.updateLayersFromWMS(args);
+																CONFIG.ui.populateFeaturesList({
+																	caller: Shorelines
+																});
+
+																$('a[href="#shorelines-view-tab"]').tab('show');
+																$('#shorelines-list').val(workspace + ':' + layerName).trigger('change');
+															}
+														]
+													}
 												});
 											},
 											error : function () {
-												debugger;
+												Shorelines.removeResource();
+												CONFIG.ui.showAlert({
+													message: 'There was an error performing a shoreline import - Check Logs',
+													caller: Shorelines,
+													displayTime: 7000,
+													style: {
+														classes: ['alert-error']
+													}
+												});
 											}
 										});
 									};
 
-									if (!foundAll) {
+									if (!foundAllRequiredColumns) {
 										CONFIG.ui.buildColumnMatchingModalWindow({
 											layerName: token,
 											columns: layerColumns,
@@ -984,13 +1045,22 @@ var Shorelines = {
 							}
 						},
 						error: function () {
-							debugger;
+							Shorelines.removeResource();
+							CONFIG.ui.showAlert({
+								message: 'There was an error performing a shoreline upload - Check Logs',
+								caller: Shorelines,
+								displayTime: 7000,
+								style: {
+									classes: ['alert-error']
+								}
+							});
 						}
 					}
 				});
 			} else {
 				var exception = responseJSON.exception;
 				LOG.warn('UI.js::Uploader Error Callback: Import incomplete.');
+				Shorelines.removeResource();
 				CONFIG.ui.showAlert({
 					message: 'Import incomplete. ' + (exception ? exception : ''),
 					caller: Shorelines,
