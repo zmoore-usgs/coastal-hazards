@@ -167,11 +167,11 @@ public abstract class ShorelineFile implements IShorelineFile {
 			throw new IOException("Could not create workspace");
 		}
 
-		if (!geoserverHandler.createPGDatastoreInGeoserver(workspace, workspace, null, "public", "dsas")) {
+		if (!geoserverHandler.createPGDatastoreInGeoserver(workspace, "shoreline", null, "public", "dsas")) {
 			throw new IOException("Could not create data store");
 		}
 
-		if (!geoserverHandler.createShorelineLayerInGeoserver(workspace, workspace, viewname)) {
+		if (!geoserverHandler.createShorelineLayerInGeoserver(workspace, "shoreline", viewname)) {
 			throw new IOException("Could not create shoreline layer");
 		}
 
@@ -185,11 +185,16 @@ public abstract class ShorelineFile implements IShorelineFile {
 	public static void validate(File zipFile) throws Exception {
 		throw new UnsupportedOperationException();
 	}
+	
+	@Override
+	public String getWorkspace() {
+		return this.workspace;
+	}
 
 	@Override
 	public boolean exists() {
 		for (File file : this.fileMap.values()) {
-			if (!file.exists()) {
+			if (file == null || !file.exists()) {
 				return false;
 			}
 		}
@@ -198,8 +203,12 @@ public abstract class ShorelineFile implements IShorelineFile {
 
 	@Override
 	public boolean clear() {
-		File parentDirectory = this.fileMap.values().iterator().next().getParentFile();
-		boolean success = FileUtils.deleteQuietly(parentDirectory);
+		boolean success = true;
+		Iterator<File> iterator = this.fileMap.values().iterator();
+		while (iterator.hasNext()) {
+			File parentDirectory = iterator.next().getParentFile();
+			success = FileUtils.deleteQuietly(parentDirectory);
+		}
 		if (success) {
 			this.fileMap.clear();
 		}

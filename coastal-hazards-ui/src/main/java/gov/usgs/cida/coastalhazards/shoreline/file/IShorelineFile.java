@@ -81,8 +81,28 @@ public interface IShorelineFile {
 	 */
 	public String importToDatabase(HttpServletRequest request) throws ShorelineFileFormatException, SQLException, NamingException, NoSuchElementException, ParseException, IOException, SchemaException, TransformException, FactoryException;
 
+	/**
+	 * Imports the shoreline file into the database
+	 *
+	 * @param columns
+	 * @return
+	 * @throws ShorelineFileFormatException
+	 * @throws SQLException
+	 * @throws NamingException
+	 * @throws NoSuchElementException
+	 * @throws ParseException
+	 * @throws IOException
+	 * @throws SchemaException
+	 * @throws TransformException
+	 * @throws FactoryException
+	 */
 	public String importToDatabase(Map<String, String> columns) throws ShorelineFileFormatException, SQLException, NamingException, NoSuchElementException, ParseException, IOException, SchemaException, TransformException, FactoryException;
 
+	/**
+	 * Imports the view as a layer in Geoserver
+	 * @param viewName
+	 * @throws IOException 
+	 */
 	public void importToGeoserver(String viewName) throws IOException;
 
 	/**
@@ -92,6 +112,13 @@ public interface IShorelineFile {
 	 */
 	public boolean exists();
 
+	/**
+	 * Returns the name of the workspace this shoreline file operates under
+	 * 
+	 * @return 
+	 */
+	public String getWorkspace();
+	
 	/**
 	 * Deletes own files in the file system and removes parent directory
 	 *
