@@ -128,7 +128,7 @@ public class ShorelineLidarFileDao extends ShorelineFileDao {
 						reprojectedX,
 						reprojectedY,
 						Double.valueOf(point[3]),
-						cleanedEPSGCode
+						"4326"
 				);
 			}
 			viewName = createViewAgainstWorkspace(connection, workspace);

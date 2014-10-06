@@ -42,6 +42,7 @@ var Shorelines = {
 				radius: 3
 			}
 		});
+		Shorelines.uploadRequest.params.workspace = CONFIG.tempSession.session.id;
 		Shorelines.initializeUploader();
 		getShorelineIdControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
 		CONFIG.map.addControl(getShorelineIdControl);

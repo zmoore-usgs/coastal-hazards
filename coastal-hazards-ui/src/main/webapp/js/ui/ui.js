@@ -292,7 +292,7 @@ var UI = function () {
 				}
 			}, caller.uploadCallbacks);
 
-			request.params.workspace = CONFIG.tempSession.getCurrentSessionKey();
+//			request.params.workspace = CONFIG.tempSession.getCurrentSessionKey();
 
 			LOG.info('UI.js::initializeUploader: Initializing uploader for the ' + context + ' context');
 

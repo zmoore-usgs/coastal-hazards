@@ -99,7 +99,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 						}
 
 						if (lastRecordId != recordId) {
-							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, orientation, "");
+							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, orientation, "4326");
 							lastRecordId = recordId;
 						}
 						insertPointIntoShorelinePointsTable(connection, shorelineId, sf, uncertaintyFieldName, uncertaintyType, cleanedEPSGCode);
@@ -135,7 +135,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 		double y = sf.getBounds().getMaxY();
 		double uncertainty = getUncertaintyFromFC(uncertaintyFieldName, sf, uncertaintyType);
 		int segmentId = getSegmentIdFromFC("segmentId", sf);
-		return insertPointIntoShorelinePointsTable(connection, shorelineId, segmentId, x, y, uncertainty, projection);
+		return insertPointIntoShorelinePointsTable(connection, shorelineId, segmentId, x, y, uncertainty, "4326");
 	}
 
 	private Collection<File> deleteExistingPointFiles(File directory) {
