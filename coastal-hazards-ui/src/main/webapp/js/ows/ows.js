@@ -25,6 +25,7 @@ var OWS = function(endpoint) {
             LOG.info('OWS.js::importFile: Importing file into OWS resource');
             $.ajax(me.importEndpoint,{
                 context : args.context || this,
+				method: 'POST',
                 data : {
                     'file-token': args['file-token'],
                     'feature-name' : args.importName,
