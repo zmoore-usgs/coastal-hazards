@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.util;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -170,7 +171,7 @@ public class AttributeGetter {
     private boolean isDate(PropertyDescriptor desc) {
         String name = desc.getName().getLocalPart();
         PropertyType propType = desc.getType();
-        if (propType.getBinding() == Date.class) {
+        if (propType.getBinding() == Date.class || propType.getBinding() == Timestamp.class) {
             return true;
         }
         if (propType.getBinding() == String.class) {
