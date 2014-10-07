@@ -62,6 +62,7 @@ public class Constants {
     public static final String TRANSECT_ID_ATTR = "TransectID";
     public static final String DISTANCE_ATTR = "Distance";
     public static final String DATE_ATTR = "Date_";
+    public static final String DB_DATE_ATTR = "date";
     public static final String UNCY_ATTR = "Uncy";
     public static final String BASELINE_DIST_ATTR = "base_dist";
     public static final String BASELINE_ID_ATTR = "BaselineID";

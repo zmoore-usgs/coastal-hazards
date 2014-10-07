@@ -33,6 +33,7 @@ public class AttributeGetter {
 				}
 				else if (isDate(desc)) {
 					attrMap.put(Constants.DATE_ATTR, desc.getName());
+					attrMap.put(Constants.DB_DATE_ATTR, desc.getName());
 				}
 				else if (isUncertainty(desc)) {
 					attrMap.put(Constants.UNCY_ATTR, desc.getName());
@@ -171,12 +172,15 @@ public class AttributeGetter {
     private boolean isDate(PropertyDescriptor desc) {
         String name = desc.getName().getLocalPart();
         PropertyType propType = desc.getType();
-        if (propType.getBinding() == Date.class || propType.getBinding() == Timestamp.class) {
+        if (propType.getBinding() == java.util.Date.class 
+        		|| propType.getBinding() == java.sql.Date.class 
+        		|| propType.getBinding() == Timestamp.class) {
             return true;
         }
         if (propType.getBinding() == String.class) {
             if ("date_".equalsIgnoreCase(name) || "date".equalsIgnoreCase(name) ||
-                    Constants.DATE_ATTR.equalsIgnoreCase(name)) {
+                    Constants.DATE_ATTR.equalsIgnoreCase(name) ||
+                    Constants.DB_DATE_ATTR.equalsIgnoreCase(name)) {
                 return true;
             }
         }
