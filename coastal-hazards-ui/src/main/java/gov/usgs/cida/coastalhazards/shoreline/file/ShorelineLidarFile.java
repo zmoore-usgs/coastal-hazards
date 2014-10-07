@@ -1,19 +1,15 @@
 package gov.usgs.cida.coastalhazards.shoreline.file;
 
+import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
 import gov.usgs.cida.coastalhazards.shoreline.exception.LidarFileFormatException;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
-import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
 import static gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile.props;
 import gov.usgs.cida.owsutils.commons.io.FileHelper;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;

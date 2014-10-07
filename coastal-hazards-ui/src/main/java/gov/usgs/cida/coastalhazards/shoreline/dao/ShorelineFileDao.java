@@ -30,11 +30,12 @@ public abstract class ShorelineFileDao {
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineFileDao.class);
 	protected String JNDI_NAME;
 	protected final String DEFAULT_JNDI_NAME = "dsas";
+	public final static int DATABASE_PROJECTION = 4326;
 	public final static String DATE_FIELD_NAME = "date";
 	public final static String UNCY_FIELD_NAME = "uncy";
 	public final static String MHW_FIELD_NAME = "mhw";
-	public final static String[] REQUIRED_FIELD_NAMES = new String[] {DATE_FIELD_NAME, UNCY_FIELD_NAME, MHW_FIELD_NAME};
-	
+	public final static String[] REQUIRED_FIELD_NAMES = new String[]{DATE_FIELD_NAME, UNCY_FIELD_NAME, MHW_FIELD_NAME};
+
 	protected Connection getConnection() {
 		Connection con = null;
 		try {
@@ -93,12 +94,16 @@ public abstract class ShorelineFileDao {
 		return createdId;
 	}
 
-	protected int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, int segmentId, double x, double y, double uncertainty, String projection) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
-		String sql = "INSERT INTO shoreline_points "
-				+ "(shoreline_id, segment_id, geom, uncy) "
-				+ "VALUES (" + shorelineId + "," + segmentId + "," + "ST_GeomFromText('POINT(" + x + " " + y + ")'," + projection + ")" + "," + uncertainty + ")";
+	protected int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, int segmentId, double x, double y, double uncertainty) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
+		StringBuilder sql = new StringBuilder("INSERT INTO shoreline_points (shoreline_id, segment_id, geom, uncy) ")
+				.append("VALUES (")
+				.append(shorelineId).append(",")
+				.append(segmentId).append(",")
+				.append("ST_GeomFromText('POINT(").append(x).append(" ").append(y).append(")',").append(DATABASE_PROJECTION).append("),")
+				.append(uncertainty).append(")");
+
 		try (Statement st = connection.createStatement()) {
-			if (st.execute(sql)) {
+			if (st.execute(sql.toString())) {
 				return 1;
 			} else {
 				return 0;
@@ -106,6 +111,39 @@ public abstract class ShorelineFileDao {
 		}
 	}
 
+	/**
+	 * Inserts an attribute into the auxillary table
+	 * 
+	 * @param connection
+	 * @param shorelineId
+	 * @param name
+	 * @param value
+	 * @return
+	 * @throws SQLException besides the normal reasons, this may be thrown if the 
+	 * element already exists in the table - for instance if the auxillary element
+	 * was repeated earlier in the shoreline file
+	 */
+	protected int insertAuxillaryAttribute(Connection connection, long shorelineId, String name, String value) throws SQLException {
+		String sql = "INSERT INTO shoreline_auxillary_attrs "
+				+ "(shoreline_id, attr_name, value) "
+				+ "VALUES (?,?,?)";
+
+		try (PreparedStatement st = connection.prepareStatement(sql)) {
+			st.setLong(1, shorelineId);
+			st.setString(2, name);
+			st.setString(3, value);
+			return st.executeUpdate(sql);
+		}
+	}
+
+	/**
+	 * Sets up a view against a given workspace in the shorelines table
+	 *
+	 * @param connection
+	 * @param workspace
+	 * @return
+	 * @throws SQLException
+	 */
 	protected String createViewAgainstWorkspace(Connection connection, String workspace) throws SQLException {
 		String sql = "SELECT * FROM CREATE_WORKSPACE_VIEW(?)";
 
@@ -129,6 +167,8 @@ public abstract class ShorelineFileDao {
 	 * @param workspace the unique name of workspace to create or append to
 	 * @param EPSGCode the projection code for this shoreline file
 	 * @return
+	 * @throws
+	 * gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException
 	 * @throws java.sql.SQLException
 	 * @throws javax.naming.NamingException
 	 * @throws java.text.ParseException

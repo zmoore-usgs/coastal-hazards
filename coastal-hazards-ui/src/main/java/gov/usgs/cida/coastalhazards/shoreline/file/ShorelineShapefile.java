@@ -10,10 +10,17 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import javax.naming.NamingException;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
@@ -101,7 +108,17 @@ public class ShorelineShapefile extends ShorelineFile {
 	}
 
 	public static void validate(File zipFile) throws ShorelineFileFormatException, IOException {
-		// Do some validation
+		ZipFile zFile = new ZipFile(zipFile);
+		Enumeration<? extends ZipEntry> entries = zFile.entries();
+		List<String> extensions = new ArrayList<>(zFile.size());
+		List<String> requiredFiles = Arrays.asList(new String[] {SHP, SHX, DBF});
+		while (entries.hasMoreElements()) {
+			ZipEntry ze = entries.nextElement();
+			extensions.add(FilenameUtils.getExtension(ze.getName()));
+		}
+		if (!extensions.containsAll(requiredFiles)) {
+			throw new ShorelineFileFormatException("Missing mandatory files within shapefile. One of: .shp, .shx, .dbf");
+		}
 	}
 
 	@Override

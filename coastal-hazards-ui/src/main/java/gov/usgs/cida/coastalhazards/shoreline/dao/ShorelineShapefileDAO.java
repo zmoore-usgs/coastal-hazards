@@ -2,15 +2,19 @@ package gov.usgs.cida.coastalhazards.shoreline.dao;
 
 import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,10 +26,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.crs.ReprojectFeatureResults;
+import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -41,6 +47,7 @@ import org.slf4j.LoggerFactory;
 public class ShorelineShapefileDAO extends ShorelineFileDao {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineShapefileDAO.class);
+	private static final String[] AUXILLARY_ATTRIBUTES = new String[]{"surveyID", "shoreInd", "defaultD", "name"};
 
 	public ShorelineShapefileDAO() {
 		this(null);
@@ -62,21 +69,33 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 		String uncertaintyFieldName = (String) bm.getKey(UNCY_FIELD_NAME);
 		String mhwFieldName = (String) bm.getKey(MHW_FIELD_NAME);
 		String orientation = ""; // Not yet sure what to do here
-		String cleanedEPSGCode = EPSGCode;
-		if (cleanedEPSGCode.contains(":")) {
-			cleanedEPSGCode = cleanedEPSGCode.split(":")[1];
-		}
 		File parentDirectory = shpFile.getParentFile();
 		deleteExistingPointFiles(parentDirectory);
+		String[][] fieldNames = null;
+
+		try (IterableShapefileReader isfr = new IterableShapefileReader(shpFile)) {
+			DbaseFileHeader dbfHeader = isfr.getDbfHeader();
+			fieldNames = new String[dbfHeader.getNumFields()][2];
+			for (int fIdx = 0; fIdx < fieldNames.length; fIdx++) {
+				fieldNames[fIdx][0] = dbfHeader.getFieldName(fIdx);
+				fieldNames[fIdx][1] = String.valueOf(dbfHeader.getFieldType(fIdx));
+			}
+		} catch (Exception ex) {
+			LOGGER.debug("Could not open shapefile for reading. Auxillary attributes will not be persisted to the database", ex);
+		}
 
 		try (Connection connection = getConnection()) {
+			//TODO- Check if incoming shapefile is not already a points shapefile
 			Xploder xploder = new Xploder(uncertaintyFieldName);
 			File pointsShapefile;
 			try {
+				LOGGER.debug("Exploding shapefile at {}", shpFile.getAbsolutePath());
 				pointsShapefile = xploder.explode(parentDirectory + File.separator + FilenameUtils.getBaseName(shpFile.getName()));
+				LOGGER.debug("Shapefile exploded");
 			} catch (Exception ex) {
 				throw new IOException(ex);
 			}
+
 			FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollectionFromShp.getFeatureCollectionFromShp(pointsShapefile.toURI().toURL());
 			Class<?> dateType = fc.getSchema().getDescriptor(dateFieldName).getType().getBinding();
 			Class<?> uncertaintyType = fc.getSchema().getDescriptor(uncertaintyFieldName).getType().getBinding();
@@ -99,16 +118,24 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 						}
 
 						if (lastRecordId != recordId) {
-							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, orientation, "4326");
+							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, orientation, "aux_name");
+
+							if (fieldNames != null && fieldNames.length > 0) {
+								Map<String, String> auxCols = getAuxillaryColumnsFromFC(sf, fieldNames);
+								for (Entry<String, String> auxEntry : auxCols.entrySet()) {
+									insertAuxillaryAttribute(connection, shorelineId, auxEntry.getKey(), auxEntry.getValue());
+								}
+							}
+
 							lastRecordId = recordId;
 						}
-						insertPointIntoShorelinePointsTable(connection, shorelineId, sf, uncertaintyFieldName, uncertaintyType, cleanedEPSGCode);
+						insertPointIntoShorelinePointsTable(connection, shorelineId, sf, uncertaintyFieldName, uncertaintyType);
 					}
 
 					viewName = createViewAgainstWorkspace(connection, workspace);
 					if (StringUtils.isBlank(viewName)) {
 						throw new SQLException("Could not create view");
-					} 
+					}
 
 					connection.commit();
 				} catch (NamingException | NoSuchElementException | ParseException | SQLException ex) {
@@ -130,12 +157,12 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 		return viewName;
 	}
 
-	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType, String projection) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
+	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
 		double x = sf.getBounds().getMaxX();
 		double y = sf.getBounds().getMaxY();
 		double uncertainty = getUncertaintyFromFC(uncertaintyFieldName, sf, uncertaintyType);
 		int segmentId = getSegmentIdFromFC("segmentId", sf);
-		return insertPointIntoShorelinePointsTable(connection, shorelineId, segmentId, x, y, uncertainty, "4326");
+		return insertPointIntoShorelinePointsTable(connection, shorelineId, segmentId, x, y, uncertainty);
 	}
 
 	private Collection<File> deleteExistingPointFiles(File directory) {
@@ -210,5 +237,41 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 
 	private int getSegmentIdFromFC(String segmentIdName, SimpleFeature sf) {
 		return (int) sf.getAttribute(segmentIdName);
+	}
+
+	private Map<String, String> getAuxillaryColumnsFromFC(SimpleFeature sf, String[][] fieldNames) {
+		// C (Character)  = String
+		// N (Numeric)   = Integer or Long or Double (depends on field's decimal count and fieldLength)
+		// F (Floating)  = Double
+		// L (Logical)   = Boolean
+		// D (Date)		 = java.util.Date (Without time)
+		// @ (Timestamp) = java.sql.Timestamp (With time)
+		// Unknown		 = String
+		Map<String, String> auxillaryAttributes = new HashMap<>();
+		for (String attribute : AUXILLARY_ATTRIBUTES) {
+			for (String[] fname : fieldNames) {
+				String fieldName = fname[0];
+				char fieldType = fname[1].charAt(0);
+				if (fieldName.trim().equalsIgnoreCase(attribute.trim())) {
+					Object attrObj = sf.getAttribute(fieldName);
+					if (attrObj != null) {
+						switch (fieldType) {
+							case 'D':
+							case '@':
+								auxillaryAttributes.put(fieldName.toLowerCase(), String.valueOf(((Date) attrObj).getTime()));
+								break;
+							case 'L':
+							case 'N':
+							case 'F':
+							case 'C':
+							default:
+								auxillaryAttributes.put(fieldName.toLowerCase(), String.valueOf(sf.getAttribute(fieldName)));
+						}
+					}
+				}
+			}
+
+		}
+		return auxillaryAttributes;
 	}
 }
