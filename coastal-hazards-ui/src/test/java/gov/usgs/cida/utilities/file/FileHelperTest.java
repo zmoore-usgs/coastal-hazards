@@ -1,9 +1,8 @@
 package gov.usgs.cida.utilities.file;
 
-import static org.junit.Assert.*;
-
 import java.util.zip.ZipEntry;
-
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 public class FileHelperTest {

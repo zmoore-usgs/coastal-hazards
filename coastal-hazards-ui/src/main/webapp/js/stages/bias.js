@@ -196,9 +196,7 @@ var ProxyDatumBias = {
 		ProxyDatumBias.listboxChanged();
 	},
 	listboxChanged: function () {
-		LOG.info('bias.js::listboxChanged: A bias layer was selected from the select list');
-		ProxyDatumBias.disableRemoveButton();
-		LOG.debug('bias.js::listboxChanged: Removing all bias from map that were not selected');
+		LOG.info('bias.js::listboxChanged: Proxy datum bias listbox has changed');
 		$("#bias-list option:not(:selected)").each(function (index, option) {
 			var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
 			if (layers.length) {
