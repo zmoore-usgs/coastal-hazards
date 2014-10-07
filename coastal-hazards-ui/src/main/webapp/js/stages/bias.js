@@ -146,7 +146,7 @@ var ProxyDatumBias = {
 				success: [
 					function (features) {
 						LOG.info('bias.js::addLayerToMap: WFS GetFileterdFeature returned successfully');
-						if (CONFIG.map.getMap().getLayersByName(layer.title).length == 0) {
+						if (CONFIG.map.getMap().getLayersByName(layer.title).length === 0) {
 							LOG.info('bias.js::addLayerToMap: Layer does not yet exist on the map. Loading layer: ' + layer.title);
 
 							var stage = CONFIG.tempSession.getStage(ProxyDatumBias.stage)
@@ -209,10 +209,11 @@ var ProxyDatumBias = {
 		});
 
 		var layerInfos = [];
+		var $selectedBiases = $("#bias-list option:selected");
 		var stage = CONFIG.tempSession.getStage(ProxyDatumBias.stage);
 		stage.viewing = [];
-		if ($("#bias-list option:selected").val()) {
-			$("#bias-list option:selected").each(function (index, option) {
+		if ($selectedBiases.val()) {
+			$selectedBiases.each(function (index, option) {
 				LOG.debug('bias.js::biasSelected: A bias (' + option.text + ') was selected from the select list');
 				var layerFullName = option.value;
 				var layerNamespace = layerFullName.split(':')[0];
@@ -227,38 +228,11 @@ var ProxyDatumBias = {
 					ProxyDatumBias.enableRemoveButton();
 				}
 			});
+			ProxyDatumBias.addProxyDatumBias(layerInfos);
+		} else {
+			ProxyDatumBias.disableRemoveButton();
 		}
 		CONFIG.tempSession.persistSession();
-
-		// Provide default names for base layers and transects
-		var derivedName = '';
-		var selectedLayers = stage.viewing;
-		var getSeries = function (series) {
-			var skey = CONFIG.name.proxydatumbias;
-			var startPoint = series.has(skey) ? skey.length : 0;
-			return series.substr(startPoint, series.lastIndexOf('_') - startPoint);
-		};
-		if (selectedLayers.length === 0) {
-			derivedName += Util.getRandomLorem();
-		}
-
-		if (selectedLayers.length > 0) {
-			derivedName += getSeries(selectedLayers[0].split(':')[1]);
-		}
-
-		if (selectedLayers.length > 1) {
-			derivedName += '_' + getSeries(selectedLayers[1].split(':')[1]);
-		}
-
-		if (selectedLayers.length > 2) {
-			derivedName += '_etal';
-		}
-
-		$('#baseline-draw-form-name').val(derivedName);
-		$('#create-transects-input-name').val(derivedName);
-		$('#results-form-name').val(derivedName);
-
-		ProxyDatumBias.addProxyDatumBias(layerInfos);
 	},
 	populateFeaturesList: function () {
 		CONFIG.ui.populateFeaturesList({
