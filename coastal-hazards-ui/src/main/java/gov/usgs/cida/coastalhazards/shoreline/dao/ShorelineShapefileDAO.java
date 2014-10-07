@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -31,7 +30,6 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -114,11 +112,11 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 						Date date = getDateFromFC(dateFieldName, sf, dateType);
 						String source = getSourceFromFC(sf);
 						if (StringUtils.isNotBlank(mhwFieldName)) {
-							mhw = getMHWFromFC(mhwFieldName, sf, dateType);
+							mhw = getMHWFromFC(mhwFieldName, sf);
 						}
 
 						if (lastRecordId != recordId) {
-							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, orientation, "aux_name");
+							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, orientation, "");
 
 							if (fieldNames != null && fieldNames.length > 0) {
 								Map<String, String> auxCols = getAuxillaryColumnsFromFC(sf, fieldNames);
@@ -180,7 +178,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 			return Double.parseDouble(
 					(String) uncy);
 		} else if (uncy instanceof java.lang.Number) {
-			return (double) uncy;
+			return ((Number)uncy).doubleValue();
 		}
 
 		throw new NumberFormatException("Could not parse uncertainty into double");
@@ -218,14 +216,18 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 		return source;
 	}
 
-	private boolean getMHWFromFC(String mhwFieldName, SimpleFeature sf, Class<?> fromType) throws ParseException {
+	private boolean getMHWFromFC(String mhwFieldName, SimpleFeature sf) throws ParseException {
 		Object mhw = sf.getAttribute(mhwFieldName);
-
-		if (fromType == java.lang.String.class) {
-			return Boolean.parseBoolean(
-					(String) mhw);
-		} else if (fromType == java.lang.Boolean.class) {
+		
+		if (mhw instanceof java.lang.String) {
+			return Boolean.parseBoolean((String) mhw);
+		} else if (mhw instanceof java.lang.Boolean) {
 			return (boolean) mhw;
+		} else if (mhw instanceof java.lang.Number) {
+			if ((long) mhw == 1) {
+				return true;
+			}
+			return false;
 		}
 
 		throw new ParseException("Could not parse MHW field " + mhwFieldName + " into boolean", 0);
