@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.shoreline.file;
 
+import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -21,6 +22,8 @@ public class ShorelineShapefileTest {
 	private static final String tempDir = System.getProperty("java.io.tmpdir");
 	private static File workDir;
 	private static File validShapeZip;
+	private static File noPRJShapeZip;
+	private static File gaMHWFalseShorelines;
 
 	public ShorelineShapefileTest() {
 	}
@@ -42,6 +45,8 @@ public class ShorelineShapefileTest {
 		String packagePath = "/";
 		FileUtils.copyDirectory(new File(getClass().getResource(packagePath).toURI()), workDir);
 		validShapeZip = new File(workDir, "valid_shapezip.zip");
+		noPRJShapeZip = new File(workDir, "no_prj_shapefile.zip");
+		gaMHWFalseShorelines = new File(workDir, "Georgia_MHW_false_shorelines.zip");
 	}
 
 	@After
@@ -55,6 +60,19 @@ public class ShorelineShapefileTest {
 	public void testValidate() throws Exception {
 		System.out.println("testValidate");
 		File zipFile = validShapeZip;
+		ShorelineShapefile.validate(zipFile);
+		assertTrue("Validated without exception", true);
+		
+		zipFile = gaMHWFalseShorelines;
+		ShorelineShapefile.validate(zipFile);
+		assertTrue("Validated without exception", true);
+		
+	}
+
+	@Test(expected = ShorelineFileFormatException.class)
+	public void testValidateWithInvalidFile() throws Exception {
+		System.out.println("testValidateWithInvalidFile");
+		File zipFile = noPRJShapeZip;
 		ShorelineShapefile.validate(zipFile);
 		assertTrue("Validated without exception", true);
 	}

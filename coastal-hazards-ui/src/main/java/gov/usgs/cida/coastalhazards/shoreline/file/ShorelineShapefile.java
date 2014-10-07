@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 public class ShorelineShapefile extends ShorelineFile {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineShapefile.class);
+	private static final String[] requiredFiles = new String[] {SHP, SHX, DBF, PRJ};
 	private static final String[] fileParts = new String[]{
 		SHP,
 		SHX,
@@ -111,7 +112,7 @@ public class ShorelineShapefile extends ShorelineFile {
 		ZipFile zFile = new ZipFile(zipFile);
 		Enumeration<? extends ZipEntry> entries = zFile.entries();
 		List<String> extensions = new ArrayList<>(zFile.size());
-		List<String> requiredFiles = Arrays.asList(new String[] {SHP, SHX, DBF});
+		List<String> requiredFiles = Arrays.asList(new String[] {SHP, SHX, DBF, PRJ});
 		while (entries.hasMoreElements()) {
 			ZipEntry ze = entries.nextElement();
 			extensions.add(FilenameUtils.getExtension(ze.getName()));
