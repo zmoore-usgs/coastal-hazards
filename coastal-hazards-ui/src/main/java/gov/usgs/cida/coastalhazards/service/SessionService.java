@@ -1,6 +1,5 @@
 package gov.usgs.cida.coastalhazards.service;
 
-import com.sun.org.apache.bcel.internal.generic.LoadClass;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;

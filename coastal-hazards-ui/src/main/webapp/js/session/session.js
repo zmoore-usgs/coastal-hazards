@@ -129,7 +129,7 @@ CCH.Session = function (name, isPerm) {
 
 		me.getStage = function (stage) {
 			//for backward compatibility, if existing sessions don't have the requested stage, try to attach it from the newStage object
-			if(!me.session.stage[stage]) { 
+			if (!me.session.stage[stage]) {
 				me.session.stage[stage] = me.newStage[stage];
 			}
 			return me.session.stage[stage];
@@ -668,7 +668,7 @@ CCH.Session = function (name, isPerm) {
 			var callbacks = args.callbacks || [];
 			var workspace = args.session || CONFIG.tempSession.getCurrentSessionKey();
 
-			if (workspace.toLowerCase() == CONFIG.name.published) {
+			if (workspace.toLowerCase() === CONFIG.name.published) {
 				throw 'Workspace cannot be read-only (Ex.: ' + CONFIG.name.published + ')';
 			}
 
@@ -681,8 +681,8 @@ CCH.Session = function (name, isPerm) {
 			function (data, textStatus, jqXHR) {
 				callbacks.each(function (callback) {
 					callback(data, textStatus, jqXHR);
-				})
-			}, 'json')
+				});
+			}, 'json');
 		}
 	});
-}
+};
