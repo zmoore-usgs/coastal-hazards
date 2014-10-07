@@ -24,7 +24,7 @@ var ProxyDatumBias = {
 		CONFIG.ui.switchTab({
 			caller: ProxyDatumBias,
 			tab: 'view'
-		})
+		});
 	},
 	leaveStage: function () {
 		LOG.debug('bias.js::leaveStage');
@@ -189,7 +189,7 @@ var ProxyDatumBias = {
 					}
 				]
 			}
-		})
+		});
 	},
 	clear: function () {
 		$("#bias-list").val('');
@@ -268,7 +268,7 @@ var ProxyDatumBias = {
 	initializeUploader: function (args) {
 		CONFIG.ui.initializeUploader($.extend({
 			caller: ProxyDatumBias
-		}, args))
+		}, args));
 	},
 	closeProxyDatumBiasIdWindows: function () {
 		$('#FramedCloud_close').trigger('click');
@@ -292,7 +292,7 @@ var ProxyDatumBias = {
 					style: {
 						classes: ['alert-success']
 					}
-				})
+				});
 
 				CONFIG.ows.getWMSCapabilities({
 					namespace: CONFIG.name.proxydatumbias,
@@ -304,21 +304,21 @@ var ProxyDatumBias = {
 								CONFIG.ui.switchTab({
 									caller: ProxyDatumBias,
 									tab: 'view'
-								})
+								});
 								ProxyDatumBias.populateFeaturesList();
 							}
 						]
 					}
-				})
-
+				});
 			}
-		]
+		];
 		try {
 			CONFIG.tempSession.removeResource({
+				session: CONFIG.name.proxydatumbias,
 				store: store,
 				layer: layer,
 				callbacks: callbacks
-			})
+			});
 		} catch (ex) {
 			CONFIG.ui.showAlert({
 				message: 'Unable to remove resource - ' + ex,
@@ -327,7 +327,7 @@ var ProxyDatumBias = {
 				style: {
 					classes: ['alert-error']
 				}
-			})
+			});
 		}
 	},
 	createSLDBody: function (args) {
@@ -360,12 +360,12 @@ var ProxyDatumBias = {
 			'</FeatureTypeStyle>' +
 			'</UserStyle>' +
 			'</NamedLayer>' +
-			'</StyledLayerDescriptor>'
+			'</StyledLayerDescriptor>';
 		return sldBody;
 	},
 	getActive: function () {
 		return $('#bias-list').children(':selected').map(function (i, v) {
-			return v.value
+			return v.value;
 		}).toArray();
 	}
-}
+};
