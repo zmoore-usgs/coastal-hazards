@@ -146,7 +146,7 @@ var ProxyDatumBias = {
 				success: [
 					function (features) {
 						LOG.info('bias.js::addLayerToMap: WFS GetFileterdFeature returned successfully');
-						if (CONFIG.map.getMap().getLayersByName(layer.title).length == 0) {
+						if (CONFIG.map.getMap().getLayersByName(layer.title).length === 0) {
 							LOG.info('bias.js::addLayerToMap: Layer does not yet exist on the map. Loading layer: ' + layer.title);
 
 							var stage = CONFIG.tempSession.getStage(ProxyDatumBias.stage)
@@ -227,6 +227,8 @@ var ProxyDatumBias = {
 					ProxyDatumBias.enableRemoveButton();
 				}
 			});
+		} else {
+			ProxyDatumBias.disableRemoveButton();
 		}
 		CONFIG.tempSession.persistSession();
 
