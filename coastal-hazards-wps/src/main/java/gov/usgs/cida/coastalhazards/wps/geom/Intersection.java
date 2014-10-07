@@ -131,7 +131,12 @@ public class Intersection {
 		this.distance = dist;
 		this.transectId = transectId;
 		this.attGet = intersectionGetter;
-		this.date = parseDate(shorelineGetter.getValue(DATE_ATTR, shoreline));
+		//this has to support either shapefile or DB load
+		if(shorelineGetter.getValue(DATE_ATTR, shoreline) != null) {
+			this.date = parseDate(shorelineGetter.getValue(DATE_ATTR, shoreline));
+		} else if(shorelineGetter.getValue(DB_DATE_ATTR, shoreline) != null) {
+			this.date = parseDate(shorelineGetter.getValue(DB_DATE_ATTR, shoreline));
+		}
 		this.uncy = uncy;
 		this.isMeanHighWater = shorelineGetter.getBooleanFromMhwAttribute(shoreline);
 	}
@@ -226,7 +231,7 @@ public class Intersection {
 				featureObjectArr[i] = distance;
 			} else if (attGet.matches(attrType.getName(), MHW_ATTR)) {
 				featureObjectArr[i] = isMeanHighWater;
-			} else if (attGet.matches(attrType.getName(), DATE_ATTR)) {
+			} else if (attGet.matches(attrType.getName(), DATE_ATTR) || attGet.matches(attrType.getName(), DB_DATE_ATTR)) {
 				featureObjectArr[i] = date.toDate();
 			} else if (attGet.matches(attrType.getName(), UNCY_ATTR)) {
 				featureObjectArr[i] = uncy;
