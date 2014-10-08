@@ -3,6 +3,9 @@ package gov.usgs.cida.coastalhazards.shoreline.dao;
 import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
+import gov.usgs.cida.utilities.features.AttributeGetter;
+import gov.usgs.cida.utilities.features.Constants;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -18,7 +21,9 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.naming.NamingException;
+
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.io.FileUtils;
@@ -65,9 +70,9 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 	public String importToDatabase(File shpFile, Map<String, String> columns, String workspace, String EPSGCode) throws SQLException, NamingException, NoSuchElementException, ParseException, IOException {
 		String viewName = null;
 		BidiMap bm = new DualHashBidiMap(columns);
-		String dateFieldName = (String) bm.getKey(DATE_FIELD_NAME);
-		String uncertaintyFieldName = (String) bm.getKey(UNCY_FIELD_NAME);
-		String mhwFieldName = (String) bm.getKey(MHW_FIELD_NAME);
+		String dateFieldName = (String) bm.getKey(Constants.DB_DATE_ATTR);
+		String uncertaintyFieldName = (String) bm.getKey(Constants.UNCY_ATTR);
+		String mhwFieldName = (String) bm.getKey(Constants.MHW_ATTR);
 		String orientation = ""; // Not yet sure what to do here
 		File parentDirectory = shpFile.getParentFile();
 		deleteExistingPointFiles(parentDirectory);
@@ -109,12 +114,13 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 					long shorelineId = 0;
 					while (iter.hasNext()) {
 						SimpleFeature sf = iter.next();
-						int recordId = getRecordIdFromFC("recordId", sf);
+						AttributeGetter attr = new AttributeGetter(sf.getFeatureType());
+						int recordId = getIntValue("recordId", sf);
 						boolean mhw = false;
 						Date date = getDateFromFC(dateFieldName, sf, dateType);
 						String source = getSourceFromFC(sf);
 						if (StringUtils.isNotBlank(mhwFieldName)) {
-							mhw = getMHWFromFC(mhwFieldName, sf, dateType);
+							mhw = attr.getBooleanFromMhwAttribute(sf);
 						}
 
 						if (lastRecordId != recordId) {
@@ -157,11 +163,29 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 		return viewName;
 	}
 
+	public int getIntValue(String attribute, SimpleFeature feature) {
+		Object value = feature.getAttribute(attribute);
+		if (value instanceof Number) {
+			return ((Number)value).intValue();
+		} else {
+			throw new ClassCastException("This attribute is not an Integer");
+		}
+	}
+	public double getDoubleValue(String attribute, SimpleFeature feature) {
+		Object value = feature.getAttribute(attribute);
+		if (value instanceof Number) {
+			return ((Number)value).doubleValue();
+		} else {
+			throw new ClassCastException("This attribute is not a floating point value");
+		}
+	}
+	
 	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
 		double x = sf.getBounds().getMaxX();
 		double y = sf.getBounds().getMaxY();
-		double uncertainty = getUncertaintyFromFC(uncertaintyFieldName, sf, uncertaintyType);
-		int segmentId = getSegmentIdFromFC("segmentId", sf);
+		AttributeGetter attr = new AttributeGetter(sf.getFeatureType());
+		double uncertainty = getDoubleValue(uncertaintyFieldName, sf);
+		int segmentId = getIntValue("segmentId", sf);
 		return insertPointIntoShorelinePointsTable(connection, shorelineId, segmentId, x, y, uncertainty);
 	}
 
@@ -171,19 +195,6 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 			existingPtFile.delete();
 		}
 		return existingPointFiles;
-	}
-
-	private double getUncertaintyFromFC(String uncyFieldName, SimpleFeature sf, Class<?> fromType) {
-		Object uncy = sf.getAttribute(uncyFieldName);
-
-		if (fromType == java.lang.String.class) {
-			return Double.parseDouble(
-					(String) uncy);
-		} else if (uncy instanceof java.lang.Number) {
-			return (double) uncy;
-		}
-
-		throw new NumberFormatException("Could not parse uncertainty into double");
 	}
 
 	private Date getDateFromFC(String dateFieldName, SimpleFeature sf, Class<?> fromType) throws ParseException {
@@ -216,27 +227,6 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 			}
 		}
 		return source;
-	}
-
-	private boolean getMHWFromFC(String mhwFieldName, SimpleFeature sf, Class<?> fromType) throws ParseException {
-		Object mhw = sf.getAttribute(mhwFieldName);
-
-		if (fromType == java.lang.String.class) {
-			return Boolean.parseBoolean(
-					(String) mhw);
-		} else if (fromType == java.lang.Boolean.class) {
-			return (boolean) mhw;
-		}
-
-		throw new ParseException("Could not parse MHW field " + mhwFieldName + " into boolean", 0);
-	}
-
-	private int getRecordIdFromFC(String recordIdFieldName, SimpleFeature sf) {
-		return (int) sf.getAttribute(recordIdFieldName);
-	}
-
-	private int getSegmentIdFromFC(String segmentIdName, SimpleFeature sf) {
-		return (int) sf.getAttribute(segmentIdName);
 	}
 
 	private Map<String, String> getAuxillaryColumnsFromFC(SimpleFeature sf, String[][] fieldNames) {

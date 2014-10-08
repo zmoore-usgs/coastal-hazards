@@ -6,7 +6,7 @@ var Shorelines = {
 	suffixes: ['_shorelines'],
 	mandatoryColumns: ['date', 'uncy'],
 	defaultingColumns: [
-		{attr: 'mhw', defaultValue: "0"}
+		{attr: 'MHW', defaultValue: "0"}
 	],
 	groupingColumn: 'date',
 	uploadRequest: {

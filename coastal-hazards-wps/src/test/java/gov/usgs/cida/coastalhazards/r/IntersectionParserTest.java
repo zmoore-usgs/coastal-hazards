@@ -47,10 +47,10 @@
 package gov.usgs.cida.coastalhazards.r;
 
 import static org.junit.Assert.*;
-import gov.usgs.cida.coastalhazards.util.Constants;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
+import gov.usgs.cida.utilities.features.AttributeGetter;
+import gov.usgs.cida.utilities.features.Constants;
 import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
-import gov.usgs.cida.coastalhazards.util.AttributeGetter;
 
 import java.io.IOException;
 import java.net.URL;

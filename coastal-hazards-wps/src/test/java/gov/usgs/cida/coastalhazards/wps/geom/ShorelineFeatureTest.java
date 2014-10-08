@@ -6,14 +6,16 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
-import gov.usgs.cida.coastalhazards.util.AttributeGetter;
+
+import gov.usgs.cida.utilities.features.AttributeGetter;
+
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import static gov.usgs.cida.coastalhazards.util.Constants.UNCY_ATTR;
+import static gov.usgs.cida.utilities.features.Constants.UNCY_ATTR;
 import static org.junit.Assert.*;
 
 /**

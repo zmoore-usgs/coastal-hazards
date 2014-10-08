@@ -12,31 +12,21 @@
     
 	<name>Coastal Hazards WPS Processes</name>
 
-	<properties>
-		<gs.version>2.4.8</gs.version>
-		<gt.version>10.8</gt.version>
-	</properties>
-	
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.geoserver</groupId>
-				<artifactId>geoserver</artifactId>
-				<version>${gs.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.geotools</groupId>
-				<artifactId>geotools</artifactId>
-				<version>${gt.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>geoserver</artifactId>
+			<version>${gs.version}</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>geotools</artifactId>
+			<version>${gt.version}</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida.coastalhazards</groupId>
 			<artifactId>coastal-hazards-commons</artifactId>

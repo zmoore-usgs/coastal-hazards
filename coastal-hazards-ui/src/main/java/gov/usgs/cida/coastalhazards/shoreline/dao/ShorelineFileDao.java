@@ -1,6 +1,8 @@
 package gov.usgs.cida.coastalhazards.shoreline.dao;
 
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
+import gov.usgs.cida.utilities.features.Constants;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -12,10 +14,12 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+
 import org.geotools.feature.SchemaException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -31,10 +35,7 @@ public abstract class ShorelineFileDao {
 	protected String JNDI_NAME;
 	protected final String DEFAULT_JNDI_NAME = "dsas";
 	public final static int DATABASE_PROJECTION = 4326;
-	public final static String DATE_FIELD_NAME = "date";
-	public final static String UNCY_FIELD_NAME = "uncy";
-	public final static String MHW_FIELD_NAME = "mhw";
-	public final static String[] REQUIRED_FIELD_NAMES = new String[]{DATE_FIELD_NAME, UNCY_FIELD_NAME, MHW_FIELD_NAME};
+	public final static String[] REQUIRED_FIELD_NAMES = new String[]{Constants.DB_DATE_ATTR, Constants.UNCY_ATTR, Constants.MHW_ATTR};
 
 	protected Connection getConnection() {
 		Connection con = null;

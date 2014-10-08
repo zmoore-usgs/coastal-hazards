@@ -1,8 +1,9 @@
-package gov.usgs.cida.coastalhazards.util;
+package gov.usgs.cida.utilities.features;
+
+import gov.usgs.cida.utilities.features.Constants;
 
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +34,6 @@ public class AttributeGetter {
 				}
 				else if (isDate(desc)) {
 					attrMap.put(Constants.DATE_ATTR, desc.getName());
-					attrMap.put(Constants.DB_DATE_ATTR, desc.getName());
 				}
 				else if (isUncertainty(desc)) {
 					attrMap.put(Constants.UNCY_ATTR, desc.getName());
@@ -164,12 +164,12 @@ public class AttributeGetter {
         return (null != actual && actual.equals(name));
     }
     
-    private boolean isGeom(PropertyDescriptor desc) {
+    public boolean isGeom(PropertyDescriptor desc) {
         PropertyType propType = desc.getType();
         return (propType instanceof GeometryType);
     }
     
-    private boolean isDate(PropertyDescriptor desc) {
+    public boolean isDate(PropertyDescriptor desc) {
         String name = desc.getName().getLocalPart();
         PropertyType propType = desc.getType();
         if (propType.getBinding() == java.util.Date.class 
@@ -187,7 +187,7 @@ public class AttributeGetter {
         return false;
     }
     
-    private boolean isUncertainty(PropertyDescriptor desc) {
+    public boolean isUncertainty(PropertyDescriptor desc) {
         String name = desc.getName().getLocalPart();
         if ("uncertainty_".equalsIgnoreCase(name) || "uncertainty".equalsIgnoreCase(name) ||
                 "uncy_".equalsIgnoreCase(name) || "uncy".equalsIgnoreCase(name) ||
@@ -197,7 +197,7 @@ public class AttributeGetter {
         return false;
     }
     
-    private boolean isOrient(PropertyDescriptor desc) {
+    public boolean isOrient(PropertyDescriptor desc) {
         String name = desc.getName().getLocalPart();
         if ("OFFshore".equalsIgnoreCase(name) || Constants.BASELINE_ORIENTATION_ATTR.equalsIgnoreCase(name)) {
             return true;
@@ -205,7 +205,7 @@ public class AttributeGetter {
         return false;
     }
     
-    private boolean isOther(PropertyDescriptor desc, String guess) {
+    public boolean isOther(PropertyDescriptor desc, String guess) {
         String name = desc.getName().getLocalPart();
         return (guess.equalsIgnoreCase(name));
     }

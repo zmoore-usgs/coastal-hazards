@@ -1,7 +1,8 @@
 package gov.usgs.cida.coastalhazards.wps;
 
-import gov.usgs.cida.coastalhazards.util.Constants;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
+import gov.usgs.cida.utilities.features.Constants;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -9,12 +10,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import org.apache.commons.io.IOUtils;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
