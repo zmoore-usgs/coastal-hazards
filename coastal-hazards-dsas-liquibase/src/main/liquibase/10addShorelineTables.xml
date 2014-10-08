@@ -10,7 +10,7 @@
 			<column name="mhw" type="BOOLEAN" />
 			<column name="workspace" type="VARCHAR(34)" />
 			<column name="source" type="VARCHAR(255)" />
-			<column name="name" type="VARCHAR(255)" />
+			<column name="shoreline_name" type="VARCHAR(255)" />
 			<column name="shoreline_type" type="VARCHAR(31)" />
 			<column name="auxillary_name" type="VARCHAR(31)" />
 		</createTable>
@@ -56,7 +56,7 @@
 	</changeSet>
 	<changeSet author="jiwalker" id="add_workspace_view">
 		<createProcedure>
-			CREATE OR REPLACE FUNCTION create_workspace_view(workspace VARCHAR, name VARCHAR, OUT viewname varchar) AS $BODY$
+			CREATE OR REPLACE FUNCTION create_workspace_view(workspace VARCHAR, shoreline_name VARCHAR, OUT viewname varchar) AS $BODY$
 			BEGIN
 				viewname := CAST(lower(substring($1 for 34) || '_' || substring($2 for 17) || '_shorelines') AS VARCHAR(63));
 				EXECUTE 'CREATE OR REPLACE VIEW ' || viewname || ' AS (' ||
@@ -66,7 +66,7 @@
 					'FROM shorelines s ' ||
 					'JOIN shoreline_points p ON s.id = p.shoreline_id ' ||
 						'and s.workspace =' || quote_literal($1) ||
-						'and s.name =' || quote_literal($2) ||
+						'and s.shoreline_name =' || quote_literal($2) ||
 					'LEFT JOIN shoreline_auxillary_attrs a ON s.id = a.shoreline_id ' ||
 						'and s.auxillary_name = a.attr_name);';
 				EXECUTE 'ALTER TABLE ' || viewname || ' OWNER TO coastal_hazards;';
@@ -75,6 +75,6 @@
 			END;
 			$BODY$ LANGUAGE plpgsql;
 		</createProcedure>
-		<rollback>DROP FUNCTION create_workspace_view(workspace VARCHAR(40), name VARCHAR(255));</rollback>
+		<rollback>DROP FUNCTION create_workspace_view(workspace VARCHAR(40), shoreline_name VARCHAR(255));</rollback>
 	</changeSet>
 </databaseChangeLog>
