@@ -886,15 +886,13 @@ public class GeoserverHandler {
 		return shpFile;
 	}
 
-	public boolean removeLayer(String geoserverDataDir, String workspace, String store, String layer) throws IllegalArgumentException, MalformedURLException {
+	public boolean removeLayer(String workspace, String store, String layer) throws IllegalArgumentException, MalformedURLException {
 		GeoServerRESTPublisher publisher = gsrm.getPublisher();
 
-		boolean success = publisher.unpublishFeatureType(workspace, store, layer);
-		publisher.removeLayer(workspace, layer);
-		if (success) {
-			touchWorkspace(workspace);
-			publisher.reloadStore(workspace, store, GeoServerRESTPublisher.StoreType.DATASTORES);
-		}
+		publisher.unpublishFeatureType(workspace, store, layer);
+		boolean success = publisher.removeLayer(workspace, layer);
+		touchWorkspace(workspace);
+		publisher.reloadStore(workspace, store, GeoServerRESTPublisher.StoreType.DATASTORES);
 		publisher.reload();
 		return success;
 	}
