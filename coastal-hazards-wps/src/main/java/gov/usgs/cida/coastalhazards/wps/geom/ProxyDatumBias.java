@@ -1,7 +1,8 @@
 package gov.usgs.cida.coastalhazards.wps.geom;
 
-import gov.usgs.cida.coastalhazards.util.AttributeGetter;
-import gov.usgs.cida.coastalhazards.util.Constants;
+import gov.usgs.cida.utilities.features.AttributeGetter;
+import gov.usgs.cida.utilities.features.Constants;
+
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 

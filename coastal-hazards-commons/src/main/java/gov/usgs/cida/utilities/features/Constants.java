@@ -44,9 +44,8 @@
  * or profits arising in connection with the access, use, quality, or performance of this software.
  */
 
-package gov.usgs.cida.coastalhazards.util;
+package gov.usgs.cida.utilities.features;
 
-import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -63,7 +62,7 @@ public class Constants {
     public static final String DISTANCE_ATTR = "Distance";
     public static final String DATE_ATTR = "Date_";
     public static final String DB_DATE_ATTR = "date";
-    public static final String UNCY_ATTR = "Uncy";
+    public static final String UNCY_ATTR = "uncy";
     public static final String BASELINE_DIST_ATTR = "base_dist";
     public static final String BASELINE_ID_ATTR = "BaselineID";
     public static final String LRR_ATTR = "LRR";
@@ -110,9 +109,6 @@ public class Constants {
         }
         
         public int getSign() {
-            if (sign == 0) {
-                throw new PoorlyDefinedBaselineException("Baseline must define orientation");
-            }
             return sign;
         }
         

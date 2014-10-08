@@ -53,12 +53,12 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
-import gov.usgs.cida.coastalhazards.util.AttributeGetter;
+
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
+import static gov.usgs.cida.utilities.features.Constants.*;
+import gov.usgs.cida.utilities.features.AttributeGetter;
+import gov.usgs.cida.utilities.features.Constants.Orientation;
 
-import static gov.usgs.cida.coastalhazards.util.Constants.*;
-
-import gov.usgs.cida.coastalhazards.util.Constants.Orientation;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.opengis.feature.simple.SimpleFeature;

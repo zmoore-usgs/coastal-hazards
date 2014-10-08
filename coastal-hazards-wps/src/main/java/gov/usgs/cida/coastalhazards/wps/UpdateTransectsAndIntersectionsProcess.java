@@ -4,22 +4,25 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.index.strtree.STRtree;
+
 import gov.usgs.cida.coastalhazards.util.BaselineDistanceAccumulator;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
-import static gov.usgs.cida.coastalhazards.util.Constants.*;
+import static gov.usgs.cida.utilities.features.Constants.*;
 import gov.usgs.cida.coastalhazards.util.GeoserverUtils;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
-import gov.usgs.cida.coastalhazards.util.AttributeGetter;
 import gov.usgs.cida.coastalhazards.wps.exceptions.LayerDoesNotExistException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
 import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineSTRTreeBuilder;
 import gov.usgs.cida.coastalhazards.wps.geom.Transect;
+import gov.usgs.cida.utilities.features.AttributeGetter;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;

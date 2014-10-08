@@ -11,13 +11,9 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 import com.vividsolutions.jts.index.strtree.STRtree;
-import gov.usgs.cida.coastalhazards.util.AttributeGetter;
+
 import gov.usgs.cida.coastalhazards.util.BaselineDistanceAccumulator;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
-
-import static gov.usgs.cida.coastalhazards.util.Constants.*;
-
-import gov.usgs.cida.coastalhazards.util.Constants.Orientation;
 import gov.usgs.cida.coastalhazards.util.GeomAsserts;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
@@ -28,11 +24,15 @@ import gov.usgs.cida.coastalhazards.wps.geom.ProxyDatumBias;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineFeature;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineSTRTreeBuilder;
 import gov.usgs.cida.coastalhazards.wps.geom.Transect;
+import gov.usgs.cida.utilities.features.AttributeGetter;
+import gov.usgs.cida.utilities.features.Constants.Orientation;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wps.gs.GeoServerProcess;
@@ -52,6 +52,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import static gov.usgs.cida.coastalhazards.wps.geom.Intersection.calculateIntersections;
+import static gov.usgs.cida.utilities.features.Constants.*;
 
 /**
  *

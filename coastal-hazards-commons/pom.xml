@@ -6,10 +6,23 @@
 		<artifactId>coastal-hazards</artifactId>
 		<version>1.1.15-SNAPSHOT</version>
 	</parent>
-	<groupId>gov.usgs.cida.coastalhazards</groupId>
 	<artifactId>coastal-hazards-commons</artifactId>
 	<name>Coastal Hazards Commons</name>
 	<dependencies>
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>geoserver</artifactId>
+			<version>${gs.version}</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>geotools</artifactId>
+			<version>${gt.version}</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>

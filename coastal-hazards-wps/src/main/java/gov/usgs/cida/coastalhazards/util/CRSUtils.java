@@ -12,6 +12,8 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+import gov.usgs.cida.utilities.features.AttributeGetter;
+import gov.usgs.cida.utilities.features.Constants;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,7 +35,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.LoggerFactory;
 
-import static gov.usgs.cida.coastalhazards.util.Constants.*;
+import static gov.usgs.cida.utilities.features.Constants.*;
 
 /**
  *

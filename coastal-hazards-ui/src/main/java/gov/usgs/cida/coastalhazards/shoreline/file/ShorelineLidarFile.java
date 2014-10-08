@@ -6,6 +6,8 @@ import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatExcep
 import static gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile.props;
 import gov.usgs.cida.owsutils.commons.io.FileHelper;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
+import gov.usgs.cida.utilities.features.Constants;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -15,7 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+
 import javax.naming.NamingException;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.geotools.feature.SchemaException;
@@ -34,7 +38,7 @@ public class ShorelineLidarFile extends ShorelineFile {
 		PRJ,
 		CSV
 	};
-	private static final String[] EXPECTED_COLUMNS = new String[]{"date", "uncy", "mhw"};
+	private static final String[] EXPECTED_COLUMNS = new String[]{Constants.DB_DATE_ATTR, Constants.UNCY_ATTR, Constants.MHW_ATTR};
 
 	public ShorelineLidarFile(String applicationName, GeoserverHandler gsHandler, ShorelineFileDao dao, String workspace) {
 		this.baseDirectory = new File(props.getProperty(applicationName + DIRECTORY_BASE_PARAM_CONFIG_KEY, System.getProperty("java.io.tmpdir")));

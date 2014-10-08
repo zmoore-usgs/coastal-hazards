@@ -1,8 +1,9 @@
-package gov.usgs.cida.coastalhazards.util;
+package gov.usgs.cida.utilities.features;
+
+import gov.usgs.cida.utilities.features.Constants;
 
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +34,6 @@ public class AttributeGetter {
 				}
 				else if (isDate(desc)) {
 					attrMap.put(Constants.DATE_ATTR, desc.getName());
-					attrMap.put(Constants.DB_DATE_ATTR, desc.getName());
 				}
 				else if (isUncertainty(desc)) {
 					attrMap.put(Constants.UNCY_ATTR, desc.getName());
@@ -108,20 +108,12 @@ public class AttributeGetter {
 	
 	public int getIntValue(String attribute, SimpleFeature feature) {
 		Object value = getValue(attribute, feature);
-		if (value instanceof Number) {
-			return ((Number)value).intValue();
-		} else {
-			throw new ClassCastException("This attribute is not an Integer");
-		}
+		return extractIntValue(value);
 	}
 	
 	public double getDoubleValue(String attribute, SimpleFeature feature) {
 		Object value = getValue(attribute, feature);
-		if (value instanceof Number) {
-			return ((Number)value).doubleValue();
-		} else {
-			throw new ClassCastException("This attribute is not a floating point value");
-		}
+		return extractDoubleValue(value);
 	}
 
 	/**
@@ -132,17 +124,8 @@ public class AttributeGetter {
 	 * @return value of mhw flag
 	 */
 	public boolean getBooleanFromMhwAttribute(SimpleFeature feature) {
-		boolean isMhw = Constants.DEFAULT_MHW_VALUE;
 		Object attribute = getValue(Constants.MHW_ATTR, feature);
-		if(attribute != null) {
-			if(attribute.toString().equals("0") || attribute.toString().equalsIgnoreCase("false")) {
-				isMhw = false;
-			} else if(attribute.toString().matches("\\d+") || attribute.toString().equalsIgnoreCase("true")) {
-				isMhw = true;
-			}
-		}
-
-		return isMhw;
+		return extractBooleanValue(attribute, Constants.DEFAULT_MHW_VALUE);
 	}
     
     public boolean exists(String guess) {
@@ -164,12 +147,12 @@ public class AttributeGetter {
         return (null != actual && actual.equals(name));
     }
     
-    private boolean isGeom(PropertyDescriptor desc) {
+    public boolean isGeom(PropertyDescriptor desc) {
         PropertyType propType = desc.getType();
         return (propType instanceof GeometryType);
     }
     
-    private boolean isDate(PropertyDescriptor desc) {
+    public boolean isDate(PropertyDescriptor desc) {
         String name = desc.getName().getLocalPart();
         PropertyType propType = desc.getType();
         if (propType.getBinding() == java.util.Date.class 
@@ -187,7 +170,7 @@ public class AttributeGetter {
         return false;
     }
     
-    private boolean isUncertainty(PropertyDescriptor desc) {
+    public boolean isUncertainty(PropertyDescriptor desc) {
         String name = desc.getName().getLocalPart();
         if ("uncertainty_".equalsIgnoreCase(name) || "uncertainty".equalsIgnoreCase(name) ||
                 "uncy_".equalsIgnoreCase(name) || "uncy".equalsIgnoreCase(name) ||
@@ -197,7 +180,7 @@ public class AttributeGetter {
         return false;
     }
     
-    private boolean isOrient(PropertyDescriptor desc) {
+    public boolean isOrient(PropertyDescriptor desc) {
         String name = desc.getName().getLocalPart();
         if ("OFFshore".equalsIgnoreCase(name) || Constants.BASELINE_ORIENTATION_ATTR.equalsIgnoreCase(name)) {
             return true;
@@ -205,9 +188,37 @@ public class AttributeGetter {
         return false;
     }
     
-    private boolean isOther(PropertyDescriptor desc, String guess) {
+    public boolean isOther(PropertyDescriptor desc, String guess) {
         String name = desc.getName().getLocalPart();
         return (guess.equalsIgnoreCase(name));
     }
     
+
+	public static int extractIntValue(Object value) {
+		if (value instanceof Number) {
+			return ((Number)value).intValue();
+		} else {
+			throw new ClassCastException("This attribute is not an Integer");
+		}
+	}
+	public static double extractDoubleValue(Object value) {
+		if (value instanceof Number) {
+			return ((Number)value).doubleValue();
+		} else {
+			throw new ClassCastException("This attribute is not a floating point value");
+		}
+	}
+	
+	public static boolean extractBooleanValue(Object attribute, boolean defaultValue) {
+		boolean isMhw = defaultValue;
+		if(attribute != null) {
+			if(attribute.toString().equals("0") || attribute.toString().equalsIgnoreCase("false")) {
+				isMhw = false;
+			} else if(attribute.toString().matches("\\d+") || attribute.toString().equalsIgnoreCase("true")) {
+				isMhw = true;
+			}
+		}
+
+		return isMhw;
+	}
 }
