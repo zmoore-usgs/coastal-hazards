@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -36,7 +35,6 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -74,6 +72,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 		String uncertaintyFieldName = (String) bm.getKey(Constants.UNCY_ATTR);
 		String mhwFieldName = (String) bm.getKey(Constants.MHW_ATTR);
 		String orientation = ""; // Not yet sure what to do here
+		String baseFileName = FilenameUtils.getBaseName(shpFile.getName());
 		File parentDirectory = shpFile.getParentFile();
 		deleteExistingPointFiles(parentDirectory);
 		String[][] fieldNames = null;
@@ -95,7 +94,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 			File pointsShapefile;
 			try {
 				LOGGER.debug("Exploding shapefile at {}", shpFile.getAbsolutePath());
-				pointsShapefile = xploder.explode(parentDirectory + File.separator + FilenameUtils.getBaseName(shpFile.getName()));
+				pointsShapefile = xploder.explode(parentDirectory + File.separator + baseFileName);
 				LOGGER.debug("Shapefile exploded");
 			} catch (Exception ex) {
 				throw new IOException(ex);
@@ -114,17 +113,16 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 					long shorelineId = 0;
 					while (iter.hasNext()) {
 						SimpleFeature sf = iter.next();
-						AttributeGetter attr = new AttributeGetter(sf.getFeatureType());
 						int recordId = getIntValue("recordId", sf);
 						boolean mhw = false;
 						Date date = getDateFromFC(dateFieldName, sf, dateType);
 						String source = getSourceFromFC(sf);
 						if (StringUtils.isNotBlank(mhwFieldName)) {
-							mhw = attr.getBooleanFromMhwAttribute(sf);
+							mhw = getBooleanValue(mhwFieldName, sf, false);
 						}
 
 						if (lastRecordId != recordId) {
-							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, orientation, "aux_name");
+							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, baseFileName, orientation, "");
 
 							if (fieldNames != null && fieldNames.length > 0) {
 								Map<String, String> auxCols = getAuxillaryColumnsFromFC(sf, fieldNames);
@@ -138,7 +136,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 						insertPointIntoShorelinePointsTable(connection, shorelineId, sf, uncertaintyFieldName, uncertaintyType);
 					}
 
-					viewName = createViewAgainstWorkspace(connection, workspace);
+					viewName = createViewAgainstWorkspace(connection, workspace, baseFileName);
 					if (StringUtils.isBlank(viewName)) {
 						throw new SQLException("Could not create view");
 					}
@@ -171,6 +169,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 			throw new ClassCastException("This attribute is not an Integer");
 		}
 	}
+	
 	public double getDoubleValue(String attribute, SimpleFeature feature) {
 		Object value = feature.getAttribute(attribute);
 		if (value instanceof Number) {
@@ -180,10 +179,14 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 		}
 	}
 	
+	public boolean getBooleanValue(String attribute, SimpleFeature feature, boolean defaultValue) {
+		Object value = feature.getAttribute(attribute);
+		return AttributeGetter.extractBooleanValue(value, defaultValue);
+	}
+	
 	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
 		double x = sf.getBounds().getMaxX();
 		double y = sf.getBounds().getMaxY();
-		AttributeGetter attr = new AttributeGetter(sf.getFeatureType());
 		double uncertainty = getDoubleValue(uncertaintyFieldName, sf);
 		int segmentId = getIntValue("segmentId", sf);
 		return insertPointIntoShorelinePointsTable(connection, shorelineId, segmentId, x, y, uncertainty);

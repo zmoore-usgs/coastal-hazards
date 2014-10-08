@@ -363,7 +363,7 @@ var UI = function () {
 									"value": layerNS + ':' + layer.name
 								})
 								.addClass(layerNS === CONFIG.name.published ? publishedLayerClass : sessionLayerClass)
-								.text(layer.name);
+								.text(layer.title);
 
 							$('#' + stage + '-list')
 								.append(option);
