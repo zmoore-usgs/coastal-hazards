@@ -563,14 +563,14 @@ var Shorelines = {
 			$('<a />').attr({
 			href: '#' + this.name,
 			'data-toggle': 'tab'
-		}).html(this.name)));
+		}).html(this.title)));
 
 		LOG.debug('Shorelines.js::createFeatureTable:: Adding color feature table to DOM');
 
 		tabContent.append(
 			$('<div />').
 			addClass('tab-pane active').
-			attr('id', this.name).
+			attr('id', this.title).
 			append(colorTableContainer));
 
 		$('.switch').each(function (index, element) {
@@ -750,7 +750,8 @@ var Shorelines = {
 		Shorelines.disableRemoveButton();
 		LOG.debug('Shorelines.js::listboxChanged: Removing all shorelines from map that were not selected');
 		$("#shorelines-list option:not(:selected)").each(function (index, option) {
-			var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
+			var layerName = (option.value || ':').split(':')[1],
+				layers = CONFIG.map.getMap().getLayersBy('name', layerName);
 			if (layers.length) {
 				$(layers).each(function (i, layer) {
 					CONFIG.map.getMap().removeLayer(layer);
