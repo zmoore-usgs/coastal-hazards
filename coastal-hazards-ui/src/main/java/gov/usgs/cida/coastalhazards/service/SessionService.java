@@ -36,7 +36,7 @@ public class SessionService extends HttpServlet {
 	private static String GEOSERVER_USER_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.username";
 	private static String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
 	private static String GEOSERVER_DATA_DIR_KEY = "coastal-hazards.geoserver.datadir";
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 5022377389976105019L;
 
 	@Override
 	public void init() throws ServletException {
@@ -67,8 +67,13 @@ public class SessionService extends HttpServlet {
 					RequestResponseHelper.sendErrorResponse(response, responseMap);
 					return;
 				}
-			} else if ("remove-layer".equals(action) && !"published".equals(workspace.trim().toLowerCase(Locale.US))) {
+			} else if ("remove-layer".equals(action) && !"published".equalsIgnoreCase(workspace.trim())) {
 				try {
+					LOG.info("Remove layer called");
+					if (layer.toLowerCase(Locale.US).contains("shoreline")) {
+						LOG.info("Shoreline layer being removed. First going to try to remove from database");
+						
+					}
 					geoserverHandler.removeLayer(geoserverDataDir, workspace, store, layer);
 				} catch (MalformedURLException ex) {
 					responseMap.put("error", "Could not remove layer: " + ex.getMessage());

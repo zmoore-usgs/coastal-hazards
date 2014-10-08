@@ -726,7 +726,7 @@ public class GeoserverHandler {
 			// I've since changed the session to be all lowercase anyway, but keeping
 			// this here as a mark of shame against Geoserver. FOR SHAME!
 			fte.setName(layerName);
-			fte.setTitle(layerName);
+			fte.setTitle(layerName.substring(workspace.length() + 1));
 
 			GSLayerEncoder le = new GSLayerEncoder();
 			le.setEnabled(true);

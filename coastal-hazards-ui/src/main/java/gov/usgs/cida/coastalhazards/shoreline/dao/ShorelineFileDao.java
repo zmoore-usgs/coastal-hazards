@@ -1,6 +1,7 @@
 package gov.usgs.cida.coastalhazards.shoreline.dao;
 
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
+import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -9,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -35,6 +37,7 @@ public abstract class ShorelineFileDao {
 	public final static String UNCY_FIELD_NAME = "uncy";
 	public final static String MHW_FIELD_NAME = "mhw";
 	public final static String[] REQUIRED_FIELD_NAMES = new String[]{DATE_FIELD_NAME, UNCY_FIELD_NAME, MHW_FIELD_NAME};
+	public final static String[] PROTECTED_WORKSPACES = new String[]{JNDISingleton.getInstance().getProperty("coastal-hazards.workspace.published", "published")};
 
 	protected Connection getConnection() {
 		Connection con = null;
@@ -114,15 +117,15 @@ public abstract class ShorelineFileDao {
 
 	/**
 	 * Inserts an attribute into the auxillary table
-	 * 
+	 *
 	 * @param connection
 	 * @param shorelineId
 	 * @param name
 	 * @param value
 	 * @return
-	 * @throws SQLException besides the normal reasons, this may be thrown if the 
-	 * element already exists in the table - for instance if the auxillary element
-	 * was repeated earlier in the shoreline file
+	 * @throws SQLException besides the normal reasons, this may be thrown if
+	 * the element already exists in the table - for instance if the auxillary
+	 * element was repeated earlier in the shoreline file
 	 */
 	protected int insertAuxillaryAttribute(Connection connection, long shorelineId, String name, String value) throws SQLException {
 		String sql = "INSERT INTO shoreline_auxillary_attrs "
@@ -160,7 +163,77 @@ public abstract class ShorelineFileDao {
 			}
 		}
 	}
-	
+
+	/**
+	 * Removes shorelines using workspace name and a wildcard match on the
+	 * shoreline name. 
+	 * 
+	 * Will also delete the associated view if there are no more rows with the 
+	 * workspace name in them in the shorelines table
+	 *
+	 * @param workspace
+	 * @param name does a suffix wild card match (name%) on the shoreline name
+	 * for deletion
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean removeShorelines(String workspace, String name) throws SQLException {
+
+		if (Arrays.asList(PROTECTED_WORKSPACES).contains(workspace.trim().toLowerCase())) {
+			LOGGER.debug("Attempting to remove protected workspace {}. Denied.", workspace);
+			return false;
+		}
+
+		String sql = "DELETE FROM shorelines "
+				+ "WHERE workspace=? AND shoreline_name LIKE '?'";
+
+		int deleteCt;
+
+		try (Connection connection = getConnection()) {
+			connection.setAutoCommit(false);
+			try (PreparedStatement ps = connection.prepareStatement(sql)) {
+				ps.setString(1, workspace);
+				ps.setString(2, name + "%");
+				deleteCt = ps.executeUpdate();
+
+				if (getShorelinesByWorkspace(workspace) == 0) {
+					LOGGER.info("No more shorelines exist workspace {}. Will delete the view", workspace);
+					String viewName = workspace + "_" + name + "_shorelines";
+					if (removeShorelineView(viewName) == 1) {
+						LOGGER.info("Deleted view {}", viewName);
+					} else {
+						LOGGER.info("Could not delete view {}", viewName);
+					}
+				}
+			}
+		}
+
+		return deleteCt > 0;
+	}
+
+	public int getShorelinesByWorkspace(String workspace) throws SQLException {
+		String sql = "SELECT COUNT(*) FROM shorelines WHERE workspace=?";
+		try (Connection connection = getConnection()) {
+			try (PreparedStatement ps = connection.prepareStatement(sql)) {
+				ps.setString(1, workspace);
+				ResultSet rs = ps.executeQuery();
+				rs.next();
+				return rs.getInt(1);
+			}
+		}
+	}
+
+	public int removeShorelineView(String view) throws SQLException {
+		String sql = "DROP VIEW ?";
+
+		try (Connection connection = getConnection()) {
+			try (PreparedStatement ps = connection.prepareStatement(sql)) {
+				ps.setString(1, view);
+				return ps.executeUpdate();
+			}
+		}
+	}
+
 	/**
 	 * Imports the shoreline file into the database. Returns the name of the
 	 * view that holds this shoreline
