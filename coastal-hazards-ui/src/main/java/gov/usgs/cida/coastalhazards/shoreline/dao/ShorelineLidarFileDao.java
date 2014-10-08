@@ -3,9 +3,12 @@ package gov.usgs.cida.coastalhazards.shoreline.dao;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;
+
 import gov.usgs.cida.coastalhazards.service.util.LidarFileUtils;
 import gov.usgs.cida.coastalhazards.shoreline.exception.LidarFileFormatException;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
+import gov.usgs.cida.utilities.features.Constants;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -17,7 +20,9 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
 import javax.naming.NamingException;
+
 import org.apache.commons.io.FilenameUtils;
 import org.geotools.feature.SchemaException;
 import org.geotools.geometry.jts.JTS;
@@ -87,7 +92,7 @@ public class ShorelineLidarFileDao extends ShorelineFileDao {
 							shorelineFile.getName(),
 							baseFileName,
 							"",
-							MHW_FIELD_NAME);
+							Constants.MHW_ATTR);
 					shorelineDateToIdMap.put(shorelineDate, shorelineId);
 				} else {
 					shorelineId = shorelineDateToIdMap.get(shorelineDate);

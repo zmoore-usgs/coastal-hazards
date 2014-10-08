@@ -14,20 +14,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.geoserver</groupId>
-			<artifactId>geoserver</artifactId>
-			<version>${gs.version}</version>
-			<type>pom</type>
-			<scope>import</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>geotools</artifactId>
-			<version>${gt.version}</version>
-			<type>pom</type>
-			<scope>import</scope>
-		</dependency>
-		<dependency>
 			<groupId>gov.usgs.cida.coastalhazards</groupId>
 			<artifactId>coastal-hazards-commons</artifactId>
 			<version>${project.version}</version>
