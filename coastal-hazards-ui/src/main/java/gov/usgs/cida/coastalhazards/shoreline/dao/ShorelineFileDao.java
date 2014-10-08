@@ -64,7 +64,7 @@ public abstract class ShorelineFileDao {
 	 */
 	protected long insertToShorelinesTable(Connection connection, String workspace, Date date, boolean mhw, String source, String name, String shorelineType, String auxillaryName) throws NamingException, SQLException {
 		String sql = "INSERT INTO shorelines "
-				+ "(date, mhw, workspace, source, name, shoreline_type, auxillary_name) "
+				+ "(date, mhw, workspace, source, shoreline_name, shoreline_type, auxillary_name) "
 				+ "VALUES (?,?,?,?,?,?,?)";
 
 		long createdId;
@@ -160,7 +160,7 @@ public abstract class ShorelineFileDao {
 			}
 		}
 	}
-
+	
 	/**
 	 * Imports the shoreline file into the database. Returns the name of the
 	 * view that holds this shoreline
