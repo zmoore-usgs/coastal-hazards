@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 public class ShorelineShapefileUploadServlet extends ShapefileUploadServlet {
 	private static final long serialVersionUID = 4407484936443705946L;
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ShorelineShapefileUploadServlet.class);
-	private ServletConfig servletConfig;
 	private final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
 	
 	/**

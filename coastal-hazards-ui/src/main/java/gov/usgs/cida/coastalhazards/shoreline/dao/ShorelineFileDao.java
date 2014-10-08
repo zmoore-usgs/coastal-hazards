@@ -77,7 +77,7 @@ public abstract class ShorelineFileDao {
 			ps.setBoolean(2, mhw);
 			ps.setString(3, workspace);
 			ps.setString(4, source);
-			ps.setString(5, name);
+			ps.setString(5, name.toLowerCase());
 			ps.setString(6, shorelineType);
 			ps.setString(7, auxillaryName);
 
@@ -154,7 +154,7 @@ public abstract class ShorelineFileDao {
 
 		try (PreparedStatement ps = connection.prepareStatement(sql)) {
 			ps.setString(1, workspace);
-			ps.setString(2, name);
+			ps.setString(2, name.toLowerCase());
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					return rs.getString(1);
@@ -185,26 +185,15 @@ public abstract class ShorelineFileDao {
 		}
 
 		String sql = "DELETE FROM shorelines "
-				+ "WHERE workspace=? AND shoreline_name LIKE '?'";
+				+ "WHERE workspace=? AND shoreline_name LIKE ?";
 
 		int deleteCt;
 
 		try (Connection connection = getConnection()) {
-			connection.setAutoCommit(false);
 			try (PreparedStatement ps = connection.prepareStatement(sql)) {
 				ps.setString(1, workspace);
 				ps.setString(2, name + "%");
 				deleteCt = ps.executeUpdate();
-
-				if (getShorelinesByWorkspace(workspace) == 0) {
-					LOGGER.info("No more shorelines exist workspace {}. Will delete the view", workspace);
-					String viewName = workspace + "_" + name + "_shorelines";
-					if (removeShorelineView(viewName) == 1) {
-						LOGGER.info("Deleted view {}", viewName);
-					} else {
-						LOGGER.info("Could not delete view {}", viewName);
-					}
-				}
 			}
 		}
 
@@ -223,13 +212,12 @@ public abstract class ShorelineFileDao {
 		}
 	}
 
-	public int removeShorelineView(String view) throws SQLException {
-		String sql = "DROP VIEW ?";
+	public void removeShorelineView(String view) throws SQLException {
+		String sql = "DROP VIEW IF EXISTS \"" + view + "\";";
 
 		try (Connection connection = getConnection()) {
-			try (PreparedStatement ps = connection.prepareStatement(sql)) {
-				ps.setString(1, view);
-				return ps.executeUpdate();
+			try (Statement statement = connection.createStatement()) {
+				statement.execute(sql);
 			}
 		}
 	}
