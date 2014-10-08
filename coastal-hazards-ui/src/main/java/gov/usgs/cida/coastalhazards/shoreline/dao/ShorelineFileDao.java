@@ -62,10 +62,10 @@ public abstract class ShorelineFileDao {
 	 * @throws NamingException
 	 * @throws SQLException
 	 */
-	protected long insertToShorelinesTable(Connection connection, String workspace, Date date, boolean mhw, String source, String shorelineType, String auxillaryName) throws NamingException, SQLException {
+	protected long insertToShorelinesTable(Connection connection, String workspace, Date date, boolean mhw, String source, String name, String shorelineType, String auxillaryName) throws NamingException, SQLException {
 		String sql = "INSERT INTO shorelines "
-				+ "(date, mhw, workspace, source, shoreline_type, auxillary_name) "
-				+ "VALUES (?,?,?,?,?,?)";
+				+ "(date, mhw, workspace, source, name, shoreline_type, auxillary_name) "
+				+ "VALUES (?,?,?,?,?,?,?)";
 
 		long createdId;
 
@@ -74,8 +74,9 @@ public abstract class ShorelineFileDao {
 			ps.setBoolean(2, mhw);
 			ps.setString(3, workspace);
 			ps.setString(4, source);
-			ps.setString(5, shorelineType);
-			ps.setString(6, auxillaryName);
+			ps.setString(5, name);
+			ps.setString(6, shorelineType);
+			ps.setString(7, auxillaryName);
 
 			int affectedRows = ps.executeUpdate();
 			if (affectedRows == 0) {
@@ -141,14 +142,16 @@ public abstract class ShorelineFileDao {
 	 *
 	 * @param connection
 	 * @param workspace
+	 * @param name
 	 * @return
 	 * @throws SQLException
 	 */
-	protected String createViewAgainstWorkspace(Connection connection, String workspace) throws SQLException {
-		String sql = "SELECT * FROM CREATE_WORKSPACE_VIEW(?)";
+	protected String createViewAgainstWorkspace(Connection connection, String workspace, String name) throws SQLException {
+		String sql = "SELECT * FROM CREATE_WORKSPACE_VIEW(?, ?)";
 
 		try (PreparedStatement ps = connection.prepareStatement(sql)) {
 			ps.setString(1, workspace);
+			ps.setString(2, name);
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					return rs.getString(1);

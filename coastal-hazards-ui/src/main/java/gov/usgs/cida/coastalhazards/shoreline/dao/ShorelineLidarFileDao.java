@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import javax.naming.NamingException;
+import org.apache.commons.io.FilenameUtils;
 import org.geotools.feature.SchemaException;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -48,6 +49,7 @@ public class ShorelineLidarFileDao extends ShorelineFileDao {
 	@Override
 	public String importToDatabase(File shorelineFile, Map<String, String> columns, String workspace, String EPSGCode) throws ShorelineFileFormatException, SQLException, NamingException, NoSuchElementException, ParseException, IOException, SchemaException, TransformException, FactoryException {
 		SimpleDateFormat dtFormat = new SimpleDateFormat("MM/dd/yyyy");
+		String baseFileName = FilenameUtils.getBaseName(shorelineFile.getName());
 		String viewName;
 		try (
 				Connection connection = getConnection();
@@ -83,6 +85,7 @@ public class ShorelineLidarFileDao extends ShorelineFileDao {
 							dtFormat.parse(shorelineDate),
 							true, //lidar always has MHW = true 
 							shorelineFile.getName(),
+							baseFileName,
 							"",
 							MHW_FIELD_NAME);
 					shorelineDateToIdMap.put(shorelineDate, shorelineId);
@@ -115,7 +118,7 @@ public class ShorelineLidarFileDao extends ShorelineFileDao {
 						reprojectedY,
 						Double.valueOf(point[3]));
 			}
-			viewName = createViewAgainstWorkspace(connection, workspace);
+			viewName = createViewAgainstWorkspace(connection, workspace, baseFileName);
 		}
 		return viewName;
 	}

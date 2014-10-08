@@ -67,6 +67,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 		String uncertaintyFieldName = (String) bm.getKey(UNCY_FIELD_NAME);
 		String mhwFieldName = (String) bm.getKey(MHW_FIELD_NAME);
 		String orientation = ""; // Not yet sure what to do here
+		String baseFileName = FilenameUtils.getBaseName(shpFile.getName());
 		File parentDirectory = shpFile.getParentFile();
 		deleteExistingPointFiles(parentDirectory);
 		String[][] fieldNames = null;
@@ -88,7 +89,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 			File pointsShapefile;
 			try {
 				LOGGER.debug("Exploding shapefile at {}", shpFile.getAbsolutePath());
-				pointsShapefile = xploder.explode(parentDirectory + File.separator + FilenameUtils.getBaseName(shpFile.getName()));
+				pointsShapefile = xploder.explode(parentDirectory + File.separator + baseFileName);
 				LOGGER.debug("Shapefile exploded");
 			} catch (Exception ex) {
 				throw new IOException(ex);
@@ -116,7 +117,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 						}
 
 						if (lastRecordId != recordId) {
-							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, orientation, "");
+							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, baseFileName, orientation, "");
 
 							if (fieldNames != null && fieldNames.length > 0) {
 								Map<String, String> auxCols = getAuxillaryColumnsFromFC(sf, fieldNames);
@@ -130,7 +131,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 						insertPointIntoShorelinePointsTable(connection, shorelineId, sf, uncertaintyFieldName, uncertaintyType);
 					}
 
-					viewName = createViewAgainstWorkspace(connection, workspace);
+					viewName = createViewAgainstWorkspace(connection, workspace, baseFileName);
 					if (StringUtils.isBlank(viewName)) {
 						throw new SQLException("Could not create view");
 					}
