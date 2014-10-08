@@ -393,7 +393,7 @@ var Shorelines = {
 					var disabledDates = CONFIG.tempSession.getDisabledDatesForShoreline(layerName);
 					if (disabledDates.indexOf(date) === -1) {
 						html += '<Rule><ogc:Filter>';
-						html += '<ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*">';
+						html += '<ogc:PropertyIsLike escape="!" singleChar="." wildCard="*">';
 						html += '<ogc:PropertyName>';
 						html += groupColumn.trim();
 						html += '</ogc:PropertyName>';
