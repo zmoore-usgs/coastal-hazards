@@ -95,10 +95,10 @@ public class SessionService extends HttpServlet {
 							String viewName = workspace + "_" + layer + "_shorelines";
 							dao.removeShorelineView(viewName);
 							LOG.info("Deleted view {}", viewName);
-							geoserverHandler.removeLayer(geoserverDataDir, workspace, store, layer);
+							geoserverHandler.removeLayer(workspace, store, workspace + "_" + layer + "_shorelines");
 						}
 					} else {
-						geoserverHandler.removeLayer(geoserverDataDir, workspace, store, layer);
+						geoserverHandler.removeLayer(workspace, store, workspace + "_" + layer + "_shorelines");
 					}
 				} catch (MalformedURLException | SQLException ex) {
 					responseMap.put("error", "Could not remove layer: " + ex.getMessage());
