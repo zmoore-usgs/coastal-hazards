@@ -268,7 +268,7 @@ var Shorelines = {
 							});
 
 							var wmsLayer = new OpenLayers.Layer.WMS(
-								layer.title,
+								layer.name,
 								'geoserver/' + layer.prefix + '/wms',
 								{
 									layers: [layer.name],
@@ -288,6 +288,7 @@ var Shorelines = {
 									// This will cause any request larger than this many characters to be a POST
 									maxGetUrlLength: 2048
 								},
+								title : layer.title,
 								singleTile: true,
 								ratio: 1,
 								groupByAttribute: groupingColumn,
@@ -391,12 +392,16 @@ var Shorelines = {
 					var date = colorLimitPairs[lpIndex][1];
 					var disabledDates = CONFIG.tempSession.getDisabledDatesForShoreline(layerName);
 					if (disabledDates.indexOf(date) === -1) {
-						html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>';
+						html += '<Rule><ogc:Filter>';
+						html += '<ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*">';
+						html += '<ogc:PropertyName>';
 						html += groupColumn.trim();
 						html += '</ogc:PropertyName>';
 						html += '<ogc:Literal>';
 						html += colorLimitPairs[lpIndex][1];
-						html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name="fill">#FFFFFF</CssParameter></Fill><Stroke><CssParameter name="stroke">';
+						html += '</ogc:Literal>';
+						html += '</ogc:PropertyIsLike>';
+						html += '</ogc:Filter><PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name="fill">#FFFFFF</CssParameter></Fill><Stroke><CssParameter name="stroke">';
 						html += colorLimitPairs[lpIndex][0];
 						html += '</CssParameter></Stroke></Mark><Size>'+scaleDenominatorFunction+'</Size></Graphic></PointSymbolizer></Rule>';
 					}
@@ -441,11 +446,9 @@ var Shorelines = {
 
 		$(layers).each(function (i, layer) {
 			if (layer.zoomToWhenAdded) {
-				var layerNS = layer.prefix,
-					layerName = layer.name,
-					mapLayer = CONFIG.ows.getLayerByName({
-						layerNS: layerNS,
-						layerName: layerName
+					var mapLayer = CONFIG.ows.getLayerByName({
+						layerNS: layer.prefix,
+						layerName: layer.name
 					}),
 					mlBbox,
 					lbbox;
@@ -511,11 +514,11 @@ var Shorelines = {
 
 			toggleDiv.addClass('switch').addClass('feature-toggle');
 			toggleDiv.data('date', date);//will be used by click handler
-
+			toggleDiv.data('layer-name', layerName);
+			
 			var checkbox = $('<input />').attr({
 				type: 'checkbox'
-			})
-				.val(date);
+			}).val(date);
 
 			if (checked) {
 				checkbox.attr('checked', 'checked');
@@ -570,7 +573,7 @@ var Shorelines = {
 			attr('id', this.name).
 			append(colorTableContainer));
 
-		$('#' + layerName + ' .switch').each(function (index, element) {
+		$('.switch').each(function (index, element) {
 			var attachedLayer = event.object.prefix + ':' + layerName;
 			$(element).on('switch-change',
 				function (event, data) {
@@ -606,17 +609,18 @@ var Shorelines = {
 					var sldBody = Shorelines.createSLDBody({
 						colorDatePairings: layer.colorGroups,
 						groupColumn: layer.groupByAttribute,
-						layerTitle: layerName.split(':')[1],
-						layerName: layerName
+						layerTitle: layer.title,
+						layerName: layer.prefix + ':' + layer.name
 					});
+					
 					layer.params.SLD_BODY = sldBody;
-					layer.redraw();
+					layer.redraw(true);
 					$("table.tablesorter").trigger('update', false);
 				});
 		});
 
 		Shorelines.setupTableSorting();
-		$('#' + layerName + ' .switch').bootstrapSwitch();
+		$('.switch').bootstrapSwitch();
 
 		// Check to see if we need to create a wildcard column by seeing if there's anything to wildcard
 		var ignoredColumns = ['id', 'date'];
