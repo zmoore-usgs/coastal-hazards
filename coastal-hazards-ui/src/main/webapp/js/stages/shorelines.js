@@ -17,7 +17,7 @@ var Shorelines = {
 			'response.encoding': 'json',
 			'filename.param': 'qqfile',
 			'action': 'stage',
-			'workspace' : 'added during app init'
+			'workspace': 'added during app init'
 		}
 	},
 	uploadExtraParams: {
@@ -268,7 +268,7 @@ var Shorelines = {
 							});
 
 							var wmsLayer = new OpenLayers.Layer.WMS(
-								layer.title,
+								layer.name,
 								'geoserver/' + layer.prefix + '/wms',
 								{
 									layers: [layer.name],
@@ -288,6 +288,7 @@ var Shorelines = {
 									// This will cause any request larger than this many characters to be a POST
 									maxGetUrlLength: 2048
 								},
+								title: layer.title,
 								singleTile: true,
 								ratio: 1,
 								groupByAttribute: groupingColumn,
@@ -318,19 +319,19 @@ var Shorelines = {
 		var groupColumn = args.groupColumn;
 		var layer = args.layer;
 		var layerName = args.layerName || layer.prefix + ':' + layer.name;
-		var scaleDenominatorFunction = '<ogc:Function name="min">' + 
-                  '<ogc:Literal>6</ogc:Literal>' + 
-                  '<ogc:Function name="max">' + 
-                    '<ogc:Literal>2</ogc:Literal>' + 
-                    '<ogc:Div>' + 
-                      '<ogc:Literal>1000000</ogc:Literal>' + 
-                      '<ogc:Function name="env">' + 
-                        '<ogc:Literal>wms_scale_denominator</ogc:Literal>' + 
-                      '</ogc:Function>' + 
-                    '</ogc:Div>' + 
-                  '</ogc:Function>' + 
-                '</ogc:Function>';
-			
+		var scaleDenominatorFunction = '<ogc:Function name="min">' +
+			'<ogc:Literal>6</ogc:Literal>' +
+			'<ogc:Function name="max">' +
+			'<ogc:Literal>2</ogc:Literal>' +
+			'<ogc:Div>' +
+			'<ogc:Literal>1000000</ogc:Literal>' +
+			'<ogc:Function name="env">' +
+			'<ogc:Literal>wms_scale_denominator</ogc:Literal>' +
+			'</ogc:Function>' +
+			'</ogc:Div>' +
+			'</ogc:Function>' +
+			'</ogc:Function>';
+
 		if (!isNaN(colorDatePairings[0][1])) {
 			LOG.info('Shorelines.js::?: Grouping will be done by number');
 			// Need to first find out about the featuretype
@@ -344,7 +345,7 @@ var Shorelines = {
 					fromDefinedColors: true
 				}).capitalize(true) + '</ogc:Literal>';
 			};
-			
+
 			sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>' +
 				'<StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
 				'<NamedLayer>' +
@@ -356,9 +357,9 @@ var Shorelines = {
 				'<Graphic>' +
 				'<Mark>' +
 				'<WellKnownName>circle</WellKnownName>' +
-				'<Fill>' + 
-				'<CssParameter name="fill">#FF0000</CssParameter>' + 
-				'</Fill>' + 
+				'<Fill>' +
+				'<CssParameter name="fill">#FF0000</CssParameter>' +
+				'</Fill>' +
 				'<Stroke>' +
 				'<CssParameter name="stroke">' +
 				'<ogc:Function name="Categorize">' +
@@ -370,7 +371,7 @@ var Shorelines = {
 				'<CssParameter name="stroke-width">1</CssParameter>' +
 				'</Stroke>' +
 				'</Mark>' +
-				'<Size>'+scaleDenominatorFunction+'</Size>' + 
+				'<Size>' + scaleDenominatorFunction + '</Size>' +
 				'</Graphic>' +
 				'</PointSymbolizer>' +
 				'</Rule>' +
@@ -385,20 +386,24 @@ var Shorelines = {
 			LOG.debug('Shorelines.js::?: Geoserver date column is actually a string');
 			createRuleSets = function (colorLimitPairs) {
 				var html = '';
-				
-				  
+
+
 				for (var lpIndex = 0; lpIndex < colorLimitPairs.length; lpIndex++) {
 					var date = colorLimitPairs[lpIndex][1];
 					var disabledDates = CONFIG.tempSession.getDisabledDatesForShoreline(layerName);
 					if (disabledDates.indexOf(date) === -1) {
-						html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>';
+						html += '<Rule><ogc:Filter>';
+						html += '<ogc:PropertyIsLike escape="!" singleChar="." wildCard="*">';
+						html += '<ogc:PropertyName>';
 						html += groupColumn.trim();
 						html += '</ogc:PropertyName>';
 						html += '<ogc:Literal>';
 						html += colorLimitPairs[lpIndex][1];
-						html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name="fill">#FFFFFF</CssParameter></Fill><Stroke><CssParameter name="stroke">';
+						html += '</ogc:Literal>';
+						html += '</ogc:PropertyIsLike>';
+						html += '</ogc:Filter><PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name="fill">#FFFFFF</CssParameter></Fill><Stroke><CssParameter name="stroke">';
 						html += colorLimitPairs[lpIndex][0];
-						html += '</CssParameter></Stroke></Mark><Size>'+scaleDenominatorFunction+'</Size></Graphic></PointSymbolizer></Rule>';
+						html += '</CssParameter></Stroke></Mark><Size>' + scaleDenominatorFunction + '</Size></Graphic></PointSymbolizer></Rule>';
 					}
 				}
 
@@ -441,17 +446,15 @@ var Shorelines = {
 
 		$(layers).each(function (i, layer) {
 			if (layer.zoomToWhenAdded) {
-				var layerNS = layer.prefix,
-					layerName = layer.name,
-					mapLayer = CONFIG.ows.getLayerByName({
-						layerNS: layerNS,
-						layerName: layerName
-					}),
+				var mapLayer = CONFIG.ows.getLayerByName({
+					layerNS: layer.prefix,
+					layerName: layer.name
+				}),
 					mlBbox,
 					lbbox;
 				if (mapLayer) {
 					mlBbox = mapLayer.bbox['EPSG:4326'];
-					
+
 					if (mlBbox) {
 						lbbox = mlBbox.bbox;
 						bounds.extend(new OpenLayers.Bounds(lbbox[1], lbbox[0], lbbox[3], lbbox[2]).
@@ -511,11 +514,11 @@ var Shorelines = {
 
 			toggleDiv.addClass('switch').addClass('feature-toggle');
 			toggleDiv.data('date', date);//will be used by click handler
+			toggleDiv.data('layer-name', layerName);
 
 			var checkbox = $('<input />').attr({
 				type: 'checkbox'
-			})
-				.val(date);
+			}).val(date);
 
 			if (checked) {
 				checkbox.attr('checked', 'checked');
@@ -560,17 +563,17 @@ var Shorelines = {
 			$('<a />').attr({
 			href: '#' + this.name,
 			'data-toggle': 'tab'
-		}).html(this.name)));
+		}).html(this.title)));
 
 		LOG.debug('Shorelines.js::createFeatureTable:: Adding color feature table to DOM');
 
 		tabContent.append(
 			$('<div />').
 			addClass('tab-pane active').
-			attr('id', this.name).
+			attr('id', this.title).
 			append(colorTableContainer));
 
-		$('#' + layerName + ' .switch').each(function (index, element) {
+		$('.switch').each(function (index, element) {
 			var attachedLayer = event.object.prefix + ':' + layerName;
 			$(element).on('switch-change',
 				function (event, data) {
@@ -606,17 +609,18 @@ var Shorelines = {
 					var sldBody = Shorelines.createSLDBody({
 						colorDatePairings: layer.colorGroups,
 						groupColumn: layer.groupByAttribute,
-						layerTitle: layerName.split(':')[1],
-						layerName: layerName
+						layerTitle: layer.title,
+						layerName: layer.prefix + ':' + layer.name
 					});
+
 					layer.params.SLD_BODY = sldBody;
-					layer.redraw();
+					layer.redraw(true);
 					$("table.tablesorter").trigger('update', false);
 				});
 		});
 
 		Shorelines.setupTableSorting();
-		$('#' + layerName + ' .switch').bootstrapSwitch();
+		$('.switch').bootstrapSwitch();
 
 		// Check to see if we need to create a wildcard column by seeing if there's anything to wildcard
 		var ignoredColumns = ['id', 'date'];
@@ -746,7 +750,8 @@ var Shorelines = {
 		Shorelines.disableRemoveButton();
 		LOG.debug('Shorelines.js::listboxChanged: Removing all shorelines from map that were not selected');
 		$("#shorelines-list option:not(:selected)").each(function (index, option) {
-			var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
+			var layerName = (option.value || ':').split(':')[1],
+				layers = CONFIG.map.getMap().getLayersBy('name', layerName);
 			if (layers.length) {
 				$(layers).each(function (i, layer) {
 					CONFIG.map.getMap().removeLayer(layer);
@@ -872,41 +877,51 @@ var Shorelines = {
 	removeResource: function (args) {
 		"use strict";
 		args = args || {};
-		var layer = args.layer || $('#shorelines-list option:selected')[0].text;
-		var store = args.store || 'shorelines';
-		var callbacks = args.callbacks || [
-			function (data, textStatus, jqXHR) {
-				CONFIG.ui.showAlert({
-					message: 'Shorelines removed',
-					caller: Shorelines,
-					displayTime: 4000,
-					style: {
-						classes: ['alert-success']
-					}
-				});
-				CONFIG.ows.getWMSCapabilities({
-					namespace: CONFIG.tempSession.getCurrentSessionKey(),
-					callbacks: {
-						success: [
-							function () {
-								$('#shorelines-list').val('');
-								$('#shorelines-list').trigger('change');
-								CONFIG.ui.switchTab({
-									caller: Shorelines,
-									tab: 'view'
-								});
-								Shorelines.populateFeaturesList();
-							}
-						]
-					}
-				});
+		var layer = args.layer || $('#shorelines-list option:selected')[0].text,
+			store = args.store || 'shorelines',
+			cutOffIndex = layer.lastIndexOf(Shorelines.suffixes[0]),
+			callbacks = args.callbacks || [
+				function (data, textStatus, jqXHR) {
+					CONFIG.ui.showAlert({
+						message: 'Shorelines removed',
+						caller: Shorelines,
+						displayTime: 4000,
+						style: {
+							classes: ['alert-success']
+						}
+					});
+					CONFIG.ows.getWMSCapabilities({
+						namespace: CONFIG.tempSession.getCurrentSessionKey(),
+						callbacks: {
+							success: [
+								function () {
+									$('#shorelines-list').val('');
+									$('#shorelines-list').trigger('change');
+									CONFIG.ui.switchTab({
+										caller: Shorelines,
+										tab: 'view'
+									});
+									Shorelines.populateFeaturesList();
+								}
+							]
+						}
+					});
 
-			}
-		];
+				}
+			];
+		
+		// I don't want the '_shorelines' suffix going into the removeResource function
+		if (cutOffIndex !== -1) {
+			layer = layer.substring(0, cutOffIndex);
+		}
+		
 		try {
 			CONFIG.tempSession.removeResource({
 				store: store,
 				layer: layer,
+				extraParams: {
+					isShoreline : 'true'
+				},
 				callbacks: callbacks
 			});
 		} catch (ex) {
@@ -945,7 +960,7 @@ var Shorelines = {
 
 							if (success === 'true') {
 								headers = headers.split(',');
-								
+
 								if (headers.length < Shorelines.mandatoryColumns.length) {
 									LOG.warn('Shorelines.js::addShorelines: There are not enough attributes in the selected shapefile to constitute a valid shoreline. Will be deleted. Needed: ' + Shorelines.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
 									Shorelines.removeResource();
@@ -978,23 +993,23 @@ var Shorelines = {
 											foundAllRequiredColumns = false;
 										}
 									});
-									
-									var doUpload = function() {
+
+									var doUpload = function () {
 										$.ajax(Shorelines.uploadRequest.endpoint, {
-											type : 'POST',
-											data : {
-												action : 'import',
-												token : token,
-												workspace : CONFIG.tempSession.session.id,
-												columns : JSON.stringify(layerColumns)
+											type: 'POST',
+											data: {
+												action: 'import',
+												token: token,
+												workspace: CONFIG.tempSession.session.id,
+												columns: JSON.stringify(layerColumns)
 											},
-											success : function (data) {
+											success: function (data) {
 												var layerName = data.layer,
 													workspace = CONFIG.tempSession.session.id;
-												
+
 												CONFIG.ows.getWMSCapabilities({
 													namespace: workspace,
-													layerName : layerName,
+													layerName: layerName,
 													callbacks: {
 														success: [
 															function (args) {
@@ -1018,7 +1033,7 @@ var Shorelines = {
 													}
 												});
 											},
-											error : function () {
+											error: function () {
 												Shorelines.removeResource();
 												CONFIG.ui.showAlert({
 													message: 'There was an error performing a shoreline import - Check Logs',

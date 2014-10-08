@@ -663,26 +663,29 @@ CCH.Session = function (name, isPerm) {
 			location.reload(true);
 		},
 		removeResource: function (args) {
-			var store = args.store;
-			var layer = args.layer;
-			var callbacks = args.callbacks || [];
-			var workspace = args.session || CONFIG.tempSession.getCurrentSessionKey();
+			var store = args.store,
+				layer = args.layer,
+				callbacks = args.callbacks || [],
+				workspace = args.session || CONFIG.tempSession.getCurrentSessionKey(),
+				extraParams = args.extraParams || {},
+				params = $.extend({}, {
+					action: 'remove-layer',
+					workspace: workspace,
+					store: store,
+					layer: layer
+				}, extraParams);
 
 			if (workspace.toLowerCase() === CONFIG.name.published) {
 				throw 'Workspace cannot be read-only (Ex.: ' + CONFIG.name.published + ')';
 			}
 
-			$.get('service/session', {
-				action: 'remove-layer',
-				workspace: workspace,
-				store: store,
-				layer: layer
-			},
-			function (data, textStatus, jqXHR) {
-				callbacks.each(function (callback) {
-					callback(data, textStatus, jqXHR);
-				});
-			}, 'json');
+			$.get('service/session',
+				params,
+				function (data, textStatus, jqXHR) {
+					callbacks.each(function (callback) {
+						callback(data, textStatus, jqXHR);
+					});
+				}, 'json');
 		}
 	});
 };

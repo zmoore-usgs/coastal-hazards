@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.service;
 
+import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineShapefileDAO;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
@@ -7,9 +8,13 @@ import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -37,16 +42,25 @@ public class SessionService extends HttpServlet {
 	private static String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
 	private static String GEOSERVER_DATA_DIR_KEY = "coastal-hazards.geoserver.datadir";
 	private static final long serialVersionUID = 5022377389976105019L;
+	private String jndiDbConnName;
 
 	@Override
-	public void init() throws ServletException {
+	public void init(ServletConfig servletConfig) throws ServletException {
 		super.init();
 		props = JNDISingleton.getInstance();
+
 		geoserverEndpoint = props.getProperty(GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY);
 		geoserverUsername = props.getProperty(GEOSERVER_USER_PARAM_CONFIG_KEY);
 		geoserverPassword = props.getProperty(GEOSERVER_PASS_PARAM_CONFIG_KEY);
 		geoserverDataDir = props.getProperty(GEOSERVER_DATA_DIR_KEY);
 		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
+
+		String jndiDbInitParam = servletConfig.getInitParameter("jndi.dbconn.name.param");
+		if (StringUtils.isNotBlank(jndiDbInitParam)) {
+			jndiDbConnName = "jdbc/" + jndiDbInitParam;
+		} else {
+			jndiDbConnName = "jdbc/dsas";
+		}
 	}
 
 	protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -70,12 +84,23 @@ public class SessionService extends HttpServlet {
 			} else if ("remove-layer".equals(action) && !"published".equalsIgnoreCase(workspace.trim())) {
 				try {
 					LOG.info("Remove layer called");
-					if (layer.toLowerCase(Locale.US).contains("shoreline")) {
+
+					boolean isShoreline = Boolean.parseBoolean(request.getParameter("isShoreline"));
+
+					if (isShoreline) {
 						LOG.info("Shoreline layer being removed. First going to try to remove from database");
-						
+						ShorelineShapefileDAO dao = new ShorelineShapefileDAO(jndiDbConnName);
+						if (dao.removeShorelines(workspace, layer)) {
+							LOG.info("No more shorelines exist workspace {}. Will delete the view", workspace);
+							String viewName = workspace + "_" + layer + "_shorelines";
+							dao.removeShorelineView(viewName);
+							LOG.info("Deleted view {}", viewName);
+							geoserverHandler.removeLayer(geoserverDataDir, workspace, store, layer);
+						}
+					} else {
+						geoserverHandler.removeLayer(geoserverDataDir, workspace, store, layer);
 					}
-					geoserverHandler.removeLayer(geoserverDataDir, workspace, store, layer);
-				} catch (MalformedURLException ex) {
+				} catch (MalformedURLException | SQLException ex) {
 					responseMap.put("error", "Could not remove layer: " + ex.getMessage());
 					RequestResponseHelper.sendErrorResponse(response, responseMap);
 					return;
@@ -116,8 +141,7 @@ public class SessionService extends HttpServlet {
 
 	// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 	/**
-	 * Handles the HTTP
-	 * <code>GET</code> method.
+	 * Handles the HTTP <code>GET</code> method.
 	 *
 	 * @param request servlet request
 	 * @param response servlet response
@@ -131,8 +155,7 @@ public class SessionService extends HttpServlet {
 	}
 
 	/**
-	 * Handles the HTTP
-	 * <code>POST</code> method.
+	 * Handles the HTTP <code>POST</code> method.
 	 *
 	 * @param request servlet request
 	 * @param response servlet response
