@@ -7,12 +7,12 @@
 numPar = 4 # number of cores
 num_c = 5 # num of cols in file
 
-localRun <- TRUE
+localRun <- FALSE
 
 if (localRun){
   Rprof("DSAS_profiler.txt")
   ci <- 0.95
-  input <- "CoastalChangeHazardsParser.tsv"
+  input <- "testOut.tsv"
   ptm <- proc.time() # for time of process
 }
 
