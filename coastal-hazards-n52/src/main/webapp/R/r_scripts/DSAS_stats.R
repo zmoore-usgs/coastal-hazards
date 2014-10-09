@@ -7,12 +7,12 @@
 numPar = 4
 num_c = 5 # num of cols in file
 
-localRun <- FALSE
+localRun <- TRUE
 
 if (localRun){
   Rprof("DSAS_profiler.txt")
   ci <- 0.95
-  input <- "testOut.tsv"
+  input <- "CoastalChangeHazardsParser.tsv"
   ptm <- proc.time() # for time of process
 }
 
@@ -124,6 +124,7 @@ EPR <-  rep(NA,numBlck)
 getDSAS <- function(blockText){  
   splitsTxt <- unlist(strsplit(blockText,delim))
   dates <- as(as.Date(splitsTxt[seq(t_i,length(splitsTxt),num_c)],format="%Y-%m-%d"),"numeric")
+  
   # distance is additive: dist + bias_distance
   dist  <- as(splitsTxt[seq(d_i,length(splitsTxt),num_c)],"numeric") + as(splitsTxt[seq(b_i,length(splitsTxt),num_c)],"numeric")
   uncy  <- sqrt(as(splitsTxt[seq(u_i,length(splitsTxt),num_c)],"numeric")^2 +as(splitsTxt[seq(bu_i,length(splitsTxt),num_c)],"numeric")^2)#
@@ -133,8 +134,8 @@ getDSAS <- function(blockText){
   dates <- dates[useI]
   dist  <- dist[useI]
   uncy  <- uncy[useI]
-  LRRout   <- calcLRR(dates,dist)
-  WLRout   <- calcWLR(dates,dist,uncy)
+  LRRout   <- as.numeric(calcLRR(dates,dist))
+  WLRout   <- as.numeric(calcWLR(dates,dist,uncy))
   SCE   <- calcSCE(dist)
   NSMout  <- calcNSM(dates,dist)
   return(c(LRRout,WLRout,SCE,NSMout))  
