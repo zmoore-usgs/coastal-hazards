@@ -4,7 +4,7 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-numPar = 4
+numPar = 4 # number of cores
 num_c = 5 # num of cols in file
 
 localRun <- FALSE
@@ -56,7 +56,7 @@ numBlck<- length(blockI)
 textBlck <- vector(length=numBlck,mode="character")
 
 for (blockNumber in 1:numBlck){
-  if (blockNumber==numBlck) {enI <- nRead-1}
+  if (blockNumber==numBlck) {enI <- nRead}
   else{enI <- blockI[blockNumber+1]-1}
   stI <- blockI[blockNumber]+1
   textBlck[blockNumber] <- paste(fileLines[stI:enI],collapse=delim)
@@ -124,6 +124,7 @@ EPR <-  rep(NA,numBlck)
 getDSAS <- function(blockText){  
   splitsTxt <- unlist(strsplit(blockText,delim))
   dates <- as(as.Date(splitsTxt[seq(t_i,length(splitsTxt),num_c)],format="%Y-%m-%d"),"numeric")
+  
   # distance is additive: dist + bias_distance
   dist  <- as(splitsTxt[seq(d_i,length(splitsTxt),num_c)],"numeric") + as(splitsTxt[seq(b_i,length(splitsTxt),num_c)],"numeric")
   uncy  <- sqrt(as(splitsTxt[seq(u_i,length(splitsTxt),num_c)],"numeric")^2 +as(splitsTxt[seq(bu_i,length(splitsTxt),num_c)],"numeric")^2)#
@@ -133,20 +134,22 @@ getDSAS <- function(blockText){
   dates <- dates[useI]
   dist  <- dist[useI]
   uncy  <- uncy[useI]
-  LRRout   <- calcLRR(dates,dist)
-  WLRout   <- calcWLR(dates,dist,uncy)
+  LRRout   <- as.numeric(calcLRR(dates,dist))
+  WLRout   <- as.numeric(calcWLR(dates,dist,uncy))
   SCE   <- calcSCE(dist)
   NSMout  <- calcNSM(dates,dist)
   return(c(LRRout,WLRout,SCE,NSMout))  
 }
 
 
-
+numPar = min(ceiling(numBlck/2),numPar) # reduce cores if necessary
 numInEach = ceiling(numBlck/numPar)
 endI = seq(0, numBlck, numInEach)
 if(endI[length(endI)] != numBlck){
   endI[length(endI) + 1] = numBlck
 }
+
+
 
 ## initialize parallelization
 library(doSNOW)
