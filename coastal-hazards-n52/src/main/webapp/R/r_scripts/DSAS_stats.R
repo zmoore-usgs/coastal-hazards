@@ -56,7 +56,7 @@ numBlck<- length(blockI)
 textBlck <- vector(length=numBlck,mode="character")
 
 for (blockNumber in 1:numBlck){
-  if (blockNumber==numBlck) {enI <- nRead-1}
+  if (blockNumber==numBlck) {enI <- nRead}
   else{enI <- blockI[blockNumber+1]-1}
   stI <- blockI[blockNumber]+1
   textBlck[blockNumber] <- paste(fileLines[stI:enI],collapse=delim)
