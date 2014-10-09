@@ -8,7 +8,7 @@ CCH.Session = function (name, isPerm) {
 		shorelines: Object.extended({
 			layers: [],
 			viewing: [],
-			groupingColumn: 'date_',
+			groupingColumn: 'date',
 			dateFormat: '',
 			view: Object.extended({
 				layer: Object.extended({
@@ -47,8 +47,7 @@ CCH.Session = function (name, isPerm) {
 
 		// - Because the session is used in the namespace for WFS-T, it needs to 
 		// not have a number at the head of it so add a random letter
-		var randID = String.fromCharCode(97 + Math.round(Math.random() * 25)) + Util.randomUUID();
-
+		var randID = String.fromCharCode(97 + Math.round(Math.random() * 25)) + Util.randomUUID().remove(/-/g).toLowerCase();
 		// Prepare the session on the OWS server
 		$.ajax('service/session?action=prepare&workspace=' + randID,
 			{
@@ -130,7 +129,7 @@ CCH.Session = function (name, isPerm) {
 
 		me.getStage = function (stage) {
 			//for backward compatibility, if existing sessions don't have the requested stage, try to attach it from the newStage object
-			if(!me.session.stage[stage]) { 
+			if (!me.session.stage[stage]) {
 				me.session.stage[stage] = me.newStage[stage];
 			}
 			return me.session.stage[stage];
@@ -664,26 +663,29 @@ CCH.Session = function (name, isPerm) {
 			location.reload(true);
 		},
 		removeResource: function (args) {
-			var store = args.store;
-			var layer = args.layer;
-			var callbacks = args.callbacks || [];
-			var workspace = args.session || CONFIG.tempSession.getCurrentSessionKey();
+			var store = args.store,
+				layer = args.layer,
+				callbacks = args.callbacks || [],
+				workspace = args.session || CONFIG.tempSession.getCurrentSessionKey(),
+				extraParams = args.extraParams || {},
+				params = $.extend({}, {
+					action: 'remove-layer',
+					workspace: workspace,
+					store: store,
+					layer: layer
+				}, extraParams);
 
-			if (workspace.toLowerCase() == CONFIG.name.published) {
+			if (workspace.toLowerCase() === CONFIG.name.published) {
 				throw 'Workspace cannot be read-only (Ex.: ' + CONFIG.name.published + ')';
 			}
 
-			$.get('service/session', {
-				action: 'remove-layer',
-				workspace: workspace,
-				store: store,
-				layer: layer
-			},
-			function (data, textStatus, jqXHR) {
-				callbacks.each(function (callback) {
-					callback(data, textStatus, jqXHR);
-				})
-			}, 'json')
+			$.get('service/session',
+				params,
+				function (data, textStatus, jqXHR) {
+					callbacks.each(function (callback) {
+						callback(data, textStatus, jqXHR);
+					});
+				}, 'json');
 		}
 	});
-}
+};

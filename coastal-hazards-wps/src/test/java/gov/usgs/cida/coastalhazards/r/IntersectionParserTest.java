@@ -47,10 +47,10 @@
 package gov.usgs.cida.coastalhazards.r;
 
 import static org.junit.Assert.*;
-import gov.usgs.cida.coastalhazards.util.Constants;
-import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
+import gov.usgs.cida.utilities.features.AttributeGetter;
+import gov.usgs.cida.utilities.features.Constants;
 import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
-import gov.usgs.cida.coastalhazards.util.AttributeGetter;
 
 import java.io.IOException;
 import java.net.URL;
@@ -92,7 +92,7 @@ public class IntersectionParserTest {
 
     @Test
     public void csvFromFeatureCollection() throws IOException, ParseException {
-    	FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollectionFromShp.featureCollectionFromShp(legacyShapefile);
+    	FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollectionFromShp.getFeatureCollectionFromShp(legacyShapefile);
         
         Map<Integer, List<Intersection>> map = new TreeMap<Integer, List<Intersection>>();
     	FeatureIterator<SimpleFeature> features = null;
@@ -133,7 +133,7 @@ public class IntersectionParserTest {
 
     @Test
     public void mhwValueTranslationFromIntersectionLayerTest() throws IOException {
-        FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollectionFromShp.featureCollectionFromShp(shapefile);
+        FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollectionFromShp.getFeatureCollectionFromShp(shapefile);
         
         Map<Integer, List<Intersection>> map = new TreeMap<Integer, List<Intersection>>();
     	FeatureIterator<SimpleFeature> features = null;

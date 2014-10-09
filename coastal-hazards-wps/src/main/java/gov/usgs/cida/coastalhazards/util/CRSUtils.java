@@ -10,9 +10,14 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
+
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+import gov.usgs.cida.utilities.features.AttributeGetter;
+import gov.usgs.cida.utilities.features.Constants;
+
 import java.util.LinkedList;
 import java.util.List;
+
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
@@ -28,14 +33,16 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import org.slf4j.LoggerFactory;
 
-import static gov.usgs.cida.coastalhazards.util.Constants.*;
+import static gov.usgs.cida.utilities.features.Constants.*;
 
 /**
  *
  * @author jiwalker
  */
 public class CRSUtils {
+	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(CRSUtils.class);
     
     private static GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
 
@@ -95,6 +102,7 @@ public class CRSUtils {
 					utmGeometry = JTS.transform(geometry, transform);
 				} catch (TransformException ex) {
 					// TODO handle exceptions
+					LOGGER.warn("Unhandled exception in transformFeatureCollection", ex);
 				}
 				feature.setDefaultGeometry(utmGeometry);
 				sfList.add(feature);
@@ -215,7 +223,13 @@ public class CRSUtils {
 				case POINT:
 					Point p = (Point)geometry;
 					if (isNewLineSegment(previous, current, getter)) {
-						lines.add(buildLineString(currentLine));
+						//only create a line if 2 or more points exist
+						if(currentLine.size() > 1) {
+							lines.add(buildLineString(currentLine));
+						} else {
+							//DO nothing right now, signifies a single point segnment
+							LOGGER.warn("Single point feature found and is being ignored, segment_id" + getter.getValue(Constants.SEGMENT_ID_ATTR, current));
+						}
 						currentLine = new LinkedList<>();
 					}
 					currentLine.add(p.getCoordinate());
@@ -253,8 +267,15 @@ public class CRSUtils {
 	}
 	
 	private static LineString buildLineString(List<Coordinate> coords) {
-		CoordinateSequence seq = new CoordinateArraySequence(coords.toArray(new Coordinate[coords.size()]));
-		LineString line = new LineString(seq, geometryFactory);
+		LineString line;
+		try {
+			CoordinateSequence seq = new CoordinateArraySequence(coords.toArray(new Coordinate[coords.size()]));
+			line = new LineString(seq, geometryFactory);
+		} catch(Exception e) {
+			LOGGER.error("Failed to build line string from list of coordinates", e);
+			line = null;
+		}
+		
 		return line;
 	}
 	

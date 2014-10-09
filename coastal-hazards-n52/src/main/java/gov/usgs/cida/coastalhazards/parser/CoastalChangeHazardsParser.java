@@ -1,10 +1,12 @@
 package gov.usgs.cida.coastalhazards.parser;
 
 import com.google.common.collect.Lists;
-import gov.usgs.cida.coastalhazards.util.AttributeGetter;
-import static gov.usgs.cida.coastalhazards.util.Constants.*;
+
+import static gov.usgs.cida.utilities.features.Constants.*;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
 import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
+import gov.usgs.cida.utilities.features.AttributeGetter;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.feature.FeatureCollection;

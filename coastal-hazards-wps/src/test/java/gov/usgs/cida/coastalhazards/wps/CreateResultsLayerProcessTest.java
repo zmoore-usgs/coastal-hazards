@@ -1,7 +1,8 @@
 package gov.usgs.cida.coastalhazards.wps;
 
-import gov.usgs.cida.coastalhazards.util.Constants;
-import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
+import gov.usgs.cida.utilities.features.Constants;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -9,12 +10,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import org.apache.commons.io.IOUtils;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
@@ -60,9 +64,9 @@ public class CreateResultsLayerProcessTest {
         }
         IOUtils.closeQuietly(reader);
         SimpleFeatureCollection transectfc = (SimpleFeatureCollection)
-                FeatureCollectionFromShp.featureCollectionFromShp(transects);
+                FeatureCollectionFromShp.getFeatureCollectionFromShp(transects);
         SimpleFeatureCollection intersectfc = (SimpleFeatureCollection)
-                FeatureCollectionFromShp.featureCollectionFromShp(intersects);
+                FeatureCollectionFromShp.getFeatureCollectionFromShp(intersects);
         // need to get the matching transect layer to run against
         CreateResultsLayerProcess createResultsLayerProcess = new CreateResultsLayerProcess(new DummyImportProcess(outTest), new DummyCatalog());
         createResultsLayerProcess.execute(buffer, transectfc, intersectfc, null, null, null);
@@ -72,7 +76,7 @@ public class CreateResultsLayerProcessTest {
     
     private void validateNSD(File shapefile) throws MalformedURLException, IOException {
         SimpleFeatureCollection resultsFC = (SimpleFeatureCollection)
-                FeatureCollectionFromShp.featureCollectionFromShp(shapefile.toURI().toURL());
+                FeatureCollectionFromShp.getFeatureCollectionFromShp(shapefile.toURI().toURL());
         
         SimpleFeatureType resultsFT = resultsFC.getSchema();
         AttributeDescriptor nsdAD = resultsFT.getDescriptor(Constants.NSD_ATTR);

@@ -9,7 +9,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.lang.reflect.Array;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -498,7 +500,7 @@ public class FileHelper {
                 log.debug(new StringBuilder("Unzipping: ").append(fileName).append(" to ").append(destinationPath).toString());
                 while ((count = zis.read(data, 0, BUFFER)) != -1) {
                     dest.write(data, 0, count);
-                }
+    }
                 dest.flush();
                 dest.close();
                 log.trace(new StringBuilder("Unzipped: ").append(fileName).append(" to ").append(destinationPath).toString());
@@ -614,10 +616,9 @@ public class FileHelper {
     }
 
     public static void removeHiddenEntries(File zipFile) throws IOException {
-        Set<String> hiddenFiles = new HashSet<String>();
+        Set<String> hiddenFiles = new HashSet<>();
 
-        ZipFile zf = new ZipFile(zipFile);
-        try {
+        try (ZipFile zf = new ZipFile(zipFile)){
 	        Enumeration<? extends ZipEntry> entries = zf.entries();
 	        while (entries.hasMoreElements()) {
 	            ZipEntry entry = entries.nextElement();
@@ -625,10 +626,6 @@ public class FileHelper {
 	                hiddenFiles.add(entry.getName());
 	            }
 	        }
-        } finally {
-        	// Do not go gentle into that good night, 
-        	// throw an Exception 'gainst the dying of the write
-        	zf.close();
         }
 
         if (!hiddenFiles.isEmpty()) {
@@ -681,6 +678,14 @@ public class FileHelper {
 
     }
 
+	public static boolean isZipFile(File file) throws IOException {
+		long n;
+		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+			n = raf.readInt();
+		}
+		return n == 0x504B0304;
+	}
+	
     public static File zipFile(File file, String newName, FileFilter filter) throws FileNotFoundException, IOException {
         String zipFileName = StringUtils.isBlank(newName) ? file.getName() : newName;
 
@@ -715,4 +720,29 @@ public class FileHelper {
             IOUtils.closeQuietly(zos);
         }
     }
+
+	/**
+	 * Creates a base64 encoded token based on a file name
+	 * @param file
+	 * @param fullPath use the full path of the file to create the token, otherwise
+	 * just the file name
+	 * @return 
+	 */
+	public static String base64EncodeFileName(File file, boolean fullPath) {
+		if (!file.exists()) {
+			return "";
+		} else {
+			byte[] input;
+			Charset encodeCharset = Charset.defaultCharset();
+			
+			if (fullPath) {
+				input = file.getAbsolutePath().getBytes(encodeCharset);
+			} else {
+				input = file.getName().getBytes(encodeCharset);
+			}
+			
+			byte[] encodedPath = base64Encode(input);
+			return new String(encodedPath, encodeCharset);
+		}
+	}
 }

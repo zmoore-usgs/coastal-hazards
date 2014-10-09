@@ -44,68 +44,84 @@
  * or profits arising in connection with the access, use, quality, or performance of this software.
  */
 
-package gov.usgs.cida.coastalhazards.util;
+package gov.usgs.cida.utilities.features;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.lang.StringUtils;
-import org.geotools.data.DataStore;
-import org.geotools.data.DataStoreFinder;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.store.EmptyFeatureCollection;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.feature.simple.SimpleFeatureTypeImpl;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class FeatureCollectionFromShp {
+public class Constants {
+    
+    public static final CoordinateReferenceSystem REQUIRED_CRS_WGS84 = DefaultGeographicCRS.WGS84;
+    public static final String DEFAULT_GEOM_ATTR = "the_geom";
+    public static final String BASELINE_ORIENTATION_ATTR = "Orient";
+    public static final String TRANSECT_ID_ATTR = "TransectID";
+    public static final String DISTANCE_ATTR = "Distance";
+    public static final String DATE_ATTR = "Date_";
+    public static final String DB_DATE_ATTR = "date";
+    public static final String UNCY_ATTR = "uncy";
+    public static final String BASELINE_DIST_ATTR = "base_dist";
+    public static final String BASELINE_ID_ATTR = "BaselineID";
+    public static final String LRR_ATTR = "LRR";
+    public static final String LCI_ATTR = "LCI";
+    public static final String SCE_ATTR = "SCE";
+    public static final String NSD_ATTR = "NSD";
+    public static final String WLR_ATTR = "WLR";
+    public static final String WCI_ATTR = "WCI";
+    public static final String NSM_ATTR = "NSM";
+    public static final String EPR_ATTR = "EPR";
+    public static final String MHW_ATTR = "MHW";
 
-    private URL shapefile;
+    public static final String AVG_SLOPE_ATTR = "avg_slope";
+    public static final String BIAS_ATTR = "BIAS";
+    public static final String BIAS_UNCY_ATTR = "UNCYB";
+
+	// new constants tied to point features
+	public static final String SHORELINE_ID_ATTR = "shoreline_id";
+	public static final String SEGMENT_ID_ATTR = "segment_id";
     
-    public static FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollectionFromShp(URL shp) throws IOException {
-        if(null == shp){
-			throw new NullPointerException("The shapefile url cannot be null");
-		}
-		
-		FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
+    public static final boolean DEFAULT_MHW_VALUE = false;
+    
+    // Per http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf (Page 7), need value less that -10^38
+    public static final double  SHAPEFILE_NODATA = -1e39;
+    
+    public static final double EARTH_RADIUS = 6371000.0d;
+
+    public static enum Orientation {
+        SHOREWARD("shoreward", 1),
+        SEAWARD("seaward", -1),
+        UNKNOWN("unknown", 0);
         
-        Map<String, URL> connectParameters = new HashMap<String, URL>();
-        connectParameters.put("url", shp);
-        DataStore dataStore = DataStoreFinder.getDataStore(connectParameters);
-        String[] typeNames = dataStore.getTypeNames();
-        String name = null;
-        if (typeNames.length == 1) {
-            name = typeNames[0];
+        private final String orientation;
+        /* Sign is negative to indicate erosion, positive for accretion */
+        private final int sign;
+        
+        Orientation(String value, int sign) {
+            this.orientation = value;
+            this.sign = sign;
         }
-        else {
-            throw new RuntimeException("DataStore has no available features. I don't know how to deal with this");
+        
+        public String getValue() {
+            return orientation;
         }
-	
-	// TODO- During testing, name is sometimes null which throws NPE in dataStore.getSchema(name) - Why?
-	if (StringUtils.isBlank(name)) {
-		throw new RuntimeException("DataStore name list is missing.");
-	}
-		
-        SimpleFeatureType schema = dataStore.getSchema(name);
-        FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = 
-                dataStore.getFeatureSource(name);
-        featureCollection = featureSource.getFeatures();
-        return featureCollection;
-    }   
-    
-    public static SimpleFeatureCollection getEmptyFeatureCollection() {
-		SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-		builder.setName("empty");
-		SimpleFeatureType type = builder.buildFeatureType();
-		SimpleFeatureCollection emptyFeatureCollection = new EmptyFeatureCollection(type);
-		return emptyFeatureCollection;
-	}
+        
+        public int getSign() {
+            return sign;
+        }
+        
+        public static Orientation fromAttr(String value) {
+            if ("shoreward".equalsIgnoreCase(value)) {
+                return SHOREWARD;
+            }
+            else if ("seaward".equalsIgnoreCase(value)) {
+                return SEAWARD;
+            }
+            else {
+                return UNKNOWN;
+            }
+        }
+    }
 }

@@ -3,10 +3,12 @@ package gov.usgs.cida.coastalhazards.wps;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineSegment;
-import gov.usgs.cida.coastalhazards.util.Constants;
+
 import gov.usgs.cida.utilities.colors.AttributeRange;
 import gov.usgs.cida.utilities.colors.ColorMap;
 import gov.usgs.cida.utilities.colors.JetColorMap;
+import gov.usgs.cida.utilities.features.Constants;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
@@ -22,6 +24,7 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.coverage.grid.GridCoordinates2D;

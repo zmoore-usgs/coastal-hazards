@@ -49,10 +49,11 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.index.strtree.STRtree;
 
-import gov.usgs.cida.coastalhazards.util.AttributeGetter;
-import gov.usgs.cida.coastalhazards.util.Constants;
-import static gov.usgs.cida.coastalhazards.util.Constants.*;
+import static gov.usgs.cida.utilities.features.Constants.*;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+import gov.usgs.cida.utilities.features.AttributeGetter;
+import gov.usgs.cida.utilities.features.Constants;
+import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
 
 import java.util.Collection;
 import java.util.Date;
@@ -131,7 +132,12 @@ public class Intersection {
 		this.distance = dist;
 		this.transectId = transectId;
 		this.attGet = intersectionGetter;
-		this.date = parseDate(shorelineGetter.getValue(DATE_ATTR, shoreline));
+		//this has to support either shapefile or DB load
+		if(shorelineGetter.getValue(DATE_ATTR, shoreline) != null) {
+			this.date = parseDate(shorelineGetter.getValue(DATE_ATTR, shoreline));
+		} else if(shorelineGetter.getValue(DB_DATE_ATTR, shoreline) != null) {
+			this.date = parseDate(shorelineGetter.getValue(DB_DATE_ATTR, shoreline));
+		}
 		this.uncy = uncy;
 		this.isMeanHighWater = shorelineGetter.getBooleanFromMhwAttribute(shoreline);
 	}
@@ -226,7 +232,7 @@ public class Intersection {
 				featureObjectArr[i] = distance;
 			} else if (attGet.matches(attrType.getName(), MHW_ATTR)) {
 				featureObjectArr[i] = isMeanHighWater;
-			} else if (attGet.matches(attrType.getName(), DATE_ATTR)) {
+			} else if (attGet.matches(attrType.getName(), DATE_ATTR) || attGet.matches(attrType.getName(), DB_DATE_ATTR)) {
 				featureObjectArr[i] = date.toDate();
 			} else if (attGet.matches(attrType.getName(), UNCY_ATTR)) {
 				featureObjectArr[i] = uncy;
@@ -312,7 +318,13 @@ public class Intersection {
                 // must be a point
                 Point crossPoint = (Point) segment.intersection(line);
                 Orientation orientation = transect.getOrientation();
-                double distance = orientation.getSign()
+                
+                int sign = orientation.getSign();
+                if (sign == 0) {
+                    throw new PoorlyDefinedBaselineException("Baseline must define orientation");
+                }
+                
+                double distance = sign
                         * transect.getOriginCoord()
                         .distance(crossPoint.getCoordinate());
                 // use feature1 to get the date and MHW attribute (can't change within shoreline)
@@ -347,7 +359,13 @@ public class Intersection {
         Map<DateTime, Intersection> intersectionSubset = calculateIntersections(subTransect, strTree, useFarthest, getter);
         for (DateTime date : intersectionSubset.keySet()) {
             Intersection intersection = intersectionSubset.get(date);
-            intersection.distance = subTransect.getOrientation().getSign() * intersection.point.distance(origin);
+            
+            int sign = subTransect.getOrientation().getSign();
+            if (subTransect.getOrientation().getSign() == 0) {
+                throw new PoorlyDefinedBaselineException("Baseline must define orientation");
+            }
+            
+            intersection.distance = sign * intersection.point.distance(origin);
             if (intersectionsSoFar.containsKey(date)) {
                 boolean isFarther = Math.abs(intersection.distance) > Math.abs(intersectionsSoFar.get(date).distance);
                 // only true  && true

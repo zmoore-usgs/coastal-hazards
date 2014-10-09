@@ -51,8 +51,10 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
-import gov.usgs.cida.coastalhazards.util.Constants.Orientation;
+
+import gov.usgs.cida.utilities.features.Constants.Orientation;
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 /**
