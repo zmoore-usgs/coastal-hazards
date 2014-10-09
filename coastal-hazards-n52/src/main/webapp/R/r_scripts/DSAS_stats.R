@@ -4,7 +4,7 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-numPar = 4
+numPar = 4 # number of cores
 num_c = 5 # num of cols in file
 
 localRun <- TRUE
@@ -142,12 +142,14 @@ getDSAS <- function(blockText){
 }
 
 
-
+numPar = min(ceiling(numBlck/2),numPar) # reduce cores if necessary
 numInEach = ceiling(numBlck/numPar)
 endI = seq(0, numBlck, numInEach)
 if(endI[length(endI)] != numBlck){
   endI[length(endI) + 1] = numBlck
 }
+
+
 
 ## initialize parallelization
 library(doSNOW)
