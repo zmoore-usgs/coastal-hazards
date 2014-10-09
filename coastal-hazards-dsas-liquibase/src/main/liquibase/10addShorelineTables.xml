@@ -69,8 +69,8 @@
 						'and s.shoreline_name =' || quote_literal($2) ||
 					'LEFT JOIN shoreline_auxillary_attrs a ON s.id = a.shoreline_id ' ||
 						'and s.auxillary_name = a.attr_name);';
-				EXECUTE 'ALTER TABLE ' || viewname || ' OWNER TO coastal_hazards;';
-				EXECUTE 'GRANT ALL ON TABLE ' || viewname || ' TO coastal_hazards;';
+				EXECUTE 'ALTER TABLE ' || viewname || ' OWNER TO dsas;';
+				EXECUTE 'GRANT ALL ON TABLE ' || viewname || ' TO dsas;';
 				EXECUTE 'GRANT ALL ON TABLE ' || viewname || ' TO public;';
 			END;
 			$BODY$ LANGUAGE plpgsql;
