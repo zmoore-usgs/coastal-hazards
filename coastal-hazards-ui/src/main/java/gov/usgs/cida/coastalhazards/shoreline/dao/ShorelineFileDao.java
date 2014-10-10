@@ -1,9 +1,8 @@
 package gov.usgs.cida.coastalhazards.shoreline.dao;
 
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
-import gov.usgs.cida.utilities.features.Constants;
-
 import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
+import gov.usgs.cida.utilities.features.Constants;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -16,12 +15,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
 import org.geotools.feature.SchemaException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -35,7 +32,6 @@ public abstract class ShorelineFileDao {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineFileDao.class);
 	protected String JNDI_NAME;
-	protected final String DEFAULT_JNDI_NAME = "dsas";
 	public final static int DATABASE_PROJECTION = 4326;
 	public final static String[] REQUIRED_FIELD_NAMES = new String[]{Constants.DB_DATE_ATTR, Constants.UNCY_ATTR, Constants.MHW_ATTR};
 	public final static String[] PROTECTED_WORKSPACES = new String[]{JNDISingleton.getInstance().getProperty("coastal-hazards.workspace.published", "published")};
@@ -167,9 +163,9 @@ public abstract class ShorelineFileDao {
 
 	/**
 	 * Removes shorelines using workspace name and a wildcard match on the
-	 * shoreline name. 
-	 * 
-	 * Will also delete the associated view if there are no more rows with the 
+	 * shoreline name.
+	 *
+	 * Will also delete the associated view if there are no more rows with the
 	 * workspace name in them in the shorelines table
 	 *
 	 * @param workspace

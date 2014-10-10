@@ -1,5 +1,7 @@
 package gov.usgs.cida.coastalhazards.shoreline.dao;
 
+import gov.usgs.cida.coastalhazards.service.util.Property;
+import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
@@ -53,15 +55,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 	private static final String[] AUXILLARY_ATTRIBUTES = new String[]{"surveyID", "shoreInd", "defaultD", "name"};
 
 	public ShorelineShapefileDAO() {
-		this(null);
-	}
-
-	public ShorelineShapefileDAO(String jndiName) {
-		if (null == jndiName) {
-			this.JNDI_NAME = DEFAULT_JNDI_NAME;
-		} else {
-			this.JNDI_NAME = jndiName;
-		}
+		this.JNDI_NAME = PropertyUtil.getProperty(Property.JDBC_NAME);
 	}
 
 	@Override
@@ -164,26 +158,26 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 	public int getIntValue(String attribute, SimpleFeature feature) {
 		Object value = feature.getAttribute(attribute);
 		if (value instanceof Number) {
-			return ((Number)value).intValue();
+			return ((Number) value).intValue();
 		} else {
 			throw new ClassCastException("This attribute is not an Integer");
 		}
 	}
-	
+
 	public double getDoubleValue(String attribute, SimpleFeature feature) {
 		Object value = feature.getAttribute(attribute);
 		if (value instanceof Number) {
-			return ((Number)value).doubleValue();
+			return ((Number) value).doubleValue();
 		} else {
 			throw new ClassCastException("This attribute is not a floating point value");
 		}
 	}
-	
+
 	public boolean getBooleanValue(String attribute, SimpleFeature feature, boolean defaultValue) {
 		Object value = feature.getAttribute(attribute);
 		return AttributeGetter.extractBooleanValue(value, defaultValue);
 	}
-	
+
 	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
 		double x = sf.getBounds().getMaxX();
 		double y = sf.getBounds().getMaxY();

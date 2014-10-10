@@ -1,12 +1,12 @@
 package gov.usgs.cida.coastalhazards.service;
 
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.file.FileHelper;
 import gov.usgs.cida.coastalhazards.metadata.MetadataValidator;
+import gov.usgs.cida.coastalhazards.service.util.Property;
+import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.utilities.communication.CSWHandler;
-import gov.usgs.cida.utilities.properties.JNDISingleton;
 import gov.usgs.cida.utilities.xml.XMLUtils;
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,6 @@ import org.w3c.dom.Node;
 public class PublishService extends HttpServlet {
 
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(PublishService.class);
-	private static DynamicReadOnlyProperties props = null;
 	private static GeoserverHandler geoserverHandler = null;
 	private static CSWHandler cswHandler = null;
 	private static String geoserverEndpoint = null;
@@ -45,30 +44,23 @@ public class PublishService extends HttpServlet {
 	private static String geoserverPassword = null;
 	private static String publishedWorkspaceName = null;
 	private static String cswEndpoint = null;
-	private static final String GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.endpoint";
-	private static final String GEOSERVER_USER_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.username";
-	private static final String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
-	private static final String PUBLISHED_WS_PARAM_CONFIG_KEY = "coastal-hazards.workspace.published";
-	private static final String CSW_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.csw.internal.endpoint";
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		props = JNDISingleton.getInstance();
-		geoserverEndpoint = props.getProperty(GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY);
-		geoserverUsername = props.getProperty(GEOSERVER_USER_PARAM_CONFIG_KEY);
-		geoserverPassword = props.getProperty(GEOSERVER_PASS_PARAM_CONFIG_KEY);
-		publishedWorkspaceName = props.getProperty(PUBLISHED_WS_PARAM_CONFIG_KEY, "published");
+		geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
+		geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
+		geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
+		publishedWorkspaceName = PropertyUtil.getProperty(Property.GEOSERVER_DEFAULT_PUBLISHED_WORKSPACE, "published");
 		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
-		cswEndpoint = props.getProperty(CSW_ENDPOINT_PARAM_CONFIG_KEY, "http://127.0.0.1/pycsw-wsgi");
+		cswEndpoint = PropertyUtil.getProperty(Property.CSW_INTERNAL_ENDPOINT, "http://127.0.0.1/pycsw-wsgi");
 		cswHandler = new CSWHandler(cswEndpoint);
 	}
 
 	/**
-	 * Processes requests for both HTTP
-	 * <code>GET</code> and
-	 * <code>POST</code> methods.
+	 * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+	 * methods.
 	 *
 	 * @param request servlet request
 	 * @param response servlet response
@@ -222,8 +214,7 @@ public class PublishService extends HttpServlet {
 
 	// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 	/**
-	 * Handles the HTTP
-	 * <code>GET</code> method.
+	 * Handles the HTTP <code>GET</code> method.
 	 *
 	 * @param request servlet request
 	 * @param response servlet response
@@ -237,8 +228,7 @@ public class PublishService extends HttpServlet {
 	}
 
 	/**
-	 * Handles the HTTP
-	 * <code>POST</code> method.
+	 * Handles the HTTP <code>POST</code> method.
 	 *
 	 * @param request servlet request
 	 * @param response servlet response

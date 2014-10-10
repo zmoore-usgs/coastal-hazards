@@ -69,7 +69,7 @@ public class TokenToShorelineFileSingleton {
 		}
 		tokenToFileMap.clear();
 	}
-	
+
 	/**
 	 * Removes a token from the map.
 	 *

@@ -3,8 +3,6 @@ package gov.usgs.cida.coastalhazards.shoreline.file;
 import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
-import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
 import gov.usgs.cida.owsutils.commons.shapefile.ProjectionUtils;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.file.TokenToFileSingleton;
@@ -35,10 +33,6 @@ import org.slf4j.LoggerFactory;
 public abstract class ShorelineFile implements IShorelineFile {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineFile.class);
-	protected static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
-	protected static final String DIRECTORY_BASE_PARAM_CONFIG_KEY = ".files.directory.base";
-	protected static final String DIRECTORY_UPLOAD_PARAM_CONFIG_KEY = ".files.directory.upload";
-	protected static final String DIRECTORY_WORK_PARAM_CONFIG_KEY = ".files.directory.work";
 	static final String SHP = "shp";
 	static final String SHX = "shx";
 	static final String DBF = "dbf";
@@ -167,7 +161,7 @@ public abstract class ShorelineFile implements IShorelineFile {
 			throw new IOException("Could not create workspace");
 		}
 
-		if (!geoserverHandler.createPGDatastoreInGeoserver(workspace, "shoreline", null, "public", "dsas")) {
+		if (!geoserverHandler.createPGDatastoreInGeoserver(workspace, "shoreline", null, "public")) {
 			throw new IOException("Could not create data store");
 		}
 
@@ -185,7 +179,7 @@ public abstract class ShorelineFile implements IShorelineFile {
 	public static void validate(File zipFile) throws Exception {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public String getWorkspace() {
 		return this.workspace;

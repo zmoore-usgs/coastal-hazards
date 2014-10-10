@@ -4,10 +4,18 @@
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
+	
+	<!-- This should match the database JNDI connection name in the container -->
+	<context-param>    
+		<param-name>jndi.jdbc.name</param-name>
+		<param-value>jdbc/dsas</param-value>
+	</context-param>
+	
 	<listener>
 		<description>ServletContextListener</description>
 		<listener-class>gov.usgs.cida.coastalhazards.InitListener</listener-class>
 	</listener>
+	
 	<!-- SERVLET -->
 	<!-- AlternateProxy -->
 	<servlet>
@@ -34,43 +42,6 @@
 		<init-param>
 			<param-name>readTimeout</param-name>
 			<param-value>300000</param-value>
-		</init-param>
-	</servlet>
-	<servlet>
-		<servlet-name>ShorelineShapefileUploadServlet</servlet-name>
-		<servlet-class>gov.usgs.cida.coastalhazards.service.ShorelineShapefileUploadServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-		<init-param>
-			<param-name>application.name</param-name>
-			<param-value>coastal-hazards</param-value>
-		</init-param>
-		<init-param>
-			<param-name>max.upload.file.size</param-name>
-			<param-value>0</param-value>
-		</init-param>
-		<init-param>
-			<param-name>geoserver.endpoint</param-name>
-			<param-value>http://localhost:8081/coastal-hazards-geoserver/</param-value>
-		</init-param>
-		<init-param>
-			<param-name>geoserver.username</param-name>
-			<param-value>admin</param-value>
-		</init-param>
-		<init-param>
-			<param-name>default.upload.workspace</param-name>
-			<param-value/>
-		</init-param>
-		<init-param>
-			<param-name>default.upload.storename</param-name>
-			<param-value>ch-input</param-value>
-		</init-param>
-		<init-param>
-			<param-name>use.crs.failover</param-name>
-			<param-value>true</param-value>
-		</init-param>
-		<init-param>
-			<param-name>projection.policy</param-name>
-			<param-value>reproject</param-value>
 		</init-param>
 	</servlet>
 	<servlet>
@@ -176,13 +147,6 @@
 		<servlet-name>ShapefileImportService</servlet-name>
 		<servlet-class>gov.usgs.cida.coastalhazards.service.ShapefileImportService</servlet-class>
 		<load-on-startup>1</load-on-startup>
-		<!-- 
-			Name of the JNDI connection name the container maps to the database
-		-->
-		<init-param>
-			<param-name>jndi.dbconn.name.param</param-name>
-			<param-value>dsas</param-value>
-		</init-param>
 	</servlet>
 	<servlet>
 		<servlet-name>SessionService</servlet-name>
@@ -195,13 +159,6 @@
 		<init-param>
 			<param-name>application.name</param-name>
 			<param-value>coastal-hazards</param-value>
-		</init-param>
-		<!-- 
-			Name of the JNDI connection name the container maps to the database
-		-->
-		<init-param>
-			<param-name>jndi.dbconn.name.param</param-name>
-			<param-value>dsas</param-value>
 		</init-param>
 	</servlet>
 	<servlet>
@@ -223,16 +180,8 @@
 			<param-name>application.name</param-name>
 			<param-value>coastal-hazards</param-value>
 		</init-param>
-		<init-param>
-			<param-name>jdbc.name</param-name>
-			<param-value>dsas</param-value>
-		</init-param>
 	</servlet>
 	<!-- MAPPING -->
-	<servlet-mapping>
-		<servlet-name>ShorelineShapefileUploadServlet</servlet-name>
-		<url-pattern>/service/upload-shoreline</url-pattern>
-	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>ShorelineStagingService</servlet-name>
 		<url-pattern>/service/stage-shoreline</url-pattern>

@@ -35,8 +35,8 @@ public class ImportUtil {
 	 * @return
 	 * @throws IOException
 	 * @throws FileUploadException
-	 * @throws ShapefileFormatException 
-	 * @throws LidarFileFormatException 
+	 * @throws ShapefileFormatException
+	 * @throws LidarFileFormatException
 	 */
 	public static File saveShorelineFileFromRequest(HttpServletRequest request, String defaultFileParam, String workDir, boolean overwrite) throws IOException, FileUploadException, ShapefileFormatException, LidarFileFormatException {
 		String filenameParam = defaultFileParam;
@@ -72,17 +72,17 @@ public class ImportUtil {
 			LOGGER.debug("Shoreline saved");
 			FileHelper.flattenZipFile(shorelineZipFile.getAbsolutePath());
 			LOGGER.debug("Shoreline zip structure flattened");
-			
+
 			try {
 				LidarFileUtils.validateLidarFileZip(shorelineZipFile);
 				LOGGER.debug("Lidar file verified");
 				extension = ".csv";
-			} catch(LidarFileFormatException ex) {
+			} catch (LidarFileFormatException ex) {
 				LOGGER.debug("failed lidar validation, try shapefile");
 				FileHelper.validateShapefileZip(shorelineZipFile);
 				LOGGER.debug("Shapefile verified");
 				extension = ".shp";
-			} 
+			}
 			gov.usgs.cida.utilities.file.FileHelper.unzipFile(saveDirectory.getAbsolutePath(), shorelineZipFile);
 			LOGGER.debug("Shoreline unzipped");
 			if (shorelineZipFile.delete()) {

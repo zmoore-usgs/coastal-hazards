@@ -100,8 +100,9 @@ public interface IShorelineFile {
 
 	/**
 	 * Imports the view as a layer in Geoserver
+	 *
 	 * @param viewName
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void importToGeoserver(String viewName) throws IOException;
 
@@ -114,11 +115,11 @@ public interface IShorelineFile {
 
 	/**
 	 * Returns the name of the workspace this shoreline file operates under
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public String getWorkspace();
-	
+
 	/**
 	 * Deletes own files in the file system and removes parent directory
 	 *
