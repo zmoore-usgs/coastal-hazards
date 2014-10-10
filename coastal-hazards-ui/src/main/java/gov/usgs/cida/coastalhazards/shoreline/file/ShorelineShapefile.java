@@ -92,15 +92,6 @@ public class ShorelineShapefile extends ShorelineFile {
 	}
 
 	@Override
-	public File saveZipFile(File zipFile) throws IOException {
-		File workLocation = createWorkLocationForZip(zipFile);
-		FileHelper.unzipFile(workLocation.getAbsolutePath(), zipFile);
-
-		// Do validation
-		return workLocation;
-	}
-
-	@Override
 	public String[] getColumns() throws IOException {
 		String[] headers = null;
 		File dbfFile = this.fileMap.get(DBF);

@@ -9,7 +9,6 @@ import gov.usgs.cida.coastalhazards.shoreline.exception.LidarFileFormatException
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile.ShorelineType;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse;
-import gov.usgs.cida.owsutils.commons.io.exception.ShapefileFormatException;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.file.FileHelper;
 import java.io.File;
@@ -28,19 +27,17 @@ import org.slf4j.LoggerFactory;
 public class ShorelineFileFactory {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineFileFactory.class);
+	private static final String WORKSPACE_PARAM = "workspace";
+	private static final String FILENAME_PARAM = "filename.param";
 	private File zipFile;
 	private HttpServletRequest request;
 	private File baseDirectory;
 	private File uploadDirectory;
 	private String workspace;
 
-	public ShorelineFileFactory(File zipFile, String jndiConnectionName, String workspace) throws IOException {
+	public ShorelineFileFactory(File zipFile, String workspace) throws IOException {
 		if (zipFile == null) {
 			throw new NullPointerException("Zip file may not be null");
-		}
-
-		if (StringUtils.isBlank(jndiConnectionName)) {
-			throw new NullPointerException("JNDI connection name may not be null or blank");
 		}
 
 		if (StringUtils.isBlank(workspace)) {
@@ -65,7 +62,7 @@ public class ShorelineFileFactory {
 		}
 
 		this.request = request;
-		String requestWorkspace = this.request.getParameter("workspace");
+		String requestWorkspace = this.request.getParameter(WORKSPACE_PARAM);
 		if (StringUtils.isBlank(requestWorkspace)) {
 			throw new NullPointerException("Request did not contain workspace name");
 		}
@@ -74,30 +71,21 @@ public class ShorelineFileFactory {
 	}
 
 	private void init(String workspace) {
-		this.baseDirectory = new File(PropertyUtil.getProperty(Property.DIRECTORIES_BASE, System.getProperty("java.io.tmpdir")));
+		this.baseDirectory = new File(PropertyUtil.getProperty(Property.DIRECTORIES_BASE, FileUtils.getTempDirectory().getAbsolutePath()));
 		this.uploadDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD));
 		this.workspace = workspace;
 	}
 
 	public ShorelineFile buildShorelineFile() throws ShorelineFileFormatException, IOException, FileUploadException {
-		String geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
-		String geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
-		String geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
-		GeoserverHandler geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
-
 		if (null == this.zipFile) {
-			try {
-				this.zipFile = saveShorelineZipFileFromRequest(this.request);
-			} catch (ShapefileFormatException | LidarFileFormatException ex) {
-				throw new ShorelineFileFormatException(ex.getMessage());
-			}
+			this.zipFile = saveShorelineZipFileFromRequest(this.request);
 			LOGGER.debug("Shoreline saved");
 		}
 
-		gov.usgs.cida.owsutils.commons.io.FileHelper.flattenZipFile(this.zipFile.getAbsolutePath());
+		this.zipFile = gov.usgs.cida.owsutils.commons.io.FileHelper.flattenZipFile(this.zipFile);
 
 		ShorelineFile result;
-		ShorelineType type = null;
+		ShorelineType type = ShorelineType.OTHER;
 		try {
 			ShorelineLidarFile.validate(this.zipFile);
 			LOGGER.debug("Lidar file verified");
@@ -110,11 +98,14 @@ public class ShorelineFileFactory {
 				type = ShorelineType.SHAPEFILE;
 			} catch (ShorelineFileFormatException | IOException ex1) {
 				LOGGER.info("Failed shapefile validation", ex1);
-				FileUtils.deleteQuietly(zipFile);
-				throw new ShorelineFileFormatException("File is neither a shoreline LIDAR or shape file");
 			}
 		}
 
+		// By now, I should have figured out what type of file I'm dealing with
+		String geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
+		String geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
+		String geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
+		GeoserverHandler geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
 		switch (type) {
 			case LIDAR:
 				result = new ShorelineLidarFile(geoserverHandler, new ShorelineLidarFileDao(), this.workspace);
@@ -122,40 +113,44 @@ public class ShorelineFileFactory {
 			case SHAPEFILE:
 				result = new ShorelineShapefile(geoserverHandler, new ShorelineShapefileDAO(), this.workspace);
 				break;
+			case OTHER:
 			default:
-				FileUtils.deleteQuietly(zipFile);
+				FileUtils.deleteQuietly(this.zipFile);
 				throw new IOException("File is neither LiIDAR or Shapefile");
 		}
 
 		File savedWorkDirectory = null;
 		try {
-			savedWorkDirectory = result.saveZipFile(zipFile);
+			savedWorkDirectory = result.saveZipFile(this.zipFile);
 		} catch (IOException ex) {
 			LOGGER.warn("Could not save zip file to work directory");
 			throw ex;
 		}
 		result.setDirectory(savedWorkDirectory);
 
-		FileUtils.deleteQuietly(zipFile);
+		FileUtils.deleteQuietly(this.zipFile);
 
 		return result;
 	}
 
-	private File saveShorelineZipFileFromRequest(HttpServletRequest request) throws IOException, FileUploadException, ShapefileFormatException, LidarFileFormatException {
+	private File saveShorelineZipFileFromRequest(HttpServletRequest request) throws IOException, FileUploadException {
 		String filenameParam = PropertyUtil.getProperty(Property.FILE_UPLOAD_FILENAME_PARAM);
-		String fnReqParam = request.getParameter("filename.param");
+		String fnReqParam = request.getParameter(FILENAME_PARAM);
 		if (StringUtils.isNotBlank(fnReqParam)) {
 			filenameParam = fnReqParam;
 		}
+		
 		LOGGER.debug("Cleaning file name.\nWas: {}", filenameParam);
 		String cleanedZipName = ImportUtil.cleanFileName(request.getParameter(filenameParam));
 		LOGGER.debug("Is: {}", cleanedZipName);
-		if (filenameParam.equals(cleanedZipName)) {
-			LOGGER.debug("(No change)");
-		}
+		
 		File cleanedZipFile = new File(this.uploadDirectory, cleanedZipName);
 		if (cleanedZipFile.exists()) {
-			FileUtils.deleteQuietly(cleanedZipFile);
+			String filePath = cleanedZipFile.getAbsolutePath();
+			LOGGER.debug("Zip file {} already existed. Will remove before writing new zip file from request", filePath);
+			if (!FileUtils.deleteQuietly(cleanedZipFile)) {
+				LOGGER.warn("Zip file {} could not be deleted. This will probably cause issues in saving the incoming file", filePath);
+			}
 		}
 
 		try {

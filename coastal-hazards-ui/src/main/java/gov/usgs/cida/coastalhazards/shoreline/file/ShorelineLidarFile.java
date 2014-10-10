@@ -50,6 +50,8 @@ public class ShorelineLidarFile extends ShorelineFile {
 	 */
 	public static void validate(File lidarZipFile) throws LidarFileFormatException, IOException {
 		File temporaryDirectory = new File(FileHelper.getTempDirectory(), UUID.randomUUID().toString() + "-deleteme");
+		temporaryDirectory.deleteOnExit();
+		
 		try {
 			if (!temporaryDirectory.mkdirs()) {
 				throw new IOException("Could not create temporary directory (" + temporaryDirectory.getCanonicalPath() + ") for processing");
@@ -76,6 +78,12 @@ public class ShorelineLidarFile extends ShorelineFile {
 		}
 	}
 
+	/**
+	 * 
+	 * @param gsHandler
+	 * @param dao
+	 * @param workspace 
+	 */
 	public ShorelineLidarFile(GeoserverHandler gsHandler, ShorelineFileDao dao, String workspace) {
 		this.baseDirectory = new File(PropertyUtil.getProperty(Property.DIRECTORIES_BASE, System.getProperty("java.io.tmpdir")));
 		this.uploadDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD));
@@ -91,15 +99,6 @@ public class ShorelineLidarFile extends ShorelineFile {
 		String fileToken = super.setDirectory(directory);
 		updateFileMapWithDirFile(directory, fileParts);
 		return fileToken;
-	}
-
-	@Override
-	public File saveZipFile(File zipFile) throws IOException {
-		File workLocation = createWorkLocationForZip(zipFile);
-		FileHelper.unzipFile(workLocation.getAbsolutePath(), zipFile);
-
-		// Do validation
-		return workLocation;
 	}
 
 	@Override
