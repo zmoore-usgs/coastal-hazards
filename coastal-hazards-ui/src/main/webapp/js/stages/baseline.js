@@ -1012,7 +1012,8 @@ var Baseline = {
 		var desiredLayer = ($('#baseline-draw-form-name').val() || Util.getRandomLorem()) + '_baseline';
 		var importName = CONFIG.tempSession.getCurrentSessionKey() + ':' + ($('#baseline-draw-form-name').val() || Util.getRandomLorem()) + '_baseline';
 		var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
-		var schema = drawLayer.protocol.schema.replace('geoserver/', geoserverEndpoint);
+		// On subsequent drawings, schema already has the endpoint replaced, so this is only necessary the first time
+		var schema = drawLayer.protocol.schema.indexOf(geoserverEndpoint) !== -1 ? drawLayer.protocol.schema : drawLayer.protocol.schema.replace('geoserver/', geoserverEndpoint);
 		var newSchema = schema.substring(0, schema.lastIndexOf('typename=') + 9) + importName;
 
 		drawLayer.protocol.setFeatureType(desiredLayer);
