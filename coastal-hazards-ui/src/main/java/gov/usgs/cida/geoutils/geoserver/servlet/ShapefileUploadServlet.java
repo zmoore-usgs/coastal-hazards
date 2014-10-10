@@ -2,11 +2,9 @@ package gov.usgs.cida.geoutils.geoserver.servlet;
 
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse.ResponseType;
 import gov.usgs.cida.owsutils.commons.io.FileHelper;
-import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
 import gov.usgs.cida.owsutils.commons.shapefile.ProjectionUtils;
 import gov.usgs.cida.utilities.service.ServiceHelper;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
@@ -23,7 +21,6 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -58,7 +55,6 @@ public class ShapefileUploadServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ShapefileUploadServlet.class);
-	private static String applicationName;
 	private static Integer maxFileSize;
 	private static String geoserverEndpoint;
 	private static URL geoserverEndpointURL;
@@ -80,7 +76,6 @@ public class ShapefileUploadServlet extends HttpServlet {
 	public void init(ServletConfig servletConfig) throws ServletException {
 		super.init();
 		ShapefileUploadServlet.servletConfig = servletConfig;
-		applicationName = servletConfig.getInitParameter("application.name");
 
 		// The maximum upload file size allowd by this server, 0 = Integer.MAX_VALUE
 		String mfsJndiProp = PropertyUtil.getProperty(Property.FILE_UPLOAD_MAX_SIZE);

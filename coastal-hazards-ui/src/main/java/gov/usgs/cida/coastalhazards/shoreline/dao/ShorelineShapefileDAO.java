@@ -164,26 +164,26 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 	public int getIntValue(String attribute, SimpleFeature feature) {
 		Object value = feature.getAttribute(attribute);
 		if (value instanceof Number) {
-			return ((Number)value).intValue();
+			return ((Number) value).intValue();
 		} else {
 			throw new ClassCastException("This attribute is not an Integer");
 		}
 	}
-	
+
 	public double getDoubleValue(String attribute, SimpleFeature feature) {
 		Object value = feature.getAttribute(attribute);
 		if (value instanceof Number) {
-			return ((Number)value).doubleValue();
+			return ((Number) value).doubleValue();
 		} else {
 			throw new ClassCastException("This attribute is not a floating point value");
 		}
 	}
-	
+
 	public boolean getBooleanValue(String attribute, SimpleFeature feature, boolean defaultValue) {
 		Object value = feature.getAttribute(attribute);
 		return AttributeGetter.extractBooleanValue(value, defaultValue);
 	}
-	
+
 	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
 		double x = sf.getBounds().getMaxX();
 		double y = sf.getBounds().getMaxY();

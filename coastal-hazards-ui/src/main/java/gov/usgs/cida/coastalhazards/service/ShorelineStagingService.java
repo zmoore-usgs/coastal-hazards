@@ -7,10 +7,8 @@ import gov.usgs.cida.coastalhazards.shoreline.file.IShorelineFile;
 import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile;
 import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFileFactory;
 import gov.usgs.cida.coastalhazards.shoreline.file.TokenToShorelineFileSingleton;
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse.ResponseType;
-import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
 import gov.usgs.cida.utilities.service.ServiceHelper;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -56,15 +54,12 @@ public class ShorelineStagingService extends HttpServlet {
 	 * Used for lidar read-dbf call, we always fake that a lidar file is a valid
 	 * shape file
 	 */
-	private String applicationName = null;
 	private Integer maxFileSize;
 	private String jndiDbConnName;
 
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {
 		super.init();
-
-		applicationName = servletConfig.getInitParameter("application.name");
 
 		// The maximum upload file size allowd by this server, 0 = Integer.MAX_VALUE
 		String mfsJndiProp = PropertyUtil.getProperty(Property.FILE_UPLOAD_MAX_SIZE);
@@ -108,7 +103,7 @@ public class ShorelineStagingService extends HttpServlet {
 			// Client is uploading a file. I want to stage the file and return a token
 			ShorelineFile shorelineFile = null;
 			try {
-				ShorelineFileFactory shorelineFactory = new ShorelineFileFactory(request, jndiDbConnName, applicationName);
+				ShorelineFileFactory shorelineFactory = new ShorelineFileFactory(request, jndiDbConnName);
 				shorelineFile = shorelineFactory.buildShorelineFile();
 				String token = TokenToShorelineFileSingleton.addShorelineFile(shorelineFile);
 				responseMap.put(TOKEN_STRING, token);

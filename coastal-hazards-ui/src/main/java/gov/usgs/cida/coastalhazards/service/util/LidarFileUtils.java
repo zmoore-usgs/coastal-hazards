@@ -16,25 +16,28 @@ public class LidarFileUtils {
 
 	/**
 	 * A lidar file is a csv with 5 columns
-	 * 
+	 *
 	 * returns true if a structurally correct lidar zip file is found
-	 * @throws IOException 
+	 *
+	 * @throws IOException
 	 */
 	public static boolean isLidar(File shorelineFile) throws IOException {
 		boolean isLidar = false;
-		
+
 		isLidar = shorelineFile.getAbsolutePath().endsWith(".csv");
-		
+
 		return isLidar;
 	}
 
 	/**
 	 * A lidar file has csv files, a prj file, and NO shp files.
-	 * 
+	 *
 	 * returns true if a structurally correct lidar zip file is found
+	 *
 	 * @param lidarZipFile
-	 * @throws gov.usgs.cida.coastalhazards.shoreline.exception.LidarFileFormatException
-	 * @throws IOException 
+	 * @throws
+	 * gov.usgs.cida.coastalhazards.shoreline.exception.LidarFileFormatException
+	 * @throws IOException
 	 */
 	public static void validateLidarFileZip(File lidarZipFile) throws LidarFileFormatException, IOException {
 		File temporaryDirectory = new File(FileHelper.getTempDirectory(), UUID.randomUUID().toString() + "-deleteme");
@@ -87,30 +90,30 @@ public class LidarFileUtils {
 			FileHelper.forceDelete(temporaryDirectory);
 		}
 	}
-	
+
 	public static void validateHeaderRow(String[] headerRow) throws LidarFileFormatException {
-		if(headerRow.length != 5) {
+		if (headerRow.length != 5) {
 			throw new LidarFileFormatException("Lidar csv file has wrong number of header columns");
 		}
-		if(!headerRow[0].equalsIgnoreCase("segment_id")) {
+		if (!headerRow[0].equalsIgnoreCase("segment_id")) {
 			throw new LidarFileFormatException("Lidar csv does not have segment_id as first column");
 		}
-		if(!headerRow[1].equalsIgnoreCase("x")) {
+		if (!headerRow[1].equalsIgnoreCase("x")) {
 			throw new LidarFileFormatException("Lidar csv does not have x as second column");
 		}
-		if(!headerRow[2].equalsIgnoreCase("y")) {
+		if (!headerRow[2].equalsIgnoreCase("y")) {
 			throw new LidarFileFormatException("Lidar csv does not have y as third column");
 		}
-		if(!headerRow[3].equalsIgnoreCase("uncy_")) {
+		if (!headerRow[3].equalsIgnoreCase("uncy_")) {
 			throw new LidarFileFormatException("Lidar csv does not have uncy_ as fourth column");
 		}
-		if(!headerRow[4].equalsIgnoreCase("Date_")) {
+		if (!headerRow[4].equalsIgnoreCase("Date_")) {
 			throw new LidarFileFormatException("Lidar csv does not have Date_ as fifth column");
 		}
 	}
-	
+
 	public static void validateDataRow(String[] dataRow) throws LidarFileFormatException {
-		if(dataRow.length != 5) {
+		if (dataRow.length != 5) {
 			throw new LidarFileFormatException("Lidar csv file has wrong number of columns in one of the rows");
 		}
 	}

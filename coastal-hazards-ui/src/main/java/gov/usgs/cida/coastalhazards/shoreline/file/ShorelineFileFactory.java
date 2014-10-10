@@ -31,12 +31,11 @@ public class ShorelineFileFactory {
 	private File zipFile;
 	private HttpServletRequest request;
 	private String jndiConnectionName;
-	private String applicationName;
 	private File baseDirectory;
 	private File uploadDirectory;
 	private String workspace;
 
-	public ShorelineFileFactory(File zipFile, String jndiConnectionName, String applicationName, String workspace) throws IOException {
+	public ShorelineFileFactory(File zipFile, String jndiConnectionName, String workspace) throws IOException {
 		if (zipFile == null) {
 			throw new NullPointerException("Zip file may not be null");
 		}
@@ -58,10 +57,10 @@ public class ShorelineFileFactory {
 		}
 
 		this.zipFile = zipFile;
-		init(jndiConnectionName, applicationName, workspace);
+		init(jndiConnectionName, workspace);
 	}
 
-	public ShorelineFileFactory(HttpServletRequest request, String jndiConnectionName, String applicationName) {
+	public ShorelineFileFactory(HttpServletRequest request, String jndiConnectionName) {
 		if (request == null) {
 			throw new NullPointerException("Zip file may not be null");
 		}
@@ -76,17 +75,11 @@ public class ShorelineFileFactory {
 			throw new NullPointerException("Request did not contain workspace name");
 		}
 
-		init(jndiConnectionName, applicationName, requestWorkspace);
+		init(jndiConnectionName, requestWorkspace);
 	}
 
-	private void init(String jndiConnectionName, String applicationName, String workspace) {
+	private void init(String jndiConnectionName, String workspace) {
 		this.jndiConnectionName = jndiConnectionName;
-		if (null == applicationName) {
-			this.applicationName = "";
-		} else {
-			this.applicationName = applicationName;
-		}
-
 		this.baseDirectory = new File(PropertyUtil.getProperty(Property.DIRECTORIES_BASE, System.getProperty("java.io.tmpdir")));
 		this.uploadDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD));
 		this.workspace = workspace;
@@ -130,10 +123,10 @@ public class ShorelineFileFactory {
 
 		switch (type) {
 			case LIDAR:
-				result = new ShorelineLidarFile(this.applicationName, geoserverHandler, new ShorelineLidarFileDao(jndiConnectionName), this.workspace);
+				result = new ShorelineLidarFile(geoserverHandler, new ShorelineLidarFileDao(jndiConnectionName), this.workspace);
 				break;
 			case SHAPEFILE:
-				result = new ShorelineShapefile(this.applicationName, geoserverHandler, new ShorelineShapefileDAO(jndiConnectionName), this.workspace);
+				result = new ShorelineShapefile(geoserverHandler, new ShorelineShapefileDAO(jndiConnectionName), this.workspace);
 				break;
 			default:
 				FileUtils.deleteQuietly(zipFile);

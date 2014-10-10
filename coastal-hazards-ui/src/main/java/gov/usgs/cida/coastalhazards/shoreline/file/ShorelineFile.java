@@ -3,8 +3,6 @@ package gov.usgs.cida.coastalhazards.shoreline.file;
 import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
-import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
 import gov.usgs.cida.owsutils.commons.shapefile.ProjectionUtils;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.file.TokenToFileSingleton;

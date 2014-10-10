@@ -1,9 +1,8 @@
 package gov.usgs.cida.coastalhazards.shoreline.dao;
 
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
-import gov.usgs.cida.utilities.features.Constants;
-
 import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
+import gov.usgs.cida.utilities.features.Constants;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -16,12 +15,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
 import org.geotools.feature.SchemaException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -167,9 +164,9 @@ public abstract class ShorelineFileDao {
 
 	/**
 	 * Removes shorelines using workspace name and a wildcard match on the
-	 * shoreline name. 
-	 * 
-	 * Will also delete the associated view if there are no more rows with the 
+	 * shoreline name.
+	 *
+	 * Will also delete the associated view if there are no more rows with the
 	 * workspace name in them in the shorelines table
 	 *
 	 * @param workspace

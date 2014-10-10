@@ -39,8 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Sutra Zhou
- * Borrowed from example for openid4java
+ * @author Sutra Zhou Borrowed from example for openid4java
  */
 public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 
@@ -57,6 +56,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * @throws javax.servlet.ServletException
 	 */
 	@Override
@@ -82,6 +82,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * @throws javax.servlet.ServletException
 	 * @throws java.io.IOException
 	 */
@@ -93,6 +94,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * @throws javax.servlet.ServletException
 	 * @throws java.io.IOException
 	 */
@@ -179,12 +181,15 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * Simple Registration Extension example.
-	 * 
+	 *
 	 * @param httpReq
 	 * @param authReq
 	 * @throws MessageException
-	 * @see <a href="http://code.google.com/p/openid4java/wiki/SRegHowTo">Simple Registration HowTo</a>
-	 * @see <a href="http://openid.net/specs/openid-simple-registration-extension-1_0.html">OpenID Simple Registration Extension 1.0</a>
+	 * @see <a href="http://code.google.com/p/openid4java/wiki/SRegHowTo">Simple
+	 * Registration HowTo</a>
+	 * @see
+	 * <a href="http://openid.net/specs/openid-simple-registration-extension-1_0.html">OpenID
+	 * Simple Registration Extension 1.0</a>
 	 */
 	private void addSimpleRegistrationToAuthRequest(HttpServletRequest httpReq,
 			AuthRequest authReq) throws MessageException {
@@ -192,8 +197,8 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 		// FetchRequest fetch = FetchRequest.createFetchRequest();
 		SRegRequest sregReq = SRegRequest.createFetchRequest();
 
-		String[] attributes = { "nickname", "email", "fullname", "dob",
-				"gender", "postcode", "country", "language", "timezone" };
+		String[] attributes = {"nickname", "email", "fullname", "dob",
+			"gender", "postcode", "country", "language", "timezone"};
 		for (int i = 0, l = attributes.length; i < l; i++) {
 			String attribute = attributes[i];
 			String value = httpReq.getParameter(attribute);
@@ -212,12 +217,16 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * Attribute exchange example.
-	 * 
+	 *
 	 * @param httpReq
 	 * @param authReq
 	 * @throws MessageException
-	 * @see <a href="http://code.google.com/p/openid4java/wiki/AttributeExchangeHowTo">Attribute Exchange HowTo</a>
-	 * @see <a href="http://openid.net/specs/openid-attribute-exchange-1_0.html">OpenID Attribute Exchange 1.0 - Final</a>
+	 * @see
+	 * <a href="http://code.google.com/p/openid4java/wiki/AttributeExchangeHowTo">Attribute
+	 * Exchange HowTo</a>
+	 * @see
+	 * <a href="http://openid.net/specs/openid-attribute-exchange-1_0.html">OpenID
+	 * Attribute Exchange 1.0 - Final</a>
 	 */
 	private void addAttributeExchangeToAuthRequest(HttpServletRequest httpReq,
 			AuthRequest authReq) throws MessageException {
@@ -239,10 +248,10 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * processing the authentication response
-	 * 
+	 *
 	 * @param httpReq
 	 * @return
-	 * @throws ServletException 
+	 * @throws ServletException
 	 */
 	public Identifier verifyResponse(HttpServletRequest httpReq)
 			throws ServletException {
@@ -274,7 +283,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 				receiveSimpleRegistration(httpReq, authSuccess);
 
 				receiveAttributeExchange(httpReq, authSuccess);
-				
+
 				Map<String, String> oidInfoMap = new HashMap<>();
 				oidInfoMap.put("oid-firstname", response.getParameter("openid.ext1.value.firstname").getValue());
 				oidInfoMap.put("oid-lastname", response.getParameter("openid.ext1.value.lastname").getValue());
@@ -296,7 +305,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 	/**
 	 * @param httpReq
 	 * @param authSuccess
-	 * @throws MessageException 
+	 * @throws MessageException
 	 */
 	private void receiveSimpleRegistration(HttpServletRequest httpReq,
 			AuthSuccess authSuccess) throws MessageException {
@@ -318,7 +327,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 	/**
 	 * @param httpReq
 	 * @param authSuccess
-	 * @throws MessageException 
+	 * @throws MessageException
 	 */
 	private void receiveAttributeExchange(HttpServletRequest httpReq,
 			AuthSuccess authSuccess) throws MessageException {
@@ -328,7 +337,6 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 
 			// List emails = fetchResp.getAttributeValues("email");
 			// String email = (String) emails.get(0);
-
 			List aliases = fetchResp.getAttributeAliases();
 			Map attributes = new LinkedHashMap();
 			for (Iterator iter = aliases.iterator(); iter.hasNext();) {

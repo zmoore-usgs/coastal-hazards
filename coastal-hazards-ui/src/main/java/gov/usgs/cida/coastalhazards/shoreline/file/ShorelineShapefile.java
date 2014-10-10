@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public class ShorelineShapefile extends ShorelineFile {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineShapefile.class);
-	private static final String[] requiredFiles = new String[] {SHP, SHX, DBF, PRJ};
+	private static final String[] requiredFiles = new String[]{SHP, SHX, DBF, PRJ};
 	private static final String[] fileParts = new String[]{
 		SHP,
 		SHX,
@@ -59,7 +59,7 @@ public class ShorelineShapefile extends ShorelineFile {
 		ZipFile zFile = new ZipFile(zipFile);
 		Enumeration<? extends ZipEntry> entries = zFile.entries();
 		List<String> extensions = new ArrayList<>(zFile.size());
-		List<String> requiredFiles = Arrays.asList(new String[] {SHP, SHX, DBF, PRJ});
+		List<String> requiredFiles = Arrays.asList(new String[]{SHP, SHX, DBF, PRJ});
 		while (entries.hasMoreElements()) {
 			ZipEntry ze = entries.nextElement();
 			extensions.add(FilenameUtils.getExtension(ze.getName()));
@@ -67,14 +67,14 @@ public class ShorelineShapefile extends ShorelineFile {
 		if (!extensions.containsAll(requiredFiles)) {
 			throw new ShorelineFileFormatException("Missing mandatory files within shapefile. One of: .shp, .shx, .dbf");
 		}
-		if (Collections.frequency(extensions, SHP) > 1 ||
-				Collections.frequency(extensions, SHX) > 1 ||
-				Collections.frequency(extensions, DBF) > 1) {
+		if (Collections.frequency(extensions, SHP) > 1
+				|| Collections.frequency(extensions, SHX) > 1
+				|| Collections.frequency(extensions, DBF) > 1) {
 			throw new ShorelineFileFormatException("Found more than one shapefile in archive. Can only stage one shape file at a time.");
 		}
 	}
 
-	public ShorelineShapefile(String applicationName, GeoserverHandler gsHandler, ShorelineFileDao dao, String workspace) {
+	public ShorelineShapefile(GeoserverHandler gsHandler, ShorelineFileDao dao, String workspace) {
 		this.baseDirectory = new File(PropertyUtil.getProperty(Property.DIRECTORIES_BASE, System.getProperty("java.io.tmpdir")));
 		this.uploadDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD));
 		this.workDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_WORK));
@@ -104,7 +104,7 @@ public class ShorelineShapefile extends ShorelineFile {
 	public String[] getColumns() throws IOException {
 		String[] headers = null;
 		File dbfFile = this.fileMap.get(DBF);
-		
+
 		// getDbfHeader uses the .shp file 
 		if (null == dbfFile || !dbfFile.exists() || !dbfFile.isFile() || !dbfFile.canRead()) {
 			throw new IOException(MessageFormat.format("DBF file at {0} not readable", dbfFile));

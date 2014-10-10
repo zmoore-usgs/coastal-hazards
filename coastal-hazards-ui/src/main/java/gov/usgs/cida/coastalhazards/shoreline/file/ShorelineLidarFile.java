@@ -69,14 +69,14 @@ public class ShorelineLidarFile extends ShorelineFile {
 			if (shpfiles.length != 0) {
 				throw new LidarFileFormatException("Lidar archive cannot contain an shp file");
 			}
-			
+
 			LOGGER.debug("File {} validated as Lidar file", lidarZipFile.getAbsolutePath());
 		} finally {
 			FileHelper.forceDelete(temporaryDirectory);
 		}
 	}
 
-	public ShorelineLidarFile(String applicationName, GeoserverHandler gsHandler, ShorelineFileDao dao, String workspace) {
+	public ShorelineLidarFile(GeoserverHandler gsHandler, ShorelineFileDao dao, String workspace) {
 		this.baseDirectory = new File(PropertyUtil.getProperty(Property.DIRECTORIES_BASE, System.getProperty("java.io.tmpdir")));
 		this.uploadDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD));
 		this.workDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_WORK));
@@ -92,12 +92,12 @@ public class ShorelineLidarFile extends ShorelineFile {
 		updateFileMapWithDirFile(directory, fileParts);
 		return fileToken;
 	}
-	
+
 	@Override
 	public File saveZipFile(File zipFile) throws IOException {
 		File workLocation = createWorkLocationForZip(zipFile);
 		FileHelper.unzipFile(workLocation.getAbsolutePath(), zipFile);
-		
+
 		// Do validation
 		return workLocation;
 	}
