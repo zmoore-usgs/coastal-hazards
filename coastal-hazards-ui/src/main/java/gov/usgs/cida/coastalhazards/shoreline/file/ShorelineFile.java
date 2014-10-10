@@ -35,10 +35,6 @@ import org.slf4j.LoggerFactory;
 public abstract class ShorelineFile implements IShorelineFile {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineFile.class);
-	protected static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
-	protected static final String DIRECTORY_BASE_PARAM_CONFIG_KEY = ".files.directory.base";
-	protected static final String DIRECTORY_UPLOAD_PARAM_CONFIG_KEY = ".files.directory.upload";
-	protected static final String DIRECTORY_WORK_PARAM_CONFIG_KEY = ".files.directory.work";
 	static final String SHP = "shp";
 	static final String SHX = "shx";
 	static final String DBF = "dbf";
@@ -185,7 +181,7 @@ public abstract class ShorelineFile implements IShorelineFile {
 	public static void validate(File zipFile) throws Exception {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public String getWorkspace() {
 		return this.workspace;

@@ -6,14 +6,12 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.openid4java.OpenIDException;
@@ -59,6 +57,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * {@inheritDoc}
+	 * @throws javax.servlet.ServletException
 	 */
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -83,6 +82,8 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * {@inheritDoc}
+	 * @throws javax.servlet.ServletException
+	 * @throws java.io.IOException
 	 */
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -92,6 +93,8 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * {@inheritDoc}
+	 * @throws javax.servlet.ServletException
+	 * @throws java.io.IOException
 	 */
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -234,7 +237,13 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 		authReq.addExtension(fetch);
 	}
 
-	// --- processing the authentication response ---
+	/**
+	 * processing the authentication response
+	 * 
+	 * @param httpReq
+	 * @return
+	 * @throws ServletException 
+	 */
 	public Identifier verifyResponse(HttpServletRequest httpReq)
 			throws ServletException {
 		try {
@@ -266,7 +275,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 
 				receiveAttributeExchange(httpReq, authSuccess);
 				
-				Map<String, String> oidInfoMap = new HashMap<String, String>();
+				Map<String, String> oidInfoMap = new HashMap<>();
 				oidInfoMap.put("oid-firstname", response.getParameter("openid.ext1.value.firstname").getValue());
 				oidInfoMap.put("oid-lastname", response.getParameter("openid.ext1.value.lastname").getValue());
 				oidInfoMap.put("oid-country", response.getParameter("openid.ext1.value.country").getValue());

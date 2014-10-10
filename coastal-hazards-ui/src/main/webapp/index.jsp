@@ -1,3 +1,5 @@
+<%@page import="gov.usgs.cida.coastalhazards.service.util.Property"%>
+<%@page import="gov.usgs.cida.coastalhazards.service.util.PropertyUtil"%>
 <%@page import="java.io.File"%>
 <%@page import="java.net.URL"%>
 <%@page import="org.slf4j.Logger"%>
@@ -7,19 +9,8 @@
 <!DOCTYPE html>
 
 <%!    
-    
-    protected DynamicReadOnlyProperties props = null;
-
-    {
-        try {
-            File propsFile = new File(getClass().getClassLoader().getResource("application.properties").toURI());
-            props = new DynamicReadOnlyProperties(propsFile);
-            props = props.addJNDIContexts(new String[0]);
-        } catch (Exception e) {
-            LoggerFactory.getLogger("index.jsp").error("Could not find JNDI - Application will probably not function correctly");
-        }
-    }
-    boolean development = Boolean.parseBoolean(props.getProperty("development"));
+    boolean development = Boolean.parseBoolean(PropertyUtil.getProperty(Property.DEVELOPMENT));
+	String applicationVersion = PropertyUtil.getProperty("application.version");
 %>
 
 <html lang="en">
@@ -424,7 +415,7 @@
                     <jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
                     <jsp:param name="contact-info" value="<a href='mailto:DSAS_Help@usgs.gov?Subject=DSASWeb%20Feedback'>Site Administrator</a>" />
                 </jsp:include>
-                <p id="footer-page-version-info">Application Version: <%= props.get("application.version") %></p>
+                <p id="footer-page-version-info">Application Version: <%= applicationVersion %></p>
             </div>
         </div>
 		
@@ -441,7 +432,6 @@
         </div>
         <iframe id="download" class="hidden"></iframe>
 		
-    </body>
     <script type="text/javascript">splashUpdate("Loading Graphing Utilities...");</script>
     <jsp:include page="js/dygraphs/dygraphs.jsp">
         <jsp:param name="debug-qualifier" value="true" />
@@ -517,4 +507,5 @@
 	<link type="text/css" rel="stylesheet" href="css/custom.css" />
 	<script type="text/javascript">splashUpdate("Loading Main module...");</script>
 	<script type="text/javascript" src="js/onReady.js"></script>
+	</body>
 </html>

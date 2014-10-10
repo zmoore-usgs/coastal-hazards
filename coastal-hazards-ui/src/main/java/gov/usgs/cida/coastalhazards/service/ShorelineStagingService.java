@@ -1,5 +1,7 @@
 package gov.usgs.cida.coastalhazards.service;
 
+import gov.usgs.cida.coastalhazards.service.util.Property;
+import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.coastalhazards.shoreline.file.IShorelineFile;
 import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile;
@@ -42,7 +44,6 @@ public class ShorelineStagingService extends HttpServlet {
 	private static final long serialVersionUID = 2377995353146379768L;
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineStagingService.class);
 	private static final Integer defaultMaxFileSize = Integer.MAX_VALUE;
-	private static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
 	private static Map<String, String> tokenMap = new HashMap<>();
 	private final static String TOKEN_STRING = "token";
 	private final static String ACTION_STRING = "action";
@@ -66,7 +67,7 @@ public class ShorelineStagingService extends HttpServlet {
 		applicationName = servletConfig.getInitParameter("application.name");
 
 		// The maximum upload file size allowd by this server, 0 = Integer.MAX_VALUE
-		String mfsJndiProp = props.getProperty(applicationName + ".max.upload.file.size");
+		String mfsJndiProp = PropertyUtil.getProperty(Property.FILE_UPLOAD_MAX_SIZE);
 		if (StringUtils.isNotBlank(mfsJndiProp)) {
 			maxFileSize = Integer.parseInt(mfsJndiProp);
 		} else {
@@ -105,13 +106,17 @@ public class ShorelineStagingService extends HttpServlet {
 			ServiceHelper.sendNotEnoughParametersError(response, new String[]{ACTION_STRING}, responseType);
 		} else if (action.equalsIgnoreCase(STAGE_ACTION_STRING)) {
 			// Client is uploading a file. I want to stage the file and return a token
+			ShorelineFile shorelineFile = null;
 			try {
 				ShorelineFileFactory shorelineFactory = new ShorelineFileFactory(request, jndiDbConnName, applicationName);
-				ShorelineFile shorelineFile = shorelineFactory.buildShorelineFile();
+				shorelineFile = shorelineFactory.buildShorelineFile();
 				String token = TokenToShorelineFileSingleton.addShorelineFile(shorelineFile);
 				responseMap.put(TOKEN_STRING, token);
 				success = true;
 			} catch (FileUploadException | IOException | ShorelineFileFormatException ex) {
+				if (shorelineFile != null) {
+					shorelineFile.clear();
+				}
 				sendException(response, "Could not stage file", ex, responseType);
 			}
 		} else if (action.equalsIgnoreCase(IMPORT_ACTION_STRING)) {

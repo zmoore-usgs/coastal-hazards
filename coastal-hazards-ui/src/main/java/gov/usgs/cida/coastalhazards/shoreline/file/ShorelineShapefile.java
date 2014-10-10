@@ -1,5 +1,7 @@
 package gov.usgs.cida.coastalhazards.shoreline.file;
 
+import gov.usgs.cida.coastalhazards.service.util.Property;
+import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.owsutils.commons.io.FileHelper;
@@ -12,6 +14,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -52,10 +55,29 @@ public class ShorelineShapefile extends ShorelineFile {
 		SHP_XML,
 		CPG};
 
+	public static void validate(File zipFile) throws ShorelineFileFormatException, IOException {
+		ZipFile zFile = new ZipFile(zipFile);
+		Enumeration<? extends ZipEntry> entries = zFile.entries();
+		List<String> extensions = new ArrayList<>(zFile.size());
+		List<String> requiredFiles = Arrays.asList(new String[] {SHP, SHX, DBF, PRJ});
+		while (entries.hasMoreElements()) {
+			ZipEntry ze = entries.nextElement();
+			extensions.add(FilenameUtils.getExtension(ze.getName()));
+		}
+		if (!extensions.containsAll(requiredFiles)) {
+			throw new ShorelineFileFormatException("Missing mandatory files within shapefile. One of: .shp, .shx, .dbf");
+		}
+		if (Collections.frequency(extensions, SHP) > 1 ||
+				Collections.frequency(extensions, SHX) > 1 ||
+				Collections.frequency(extensions, DBF) > 1) {
+			throw new ShorelineFileFormatException("Found more than one shapefile in archive. Can only stage one shape file at a time.");
+		}
+	}
+
 	public ShorelineShapefile(String applicationName, GeoserverHandler gsHandler, ShorelineFileDao dao, String workspace) {
-		this.baseDirectory = new File(props.getProperty(applicationName + DIRECTORY_BASE_PARAM_CONFIG_KEY, System.getProperty("java.io.tmpdir")));
-		this.uploadDirectory = new File(baseDirectory, props.getProperty(applicationName + DIRECTORY_UPLOAD_PARAM_CONFIG_KEY));
-		this.workDirectory = new File(baseDirectory, props.getProperty(applicationName + DIRECTORY_WORK_PARAM_CONFIG_KEY));
+		this.baseDirectory = new File(PropertyUtil.getProperty(Property.DIRECTORIES_BASE, System.getProperty("java.io.tmpdir")));
+		this.uploadDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD));
+		this.workDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_WORK));
 		this.geoserverHandler = gsHandler;
 		this.dao = dao;
 		this.fileMap = new HashMap<>(fileParts.length);
@@ -82,7 +104,7 @@ public class ShorelineShapefile extends ShorelineFile {
 	public String[] getColumns() throws IOException {
 		String[] headers = null;
 		File dbfFile = this.fileMap.get(DBF);
-
+		
 		// getDbfHeader uses the .shp file 
 		if (null == dbfFile || !dbfFile.exists() || !dbfFile.isFile() || !dbfFile.canRead()) {
 			throw new IOException(MessageFormat.format("DBF file at {0} not readable", dbfFile));
@@ -106,20 +128,6 @@ public class ShorelineShapefile extends ShorelineFile {
 		String projection = getEPSGCode();
 		File shpFile = fileMap.get(SHP);
 		return dao.importToDatabase(shpFile, columns, workspace, projection);
-	}
-
-	public static void validate(File zipFile) throws ShorelineFileFormatException, IOException {
-		ZipFile zFile = new ZipFile(zipFile);
-		Enumeration<? extends ZipEntry> entries = zFile.entries();
-		List<String> extensions = new ArrayList<>(zFile.size());
-		List<String> requiredFiles = Arrays.asList(new String[] {SHP, SHX, DBF, PRJ});
-		while (entries.hasMoreElements()) {
-			ZipEntry ze = entries.nextElement();
-			extensions.add(FilenameUtils.getExtension(ze.getName()));
-		}
-		if (!extensions.containsAll(requiredFiles)) {
-			throw new ShorelineFileFormatException("Missing mandatory files within shapefile. One of: .shp, .shx, .dbf");
-		}
 	}
 
 	@Override

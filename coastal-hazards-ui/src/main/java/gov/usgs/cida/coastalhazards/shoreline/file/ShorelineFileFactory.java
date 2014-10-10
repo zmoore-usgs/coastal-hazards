@@ -1,15 +1,15 @@
 package gov.usgs.cida.coastalhazards.shoreline.file;
 
-import gov.usgs.cida.coastalhazards.shoreline.exception.LidarFileFormatException;
-import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
+import gov.usgs.cida.coastalhazards.service.util.ImportUtil;
+import gov.usgs.cida.coastalhazards.service.util.Property;
+import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineLidarFileDao;
 import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineShapefileDAO;
+import gov.usgs.cida.coastalhazards.shoreline.exception.LidarFileFormatException;
+import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile.ShorelineType;
-import gov.usgs.cida.coastalhazards.service.util.ImportUtil;
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse;
 import gov.usgs.cida.owsutils.commons.io.exception.ShapefileFormatException;
-import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.file.FileHelper;
 import java.io.File;
@@ -28,14 +28,10 @@ import org.slf4j.LoggerFactory;
 public class ShorelineFileFactory {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineFileFactory.class);
-	private static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
-	private static final String DIRECTORY_BASE_PARAM_CONFIG_KEY = ".files.directory.base";
-	private static final String DIRECTORY_UPLOAD_PARAM_CONFIG_KEY = ".files.directory.upload";
 	private File zipFile;
 	private HttpServletRequest request;
 	private String jndiConnectionName;
 	private String applicationName;
-	private final String DEFAULT_REQ_FILENAME_PARAM = "qqfile";
 	private File baseDirectory;
 	private File uploadDirectory;
 	private String workspace;
@@ -91,15 +87,15 @@ public class ShorelineFileFactory {
 			this.applicationName = applicationName;
 		}
 
-		this.baseDirectory = new File(props.getProperty(applicationName + DIRECTORY_BASE_PARAM_CONFIG_KEY, System.getProperty("java.io.tmpdir")));
-		this.uploadDirectory = new File(baseDirectory, props.getProperty(applicationName + DIRECTORY_UPLOAD_PARAM_CONFIG_KEY));
+		this.baseDirectory = new File(PropertyUtil.getProperty(Property.DIRECTORIES_BASE, System.getProperty("java.io.tmpdir")));
+		this.uploadDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD));
 		this.workspace = workspace;
 	}
 
 	public ShorelineFile buildShorelineFile() throws ShorelineFileFormatException, IOException, FileUploadException {
-		String geoserverEndpoint = props.getProperty(applicationName + ".geoserver.endpoint");
-		String geoserverUsername = props.getProperty(applicationName + ".geoserver.username");
-		String geoserverPassword = props.getProperty(applicationName + ".geoserver.password");
+		String geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
+		String geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
+		String geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
 		GeoserverHandler geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
 
 		if (null == this.zipFile) {
@@ -127,6 +123,7 @@ public class ShorelineFileFactory {
 				type = ShorelineType.SHAPEFILE;
 			} catch (ShorelineFileFormatException | IOException ex1) {
 				LOGGER.info("Failed shapefile validation", ex1);
+				FileUtils.deleteQuietly(zipFile);
 				throw new ShorelineFileFormatException("File is neither a shoreline LIDAR or shape file");
 			}
 		}
@@ -158,7 +155,7 @@ public class ShorelineFileFactory {
 	}
 
 	private File saveShorelineZipFileFromRequest(HttpServletRequest request) throws IOException, FileUploadException, ShapefileFormatException, LidarFileFormatException {
-		String filenameParam = props.getProperty(applicationName + ".filename.param", DEFAULT_REQ_FILENAME_PARAM);
+		String filenameParam = PropertyUtil.getProperty(Property.FILE_UPLOAD_FILENAME_PARAM);
 		String fnReqParam = request.getParameter("filename.param");
 		if (StringUtils.isNotBlank(fnReqParam)) {
 			filenameParam = fnReqParam;
@@ -173,7 +170,14 @@ public class ShorelineFileFactory {
 		if (cleanedZipFile.exists()) {
 			FileUtils.deleteQuietly(cleanedZipFile);
 		}
-		RequestResponse.saveFileFromRequest(request, cleanedZipFile, filenameParam);
+
+		try {
+			RequestResponse.saveFileFromRequest(request, cleanedZipFile, filenameParam);
+		} catch (FileUploadException | IOException ex) {
+			LOGGER.info("Could not save file from request", ex);
+			FileUtils.deleteQuietly(cleanedZipFile);
+			throw ex;
+		}
 		return cleanedZipFile;
 	}
 

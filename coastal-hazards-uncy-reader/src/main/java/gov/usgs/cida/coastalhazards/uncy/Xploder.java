@@ -28,6 +28,7 @@ import org.geotools.data.shapefile.dbf.DbaseFileReader;
 import org.geotools.data.shapefile.files.ShpFileType;
 import org.geotools.data.shapefile.files.ShpFiles;
 import org.geotools.data.shapefile.shp.ShapeType;
+import org.geotools.data.shapefile.shp.ShapefileException;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -125,7 +126,7 @@ public class Xploder {
 		}
 	}
 
-	public int processShape(ShapeAndAttributes sap) throws Exception {
+	public int processShape(ShapeAndAttributes sap) throws IOException {
 
 		Double uncertainty = ((Number) sap.row.read(uncertaintyIdIdx)).doubleValue();
 
@@ -153,7 +154,7 @@ public class Xploder {
 
 	}
 
-	public void writePoint(Point p, DbaseFileReader.Row row, double uncy, int recordId, int segmentId) throws Exception {
+	public void writePoint(Point p, DbaseFileReader.Row row, double uncy, int recordId, int segmentId) throws IOException {
 
 		SimpleFeature writeFeature = featureWriter.next();
 
@@ -179,7 +180,7 @@ public class Xploder {
 		featureWriter.write();
 	}
 
-	private File initWriter(String fn) throws Exception {
+	private File initWriter(String fn) throws IOException {
 		// read input to get attributes
 		SimpleFeatureType sourceSchema = readSourceSchema(fn);
 
@@ -225,7 +226,7 @@ public class Xploder {
 		return fout;
 	}
 
-	public File explode(String fn) throws Exception {
+	public File explode(String fn) throws IOException  {
 		File ptFile;
 
 		try (IterableShapefileReader rdr = initReader(fn)) {
@@ -262,7 +263,7 @@ public class Xploder {
 		return ptFile;
 	}
 
-	protected IterableShapefileReader initReader(String fn) throws Exception {
+	protected IterableShapefileReader initReader(String fn) throws ShapefileException  {
 		CoordinateSequenceFactory csf = com.vividsolutions.jtsexample.geom.ExtendedCoordinateSequenceFactory.instance();
 		GeometryFactory gf = new GeometryFactory(csf);
 		XploderMultiLineHandler mlh = new XploderMultiLineHandler(ShapeType.ARCM, gf);

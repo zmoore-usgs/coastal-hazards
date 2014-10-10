@@ -1,9 +1,10 @@
 package gov.usgs.cida.coastalhazards;
 
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
-import gov.usgs.cida.utilities.properties.JNDISingleton;
+import gov.usgs.cida.coastalhazards.service.util.Property;
+import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.apache.commons.io.FileUtils;
@@ -16,17 +17,15 @@ import org.slf4j.LoggerFactory;
  */
 public class InitListener implements ServletContextListener {
 
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(InitListener.class);
-	private static DynamicReadOnlyProperties props = null;
+	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(InitListener.class);
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		props = JNDISingleton.getInstance();
-		LOG.info("Coastal Hazards UI Application Initializing.");
+		LOGGER.info("Coastal Hazards UI Application Initializing.");
 
-		String baseDir = props.getProperty("coastal-hazards.files.directory.base", FileUtils.getTempDirectoryPath() + "/coastal-hazards");
-		String workDir = props.getProperty("coastal-hazards.files.directory.work", "/work");
-		String uploadDir = props.getProperty("coastal-hazards.files.directory.upload", "/upload");
+		String baseDir = PropertyUtil.getProperty(Property.DIRECTORIES_BASE, FileUtils.getTempDirectoryPath() + "/coastal-hazards");
+		String workDir = PropertyUtil.getProperty(Property.DIRECTORIES_WORK, "/work");
+		String uploadDir = PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD, "/upload");
 		File baseDirFile, workDirFile, uploadDirFile;
 
 		System.setProperty("coastal-hazards.files.directory.base", baseDir);
@@ -49,21 +48,22 @@ public class InitListener implements ServletContextListener {
 			createDir(uploadDirFile);
 		}
 
-        // TODO- Create file cleanup service for work and upload directories
-		LOG.info("Coastal Hazards UI Application Initialized.");
+		// TODO- Create file cleanup service for work and upload directories
+		LOGGER.info("Coastal Hazards UI Application Initialized.");
 	}
 
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		LOG.info("Coastal Hazards UI Application Destroying.");
-		LOG.info("Coastal Hazards UI Application Destroyed.");
+		LOGGER.info("Coastal Hazards UI Application Destroying.");
+		// Do stuff here for application cleanup
+		LOGGER.info("Coastal Hazards UI Application Destroyed.");
 	}
 
 	private void createDir(File directory) {
 		try {
 			FileUtils.forceMkdir(directory);
 		} catch (IOException ex) {
-			LOG.error("** Work application directory (" + directory.getPath() + ") could not be created -- the application should not be expected to function normally", ex);
+			LOGGER.error(MessageFormat.format("** Work application directory ({0}) could not be created -- the application should not be expected to function normally", directory.getPath()), ex);
 		}
 	}
 }

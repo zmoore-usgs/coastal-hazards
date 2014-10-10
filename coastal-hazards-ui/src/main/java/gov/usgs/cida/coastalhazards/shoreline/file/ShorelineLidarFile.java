@@ -1,13 +1,13 @@
 package gov.usgs.cida.coastalhazards.shoreline.file;
 
+import gov.usgs.cida.coastalhazards.service.util.Property;
+import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
 import gov.usgs.cida.coastalhazards.shoreline.exception.LidarFileFormatException;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
-import static gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile.props;
 import gov.usgs.cida.owsutils.commons.io.FileHelper;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.features.Constants;
-
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -17,9 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-
 import javax.naming.NamingException;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.geotools.feature.SchemaException;
@@ -39,32 +37,6 @@ public class ShorelineLidarFile extends ShorelineFile {
 		CSV
 	};
 	private static final String[] EXPECTED_COLUMNS = new String[]{Constants.DB_DATE_ATTR, Constants.UNCY_ATTR, Constants.MHW_ATTR};
-
-	public ShorelineLidarFile(String applicationName, GeoserverHandler gsHandler, ShorelineFileDao dao, String workspace) {
-		this.baseDirectory = new File(props.getProperty(applicationName + DIRECTORY_BASE_PARAM_CONFIG_KEY, System.getProperty("java.io.tmpdir")));
-		this.uploadDirectory = new File(baseDirectory, props.getProperty(applicationName + DIRECTORY_UPLOAD_PARAM_CONFIG_KEY));
-		this.workDirectory = new File(baseDirectory, props.getProperty(applicationName + DIRECTORY_WORK_PARAM_CONFIG_KEY));
-		this.geoserverHandler = gsHandler;
-		this.dao = dao;
-		this.fileMap = new HashMap<>(fileParts.length);
-		this.workspace = workspace;
-	}
-
-	@Override
-	public String setDirectory(File directory) throws IOException {
-		String fileToken = super.setDirectory(directory);
-		updateFileMapWithDirFile(directory, fileParts);
-		return fileToken;
-	}
-
-	@Override
-	public File saveZipFile(File zipFile) throws IOException {
-		File workLocation = createWorkLocationForZip(zipFile);
-		FileHelper.unzipFile(workLocation.getAbsolutePath(), zipFile);
-
-		// Do validation
-		return workLocation;
-	}
 
 	/**
 	 * A lidar file has csv files, a prj file, and NO shp files.
@@ -97,9 +69,37 @@ public class ShorelineLidarFile extends ShorelineFile {
 			if (shpfiles.length != 0) {
 				throw new LidarFileFormatException("Lidar archive cannot contain an shp file");
 			}
+			
+			LOGGER.debug("File {} validated as Lidar file", lidarZipFile.getAbsolutePath());
 		} finally {
 			FileHelper.forceDelete(temporaryDirectory);
 		}
+	}
+
+	public ShorelineLidarFile(String applicationName, GeoserverHandler gsHandler, ShorelineFileDao dao, String workspace) {
+		this.baseDirectory = new File(PropertyUtil.getProperty(Property.DIRECTORIES_BASE, System.getProperty("java.io.tmpdir")));
+		this.uploadDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD));
+		this.workDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_WORK));
+		this.geoserverHandler = gsHandler;
+		this.dao = dao;
+		this.fileMap = new HashMap<>(fileParts.length);
+		this.workspace = workspace;
+	}
+
+	@Override
+	public String setDirectory(File directory) throws IOException {
+		String fileToken = super.setDirectory(directory);
+		updateFileMapWithDirFile(directory, fileParts);
+		return fileToken;
+	}
+	
+	@Override
+	public File saveZipFile(File zipFile) throws IOException {
+		File workLocation = createWorkLocationForZip(zipFile);
+		FileHelper.unzipFile(workLocation.getAbsolutePath(), zipFile);
+		
+		// Do validation
+		return workLocation;
 	}
 
 	@Override

@@ -1,19 +1,9 @@
-<%@page import="org.slf4j.Logger"%>
-<%@page import="org.slf4j.LoggerFactory"%>
-<%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
+<%@page import="gov.usgs.cida.coastalhazards.service.util.Property"%>
+<%@page import="gov.usgs.cida.coastalhazards.service.util.PropertyUtil"%>
 <%!    
-    protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
-
-    {
-        try {
-            props = props.addJNDIContexts(new String[0]);
-        } catch (Exception e) {
-            LoggerFactory.getLogger("index.jsp").error("Could not find JNDI - Application will probably not function correctly");
-        }
-    }
-    boolean development = Boolean.parseBoolean(props.getProperty("development"));
-    String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
-    String n52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
+    boolean development = Boolean.parseBoolean(PropertyUtil.getProperty(Property.DEVELOPMENT));
+    String geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
+    String n52Endpoint = PropertyUtil.getProperty(Property.N52_ENDPOINT);
 %>
 <script type="text/javascript">
 	splashUpdate("Setting configuration...");

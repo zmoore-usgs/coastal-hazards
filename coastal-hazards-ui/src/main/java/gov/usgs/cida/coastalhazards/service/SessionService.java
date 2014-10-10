@@ -1,10 +1,10 @@
 package gov.usgs.cida.coastalhazards.service;
 
+import gov.usgs.cida.coastalhazards.service.util.Property;
+import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineShapefileDAO;
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
-import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -12,8 +12,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -31,28 +29,21 @@ import org.slf4j.LoggerFactory;
 public class SessionService extends HttpServlet {
 
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SessionService.class);
-	private static DynamicReadOnlyProperties props = null;
 	private static GeoserverHandler geoserverHandler = null;
 	private static String geoserverEndpoint = null;
 	private static String geoserverUsername = null;
 	private static String geoserverPassword = null;
 	private static String geoserverDataDir = null;
-	private static String GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.endpoint";
-	private static String GEOSERVER_USER_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.username";
-	private static String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
-	private static String GEOSERVER_DATA_DIR_KEY = "coastal-hazards.geoserver.datadir";
 	private static final long serialVersionUID = 5022377389976105019L;
 	private String jndiDbConnName;
 
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {
 		super.init();
-		props = JNDISingleton.getInstance();
-
-		geoserverEndpoint = props.getProperty(GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY);
-		geoserverUsername = props.getProperty(GEOSERVER_USER_PARAM_CONFIG_KEY);
-		geoserverPassword = props.getProperty(GEOSERVER_PASS_PARAM_CONFIG_KEY);
-		geoserverDataDir = props.getProperty(GEOSERVER_DATA_DIR_KEY);
+		geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
+		geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
+		geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
+		geoserverDataDir = PropertyUtil.getProperty(Property.GEOSERVER_DATA_DIRECTORY);
 		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
 
 		String jndiDbInitParam = servletConfig.getInitParameter("jndi.dbconn.name.param");
