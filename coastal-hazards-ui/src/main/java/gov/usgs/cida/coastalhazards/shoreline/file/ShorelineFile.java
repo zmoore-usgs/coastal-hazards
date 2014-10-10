@@ -161,7 +161,7 @@ public abstract class ShorelineFile implements IShorelineFile {
 			throw new IOException("Could not create workspace");
 		}
 
-		if (!geoserverHandler.createPGDatastoreInGeoserver(workspace, "shoreline", null, "public", "dsas")) {
+		if (!geoserverHandler.createPGDatastoreInGeoserver(workspace, "shoreline", null, "public")) {
 			throw new IOException("Could not create data store");
 		}
 
