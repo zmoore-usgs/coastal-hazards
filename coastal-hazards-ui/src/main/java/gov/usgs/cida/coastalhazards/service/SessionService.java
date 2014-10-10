@@ -81,7 +81,7 @@ public class SessionService extends HttpServlet {
 							geoserverHandler.removeLayer(workspace, store, workspace + "_" + layer + "_shorelines");
 						}
 					} else {
-						geoserverHandler.removeLayer(workspace, store, workspace + "_" + layer + "_shorelines");
+						geoserverHandler.removeLayer(workspace, store, layer);
 					}
 				} catch (MalformedURLException | SQLException ex) {
 					responseMap.put("error", "Could not remove layer: " + ex.getMessage());
