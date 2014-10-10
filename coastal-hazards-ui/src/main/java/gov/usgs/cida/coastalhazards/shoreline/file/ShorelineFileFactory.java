@@ -30,7 +30,6 @@ public class ShorelineFileFactory {
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineFileFactory.class);
 	private File zipFile;
 	private HttpServletRequest request;
-	private String jndiConnectionName;
 	private File baseDirectory;
 	private File uploadDirectory;
 	private String workspace;
@@ -57,16 +56,12 @@ public class ShorelineFileFactory {
 		}
 
 		this.zipFile = zipFile;
-		init(jndiConnectionName, workspace);
+		init(workspace);
 	}
 
-	public ShorelineFileFactory(HttpServletRequest request, String jndiConnectionName) {
+	public ShorelineFileFactory(HttpServletRequest request) {
 		if (request == null) {
-			throw new NullPointerException("Zip file may not be null");
-		}
-
-		if (StringUtils.isBlank(jndiConnectionName)) {
-			throw new NullPointerException("JNDI connection name may not be null or blank");
+			throw new NullPointerException("Request object may not be null");
 		}
 
 		this.request = request;
@@ -75,11 +70,10 @@ public class ShorelineFileFactory {
 			throw new NullPointerException("Request did not contain workspace name");
 		}
 
-		init(jndiConnectionName, requestWorkspace);
+		init(requestWorkspace);
 	}
 
-	private void init(String jndiConnectionName, String workspace) {
-		this.jndiConnectionName = jndiConnectionName;
+	private void init(String workspace) {
 		this.baseDirectory = new File(PropertyUtil.getProperty(Property.DIRECTORIES_BASE, System.getProperty("java.io.tmpdir")));
 		this.uploadDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD));
 		this.workspace = workspace;
@@ -123,10 +117,10 @@ public class ShorelineFileFactory {
 
 		switch (type) {
 			case LIDAR:
-				result = new ShorelineLidarFile(geoserverHandler, new ShorelineLidarFileDao(jndiConnectionName), this.workspace);
+				result = new ShorelineLidarFile(geoserverHandler, new ShorelineLidarFileDao(), this.workspace);
 				break;
 			case SHAPEFILE:
-				result = new ShorelineShapefile(geoserverHandler, new ShorelineShapefileDAO(jndiConnectionName), this.workspace);
+				result = new ShorelineShapefile(geoserverHandler, new ShorelineShapefileDAO(), this.workspace);
 				break;
 			default:
 				FileUtils.deleteQuietly(zipFile);

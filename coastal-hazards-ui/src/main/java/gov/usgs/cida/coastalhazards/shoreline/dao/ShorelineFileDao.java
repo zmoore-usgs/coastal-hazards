@@ -32,7 +32,6 @@ public abstract class ShorelineFileDao {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineFileDao.class);
 	protected String JNDI_NAME;
-	protected final String DEFAULT_JNDI_NAME = "dsas";
 	public final static int DATABASE_PROJECTION = 4326;
 	public final static String[] REQUIRED_FIELD_NAMES = new String[]{Constants.DB_DATE_ATTR, Constants.UNCY_ATTR, Constants.MHW_ATTR};
 	public final static String[] PROTECTED_WORKSPACES = new String[]{JNDISingleton.getInstance().getProperty("coastal-hazards.workspace.published", "published")};

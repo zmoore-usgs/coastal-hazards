@@ -5,6 +5,8 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;
 
 import gov.usgs.cida.coastalhazards.service.util.LidarFileUtils;
+import gov.usgs.cida.coastalhazards.service.util.Property;
+import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.shoreline.exception.LidarFileFormatException;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.utilities.features.Constants;
@@ -40,15 +42,7 @@ import org.opengis.referencing.operation.TransformException;
 public class ShorelineLidarFileDao extends ShorelineFileDao {
 
 	public ShorelineLidarFileDao() {
-		this(null);
-	}
-
-	public ShorelineLidarFileDao(String jndiName) {
-		if (null == jndiName) {
-			this.JNDI_NAME = DEFAULT_JNDI_NAME;
-		} else {
-			this.JNDI_NAME = jndiName;
-		}
+		this.JNDI_NAME = PropertyUtil.getProperty(Property.JDBC_NAME);
 	}
 
 	@Override

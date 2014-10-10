@@ -27,6 +27,7 @@ public enum Property {
 	N52_ENDPOINT("coastal-hazards.n52.endpoint"),
 	FILE_UPLOAD_MAX_SIZE("coastal-hazards.files.upload.max-size"),
 	FILE_UPLOAD_FILENAME_PARAM("coastal-hazards.filename.param"),
+	JDBC_NAME("jndi.jdbc.name"),
 	DEVELOPMENT("development");
 
 	private final String key;

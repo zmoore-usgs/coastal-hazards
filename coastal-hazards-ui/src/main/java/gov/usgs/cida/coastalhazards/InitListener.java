@@ -5,6 +5,7 @@ import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.apache.commons.io.FileUtils;
@@ -22,16 +23,16 @@ public class InitListener implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		LOGGER.info("Coastal Hazards UI Application Initializing.");
-
+		ServletContext sc = sce.getServletContext();
+		String key = Property.JDBC_NAME.getKey();
+		String initParameter = sc.getInitParameter(key);
+		System.setProperty(key, initParameter);
+		
 		String baseDir = PropertyUtil.getProperty(Property.DIRECTORIES_BASE, FileUtils.getTempDirectoryPath() + "/coastal-hazards");
 		String workDir = PropertyUtil.getProperty(Property.DIRECTORIES_WORK, "/work");
 		String uploadDir = PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD, "/upload");
 		File baseDirFile, workDirFile, uploadDirFile;
-
-		System.setProperty("coastal-hazards.files.directory.base", baseDir);
-		System.setProperty("coastal-hazards.files.directory.work", workDir);
-		System.setProperty("coastal-hazards.files.directory.upload", uploadDir);
-
+		
 		baseDirFile = new File(baseDir);
 		workDirFile = new File(baseDirFile, workDir);
 		uploadDirFile = new File(baseDirFile, uploadDir);

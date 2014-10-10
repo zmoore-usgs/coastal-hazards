@@ -35,7 +35,6 @@ public class SessionService extends HttpServlet {
 	private static String geoserverPassword = null;
 	private static String geoserverDataDir = null;
 	private static final long serialVersionUID = 5022377389976105019L;
-	private String jndiDbConnName;
 
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {
@@ -45,13 +44,6 @@ public class SessionService extends HttpServlet {
 		geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
 		geoserverDataDir = PropertyUtil.getProperty(Property.GEOSERVER_DATA_DIRECTORY);
 		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
-
-		String jndiDbInitParam = servletConfig.getInitParameter("jndi.dbconn.name.param");
-		if (StringUtils.isNotBlank(jndiDbInitParam)) {
-			jndiDbConnName = "jdbc/" + jndiDbInitParam;
-		} else {
-			jndiDbConnName = "jdbc/dsas";
-		}
 	}
 
 	protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -80,7 +72,7 @@ public class SessionService extends HttpServlet {
 
 					if (isShoreline) {
 						LOG.info("Shoreline layer being removed. First going to try to remove from database");
-						ShorelineShapefileDAO dao = new ShorelineShapefileDAO(jndiDbConnName);
+						ShorelineShapefileDAO dao = new ShorelineShapefileDAO();
 						if (dao.removeShorelines(workspace, layer)) {
 							LOG.info("No more shorelines exist workspace {}. Will delete the view", workspace);
 							String viewName = workspace + "_" + layer + "_shorelines";

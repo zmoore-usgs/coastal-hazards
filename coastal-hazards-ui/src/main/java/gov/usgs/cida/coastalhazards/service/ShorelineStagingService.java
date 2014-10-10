@@ -55,7 +55,6 @@ public class ShorelineStagingService extends HttpServlet {
 	 * shape file
 	 */
 	private Integer maxFileSize;
-	private String jndiDbConnName;
 
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {
@@ -72,14 +71,6 @@ public class ShorelineStagingService extends HttpServlet {
 			maxFileSize = defaultMaxFileSize;
 		}
 		LOGGER.debug("Maximum allowable file size set to: " + maxFileSize + " bytes");
-
-		String jndiDbInitParam = servletConfig.getInitParameter("jndi.dbconn.name.param");
-		if (StringUtils.isNotBlank(jndiDbInitParam)) {
-			jndiDbConnName = "jdbc/" + jndiDbInitParam;
-		} else {
-			jndiDbConnName = "jdbc/dsas";
-		}
-
 	}
 
 	/**
@@ -103,7 +94,7 @@ public class ShorelineStagingService extends HttpServlet {
 			// Client is uploading a file. I want to stage the file and return a token
 			ShorelineFile shorelineFile = null;
 			try {
-				ShorelineFileFactory shorelineFactory = new ShorelineFileFactory(request, jndiDbConnName);
+				ShorelineFileFactory shorelineFactory = new ShorelineFileFactory(request);
 				shorelineFile = shorelineFactory.buildShorelineFile();
 				String token = TokenToShorelineFileSingleton.addShorelineFile(shorelineFile);
 				responseMap.put(TOKEN_STRING, token);

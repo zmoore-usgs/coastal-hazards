@@ -1,5 +1,7 @@
 package gov.usgs.cida.coastalhazards.shoreline.dao;
 
+import gov.usgs.cida.coastalhazards.service.util.Property;
+import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
@@ -53,15 +55,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 	private static final String[] AUXILLARY_ATTRIBUTES = new String[]{"surveyID", "shoreInd", "defaultD", "name"};
 
 	public ShorelineShapefileDAO() {
-		this(null);
-	}
-
-	public ShorelineShapefileDAO(String jndiName) {
-		if (null == jndiName) {
-			this.JNDI_NAME = DEFAULT_JNDI_NAME;
-		} else {
-			this.JNDI_NAME = jndiName;
-		}
+		this.JNDI_NAME = PropertyUtil.getProperty(Property.JDBC_NAME);
 	}
 
 	@Override

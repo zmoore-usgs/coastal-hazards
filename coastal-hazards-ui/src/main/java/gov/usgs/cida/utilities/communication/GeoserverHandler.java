@@ -1,6 +1,8 @@
 package gov.usgs.cida.utilities.communication;
 
 import com.vividsolutions.jts.geom.Envelope;
+import gov.usgs.cida.coastalhazards.service.util.Property;
+import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.utilities.xml.XMLUtils;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
@@ -696,7 +698,7 @@ public class GeoserverHandler {
 	 * @param jndiName JNDI name to gain connection from
 	 * @return
 	 */
-	public boolean createPGDatastoreInGeoserver(String workspace, String storeName, String nameSpace, String schemaName, String jndiName) {
+	public boolean createPGDatastoreInGeoserver(String workspace, String storeName, String nameSpace, String schemaName) {
 		if (gsrm.getReader().getDatastore(workspace, storeName) == null) {
 			GSPostGISDatastoreEncoder pg = new GSPostGISDatastoreEncoder(workspace);
 			String _nameSpace = nameSpace;
@@ -707,7 +709,7 @@ public class GeoserverHandler {
 			pg.setExposePrimaryKeys(false);
 			pg.setSchema(schemaName);
 			pg.setName(storeName);
-			pg.setJndiReferenceName("java:comp/env/jdbc/" + jndiName);
+			pg.setJndiReferenceName("java:comp/env/" + PropertyUtil.getProperty(Property.JDBC_NAME));
 			return gsrm.getStoreManager().create(workspace, pg);
 		}
 		return true;
