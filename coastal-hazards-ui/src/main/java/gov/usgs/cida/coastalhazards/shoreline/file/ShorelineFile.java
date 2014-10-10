@@ -3,6 +3,7 @@ package gov.usgs.cida.coastalhazards.shoreline.file;
 import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
+import gov.usgs.cida.owsutils.commons.io.FileHelper;
 import gov.usgs.cida.owsutils.commons.shapefile.ProjectionUtils;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.file.TokenToFileSingleton;
@@ -58,7 +59,7 @@ public abstract class ShorelineFile implements IShorelineFile {
 
 	public static enum ShorelineType {
 
-		LIDAR, SHAPEFILE
+		LIDAR, SHAPEFILE, OTHER
 	};
 
 	/**
@@ -95,9 +96,6 @@ public abstract class ShorelineFile implements IShorelineFile {
 			}
 		}
 	}
-
-	@Override
-	public abstract File saveZipFile(File file) throws IOException;
 
 	@Override
 	public File getDirectory(String token) {
@@ -179,10 +177,19 @@ public abstract class ShorelineFile implements IShorelineFile {
 	public static void validate(File zipFile) throws Exception {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	@Override
 	public String getWorkspace() {
 		return this.workspace;
+	}
+	
+	
+	@Override
+	public File saveZipFile(File zipFile) throws IOException {
+		File workLocation = createWorkLocationForZip(zipFile);
+		FileHelper.unzipFile(workLocation.getAbsolutePath(), zipFile);
+		FileHelper.renameDirectoryContents(workLocation);
+		return workLocation;
 	}
 
 	@Override
