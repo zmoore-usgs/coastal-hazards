@@ -909,18 +909,18 @@ var Shorelines = {
 
 				}
 			];
-		
+
 		// I don't want the '_shorelines' suffix going into the removeResource function
 		if (cutOffIndex !== -1) {
 			layer = layer.substring(0, cutOffIndex);
 		}
-		
+
 		try {
 			CONFIG.tempSession.removeResource({
 				store: store,
 				layer: layer,
 				extraParams: {
-					isShoreline : 'true'
+					isShoreline: 'true'
 				},
 				callbacks: callbacks
 			});
@@ -973,7 +973,7 @@ var Shorelines = {
 										}
 									});
 								} else {
-									// User needs to tell me which is uncy
+									// User needs to tell me which is uncy and date
 									for (var hIdx = 0; hIdx < headers.length; hIdx++) {
 										layerColumns[headers[hIdx]] = '';
 									}
@@ -1054,6 +1054,11 @@ var Shorelines = {
 											caller: Shorelines,
 											updateCallback: function () {
 												doUpload();
+											},
+											cancelCallback: function () {
+												$.ajax(Shorelines.uploadRequest.endpoint + '?' + $.param({action: "delete-token", token: token}),{
+													type: 'DELETE'
+												});
 											}
 										});
 									} else {

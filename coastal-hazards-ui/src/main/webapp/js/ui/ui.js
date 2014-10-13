@@ -596,6 +596,7 @@ var UI = function () {
 				explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row'),
 				explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well'),
 				mandatoryColumnList = "",
+				cancelCallback = args.cancelCallback ? args.cancelCallback : Util.noopFunction,
 				continueCallback = args.continueCallback,
 				updateCallback = args.updateCallback ? args.updateCallback : function (event, context) {
 					var mapping = $('#' + layerName + '-drag-drop-row').data('mapping');
@@ -738,16 +739,7 @@ var UI = function () {
 						$('#modal-continue-button').attr('disabled', 'disabled');
 
 						// When cancel button is clicked, remove the layer on the server as well
-						$('#cancel-button').click(function () {
-							CONFIG.ows.clearFeaturesOnServer({
-								layer: CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName,
-								callbacks: [
-									function () {
-										caller.removeResource();
-									}
-								]
-							});
-						});
+						$('#cancel-button').click(cancelCallback);
 
 						$('#' + layerName + '-drag-drop-row').data('mapping', columns);
 						$('.' + layerName + '-drag-item').draggable({
