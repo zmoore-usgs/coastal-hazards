@@ -1,3 +1,4 @@
+/* global Util, OpenLayers, CONFIG, LOG */
 var Baseline = {
 	stage: 'baseline',
 	suffixes: ['_baseline'],
@@ -16,6 +17,7 @@ var Baseline = {
 	baselineEditButton: $('#baseline-edit-button'),
 	baselineEditMenu: $('#baseline-edit-menu'),
 	appInit: function () {
+		"use strict";
 		// Default value for new drawn base layer is random. If a shoreline is chosen,
 		// the name of the shoreline will be used instead
 		$('#baseline-draw-form-name').val(Util.getRandomLorem());
@@ -46,8 +48,8 @@ var Baseline = {
 				var indexOfFeatureInLayer = feature.layer.features.findIndex(function (f) {
 					return f.id === feature.id;
 				});
-				feature.attributes['Orient'] = 'seaward';
-				feature.attributes['ID'] = indexOfFeatureInLayer + 1;
+				feature.attributes.Orient = 'seaward';
+				feature.attributes.ID = indexOfFeatureInLayer + 1;
 			}
 		});
 
@@ -110,6 +112,7 @@ var Baseline = {
 		});
 	},
 	enterStage: function () {
+		"use strict";
 		LOG.debug('Baseline.js::enterStage');
 		CONFIG.ui.switchTab({
 			caller: Baseline,
@@ -117,6 +120,7 @@ var Baseline = {
 		});
 	},
 	leaveStage: function () {
+		"use strict";
 		LOG.debug('Baseline.js::leaveStage');
 		Baseline.deactivateHighlightControl();
 		Baseline.stopDrawing();
@@ -128,6 +132,7 @@ var Baseline = {
 		}
 	},
 	addLayerToMap: function (args) {
+		"use strict";
 		var layerPrefix = args.name.split(':')[0];
 		var layerName = args.name.split(':')[1];
 
@@ -267,19 +272,23 @@ var Baseline = {
 							displayBaseline();
 						}
 					}
-				}]
+				}
+			]
 		});
 	},
 	populateFeaturesList: function () {
+		"use strict";
 		CONFIG.ui.populateFeaturesList({
 			caller: Baseline
 		});
 	},
 	clearDrawFeatures: function () {
+		"use strict";
 		LOG.info('Baseline.js::clearDrawFeatures: Clearing draw layer');
 		return Baseline.getDrawLayer().removeAllFeatures();
 	},
 	refreshFeatureList: function (args) {
+		"use strict";
 		LOG.info('Baseline.js::refreshFeatureList: Will cause WMS GetCapabilities call to refresh current feature list');
 		var updatedArgs = args || {};
 		var isCloning = updatedArgs.isCloning;
@@ -318,11 +327,13 @@ var Baseline = {
 		});
 	},
 	clear: function () {
+		"use strict";
 		$("#baseline-list").val('');
 		Baseline.listboxChanged();
 	},
 	//@param: params.isCloning - optional boolean
 	listboxChanged: function (params) {
+		"use strict";
 		LOG.debug('Baseline.js::baselineSelected: A baseline was selected from the dropdown list');
 		params = $.extend({}, params);
 		var isCloning = params.isCloning;
@@ -385,6 +396,7 @@ var Baseline = {
 		}
 	},
 	editButtonToggled: function (event) {
+		"use strict";
 		var activated = !$(event.target).hasClass('active');
 		var baselineEditControlId = 'baseline-edit-control';
 		var baselineEditDrawControlId = 'baseline-edit-draw-control';
@@ -418,12 +430,12 @@ var Baseline = {
 				displayInLayerSwitcher: false,
 				// Use this for features we draw, not those that already exist
 				onFeatureInsert: function (feature) {
-					if (!feature.attributes['Orient']) {
+					if (!feature.attributes.Orient) {
 						var indexOfFeatureInLayer = feature.layer.features.sum(function (f) {
-							return f['data']['ID'] ? parseInt(f['data']['ID']) : 0;
+							return f.data.ID ? parseInt(f.data.ID, 10) : 0;
 						});
-						feature.attributes['Orient'] = 'seaward';
-						feature.attributes['ID'] = indexOfFeatureInLayer + 1;
+						feature.attributes.Orient = 'seaward';
+						feature.attributes.ID = indexOfFeatureInLayer + 1;
 					}
 
 				}
@@ -526,6 +538,7 @@ var Baseline = {
 		}
 	},
 	editMenuToggled: function (event) {
+		"use strict";
 		LOG.info('Baseline.js::editMenuToggled: Baseline Edit Menu Toggled');
 
 		if (!Baseline.baselineEditButton.hasClass('active')) {
@@ -562,42 +575,30 @@ var Baseline = {
 			target.addClass('active');
 			$('.baseline-edit-container-instructions').addClass('hidden');
 			switch (targetId) {
-				case 'baseline-edit-create-vertex' :
-				{
-					modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
-					modifyControl.mode.createVertices = true;
-					$('#baseline-edit-container-instructions-vertex').removeClass('hidden');
-					break;
-				}
-				case 'baseline-edit-rotate' :
-				{
-					modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
-					modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-					$('#baseline-edit-container-instructions-rotate').removeClass('hidden');
-					break;
-				}
-				case 'baseline-edit-drag':
-				{
-					modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
-					modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-					$('#baseline-edit-container-instructions-drag').removeClass('hidden');
-					break;
-				}
-				case 'baseline-edit-resize-w-aspect' :
-				{
-					modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
-					modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-				}
-				case 'baseline-edit-resize':
-				{
-					modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
-					$('#baseline-edit-container-instructions-resize').removeClass('hidden');
-					break;
-				}
-				default :
-				{
-					$('#baseline-edit-container-instructions-initial').removeClass('hidden');
-				}
+			case 'baseline-edit-create-vertex' :
+				modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+				modifyControl.mode.createVertices = true;
+				$('#baseline-edit-container-instructions-vertex').removeClass('hidden');
+				break;
+			case 'baseline-edit-rotate' :
+				modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
+				modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+				$('#baseline-edit-container-instructions-rotate').removeClass('hidden');
+				break;
+			case 'baseline-edit-drag':
+				modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
+				modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+				$('#baseline-edit-container-instructions-drag').removeClass('hidden');
+				break;
+			case 'baseline-edit-resize-w-aspect' :
+				modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+				modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+			case 'baseline-edit-resize':
+				modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+				$('#baseline-edit-container-instructions-resize').removeClass('hidden');
+				break;
+			default :
+				$('#baseline-edit-container-instructions-initial').removeClass('hidden');
 			}
 
 			modifyControl.activate();
@@ -607,14 +608,17 @@ var Baseline = {
 		}
 	},
 	enableCloneButton: function () {
+		"use strict";
 		$('#baseline-clone-btn').removeAttr('disabled');
 	},
 	disableCloneButton: function () {
+		"use strict";
 		$('#baseline-clone-btn').attr('disabled', 'disabled');
 	},
 	// Creates a modal window which requests the user to put in a name for the 
 	// cloned layer they wish to use
 	cloneLayer: function () {
+		"use strict";
 		LOG.debug('Baseline.js::cloneLayer');
 		var selectVal = $("#baseline-list option:selected").val();
 		var selectText = $("#baseline-list option:selected").html();
@@ -716,38 +720,38 @@ var Baseline = {
 							}
 						}
 					}],
-				doneButtonText: 'Cancel',
-				callbacks: [
-					function () {
-						// Test that the user has entered a valid character
-						$('#baseline-name-textbox').keypress(function (event) {
-							var createArrayRange = function (n1, n2) {
-								var arr = [];
-								while (n1 < n2) {
-									arr.push(n1++);
+					doneButtonText: 'Cancel',
+					callbacks: [
+						function () {
+							// Test that the user has entered a valid character
+							$('#baseline-name-textbox').keypress(function (event) {
+								var createArrayRange = function (n1, n2) {
+									var arr = [];
+									while (n1 < n2) {
+										arr.push(n1++);
+									}
+									return arr;
+								};
+								// http://www.asciitable.com/
+								// 48 - 57 = digits
+								// 65 - 90 = uppercase alpha
+								// 97 - 122 = lowercase alpha
+								// 8 = backspace
+								// 95 = underscore
+								var validKeyCodes = [].add(createArrayRange(48, 57)).add(createArrayRange(65, 90)).add(createArrayRange(97, 122)).add([8, 95]);
+								if (!validKeyCodes.find(event.which)) {
+									event.preventDefault();
+									return false;
 								}
-								return arr;
-							};
-							// http://www.asciitable.com/
-							// 48 - 57 = digits
-							// 65 - 90 = uppercase alpha
-							// 97 - 122 = lowercase alpha
-							// 8 = backspace
-							// 95 = underscore
-							var validKeyCodes = [].add(createArrayRange(48, 57)).add(createArrayRange(65, 90)).add(createArrayRange(97, 122)).add([8, 95]);
-							if (!validKeyCodes.find(event.which)) {
-								event.preventDefault();
-								return false;
-							}
-						});
-						$('#baseline-name-textbox').on('change', function (event) {
-							var value = event.currentTarget.value;
-							if (/^[0-9]/.test(event.currentTarget.value)) {
-								$('#baseline-name-textbox').val(value.substring(1));
-							}
-						});
-					}
-				]
+							});
+							$('#baseline-name-textbox').on('change', function (event) {
+								var value = event.currentTarget.value;
+								if (/^[0-9]/.test(event.currentTarget.value)) {
+									$('#baseline-name-textbox').val(value.substring(1));
+								}
+							});
+						}
+					]
 			});
 		}
 	},
@@ -755,6 +759,7 @@ var Baseline = {
 
 	},
 	disableDrawButton: function () {
+		"use strict";
 		if (!$('#draw-panel-well').hasClass('hidden')) {
 			LOG.debug('UI.js::?: Draw form was found to be active. Deactivating draw form');
 			Baseline.baselineDrawButton.click();
@@ -762,9 +767,11 @@ var Baseline = {
 		Baseline.baselineDrawButton.attr('disabled', 'disabled');
 	},
 	enableDrawButton: function () {
+		"use strict";
 		Baseline.baselineDrawButton.removeAttr('disabled');
 	},
 	disableEditButtonSet: function () {
+		"use strict";
 		if (!$('#baseline-edit-container').hasClass('hidden')) {
 			LOG.debug('UI.js::?: Edit form was found to be active. Deactivating edit form');
 			Baseline.baselineEditButton.trigger('click');
@@ -772,6 +779,7 @@ var Baseline = {
 		$('#baseline-edit-btn-group button').attr('disabled', 'disabled');
 	},
 	enableEditButtonSet: function () {
+		"use strict";
 		if ($("#baseline-list option:selected")[0].value.startsWith(CONFIG.tempSession.getCurrentSessionKey())) {
 			LOG.info('Baseline.js::enableEditButton: Showing baseline edit button on panel');
 
@@ -787,6 +795,7 @@ var Baseline = {
 		}
 	},
 	drawButtonToggled: function (event) {
+		"use strict";
 		// When a user clicks the button, this event receives notification before the active state changes.
 		// Therefore if the button is 'active' coming in, this means the user is wishing to deactivate it
 		var beginDrawing = $(event.currentTarget).hasClass('active') ? false : true;
@@ -800,6 +809,7 @@ var Baseline = {
 		}
 	},
 	beginDrawing: function () {
+		"use strict";
 		LOG.debug('Baseline.js::beginDrawing: Initializing baseline draw panel');
 		Baseline.disableEditButtonSet();
 
@@ -823,6 +833,7 @@ var Baseline = {
 		$('#draw-panel-well').removeClass('hidden');
 	},
 	stopDrawing: function () {
+		"use strict";
 		LOG.debug('Baseline.js::stopDrawing: Removing (uninitializing) draw panel.');
 
 		LOG.debug('Baseline.js::stopDrawing: Removing draw control');
@@ -840,24 +851,29 @@ var Baseline = {
 		$('#draw-panel-well').addClass('hidden');
 	},
 	getModifyControl: function () {
+		"use strict";
 		return CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
 	},
 	getSelectControl: function () {
+		"use strict";
 		return CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
 	},
 	getDrawControl: function () {
+		"use strict";
 		return CONFIG.map.getMap().getControlsBy('id', 'baseline-draw-control')[0];
 	},
 	getDrawLayer: function () {
+		"use strict";
 		return CONFIG.map.getMap().getControlsBy('id', 'baseline-draw-control')[0].layer;
 	},
 	saveEditedLayer: function () {
+		"use strict";
 		LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
 
 		var layer = CONFIG.map.getMap().getLayersByName('baseline-edit-layer')[0];
 
 		var saveStrategy = layer.strategies.find(function (n) {
-			return n['CLASS_NAME'] === 'OpenLayers.Strategy.Save'
+			return n.CLASS_NAME === 'OpenLayers.Strategy.Save';
 		});
 
 		saveStrategy.events.remove('success');
@@ -869,22 +885,23 @@ var Baseline = {
 
 			Baseline.refreshFeatureList({
 				selectLayer: layer.cloneOf
-			})
+			});
 		});
 
 		saveStrategy.save();
 	},
 	saveButtonClickHandler: function () {
+		"use strict";
 		LOG.info('Baseline.js::saveButtonClickHandler');
 		var drawLayer = Baseline.getDrawLayer();
 		var importName = ($('#baseline-draw-form-name').val() || Util.getRandomLorem()) + '_baseline';
 		var existingLayer = $("#baseline-list option").filter(function () {
-			return $(this).val() == CONFIG.tempSession.getCurrentSessionKey() + ':' + importName
-		})
+			return $(this).val() === CONFIG.tempSession.getCurrentSessionKey() + ':' + importName;
+		});
 		if (drawLayer.features.length) {
 			LOG.info('Baseline.js::saveDrawnFeatures: Layer to be saved, "' + importName + '" has ' + drawLayer.features.length + ' features');
 
-			var layerExists = existingLayer.length
+			var layerExists = existingLayer.length;
 
 			if (layerExists) {
 				CONFIG.ui.createModalWindow({
@@ -901,10 +918,10 @@ var Baseline = {
 									callbacks: [
 										Baseline.saveDrawnFeatures
 									]
-								})
+								});
 							}
 						}]
-				})
+					});
 			} else {
 				CONFIG.ows.importFile({
 					'file-token': '', // Not including a file token denotes a new, blank file should be imported
@@ -929,23 +946,25 @@ var Baseline = {
 									style: {
 										classes: ['alert-error']
 									}
-								})
+								});
 							}
 						}]
 				});
-
 			}
 		} else {
 			LOG.info('User has not drawn any features to save or did not name the new feature');
 		}
 	},
 	disableRemoveButton: function () {
+		"use strict";
 		$('#baseline-remove-btn').attr('disabled', 'disabled');
 	},
 	enableRemoveButton: function () {
+		"use strict";
 		$('#baseline-remove-btn').removeAttr('disabled');
 	},
 	getHighlightControl: function () {
+		"use strict";
 		var ca = CONFIG.map.getMap().getControlsBy('title', 'baseline-highlight-control');
 		if (ca.length) {
 			return ca[0];
@@ -954,18 +973,21 @@ var Baseline = {
 		}
 	},
 	deactivateHighlightControl: function () {
+		"use strict";
 		var ca = Baseline.getHighlightControl();
 		if (ca.length) {
 			ca[0].deactivate();
 		}
 	},
 	activateHighlightControl: function () {
+		"use strict";
 		var ca = Baseline.getHighlightControl();
 		if (ca.length) {
 			ca[0].activate();
 		}
 	},
 	removeResource: function (args) {
+		"use strict";
 		args = args || {};
 		var layer = args.layer || $('#baseline-list option:selected')[0].text;
 		var store = args.store || 'ch-input';
@@ -978,23 +1000,23 @@ var Baseline = {
 					style: {
 						classes: ['alert-success']
 					}
-				})
+				});
 
 				$('#baseline-list').val('');
 				CONFIG.ui.switchTab({
 					caller: Baseline,
 					tab: 'view'
-				})
+				});
 				Baseline.refreshFeatureList();
 			}
-		]
+		];
 
 		try {
 			CONFIG.tempSession.removeResource({
 				store: store,
 				layer: layer,
 				callbacks: callbacks
-			})
+			});
 		} catch (ex) {
 			CONFIG.ui.showAlert({
 				message: 'Draw Failed - ' + ex,
@@ -1003,10 +1025,11 @@ var Baseline = {
 				style: {
 					classes: ['alert-error']
 				}
-			})
+			});
 		}
 	},
 	saveDrawnFeatures: function (args) {
+		"use strict";
 		LOG.info('Baseline.js::saveDrawnFeatures: User wishes to save thir drawn features');
 		var drawLayer = Baseline.getDrawLayer();
 		var desiredLayer = ($('#baseline-draw-form-name').val() || Util.getRandomLorem()) + '_baseline';
@@ -1024,7 +1047,7 @@ var Baseline = {
 
 		// Do WFS-T to fill out the layer
 		var saveStrategy = drawLayer.strategies.find(function (n) {
-			return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
+			return n.CLASS_NAME === 'OpenLayers.Strategy.Save';
 		});
 
 		// Re-bind the save strategy
@@ -1034,7 +1057,7 @@ var Baseline = {
 			LOG.info('Baseline.js::saveDrawnFeatures: Drawn baseline saved successfully - reloading current layer set from server');
 			Baseline.refreshFeatureList({
 				selectLayer: importName
-			})
+			});
 
 			CONFIG.ui.showAlert({
 				message: 'Draw Successful',
@@ -1043,10 +1066,10 @@ var Baseline = {
 				style: {
 					classes: ['alert-success']
 				}
-			})
+			});
 			$('a[href="#' + Baseline.stage + '-view-tab"]').tab('show');
 
-			LOG.info('Baseline.js::saveDrawnFeatures: Triggering click on baseline draw button')
+			LOG.info('Baseline.js::saveDrawnFeatures: Triggering click on baseline draw button');
 			Baseline.baselineDrawButton.click();
 			Baseline.getDrawControl().deactivate();
 		});
@@ -1059,18 +1082,20 @@ var Baseline = {
 				style: {
 					classes: ['alert-error']
 				}
-			})
-		})
+			});
+		});
 
 		LOG.info('Baseline.js::saveDrawnFeatures: Saving draw features to OWS server');
 		saveStrategy.save();
 	},
 	initializeUploader: function (args) {
+		"use strict";
 		CONFIG.ui.initializeUploader($.extend({
 			caller: Baseline
-		}, args))
+		}, args));
 	},
 	getActive: function () {
+		"use strict";
 		return $("#baseline-list option:selected").first().val();
 	}
-}
+};

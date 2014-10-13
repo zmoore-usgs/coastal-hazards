@@ -50,6 +50,7 @@ public class ShorelineStagingService extends HttpServlet {
 	private final static String STAGE_ACTION_STRING = "stage";
 	private final static String IMPORT_ACTION_STRING = "import";
 	private final static String READDBF_ACTION_STRING = "read-dbf";
+	private final static String DELETE_TOKEN_ACTION_STRING = "delete-token";
 	/**
 	 * Used for lidar read-dbf call, we always fake that a lidar file is a valid
 	 * shape file
@@ -144,6 +145,30 @@ public class ShorelineStagingService extends HttpServlet {
 
 		if (success) {
 			RequestResponse.sendSuccessResponse(response, responseMap, responseType);
+		}
+	}
+
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		ResponseType responseType = ServiceHelper.getResponseType(request);
+		Map<String, String> responseMap = new HashMap<>();
+
+		String action = request.getParameter(ACTION_STRING);
+		if (StringUtils.isBlank(action)) {
+			ServiceHelper.sendNotEnoughParametersError(response, new String[]{ACTION_STRING}, responseType);
+		} else if (action.equalsIgnoreCase(DELETE_TOKEN_ACTION_STRING)) {
+			String token = request.getParameter(TOKEN_STRING);
+			if (StringUtils.isBlank(token)) {
+				ServiceHelper.sendNotEnoughParametersError(response, new String[]{TOKEN_STRING}, responseType);
+			} else {
+				IShorelineFile shorelineFile = TokenToShorelineFileSingleton.getShorelineFile(token);
+
+				if (null != shorelineFile && shorelineFile.exists()) {
+					shorelineFile.clear();
+				}
+				responseMap.put("success", "true");
+				RequestResponse.sendSuccessResponse(response, responseMap, responseType);
+			}
 		}
 	}
 
