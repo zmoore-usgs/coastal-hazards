@@ -7,7 +7,7 @@
 numPar = 4 # number of cores
 num_c = 5 # num of cols in file
 
-localRun <- TRUE
+localRun <- FALSE
 
 if (localRun){
   Rprof("DSAS_profiler.txt")
