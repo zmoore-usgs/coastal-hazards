@@ -1,4 +1,4 @@
-# wps.des: id=DSAS_stats, title=Digital Shoreline Analysis System Stats, abstract=stats available - LRR LCI WLR WCI SCE NSM EPR;
+# wps.des: id=DSAS_stats, title=Digital Shoreline Analysis System Stats, abstract=stats available - LRR LCI WLR WCI SCE NSM EPR ECI;
 # wps.in: input, xml, block intersection text, text input from intersections layer with time elements and uncertainty;
 # wps.in: ci, double, confidence interval, percentage for confidence level > 0.5 and < 1.0;
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
@@ -26,9 +26,10 @@ statLongNames  <-  data.frame("LRR"="Linear regression rate",
                          "WCI"="Weighted linear regression rate CI",
                          "SCE"="Shoreline change envelope",
                          "NSM"="Net shoreline movement",
-                         "EPR"="End point rate")
+                         "EPR"="End point rate",
+                         "ECI"="End point rate uncertainty")
 statUnits <-  data.frame("LRR"="m yr^-1","LCI"="m yr^-1","WLR"="m yr^-1",
-                         "WCI"="m yr^-1","SCE"="m","NSM"="m","EPR"="m yr^-1")
+                         "WCI"="m yr^-1","SCE"="m","NSM"="m","EPR"="m yr^-1","ECI"="m yr^-1")
 fileN    <- input # will have input as a string (long string read in)
 conLevel <- ci
 zRepV    <- 0.01 #replace value for when the uncertainty is zero
@@ -120,6 +121,7 @@ WCI <-  rep(NA,numBlck)
 SCE <-  rep(NA,numBlck)
 NSM <-  rep(NA,numBlck)
 EPR <-  rep(NA,numBlck)
+ECI <-  rep(NA,numBlck)
 
 getDSAS <- function(blockText){  
   splitsTxt <- unlist(strsplit(blockText,delim))
@@ -179,13 +181,14 @@ for (p in 1:numPar){
     SCE[b] <- DSASstats[5]
     NSM[b] <- DSASstats[6]
     EPR[b] <- DSASstats[7]
+    ECI[b] <- -99
     b = b + 1
   }
 }
 
 stopCluster(c1)
 
-statsout <- data.frame("transect_ID"=blckNm,LRR,LCI,WLR,WCI,SCE,NSM,EPR)
+statsout <- data.frame("transect_ID"=blckNm,LRR,LCI,WLR,WCI,SCE,NSM,EPR,ECI)
 
 if (localRun){
   Rprof(NULL)
