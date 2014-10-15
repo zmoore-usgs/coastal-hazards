@@ -1,7 +1,7 @@
 var Results = {
     stage : 'results',
     
-    viewableResultsColumns : ['base_dist', 'LRR', 'LCI', 'WLR', 'WCI', 'SCE', 'NSM', 'EPR'],
+    viewableResultsColumns : ['base_dist', 'LRR', 'LCI', 'WLR', 'WCI', 'SCE', 'NSM', 'EPR', 'ECI'],
     
     suffixes : ['_rates','_results','_clip','_lt'],
     
@@ -479,7 +479,7 @@ var Results = {
 			.append($('<button />').addClass(commonButtonControls).attr('id', 'wlr-btn').html('WLR +/- WCI'))
 			.append($('<button />').addClass(commonButtonControls).attr('id', 'sce-btn').html('SCE'))
 			.append($('<button />').addClass(commonButtonControls).attr('id', 'nsm-btn').html('NSM'))
-			.append($('<button />').addClass(commonButtonControls).attr('id', 'epr-btn').html('EPR')));
+			.append($('<button />').addClass(commonButtonControls).attr('id', 'epr-btn').html('EPR +/- ECI')));
 			container.append(row);
 		
 		$('#plot-menu-icon').popover({
