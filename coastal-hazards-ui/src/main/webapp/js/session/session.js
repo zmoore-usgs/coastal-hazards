@@ -3,7 +3,8 @@ var CCH = window.CCH || {};
 CCH.Session = function (name, isPerm) {
 	"use strict";
 	var me = (this === window) ? {} : this;
-
+	me.MAX_SESSION_ID_LENGTH = 34;
+	me.SESSION_OBJECT_NAME = name;
 	me.newStage = Object.extended({
 		shorelines: Object.extended({
 			layers: [],
@@ -38,9 +39,8 @@ CCH.Session = function (name, isPerm) {
 		})
 	});
 	me.isPerm = isPerm;
-	me.name = name;
 	me.sessionObject = isPerm ? localStorage : sessionStorage;
-	me.session = isPerm ? $.parseJSON(me.sessionObject.getItem(me.name)) : Object.extended();
+	me.session = isPerm ? $.parseJSON(me.sessionObject.getItem(me.SESSION_OBJECT_NAME)) : Object.extended();
 	me.createNewSession = function () {
 		// - A session has not yet been created for perm storage. Probably the first
 		// run of the application or a new browser with no imported session
@@ -90,20 +90,96 @@ CCH.Session = function (name, isPerm) {
 		newSession.currentSession = randID;
 		return newSession;
 	};
+
+	me.verifySession = function (sessionsObj) {
+		var verifySessionId = function (sessionId) {
+			// length check
+			if (sessionId.length > me.MAX_SESSION_ID_LENGTH || sessionId.length === 0) {
+				return false;
+			}
+
+			// legacy sessions contained '-' which we can't use anymore
+			if (sessionId.indexOf('-') !== -1) {
+				return false;
+			}
+
+			// case check - must all be lowercase
+			for (var cIdx = 0; cIdx < sessionId.length; cIdx++) {
+				var sessionIdChar = sessionId.charAt(cIdx);
+				if (isNaN(sessionIdChar) && sessionIdChar === sessionIdChar.toUpperCase()) {
+					return false;
+				}
+			}
+			
+			return true;
+		};
+		return verifySessionId(sessionsObj.id);
+	};
+
 	if (isPerm) {
 		if (!me.session) {
 			me.session = me.createNewSession();
 		}
+
+		var invalidSessions = [];
+		$.each(me.session.sessions, function (i, session) {
+			if (!me.verifySession(session)) {
+				invalidSessions.push(session.id);
+			}
+		});
+
+		if (invalidSessions.length) {
+			throw {
+				message: 'Invalid Sessions Found',
+				func: function () {
+					// Session will need to be removed
+					$.get('templates/remove-session-modal.html')
+						.done(function (data) {
+							var modalId = 'modal-session-invalid-remove',
+								template = Handlebars.compile(data),
+								modalHtml = template({
+									modalId: modalId,
+									sessionList: invalidSessions,
+									includesCurrentId: invalidSessions.indexOf(me.session.currentSession) !== -1
+								});
+							$('#application-overlay').fadeOut();
+							$('body').append($(modalHtml));
+							$('#modal-session-invalid-remove').modal();
+							$('#btn-session-remove').click(function () {
+								var permSession = $.parseJSON(me.sessionObject[me.SESSION_OBJECT_NAME]),
+									cleanedSessions = [];
+
+								for (var sIdx in permSession.sessions) {
+									var session = permSession.sessions[sIdx];
+									if (invalidSessions.indexOf(session.id) === -1) {
+										cleanedSessions.push(session);
+									}
+								}
+								permSession.sessions = cleanedSessions;
+
+								if (permSession.sessions.indexOf(permSession.currentSession) === -1) {
+									permSession.currentSession = '';
+								}
+								me.sessionObject.setItem(me.SESSION_OBJECT_NAME, JSON.stringify(permSession));
+								localStorage.removeItem('coastal-hazards');
+								location.reload(true);
+							});
+
+						});
+				}
+			};
+		}
+
 	} else {
 		LOG.info('Session.js::constructor:Removing previous temp session');
-		me.sessionObject.removeItem('coastal-hazards');
+		me.sessionObject.removeItem(me.SESSION_OBJECT_NAME);
 
 		LOG.info('Session.js::constructor:Saving new temp session');
 		me.session = CONFIG.permSession.session.sessions.find(function (session) {
 			return session.id === CONFIG.permSession.session.currentSession;
 		});
 
-		me.sessionObject.setItem(me.name, JSON.stringify(me.session));
+		me.sessionObject.setItem(me.SESSION_OBJECT_NAME, JSON.stringify(me.session));
 
 		me.namespace = Object.extended();
 
@@ -148,7 +224,6 @@ CCH.Session = function (name, isPerm) {
 			if (!args) {
 				return null;
 			}
-			var name = args.name;
 			var stage = args.stage;
 			var config = me.getStage(stage);
 
@@ -548,7 +623,7 @@ CCH.Session = function (name, isPerm) {
 											importRow.append(importDisplay);
 											importWell.append(importRow);
 											$('#import-all-session-button').on('click', function () {
-												var chObj = JSON.parse(localStorage.getItem('coastal-hazards'));
+												var chObj = JSON.parse(localStorage.getItem(me.SESSION_OBJECT_NAME));
 												resultObject.sessions.each(function (ros) {
 													var foundSession = chObj.sessions.find(function (s) {
 														return s.id === ros.id;
@@ -559,7 +634,7 @@ CCH.Session = function (name, isPerm) {
 													}
 												});
 
-												localStorage.setItem('coastal-hazards', JSON.stringify(chObj)); //TODO- This will not work with IE8 and below. No JSON object
+												localStorage.setItem(me.SESSION_OBJECT_NAME, JSON.stringify(chObj)); //TODO- This will not work with IE8 and below. No JSON object
 												CONFIG.tempSession.createSessionManagementModalWindow();
 											});
 										} catch (ex) {
@@ -609,7 +684,7 @@ CCH.Session = function (name, isPerm) {
 					$('<input />').attr({
 					'type': 'hidden',
 					'name': 'data'
-				}).val(localStorage['coastal-hazards']));
+				}).val(localStorage[me.SESSION_OBJECT_NAME]));
 			$('body').append(exportForm);
 			exportForm.attr('action', 'service/export');
 			exportForm.submit();
@@ -617,11 +692,11 @@ CCH.Session = function (name, isPerm) {
 		},
 		save: function () {
 			LOG.info('Session.js::save:Saving session object to storage');
-			me.sessionObject.setItem(me.name, JSON.stringify(me.session));
+			me.sessionObject.setItem(me.SESSION_OBJECT_NAME, JSON.stringify(me.session));
 		},
 		load: function (name) {
 			LOG.info('Session.js::load:Loading session object from storage');
-			$.parseJSON(me.sessionObject.getItem(name ? name : me.name));
+			$.parseJSON(me.sessionObject.getItem(name ? name : me.SESSION_OBJECT_NAME));
 		},
 		getCurrentSessionKey: function () {
 			if (me.isPerm) {
@@ -637,13 +712,13 @@ CCH.Session = function (name, isPerm) {
 			type = type || '';
 			switch (type) {
 				case  'temp' :
-					sessionStorage.removeItem('coastal-hazards');
+					sessionStorage.removeItem(me.SESSION_OBJECT_NAME);
 					break;
 				case 'perm' :
 					// Fall through
 				default :
-					localStorage.removeItem('coastal-hazards');
-					sessionStorage.removeItem('coastal-hazards');
+					localStorage.removeItem(me.SESSION_OBJECT_NAME);
+					sessionStorage.removeItem(me.SESSION_OBJECT_NAME);
 			}
 			LOG.warn('UI.js::Cleared ' + type + ' session. Reloading application.');
 			location.reload(true);

@@ -18,6 +18,7 @@
 	String versionOpenLayers = PropertyUtil.getProperty("version.openlayers");
 	String versionSugar = PropertyUtil.getProperty("version.sugarjs");
 	String versionBootstrapSwitch = PropertyUtil.getProperty("version.bootstrap.switch");
+	String versionHandlebars = PropertyUtil.getProperty("version.handlebars");
 %>
 
 <html lang="en">
@@ -64,6 +65,7 @@
 		<link type="text/css" rel="stylesheet" href="webjars/bootstrap/<%=versionBootstrap%>/css/bootstrap-responsive<%= development ? "" : ".min"%>.css" />
 		<link type="text/css" rel="stylesheet" href="webjars/font-awesome/<%=versionFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
 		<link type="text/css" rel="stylesheet" href="webjars/bootstrap-switch/<%=versionBootstrapSwitch%>/stylesheets/bootstrap-switch.css" />
+		<link type="text/css" rel="stylesheet" href="css/custom.css" />
     </head>
 
     <body>
@@ -459,20 +461,11 @@
 			<jsp:param name="relPath" value="" />
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
-
-		<script type="text/javascript">splashUpdate("Loading JQuery UI...");</script>
 		<script type="text/javascript" src="webjars/jquery-ui/<%= versionJqueryUi%>/jquery-ui.min.js"></script>
-
-		<script type="text/javascript">splashUpdate("Loading UI Framework...");</script>
-		<script type="text/javascript" src="webjars/bootstrap/<%=versionBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
-
-		<script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
-		<script type="text/javascript" src="webjars/openlayers/<%= versionOpenLayers %>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
-
-		<script type="text/javascript">splashUpdate("Loading JS Utilities...");</script>
 		<script type="text/javascript" src="webjars/sugar/<%= versionSugar %>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
-
-		<script type="text/javascript">splashUpdate("Loading Upload Management...");</script>
+		<script type="text/javascript" src="webjars/bootstrap/<%=versionBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+		<script type="text/javascript" src="webjars/openlayers/<%= versionOpenLayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
+		<script type="text/javascript" src="webjars/handlebars/<%= versionHandlebars%>/handlebars.min.js"></script>
 		<jsp:include page="js/fineuploader/fineuploader.jsp">
 			<jsp:param name="debug-qualifier" value="true" />
 		</jsp:include>
@@ -501,14 +494,11 @@
 			<script type="text/javascript" src="js/stages/results.js"></script>
 			<script type="text/javascript">splashUpdate("Loading Toggle plugin...");</script>
 			<script type="text/javascript" src="webjars/bootstrap-switch/<%=versionBootstrapSwitch%>/js/bootstrap-switch.js"></script>
-		<script type="text/javascript">splashUpdate("Loading Intro Module...");</script>
-	<%-- For now, stick with full version. Minified version seems gimped --%>
-    <jsp:include page="js/bootstro/bootstro.jsp">
-        <jsp:param name="debug-qualifier" value="true" />
-    </jsp:include>
-	<script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
-	<link type="text/css" rel="stylesheet" href="css/custom.css" />
-	<script type="text/javascript">splashUpdate("Loading Main module...");</script>
-	<script type="text/javascript" src="js/onReady.js"></script>
-</body>
+			<script type="text/javascript">splashUpdate("Loading Intro Module...");</script>
+		<jsp:include page="js/bootstro/bootstro.jsp">
+			<jsp:param name="debug-qualifier" value="true" />
+		</jsp:include>
+		<script type="text/javascript">splashUpdate("Loading Main module...");</script>
+		<script type="text/javascript" src="js/onReady.js"></script>
+	</body>
 </html>

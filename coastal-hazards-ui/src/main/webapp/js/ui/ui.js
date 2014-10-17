@@ -22,7 +22,9 @@ var UI = function () {
 		'images/workflow_figures/shorelines_future.png',
 		'images/workflow_figures/shorelines_past.png'
 	];
-	$('#manage-sessions-btn').on('click', CONFIG.tempSession.createSessionManagementModalWindow);
+	$('#manage-sessions-btn').on('click', function () {
+		CONFIG.tempSession.createSessionManagementModalWindow();
+	});
 
 	$('.collapsibleHelp').accordion({
 		collapsible: true,
@@ -333,7 +335,7 @@ var UI = function () {
 				.append($("<option />")
 					.attr("value", '')
 					.text(''));
-				
+
 			wmsCapabilities.keys().each(function (layerNS) {
 				var cap = wmsCapabilities[layerNS];
 				var layers = cap.capability.layers;
