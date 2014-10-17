@@ -6,7 +6,8 @@ var Shorelines = {
 	suffixes: ['_shorelines'],
 	mandatoryColumns: ['date', 'uncy'],
 	defaultingColumns: [
-		{attr: 'MHW', defaultValue: "0"}
+		{attr: 'MHW', defaultValue: "0"},
+		{attr: 'source', defaultValue: ''}
 	],
 	groupingColumn: 'date',
 	uploadRequest: {
@@ -1069,6 +1070,8 @@ var Shorelines = {
 												doUpload();
 											},
 											cancelCallback: function () {
+												// Call to delete the stored file
+												// on the back-end via its token
 												$.ajax(Shorelines.uploadRequest.endpoint + '?' + $.param({action: "delete-token", token: token}), {
 													type: 'DELETE'
 												});

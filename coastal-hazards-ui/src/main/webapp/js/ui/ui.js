@@ -600,31 +600,7 @@ var UI = function () {
 				mandatoryColumnList = "",
 				cancelCallback = args.cancelCallback ? args.cancelCallback : Util.noopFunction,
 				continueCallback = args.continueCallback,
-				updateCallback = args.updateCallback ? args.updateCallback : function (event, context) {
-					var mapping = $('#' + layerName + '-drag-drop-row').data('mapping');
-
-					var columns = [];
-					mapping.keys().each(function (key) {
-						if (key && mapping[key] && key !== mapping[key]) {
-							columns.push(key + '|' + mapping[key]);
-						}
-					});
-					var workspace = caller.overrideWorkspace || CONFIG.tempSession.getCurrentSessionKey();
-					CONFIG.ows.renameColumns({
-						layer: layerName,
-						workspace: workspace,
-						store: caller.overrideStore || 'ch-input',
-						columns: columns.filter(function (c) {
-							return !c.endsWith('|');
-						}),
-						callbacks: [
-							function () {
-								$("#" + caller.stage + "-list").val(workspace + ':' + layerName);
-								$("#" + caller.stage + "-list").trigger('change');
-							}
-						]
-					});
-				};
+				updateCallback = args.updateCallback;
 
 			for (var i = 0; i < caller.mandatoryColumns.length; i++) {
 				if (mandatoryColumnList.length > 0) {
@@ -633,9 +609,11 @@ var UI = function () {
 				mandatoryColumnList += ' ' + caller.mandatoryColumns[i];
 			}
 
-			var explanationText = 'There is a possible attribute mismatch between the resource you are trying to view and what is considered a valid ' + caller.stage + ' resource. <br /><br />Reqiured attributes:  ' +
-				mandatoryColumnList +
-				'. ';
+			var explanationText = 'There is a possible attribute mismatch between '
+				+ 'the resource you are trying to view and what is considered a valid '
+				+ caller.stage
+				+ ' resource. <br /><br />Reqiured attributes:  '
+				+ mandatoryColumnList + '. ';
 
 			if (caller.defaultingColumns) {
 				var defaultColumnList = "<br/><ul>";
@@ -840,7 +818,6 @@ var UI = function () {
 						$("#modal-window").on('hidden', function () {
 							$('#' + layerName + '-drag-drop-row').data('mapping', undefined);
 						});
-
 					}]
 			});
 		},
