@@ -1,9 +1,10 @@
-/*global Util, LOG, CONFIG */
-var CCH = CCH || {};
+/*global Util, LOG, CONFIG, Shorelines */
+var CCH = window.CCH || {};
 CCH.Session = function (name, isPerm) {
 	"use strict";
 	var me = (this === window) ? {} : this;
-
+	me.MAX_SESSION_ID_LENGTH = 34;
+	me.SESSION_OBJECT_NAME = name;
 	me.newStage = Object.extended({
 		shorelines: Object.extended({
 			layers: [],
@@ -38,38 +39,38 @@ CCH.Session = function (name, isPerm) {
 		})
 	});
 	me.isPerm = isPerm;
-	me.name = name;
 	me.sessionObject = isPerm ? localStorage : sessionStorage;
-	me.session = isPerm ? $.parseJSON(me.sessionObject.getItem(me.name)) : Object.extended();
+	me.session = isPerm ? $.parseJSON(me.sessionObject.getItem(me.SESSION_OBJECT_NAME)) : Object.extended();
 	me.createNewSession = function () {
 		// - A session has not yet been created for perm storage. Probably the first
 		// run of the application or a new browser with no imported session
 
 		// - Because the session is used in the namespace for WFS-T, it needs to 
 		// not have a number at the head of it so add a random letter
+
+		// - I need to remove any dashes from the random id and lowercase the entire
+		// id. This is due to a back-end id length limitation
 		var randID = String.fromCharCode(97 + Math.round(Math.random() * 25)) + Util.randomUUID().remove(/-/g).toLowerCase();
 		// Prepare the session on the OWS server
-		$.ajax('service/session?action=prepare&workspace=' + randID,
-			{
-				success: function () {
-					LOG.info('Session.js::init: A workspace has been prepared on the OWS server with the name of ' + randID);
-					CONFIG.ui.showAlert({
-						message: 'No session could be found. A new session has been created',
-						displayTime: 5000,
-						style: {
-							classes: ['alert-info']
-						}
-					});
-				},
-				error: function (data, textStatus, jqXHR) {
-					LOG.error('Session.js::init: A workspace could not be created on the OWS server with the name of ' + randID);
-					CONFIG.ui.showAlert({
-						message: 'No session could be found. A new session could not be created on server. This application may not function correctly.',
-						style: {
-							classes: ['alert-error']
-						}
-					});
-				}
+		$.get('service/session?action=prepare&workspace=' + randID)
+			.done(function () {
+				LOG.info('Session.js::init: A workspace has been prepared on the OWS server with the name of ' + randID);
+				CONFIG.ui.showAlert({
+					message: 'No session could be found. A new session has been created',
+					displayTime: 5000,
+					style: {
+						classes: ['alert-info']
+					}
+				});
+			})
+			.fail(function () {
+				LOG.error('Session.js::init: A workspace could not be created on the OWS server with the name of ' + randID);
+				CONFIG.ui.showAlert({
+					message: 'No session could be found. A new session could not be created on server. This application may not function correctly.',
+					style: {
+						classes: ['alert-error']
+					}
+				});
 			});
 
 		var newSession = Object.extended();
@@ -89,20 +90,96 @@ CCH.Session = function (name, isPerm) {
 		newSession.currentSession = randID;
 		return newSession;
 	};
+
+	me.verifySession = function (sessionsObj) {
+		var verifySessionId = function (sessionId) {
+			// length check
+			if (sessionId.length > me.MAX_SESSION_ID_LENGTH || sessionId.length === 0) {
+				return false;
+			}
+
+			// legacy sessions contained '-' which we can't use anymore
+			if (sessionId.indexOf('-') !== -1) {
+				return false;
+			}
+
+			// case check - must all be lowercase
+			for (var cIdx = 0; cIdx < sessionId.length; cIdx++) {
+				var sessionIdChar = sessionId.charAt(cIdx);
+				if (isNaN(sessionIdChar) && sessionIdChar === sessionIdChar.toUpperCase()) {
+					return false;
+				}
+			}
+			
+			return true;
+		};
+		return verifySessionId(sessionsObj.id);
+	};
+
 	if (isPerm) {
 		if (!me.session) {
 			me.session = me.createNewSession();
 		}
+
+		var invalidSessions = [];
+		$.each(me.session.sessions, function (i, session) {
+			if (!me.verifySession(session)) {
+				invalidSessions.push(session.id);
+			}
+		});
+
+		if (invalidSessions.length) {
+			throw {
+				message: 'Invalid Sessions Found',
+				func: function () {
+					// Session will need to be removed
+					$.get('templates/remove-session-modal.html')
+						.done(function (data) {
+							var modalId = 'modal-session-invalid-remove',
+								template = Handlebars.compile(data),
+								modalHtml = template({
+									modalId: modalId,
+									sessionList: invalidSessions,
+									includesCurrentId: invalidSessions.indexOf(me.session.currentSession) !== -1
+								});
+							$('#application-overlay').fadeOut();
+							$('body').append($(modalHtml));
+							$('#modal-session-invalid-remove').modal();
+							$('#btn-session-remove').click(function () {
+								var permSession = $.parseJSON(me.sessionObject[me.SESSION_OBJECT_NAME]),
+									cleanedSessions = [];
+
+								for (var sIdx in permSession.sessions) {
+									var session = permSession.sessions[sIdx];
+									if (invalidSessions.indexOf(session.id) === -1) {
+										cleanedSessions.push(session);
+									}
+								}
+								permSession.sessions = cleanedSessions;
+
+								if (permSession.sessions.indexOf(permSession.currentSession) === -1) {
+									permSession.currentSession = '';
+								}
+								me.sessionObject.setItem(me.SESSION_OBJECT_NAME, JSON.stringify(permSession));
+								localStorage.removeItem('coastal-hazards');
+								location.reload(true);
+							});
+
+						});
+				}
+			};
+		}
+
 	} else {
 		LOG.info('Session.js::constructor:Removing previous temp session');
-		me.sessionObject.removeItem('coastal-hazards');
+		me.sessionObject.removeItem(me.SESSION_OBJECT_NAME);
 
 		LOG.info('Session.js::constructor:Saving new temp session');
 		me.session = CONFIG.permSession.session.sessions.find(function (session) {
 			return session.id === CONFIG.permSession.session.currentSession;
 		});
 
-		me.sessionObject.setItem(me.name, JSON.stringify(me.session));
+		me.sessionObject.setItem(me.SESSION_OBJECT_NAME, JSON.stringify(me.session));
 
 		me.namespace = Object.extended();
 
@@ -147,7 +224,6 @@ CCH.Session = function (name, isPerm) {
 			if (!args) {
 				return null;
 			}
-			var name = args.name;
 			var stage = args.stage;
 			var config = me.getStage(stage);
 
@@ -277,7 +353,7 @@ CCH.Session = function (name, isPerm) {
 				me.session = session;
 			} else {
 				me.session = CONFIG.permSession.session.sessions.find(function (session) {
-					return session.id == CONFIG.permSession.session.currentSession
+					return session.id === CONFIG.permSession.session.currentSession;
 				});
 			}
 			me.save();
@@ -305,9 +381,9 @@ CCH.Session = function (name, isPerm) {
 			var container = $('<div />').addClass('container-fluid');
 			var menuNavBar = $('<div />').addClass('navbar navbar-static');
 			var innerNavBar = $('<div />').addClass('navbar-inner');
-			var navBarItem = $('<ul />').
-				addClass('nav').
-				attr({
+			var navBarItem = $('<ul />')
+				.addClass('nav')
+				.attr({
 					'role': 'navigation'
 				});
 			var fileDropDown = $('<li />').addClass('dropdown');
@@ -316,10 +392,10 @@ CCH.Session = function (name, isPerm) {
 				'data-toggle': 'dropdown',
 				'role': 'button',
 				'href': '#'
-			}).
-				html('File').
-				addClass('dropdown-toggle').
-				append($('<b />').addClass('caret'));
+			})
+				.html('File')
+				.addClass('dropdown-toggle')
+				.append($('<b />').addClass('caret'));
 			container.append(menuNavBar.append(innerNavBar.append(navBarItem.append(fileDropDown.append(fileDropDownLink)))));
 
 			var sessionDropDown = $('<li />').addClass('dropdown');
@@ -328,10 +404,10 @@ CCH.Session = function (name, isPerm) {
 				'data-toggle': 'dropdown',
 				'role': 'button',
 				'href': '#'
-			}).
-				html('Session').
-				addClass('dropdown-toggle').
-				append($('<b />').addClass('caret'));
+			})
+				.html('Session')
+				.addClass('dropdown-toggle')
+				.append($('<b />').addClass('caret'));
 			container.append(menuNavBar.append(innerNavBar.append(navBarItem.append(sessionDropDown.append(sessionDropDownLink)))));
 
 			CONFIG.ui.createLoginMenuItem();
@@ -341,21 +417,21 @@ CCH.Session = function (name, isPerm) {
 			}).html('<img id="sign-in-img" src="images/OpenID/White-signin_Medium_base_44dp.png"></img>')));
 			container.append(menuNavBar.append(innerNavBar.append(loginLink)));
 
-			var fileDropDownList = $('<ul />').
-				addClass('dropdown-menu').
-				attr({
+			var fileDropDownList = $('<ul />')
+				.addClass('dropdown-menu')
+				.attr({
 					'aria-labelledby': 'file-drop-down'
 				});
 
-			var importli = $('<li />').attr('role', 'presentation').
-				append($('<a />').attr({
+			var importli = $('<li />').attr('role', 'presentation')
+				.append($('<a />').attr({
 					'tabindex': '-1',
 					'role': 'menuitem',
 					'id': 'file-menu-item-import'
 				}).html('Import'));
 
-			var exportli = $('<li />').attr('role', 'presentation').
-				append($('<a />').attr({
+			var exportli = $('<li />').attr('role', 'presentation')
+				.append($('<a />').attr({
 					'tabindex': '-1',
 					'role': 'menuitem',
 					'id': 'file-menu-item-export'
@@ -363,32 +439,32 @@ CCH.Session = function (name, isPerm) {
 			fileDropDownList.append(importli, exportli);
 			fileDropDown.append(fileDropDownList);
 
-			var sessionDropDownList = $('<ul />').
-				addClass('dropdown-menu').
-				attr({
+			var sessionDropDownList = $('<ul />')
+				.addClass('dropdown-menu')
+				.attr({
 					'aria-labelledby': 'session-drop-down',
 					'id': 'session-drop-down-list'
 				});
-			var createli = $('<li />').attr('role', 'presentation').
-				append($('<a />').attr({
+			var createli = $('<li />').attr('role', 'presentation')
+				.append($('<a />').attr({
 					'tabindex': '-1',
 					'role': 'menuitem',
 					'id': 'session-menu-item-create'
 				}).html('Create New'));
-			var clearAllli = $('<li />').attr('role', 'presentation').
-				append($('<a />').attr({
+			var clearAllli = $('<li />').attr('role', 'presentation')
+				.append($('<a />').attr({
 					'tabindex': '-1',
 					'role': 'menuitem',
 					'id': 'session-menu-item-clear-all'
 				}).html('Clear All'));
-			var setCurrentli = $('<li />').attr('role', 'presentation').
-				append($('<a />').attr({
+			var setCurrentli = $('<li />').attr('role', 'presentation')
+				.append($('<a />').attr({
 					'tabindex': '-1',
 					'role': 'menuitem',
 					'id': 'session-menu-item-set-current'
 				}).html('Set Current'));
-			var setMetadatatli = $('<li />').attr('role', 'presentation').
-				append($('<a />').attr({
+			var setMetadatatli = $('<li />').attr('role', 'presentation')
+				.append($('<a />').attr({
 					'tabindex': '-1',
 					'role': 'menuitem',
 					'id': 'session-menu-item-set-metadata'
@@ -458,17 +534,17 @@ CCH.Session = function (name, isPerm) {
 							var importDescriptionRow = $('#session-management-session-description-row');
 							importDescriptionRow.html('');
 							var session = CONFIG.permSession.session.sessions.find(function (s) {
-								return s.id == key;
+								return s.id === key;
 							});
 							var sessionLayers = CONFIG.permSession.session.sessions.find(function (s) {
-								return s.id == key;
+								return s.id === key;
 							}).layers.filter(function (l) {
-								return l.prefix == key;
+								return l.prefix === key;
 							});
 							var html = 'Session Information' +
 								'<br />Name: ' + (session.name || '') +
 								'<br />Created: ' + session.created +
-								'<br />Is Current: ' + (key == CONFIG.permSession.session.currentSession ? 'true' : 'false') +
+								'<br />Is Current: ' + (key === CONFIG.permSession.session.currentSession ? 'true' : 'false') +
 								'<br />Layers: ' + sessionLayers.length +
 								'<br />Results: ' + Object.values(session.results).length +
 								'<br />Metadata: ' + (session.metadata || '');
@@ -477,7 +553,8 @@ CCH.Session = function (name, isPerm) {
 						});
 						sessionList.val(CONFIG.permSession.session.currentSession);
 						sessionList.trigger('change');
-					}]
+					}
+				]
 			});
 		},
 		importSession: function () {
@@ -525,7 +602,7 @@ CCH.Session = function (name, isPerm) {
 											}
 
 											var session = resultObject.sessions.find(function (s) {
-												return s.id == currentId
+												return s.id === currentId;
 											});
 											if (!session) {
 												importRow.html('Imported session has a nonexistent session marked as current');
@@ -538,32 +615,18 @@ CCH.Session = function (name, isPerm) {
 											importDisplay.append('<br />Session created: ' + session.created);
 											importDisplay.append('<br />Layers found: ' + session.layers.length + '<br />');
 											importDisplay.append(
-												//                                            $('<button />').
-												//                                            attr('id', 'import-current-session-button').
-												//                                            addClass('btn btn-success span6').
-												//                                            html('Import Current Session'),
-												$('<button />').
-												attr('id', 'import-all-session-button').
-												addClass('btn btn-success span6').
-												html('Import Sessions'));
+												$('<button />')
+												.attr('id', 'import-all-session-button')
+												.addClass('btn btn-success span6')
+												.html('Import Sessions'));
 
 											importRow.append(importDisplay);
 											importWell.append(importRow);
-
-											//                                        $('#import-current-session-button').on('click', function() {
-											//                                            var currentSession = resultObject.sessions.find(function(n){
-											//                                                return n.id == resultObject.currentSession
-											//                                            })
-											//                                            CONFIG.tempSession.setCurrentSession(currentSession);
-											//                                            CONFIG.tempSession.persistSession();
-											//                                            location.reload(true);
-											//                                            
-											//                                        })
 											$('#import-all-session-button').on('click', function () {
-												var chObj = JSON.parse(localStorage.getItem('coastal-hazards'));
+												var chObj = JSON.parse(localStorage.getItem(me.SESSION_OBJECT_NAME));
 												resultObject.sessions.each(function (ros) {
 													var foundSession = chObj.sessions.find(function (s) {
-														return s.id == ros.id;
+														return s.id === ros.id;
 													});
 													if (!foundSession) {
 														chObj.sessions.push(ros);
@@ -571,7 +634,7 @@ CCH.Session = function (name, isPerm) {
 													}
 												});
 
-												localStorage.setItem('coastal-hazards', JSON.stringify(chObj)); //TODO- This will not work with IE8 and below. No JSON object
+												localStorage.setItem(me.SESSION_OBJECT_NAME, JSON.stringify(chObj)); //TODO- This will not work with IE8 and below. No JSON object
 												CONFIG.tempSession.createSessionManagementModalWindow();
 											});
 										} catch (ex) {
@@ -589,8 +652,7 @@ CCH.Session = function (name, isPerm) {
 								} else {
 									// Not a json file
 									$('#file-upload-input').val('');
-									importRow = $('#import-row');
-									importRow.html('Your file could not be read: ' + ex);
+									$('#import-row').html('Your file could not be read');
 								}
 							});
 						}
@@ -608,22 +670,21 @@ CCH.Session = function (name, isPerm) {
 				'id': 'export-form',
 				'style': 'display:none;visibility:hidden;',
 				'method': 'POST'
-			}).
-				append(
-					$('<input />').attr({
-					'type': 'hidden',
-					'name': 'filename'
-				}).val('cch_session_' + me.getCurrentSessionKey() + '.json')).
-				append(
+			}).append(
+				$('<input />').attr({
+				'type': 'hidden',
+				'name': 'filename'
+			}).val('cch_session_' + me.getCurrentSessionKey() + '.json'))
+				.append(
 					$('<input />').attr({
 					'type': 'hidden',
 					'name': 'encoding'
-				}).val('UTF-8')).
-				append(
+				}).val('UTF-8'))
+				.append(
 					$('<input />').attr({
 					'type': 'hidden',
 					'name': 'data'
-				}).val(localStorage['coastal-hazards']));
+				}).val(localStorage[me.SESSION_OBJECT_NAME]));
 			$('body').append(exportForm);
 			exportForm.attr('action', 'service/export');
 			exportForm.submit();
@@ -631,11 +692,11 @@ CCH.Session = function (name, isPerm) {
 		},
 		save: function () {
 			LOG.info('Session.js::save:Saving session object to storage');
-			me.sessionObject.setItem(me.name, JSON.stringify(me.session));
+			me.sessionObject.setItem(me.SESSION_OBJECT_NAME, JSON.stringify(me.session));
 		},
 		load: function (name) {
 			LOG.info('Session.js::load:Loading session object from storage');
-			$.parseJSON(me.sessionObject.getItem(name ? name : me.name));
+			$.parseJSON(me.sessionObject.getItem(name ? name : me.SESSION_OBJECT_NAME));
 		},
 		getCurrentSessionKey: function () {
 			if (me.isPerm) {
@@ -650,14 +711,14 @@ CCH.Session = function (name, isPerm) {
 		clearSessions: function (type) {
 			type = type || '';
 			switch (type) {
-				case 'perm' :
-					localStorage.removeItem('coastal-hazards');
 				case  'temp' :
-					sessionStorage.removeItem('coastal-hazards');
+					sessionStorage.removeItem(me.SESSION_OBJECT_NAME);
 					break;
+				case 'perm' :
+					// Fall through
 				default :
-					localStorage.removeItem('coastal-hazards');
-					sessionStorage.removeItem('coastal-hazards');
+					localStorage.removeItem(me.SESSION_OBJECT_NAME);
+					sessionStorage.removeItem(me.SESSION_OBJECT_NAME);
 			}
 			LOG.warn('UI.js::Cleared ' + type + ' session. Reloading application.');
 			location.reload(true);

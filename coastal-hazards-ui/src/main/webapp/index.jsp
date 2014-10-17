@@ -8,13 +8,21 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 
-<%!    
-    boolean development = Boolean.parseBoolean(PropertyUtil.getProperty(Property.DEVELOPMENT));
+<%!
+	boolean development = Boolean.parseBoolean(PropertyUtil.getProperty(Property.DEVELOPMENT));
 	String applicationVersion = PropertyUtil.getProperty("application.version");
+	String versionJquery = PropertyUtil.getProperty("version.jquery");
+	String versionJqueryUi = PropertyUtil.getProperty("version.jquery.ui");
+	String versionBootstrap = PropertyUtil.getProperty("version.bootstrap");
+	String versionFontAwesome = PropertyUtil.getProperty("version.fontawesome");
+	String versionOpenLayers = PropertyUtil.getProperty("version.openlayers");
+	String versionSugar = PropertyUtil.getProperty("version.sugarjs");
+	String versionBootstrapSwitch = PropertyUtil.getProperty("version.bootstrap.switch");
+	String versionHandlebars = PropertyUtil.getProperty("version.handlebars");
 %>
 
 <html lang="en">
-    
+
     <head>
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" />
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE" />
@@ -39,9 +47,9 @@
             <jsp:param name="revisedDate" value="" />
             <jsp:param name="nextReview" value="" />
             <jsp:param name="expires" value="never" />
-            <jsp:param name="development" value="<%= development %>" />
+            <jsp:param name="development" value="<%= development%>" />
         </jsp:include>
-		<script type="text/javascript" src="webjars/jquery/2.1.1/jquery<%= development ?  "" : ".min" %>.js"></script>
+		<script type="text/javascript" src="webjars/jquery/<%= versionJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript">
 			/* This application does not support <IE9 - Stop early if <IE9*/
 			if (navigator.appName === 'Microsoft Internet Explorer') {
@@ -52,29 +60,35 @@
 				}
 			}
 		</script>
+		<link type="text/css" rel="stylesheet" href="webjars/jquery-ui/<%= versionJqueryUi%>/jquery-ui.min.css" />
+		<link type="text/css" rel="stylesheet" href="webjars/bootstrap/<%=versionBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
+		<link type="text/css" rel="stylesheet" href="webjars/bootstrap/<%=versionBootstrap%>/css/bootstrap-responsive<%= development ? "" : ".min"%>.css" />
+		<link type="text/css" rel="stylesheet" href="webjars/font-awesome/<%=versionFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
+		<link type="text/css" rel="stylesheet" href="webjars/bootstrap-switch/<%=versionBootstrapSwitch%>/stylesheets/bootstrap-switch.css" />
+		<link type="text/css" rel="stylesheet" href="css/custom.css" />
     </head>
 
     <body>
         <%-- Loads during application startup, fades out when application is built --%>
         <jsp:include page="components/application-overlay.jsp"></jsp:include>
 
-        <div class="container-fluid">
-            <div class="row-fluid" id="header-row">
+			<div class="container-fluid">
+				<div class="row-fluid" id="header-row">
                 <jsp:include page="template/USGSHeader.jsp">
                     <jsp:param name="relPath" value="" />
                     <jsp:param name="header-class" value="" />
                     <jsp:param name="site-title" value="USGS Coastal Change Hazards" />
                 </jsp:include>
 				<jsp:include page="components/app-navbar.jsp"></jsp:include>
-            </div>
-            
-            <div class="row-fluid" id="content-row">
-                <!-- NAV -->
-                <div class="span1" id='nav-list'>
-                    <ul id="stage-select-tablist" class="nav nav-pills nav-stacked">
-                        <%if("admin".equals(request.getParameter("u"))) { //TODO replace this with session based filter %>
+				</div>
+
+				<div class="row-fluid" id="content-row">
+					<!-- NAV -->
+					<div class="span1" id='nav-list'>
+						<ul id="stage-select-tablist" class="nav nav-pills nav-stacked">
+                        <%if ("admin".equals(request.getParameter("u"))) { //TODO replace this with session based filter %>
                         <li><a href="#bias" data-toggle="tab"><img id="bias_img" src="images/workflow_figures/bias_future.png" title="Display Proxy-Datum Bias"/></a></li>
-                        <%} %>
+								<%} %>
                         <li class="active"><a href="#shorelines" data-toggle="tab"><img id="shorelines_img" src="images/workflow_figures/shorelines.png" title="Display Shorelines"/></a></li>
                         <li><a href="#baseline" data-toggle="tab"><img id="baseline_img" src="images/workflow_figures/baseline_future.png" title="Display Baseline"/></a></li>
                         <li><a href="#transects" data-toggle="tab"><img id="transects_img" src="images/workflow_figures/transects_future.png" title="Calculate Transects"/></a></li>
@@ -101,12 +115,12 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="shorelines-view-tab">
                                     <select id="shorelines-list" class="feature-list"></select>
-                                        <div class="tabbable">
-                                            <ul class="nav nav-tabs" id="shoreline-table-navtabs">
-                                            </ul>
-                                            <div class="tab-content" id="shoreline-table-tabcontent">
-                                            </div>
-                                        </div>
+									<div class="tabbable">
+										<ul class="nav nav-tabs" id="shoreline-table-navtabs">
+										</ul>
+										<div class="tab-content" id="shoreline-table-tabcontent">
+										</div>
+									</div>
                                 </div>
                                 <div class="tab-pane" id="shorelines-manage-tab">
                                     <div id="shorelines-uploader" class="uploader"></div>
@@ -234,7 +248,7 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="transects-view-tab">
                                     <select id="transects-list" class="feature-list"></select>
-                                    </div>
+								</div>
                                 <div class="tab-pane" id="transects-manage-tab">
                                     <div class="row-fluid">
                                         <div id="transects-uploader" class="uploader"></div>
@@ -295,7 +309,7 @@
                                 </div>
                             </div>
                         </div> <!-- /Transects -->
-                        
+
                         <!-- ProxyDatumBias -->
                         <div class="tab-pane container-fluid" id="bias">
                             <div class="row-fluid">
@@ -365,12 +379,12 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="results-view-tab">
                                     <select id="results-list" class="feature-list"></select>
-                                        <div class="row-fluid">
-                                            <div class="tabbable">
-                                                <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
-                                                <div class="tab-content" id="results-tabcontent"></div>
-                                            </div>
-                                        </div>
+									<div class="row-fluid">
+										<div class="tabbable">
+											<ul class="nav nav-tabs" id="results-table-navtabs"></ul>
+											<div class="tab-content" id="results-tabcontent"></div>
+										</div>
+									</div>
                                 </div>
                                 <div class="tab-pane" id="results-manage-tab">
                                     <h4>Download Results</h4>
@@ -415,10 +429,10 @@
                     <jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
                     <jsp:param name="contact-info" value="<a href='mailto:DSAS_Help@usgs.gov?Subject=DSASWeb%20Feedback'>Site Administrator</a>" />
                 </jsp:include>
-                <p id="footer-page-version-info">Application Version: <%= applicationVersion %></p>
+                <p id="footer-page-version-info">Application Version: <%= applicationVersion%></p>
             </div>
         </div>
-		
+
 		<%-- Stuff that isn't shown in the application but is used by JS --%>
         <div id="modal-window" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-window-label" aria-hidden="true">
             <div class="modal-header">
@@ -431,81 +445,60 @@
             <div class="modal-footer"></div>
         </div>
         <iframe id="download" class="hidden"></iframe>
-		
-    <script type="text/javascript">splashUpdate("Loading Graphing Utilities...");</script>
-    <jsp:include page="js/dygraphs/dygraphs.jsp">
-        <jsp:param name="debug-qualifier" value="true" />
-    </jsp:include>
 
-    <script type="text/javascript">splashUpdate("Loading Logging...");</script>
-    <jsp:include page="js/log4javascript/log4javascript.jsp">
-        <jsp:param name="relPath" value="" />
-    </jsp:include>
+		<script type="text/javascript">splashUpdate("Loading Graphing Utilities...");</script>
+		<jsp:include page="js/dygraphs/dygraphs.jsp">
+			<jsp:param name="debug-qualifier" value="true" />
+		</jsp:include>
 
-    <script type="text/javascript">splashUpdate("Loading Sorting Tables...");</script>
-    <jsp:include page="js/jquery-tablesorter/package.jsp">
-        <jsp:param name="relPath" value="" />
-        <jsp:param name="debug-qualifier" value="<%= development%>" />
-    </jsp:include>
+		<script type="text/javascript">splashUpdate("Loading Logging...");</script>
+		<jsp:include page="js/log4javascript/log4javascript.jsp">
+			<jsp:param name="relPath" value="" />
+		</jsp:include>
 
-    <script type="text/javascript">splashUpdate("Loading JQuery UI...");</script>
-    <script type="text/javascript" src="js/jquery-ui/jquery-ui-1.10.0.custom.min.js"></script>
-
-    <script type="text/javascript">splashUpdate("Loading UI Framework...");</script>
-	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap<%= development ?  "" : ".min" %>.css" />
-	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap-responsive<%= development ? "" : ".min"%>.css" />
-	<link type="text/css" rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
-	<script type="text/javascript" src="webjars/bootstrap/2.3.2/js/bootstrap<%= development ?  "" : ".min" %>.js"></script>
-    <link type="text/css" rel="stylesheet" href="webjars/font-awesome/4.0.3/css/font-awesome<%= development ?  "" : ".min" %>.css" />
-
-    <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
-    <script type="text/javascript" src="webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : "" %>.js"></script>
-
-    <script type="text/javascript">splashUpdate("Loading JS Utilities...");</script>
-    <script type="text/javascript" src="webjars/sugar/1.4.1/sugar-full<%= development ? ".development" : ".min" %>.js"></script>
-
-    <script type="text/javascript">splashUpdate("Loading Upload Management...");</script>
-    <jsp:include page="js/fineuploader/fineuploader.jsp">
-        <jsp:param name="debug-qualifier" value="true" />
-    </jsp:include>
-	<jsp:include page="components/config.jsp"></jsp:include>
-    <script type="text/javascript">splashUpdate("Loading UI module...");</script>
-    <script type="text/javascript" src="js/ui/ui.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Utilities module...");</script>
-    <script type="text/javascript" src="js/util/util.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Mapping module...");</script>
-    <script type="text/javascript" src="js/map/map.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Session Management module...");</script>
-    <script type="text/javascript" src="js/session/session.js"></script>
-    <script type="text/javascript">splashUpdate("Loading OWS module...");</script>
-    <script type="text/javascript" src="js/ows/ows.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Shorelines module...");</script>
-    <script type="text/javascript" src="js/stages/shorelines.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Baseline module...");</script>
-    <script type="text/javascript" src="js/stages/baseline.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Transects module...");</script>
-    <script type="text/javascript" src="js/stages/transects.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Proxy Datum Bias module...");</script>
-    <script type="text/javascript" src="js/stages/bias.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Calculation module...");</script>
-    <script type="text/javascript" src="js/stages/calculation.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Results module...");</script>
-    <script type="text/javascript" src="js/stages/results.js"></script>
-
-    <!-- TODO - Modularize -->
-    <script type="text/javascript">splashUpdate("Loading JQuery UI CSS...");</script>
-    <link type="text/css" rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
-    <script type="text/javascript">splashUpdate("Loading Toggle plugin...");</script>
-    <link type="text/css" rel="stylesheet" href="js/bootstrap-switch/static/stylesheets/bootstrapSwitch.css" />
-    <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
-	<script type="text/javascript">splashUpdate("Loading Intro Module...");</script>
-	<%-- For now, stick with full version. Minified version seems gimped --%>
-    <jsp:include page="js/bootstro/bootstro.jsp">
-        <jsp:param name="debug-qualifier" value="true" />
-    </jsp:include>
-	<script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
-	<link type="text/css" rel="stylesheet" href="css/custom.css" />
-	<script type="text/javascript">splashUpdate("Loading Main module...");</script>
-	<script type="text/javascript" src="js/onReady.js"></script>
+		<script type="text/javascript">splashUpdate("Loading Sorting Tables...");</script>
+		<jsp:include page="js/jquery-tablesorter/package.jsp">
+			<jsp:param name="relPath" value="" />
+			<jsp:param name="debug-qualifier" value="<%= development%>" />
+		</jsp:include>
+		<script type="text/javascript" src="webjars/jquery-ui/<%= versionJqueryUi%>/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="webjars/sugar/<%= versionSugar %>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+		<script type="text/javascript" src="webjars/bootstrap/<%=versionBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+		<script type="text/javascript" src="webjars/openlayers/<%= versionOpenLayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
+		<script type="text/javascript" src="webjars/handlebars/<%= versionHandlebars%>/handlebars.min.js"></script>
+		<jsp:include page="js/fineuploader/fineuploader.jsp">
+			<jsp:param name="debug-qualifier" value="true" />
+		</jsp:include>
+		<jsp:include page="components/config.jsp"></jsp:include>
+			<script type="text/javascript">splashUpdate("Loading UI module...");</script>
+			<script type="text/javascript" src="js/ui/ui.js"></script>
+			<script type="text/javascript">splashUpdate("Loading Utilities module...");</script>
+			<script type="text/javascript" src="js/util/util.js"></script>
+			<script type="text/javascript">splashUpdate("Loading Mapping module...");</script>
+			<script type="text/javascript" src="js/map/map.js"></script>
+			<script type="text/javascript">splashUpdate("Loading Session Management module...");</script>
+			<script type="text/javascript" src="js/session/session.js"></script>
+			<script type="text/javascript">splashUpdate("Loading OWS module...");</script>
+			<script type="text/javascript" src="js/ows/ows.js"></script>
+			<script type="text/javascript">splashUpdate("Loading Shorelines module...");</script>
+			<script type="text/javascript" src="js/stages/shorelines.js"></script>
+			<script type="text/javascript">splashUpdate("Loading Baseline module...");</script>
+			<script type="text/javascript" src="js/stages/baseline.js"></script>
+			<script type="text/javascript">splashUpdate("Loading Transects module...");</script>
+			<script type="text/javascript" src="js/stages/transects.js"></script>
+			<script type="text/javascript">splashUpdate("Loading Proxy Datum Bias module...");</script>
+			<script type="text/javascript" src="js/stages/bias.js"></script>
+			<script type="text/javascript">splashUpdate("Loading Calculation module...");</script>
+			<script type="text/javascript" src="js/stages/calculation.js"></script>
+			<script type="text/javascript">splashUpdate("Loading Results module...");</script>
+			<script type="text/javascript" src="js/stages/results.js"></script>
+			<script type="text/javascript">splashUpdate("Loading Toggle plugin...");</script>
+			<script type="text/javascript" src="webjars/bootstrap-switch/<%=versionBootstrapSwitch%>/js/bootstrap-switch.js"></script>
+			<script type="text/javascript">splashUpdate("Loading Intro Module...");</script>
+		<jsp:include page="js/bootstro/bootstro.jsp">
+			<jsp:param name="debug-qualifier" value="true" />
+		</jsp:include>
+		<script type="text/javascript">splashUpdate("Loading Main module...");</script>
+		<script type="text/javascript" src="js/onReady.js"></script>
 	</body>
 </html>
