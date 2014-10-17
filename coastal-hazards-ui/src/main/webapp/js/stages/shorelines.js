@@ -96,6 +96,8 @@ var Shorelines = {
 	},
 	/**
 	 * Calls DescribeFeatureType against OWS service and tries to add the layer(s) to the map 
+	 * @param {type} layers
+	 * @returns {undefined}
 	 */
 	addShorelines: function (layers) {
 		"use strict";
@@ -199,6 +201,9 @@ var Shorelines = {
 	},
 	/**
 	 * Uses a OWS DescribeFeatureType response to add a layer to a map
+	 * 
+	 * @param {type} args
+	 * @returns {undefined}
 	 */
 	addLayerToMap: function (args) {
 		"use strict";
@@ -723,7 +728,7 @@ var Shorelines = {
 			},
 			format: function (s, table, cell, cellIndex) {
 				var toggleButton = $(cell).find('.switch')[0];
-				return $(toggleButton).bootstrapSwitch('status') ? 1 : 0
+				return $(toggleButton).bootstrapSwitch('status') ? 1 : 0;
 			},
 			// set type, either numeric or text 
 			type: 'numeric'
@@ -1052,11 +1057,14 @@ var Shorelines = {
 											layerName: token,
 											columns: layerColumns,
 											caller: Shorelines,
+											continueCallback: function () {
+												doUpload();
+											},
 											updateCallback: function () {
 												doUpload();
 											},
 											cancelCallback: function () {
-												$.ajax(Shorelines.uploadRequest.endpoint + '?' + $.param({action: "delete-token", token: token}),{
+												$.ajax(Shorelines.uploadRequest.endpoint + '?' + $.param({action: "delete-token", token: token}), {
 													type: 'DELETE'
 												});
 											}

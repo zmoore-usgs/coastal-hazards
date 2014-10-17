@@ -780,8 +780,10 @@ var UI = function () {
 									}
 								});
 								if (readyToUpdate) {
+									$('#modal-continue-button').removeAttr('disabled');
 									$('#modal-update-button').removeAttr('disabled');
 								} else {
+									$('#modal-continue-button').attr('disabled', 'disabled');
 									$('#modal-update-button').attr('disabled', 'disabled');
 								}
 
