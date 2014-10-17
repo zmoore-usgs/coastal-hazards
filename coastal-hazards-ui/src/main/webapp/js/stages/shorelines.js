@@ -1,14 +1,17 @@
 /* global LOG */
 /* global CONFIG */
 /* global OpenLayers */
+/* global Handlebars */
 var Shorelines = {
 	stage: 'shorelines',
 	suffixes: ['_shorelines'],
 	mandatoryColumns: ['date', 'uncy'],
 	defaultingColumns: [
-		{attr: 'MHW', defaultValue: "0"}
+		{attr: 'MHW', defaultValue: "0"},
+		{attr: 'source', defaultValue: ''}
 	],
 	groupingColumn: 'date',
+	columnMatchingTemplate: undefined,
 	uploadRequest: {
 		'endpoint': 'service/stage-shoreline',
 		'paramsInBody': false,
@@ -78,6 +81,10 @@ var Shorelines = {
 			});
 			boxLayer.addMarker(box);
 		});
+		
+		$.get('templates/column-matching-modal.html').done(function(data) {
+			Shorelines.columnMatchingTemplate = Handlebars.compile(data);
+		});
 	},
 	enterStage: function () {
 		"use strict";
@@ -96,6 +103,8 @@ var Shorelines = {
 	},
 	/**
 	 * Calls DescribeFeatureType against OWS service and tries to add the layer(s) to the map 
+	 * @param {type} layers
+	 * @returns {undefined}
 	 */
 	addShorelines: function (layers) {
 		"use strict";
@@ -152,6 +161,7 @@ var Shorelines = {
 									layerName: layerName,
 									columns: layerColumns,
 									caller: Shorelines,
+									template : Shorelines.columnMatchingTemplate,
 									continueCallback: function () {
 										Shorelines.addLayerToMap({
 											layer: layer,
@@ -199,6 +209,9 @@ var Shorelines = {
 	},
 	/**
 	 * Uses a OWS DescribeFeatureType response to add a layer to a map
+	 * 
+	 * @param {type} args
+	 * @returns {undefined}
 	 */
 	addLayerToMap: function (args) {
 		"use strict";
@@ -723,7 +736,7 @@ var Shorelines = {
 			},
 			format: function (s, table, cell, cellIndex) {
 				var toggleButton = $(cell).find('.switch')[0];
-				return $(toggleButton).bootstrapSwitch('status') ? 1 : 0
+				return $(toggleButton).bootstrapSwitch('status') ? 1 : 0;
 			},
 			// set type, either numeric or text 
 			type: 'numeric'
@@ -962,7 +975,12 @@ var Shorelines = {
 								headers = headers.split(',');
 
 								if (headers.length < Shorelines.mandatoryColumns.length) {
-									LOG.warn('Shorelines.js::addShorelines: There are not enough attributes in the selected shapefile to constitute a valid shoreline. Will be deleted. Needed: ' + Shorelines.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
+									LOG.warn('Shorelines.js::addShorelines: There '
+										+ 'are not enough attributes in the selected '
+										+ 'shapefile to constitute a valid shoreline. '
+										+ 'Will be deleted. Needed: '
+										+ Shorelines.mandatoryColumns.length
+										+ ', Found in upload: ' + headers.length);
 									Shorelines.removeResource();
 									CONFIG.ui.showAlert({
 										message: 'Not enough attributes in upload - Check Logs',
@@ -1052,11 +1070,17 @@ var Shorelines = {
 											layerName: token,
 											columns: layerColumns,
 											caller: Shorelines,
+											template : Shorelines.columnMatchingTemplate,
+											continueCallback: function () {
+												doUpload();
+											},
 											updateCallback: function () {
 												doUpload();
 											},
 											cancelCallback: function () {
-												$.ajax(Shorelines.uploadRequest.endpoint + '?' + $.param({action: "delete-token", token: token}),{
+												// Call to delete the stored file
+												// on the back-end via its token
+												$.ajax(Shorelines.uploadRequest.endpoint + '?' + $.param({action: "delete-token", token: token}), {
 													type: 'DELETE'
 												});
 											}

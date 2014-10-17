@@ -511,62 +511,6 @@ var OWS = function(endpoint) {
     
             return wps;
         },
-        renameColumns : function(args) {
-            var wps = CONFIG.ows.createRenameColumnsWPSXML(args);
-            CONFIG.ows.executeWPSProcess({
-                processIdentifier : 'gs:RenameLayerColumns',
-                request : wps,
-                callbacks : args.callbacks || [],
-                context : args.context || this
-            });
-        },
-        createRenameColumnsWPSXML : function(args) {
-            var layer = args.layer;
-            var workspace = args.workspace;
-            var store = args.store;
-            var columns = args.columns || [];
-            var wps = '<?xml version="1.0" encoding="UTF-8"?>' + 
-            '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
-            '<ows:Identifier>gs:RenameLayerColumns</ows:Identifier>' + 
-            '<wps:DataInputs>' + 
-            '<wps:Input>' + 
-            '<ows:Identifier>layer</ows:Identifier>' + 
-            '<wps:Data>' + 
-            '<wps:LiteralData>'+layer+'</wps:LiteralData>' + 
-            '</wps:Data>' + 
-            '</wps:Input>' + 
-            '<wps:Input>' + 
-            '<ows:Identifier>workspace</ows:Identifier>' + 
-            '<wps:Data>' + 
-            '<wps:LiteralData>'+workspace+'</wps:LiteralData>' + 
-            '</wps:Data>' + 
-            '</wps:Input>' + 
-            '<wps:Input>' + 
-            ' <ows:Identifier>store</ows:Identifier>' + 
-            '<wps:Data>' + 
-            '<wps:LiteralData>'+store+'</wps:LiteralData>' + 
-            '</wps:Data>' + 
-            '</wps:Input>';
-    
-            columns.each(function(column) {
-                wps +=  '<wps:Input>' + 
-                '<ows:Identifier>column</ows:Identifier>' + 
-                '<wps:Data>' + 
-                '<wps:LiteralData>'+column+'</wps:LiteralData>' + 
-                '</wps:Data>' + 
-                '</wps:Input>';
-            });
-               
-            wps += '</wps:DataInputs>' + 
-            '<wps:ResponseForm>' + 
-            '<wps:RawDataOutput>' + 
-            '<ows:Identifier>layerName</ows:Identifier>' + 
-            '</wps:RawDataOutput>' + 
-            '</wps:ResponseForm>' + 
-            '</wps:Execute>';
-           
-            return wps;
-        },
         createResultsRasterSLD : function(args) {
             var argss = args || {};
             var attribute = argss.attribute || 'LRR';

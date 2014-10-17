@@ -44,8 +44,6 @@ $(document).ready(function () {
 		return;
 	}
 
-
-
 	var setupAjaxError = function () {
 		$(document).ajaxError(function (event, jqXHR, ajaxSettings, thrownError) {
 			LOG.debug('AJAX Call Error: ' + thrownError);
