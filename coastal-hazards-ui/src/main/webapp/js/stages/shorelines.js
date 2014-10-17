@@ -967,7 +967,12 @@ var Shorelines = {
 								headers = headers.split(',');
 
 								if (headers.length < Shorelines.mandatoryColumns.length) {
-									LOG.warn('Shorelines.js::addShorelines: There are not enough attributes in the selected shapefile to constitute a valid shoreline. Will be deleted. Needed: ' + Shorelines.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
+									LOG.warn('Shorelines.js::addShorelines: There '
+										+ 'are not enough attributes in the selected '
+										+ 'shapefile to constitute a valid shoreline. '
+										+ 'Will be deleted. Needed: '
+										+ Shorelines.mandatoryColumns.length
+										+ ', Found in upload: ' + headers.length);
 									Shorelines.removeResource();
 									CONFIG.ui.showAlert({
 										message: 'Not enough attributes in upload - Check Logs',
