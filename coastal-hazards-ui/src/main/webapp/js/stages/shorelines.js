@@ -1,6 +1,7 @@
 /* global LOG */
 /* global CONFIG */
 /* global OpenLayers */
+/* global Handlebars */
 var Shorelines = {
 	stage: 'shorelines',
 	suffixes: ['_shorelines'],
@@ -10,6 +11,7 @@ var Shorelines = {
 		{attr: 'source', defaultValue: ''}
 	],
 	groupingColumn: 'date',
+	columnMatchingTemplate: undefined,
 	uploadRequest: {
 		'endpoint': 'service/stage-shoreline',
 		'paramsInBody': false,
@@ -78,6 +80,10 @@ var Shorelines = {
 				});
 			});
 			boxLayer.addMarker(box);
+		});
+		
+		$.get('templates/column-matching-modal.html').done(function(data) {
+			Shorelines.columnMatchingTemplate = Handlebars.compile(data);
 		});
 	},
 	enterStage: function () {
@@ -155,6 +161,7 @@ var Shorelines = {
 									layerName: layerName,
 									columns: layerColumns,
 									caller: Shorelines,
+									template : Shorelines.columnMatchingTemplate,
 									continueCallback: function () {
 										Shorelines.addLayerToMap({
 											layer: layer,
@@ -1063,6 +1070,7 @@ var Shorelines = {
 											layerName: token,
 											columns: layerColumns,
 											caller: Shorelines,
+											template : Shorelines.columnMatchingTemplate,
 											continueCallback: function () {
 												doUpload();
 											},

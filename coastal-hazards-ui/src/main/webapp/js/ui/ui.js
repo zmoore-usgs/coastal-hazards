@@ -594,113 +594,23 @@ var UI = function () {
 			var layerName = args.layerName,
 				columns = args.columns,
 				caller = args.caller,
-				container = $('<div />').addClass('container-fluid'),
-				explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row'),
-				explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well'),
-				mandatoryColumnList = "",
+				template = args.template,
 				cancelCallback = args.cancelCallback ? args.cancelCallback : Util.noopFunction,
 				continueCallback = args.continueCallback,
 				updateCallback = args.updateCallback;
-
-			for (var i = 0; i < caller.mandatoryColumns.length; i++) {
-				if (mandatoryColumnList.length > 0) {
-					mandatoryColumnList += ",";
-				}
-				mandatoryColumnList += ' ' + caller.mandatoryColumns[i];
-			}
-
-			var explanationText = 'There is a possible attribute mismatch between '
-				+ 'the resource you are trying to view and what is considered a valid '
-				+ caller.stage
-				+ ' resource. <br /><br />Reqiured attributes:  '
-				+ mandatoryColumnList + '. ';
-
-			if (caller.defaultingColumns) {
-				var defaultColumnList = "<br/><ul>";
-				for (var i = 0; i < caller.defaultingColumns.length; i++) {
-					defaultColumnList += '<li>' +
-						caller.defaultingColumns[i].attr + ' - Default value: ' + caller.defaultingColumns[i].defaultValue + '</li>';
-				}
-				defaultColumnList += "</ul>";
-				explanationText += "<br /><br />Optional attributes and their defaults. These can be left unmapped to accept the default values." + defaultColumnList;
-			}
-
-			explanationText += "<br/>Please drag attributes from the left to the right to properly map to the correct attributes. Attributes wrapped in blue are required, those wrapped in green are optional. " +
-				"The resource will be updated server-side once complete.";
-
-			explanationWell.html(explanationText);
-
-			container.append(explanationRow.append(explanationWell));
-
-			var containerRow = $('<div />').addClass('row-fluid').attr('id', layerName + '-drag-drop-row');
-
-			// Create the draggable column
-			var dragListContainer = $('<div />').
-				attr('id', layerName + '-drag-container').
-				addClass('well span5');
-			var dragList = $('<ul />').
-				attr('id', layerName + '-drag-list').
-				addClass('ui-helper-reset');
-			columns.keys().each(function (name) {
-
-				var li = $('<li />');
-				var dragHolder = $('<div />').
-					addClass(layerName + '-drop-holder left-drop-holder');
-				var dragItem = $('<div />').
-					addClass(layerName + '-drag-item ui-state-default ui-corner-all').
-					attr('id', name + '-drag-item').
-					html(name);
-				var iconSpan = $('<span />').
-					attr('style', 'float:left;').
-					addClass('ui-icon ui-icon-link').
-					html('&nbsp;');
-
-				dragItem.append(iconSpan);
-				dragHolder.append(dragItem);
-				li.append(dragHolder);
-				dragList.append(li);
+			
+			var html = template({
+				stage: caller.stage,
+				defaultingColumns: caller.defaultingColumns,
+				layerName: layerName,
+				columnKeys: columns.keys(), 
+				mandatoryColumns: caller.mandatoryColumns, 
+				defaultColumns: caller.defaultingColumns
 			});
-			dragListContainer.append(dragList);
-			containerRow.append(dragListContainer);
-			container.append(containerRow);
-
-			// Create the droppable column
-			var dropListContainer = $('<div />').
-				attr('id', layerName + '-drop-container').
-				addClass('well span5 offset2');
-			var dropList = $('<ul />').
-				attr('id', layerName + '-drop-list').
-				addClass('ui-helper-reset');
-			caller.mandatoryColumns.each(function (name) {
-				var listItem = $('<li />').
-					append(
-						$('<div />').
-						addClass(layerName + '-drop-holder right-drop-holder').
-						attr('id', name + '-drop-item').
-						html(name));
-
-				dropList.append(listItem);
-			});
-			if (caller.defaultingColumns) {
-				caller.defaultingColumns.each(function (col) {
-					var listItem = $('<li />').
-						append(
-							$('<div />').
-							addClass(layerName + '-drop-holder right-drop-holder-optional').
-							attr('id', col.attr + '-drop-item').
-							html(col.attr));
-
-					dropList.append(listItem);
-				});
-			}
-			dropListContainer.append(dropList);
-			containerRow.append(dropListContainer);
-
-			container.append(containerRow);
 
 			CONFIG.ui.createModalWindow({
 				headerHtml: 'Layer Attribute Mismatch Detected',
-				bodyHtml: container.html(),
+				bodyHtml: html,
 				doneButtonText: 'Cancel',
 				buttons: [{
 						id: 'modal-continue-button',
