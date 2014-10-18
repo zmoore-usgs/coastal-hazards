@@ -41,6 +41,16 @@ var OWS = function(endpoint) {
                 }
             });
         },
+		downloadLayerAsShapefile : function(layer) {
+			var workspace = layer.split(':')[0];;
+				
+			window.location = me.geoserverEndpoint 
+				+ '/' 
+				+ workspace 
+				+ '/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=' 
+				+ layer
+				+ '&outputFormat=shape-zip';
+		},
         getUTMZoneCount : function(args) {
             var layerPrefix = args.layerPrefix;
             var layerName = args.layerName;
