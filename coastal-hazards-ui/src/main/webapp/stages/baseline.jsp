@@ -44,6 +44,7 @@
 						<i class="icon-plus icon-white"></i>
 						&nbsp;Clone
 					</button>
+					<button class="btn btn-success" disabled id="baseline-downloadbutton"><i class="icon-arrow-down icon-white"></i>Download</button>
 					<button id="baseline-remove-btn" disabled class="btn btn-success">
 						<i class="icon-remove icon-white"></i>
 						&nbsp;Remove
