@@ -20,6 +20,7 @@
 			<div class="row-fluid">
 				<div id="transects-uploader" class="uploader"></div>
 				<button class="btn btn-success" id="transects-triggerbutton" disabled="disabled"><i class="icon-arrow-up icon-white"></i>Upload</button>
+				<button class="btn btn-success" disabled id="transects-downloadbutton"><i class="icon-arrow-down icon-white"></i>Download</button>
 				<button data-toggle="button" class="btn btn-success" disabled id="create-transects-toggle">
 					<i class="icon-tasks icon-white"></i>
 					&nbsp;Generate
@@ -69,9 +70,6 @@
 						&nbsp;Cast Transects
 					</button>
 				</div>
-
-				<!-- Intersections -->
-
 			</div>
 		</div>
 	</div>
