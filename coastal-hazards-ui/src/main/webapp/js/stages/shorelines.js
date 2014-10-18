@@ -12,6 +12,7 @@ var Shorelines = {
 	],
 	groupingColumn: 'date',
 	columnMatchingTemplate: undefined,
+	$downloadButton: $('#shorelines-downloadbutton'),
 	uploadRequest: {
 		'endpoint': 'service/stage-shoreline',
 		'paramsInBody': false,
@@ -84,6 +85,11 @@ var Shorelines = {
 		
 		$.get('templates/column-matching-modal.html').done(function(data) {
 			Shorelines.columnMatchingTemplate = Handlebars.compile(data);
+		});
+		
+		// Bind the download button to download whatever layer is in the dropdown listbox
+		Shorelines.$downloadButton.on('click', function() {
+			CONFIG.ows.downloadLayerAsShapefile($("#shorelines-list").val());
 		});
 	},
 	enterStage: function () {
@@ -761,6 +767,7 @@ var Shorelines = {
 		LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
 		CONFIG.map.getShorelineBoxLayer().setVisibility(true);
 		Shorelines.disableRemoveButton();
+		Shorelines.disableDownloadButton();
 		LOG.debug('Shorelines.js::listboxChanged: Removing all shorelines from map that were not selected');
 		$("#shorelines-list option:not(:selected)").each(function (index, option) {
 			var layerName = (option.value || ':').split(':')[1],
@@ -796,6 +803,7 @@ var Shorelines = {
 				stage.viewing.push(layerFullName);
 				if (layerFullName.has(CONFIG.tempSession.getCurrentSessionKey())) {
 					Shorelines.enableRemoveButton();
+					Shorelines.enableDownloadButton();
 				}
 			});
 		}
@@ -878,6 +886,14 @@ var Shorelines = {
 	closeShorelineIdWindows: function () {
 		"use strict";
 		$('#FramedCloud_close').trigger('click');
+	},
+	disableDownloadButton: function () {
+		"use strict";
+		this.$downloadButton.attr('disabled', 'disabled');
+	},
+	enableDownloadButton: function () {
+		"use strict";
+		this.$downloadButton.removeAttr('disabled');
 	},
 	disableRemoveButton: function () {
 		"use strict";
