@@ -7,7 +7,6 @@ import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
 import gov.usgs.cida.utilities.features.AttributeGetter;
 import gov.usgs.cida.utilities.features.Constants;
-
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -22,9 +21,7 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.naming.NamingException;
-
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.io.FileUtils;
@@ -52,7 +49,7 @@ import org.slf4j.LoggerFactory;
 public class ShorelineShapefileDAO extends ShorelineFileDao {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineShapefileDAO.class);
-	private static final String[] AUXILLARY_ATTRIBUTES = new String[]{"surveyID", "shoreInd", "defaultD", "name"};
+	private static final String[] AUXILLARY_ATTRIBUTES = new String[]{"surveyID", "shoreInd", "defaultD", "defaultd", "name"};
 
 	public ShorelineShapefileDAO() {
 		this.JNDI_NAME = PropertyUtil.getProperty(Property.JDBC_NAME);
@@ -86,13 +83,9 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 			//TODO- Check if incoming shapefile is not already a points shapefile
 			Xploder xploder = new Xploder(uncertaintyFieldName);
 			File pointsShapefile;
-			try {
-				LOGGER.debug("Exploding shapefile at {}", shpFile.getAbsolutePath());
-				pointsShapefile = xploder.explode(parentDirectory + File.separator + baseFileName);
-				LOGGER.debug("Shapefile exploded");
-			} catch (Exception ex) {
-				throw new IOException(ex);
-			}
+			LOGGER.debug("Exploding shapefile at {}", shpFile.getAbsolutePath());
+			pointsShapefile = xploder.explode(parentDirectory + File.separator + baseFileName);
+			LOGGER.debug("Shapefile exploded");
 
 			FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollectionFromShp.getFeatureCollectionFromShp(pointsShapefile.toURI().toURL());
 			Class<?> dateType = fc.getSchema().getDescriptor(dateFieldName).getType().getBinding();
@@ -239,7 +232,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 			for (String[] fname : fieldNames) {
 				String fieldName = fname[0];
 				char fieldType = fname[1].charAt(0);
-				if (fieldName.trim().equalsIgnoreCase(attribute.trim())) {
+				if (fieldName.trim().replaceAll("_", "").equalsIgnoreCase(attribute.trim())) {
 					Object attrObj = sf.getAttribute(fieldName);
 					if (attrObj != null) {
 						switch (fieldType) {

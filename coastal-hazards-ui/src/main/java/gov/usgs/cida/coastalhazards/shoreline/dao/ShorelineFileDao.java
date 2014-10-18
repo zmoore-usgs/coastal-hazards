@@ -133,7 +133,7 @@ public abstract class ShorelineFileDao {
 			st.setLong(1, shorelineId);
 			st.setString(2, name);
 			st.setString(3, value);
-			return st.executeUpdate(sql);
+			return st.executeUpdate();
 		}
 	}
 

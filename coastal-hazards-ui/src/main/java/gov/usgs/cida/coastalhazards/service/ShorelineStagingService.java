@@ -1,7 +1,5 @@
 package gov.usgs.cida.coastalhazards.service;
 
-import gov.usgs.cida.coastalhazards.service.util.Property;
-import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.coastalhazards.shoreline.file.IShorelineFile;
 import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile;
@@ -18,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import javax.naming.NamingException;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,38 +38,13 @@ public class ShorelineStagingService extends HttpServlet {
 
 	private static final long serialVersionUID = 2377995353146379768L;
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineStagingService.class);
-	private static final Integer defaultMaxFileSize = Integer.MAX_VALUE;
 	private static Map<String, String> tokenMap = new HashMap<>();
 	private final static String TOKEN_STRING = "token";
 	private final static String ACTION_STRING = "action";
-	private final static String SUCCESS_STRING = "success";
-	private final static String ERROR_STRING = "error";
 	private final static String STAGE_ACTION_STRING = "stage";
 	private final static String IMPORT_ACTION_STRING = "import";
 	private final static String READDBF_ACTION_STRING = "read-dbf";
 	private final static String DELETE_TOKEN_ACTION_STRING = "delete-token";
-	/**
-	 * Used for lidar read-dbf call, we always fake that a lidar file is a valid
-	 * shape file
-	 */
-	private Integer maxFileSize;
-
-	@Override
-	public void init(ServletConfig servletConfig) throws ServletException {
-		super.init();
-
-		// The maximum upload file size allowd by this server, 0 = Integer.MAX_VALUE
-		String mfsJndiProp = PropertyUtil.getProperty(Property.FILE_UPLOAD_MAX_SIZE);
-		if (StringUtils.isNotBlank(mfsJndiProp)) {
-			maxFileSize = Integer.parseInt(mfsJndiProp);
-		} else {
-			maxFileSize = defaultMaxFileSize;
-		}
-		if (maxFileSize == 0) {
-			maxFileSize = defaultMaxFileSize;
-		}
-		LOGGER.debug("Maximum allowable file size set to: " + maxFileSize + " bytes");
-	}
 
 	/**
 	 * Handles the HTTP <code>POST</code> method.
@@ -117,20 +89,24 @@ public class ShorelineStagingService extends HttpServlet {
 					if (null == shorelineFile || !shorelineFile.exists()) {
 						throw new FileNotFoundException();
 					}
+					
+					// Do the actual import into the database
 					String viewName = shorelineFile.importToDatabase(request);
+					
+					// Now that the shapefile is in the database, import to Geoserver
 					shorelineFile.importToGeoserver(viewName);
+					
+					// Done
 					responseMap.put("layer", viewName);
 					responseMap.put("workspace", shorelineFile.getWorkspace());
 					success = true;
 				} catch (FileNotFoundException ex) {
+					LOGGER.warn("File not found for token " + token, ex);
 					responseMap.put("serverCode", "404");
-					responseMap.put(ERROR_STRING, "File not found. Try re-staging file");
-					responseMap.put(SUCCESS_STRING, "false");
+					responseMap.put(RequestResponse.ERROR_STRING, "File not found. Try re-staging file");
 					RequestResponse.sendErrorResponse(response, responseMap, responseType);
 				} catch (ShorelineFileFormatException | IOException | SQLException | ParseException | NoSuchElementException | NamingException | SchemaException | FactoryException | TransformException ex) {
-					responseMap.put(ERROR_STRING, ex.getMessage());
-					responseMap.put(SUCCESS_STRING, "false");
-					RequestResponse.sendErrorResponse(response, responseMap, responseType);
+					sendException(response, "Could not import file", ex, responseType);
 				} finally {
 					if (shorelineFile != null) {
 						shorelineFile.clear();
@@ -149,7 +125,7 @@ public class ShorelineStagingService extends HttpServlet {
 	}
 
 	@Override
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		ResponseType responseType = ServiceHelper.getResponseType(request);
 		Map<String, String> responseMap = new HashMap<>();
 
@@ -166,7 +142,6 @@ public class ShorelineStagingService extends HttpServlet {
 				if (null != shorelineFile && shorelineFile.exists()) {
 					shorelineFile.clear();
 				}
-				responseMap.put("success", "true");
 				RequestResponse.sendSuccessResponse(response, responseMap, responseType);
 			}
 		}
@@ -204,7 +179,6 @@ public class ShorelineStagingService extends HttpServlet {
 				String[] columns = shorelineFile.getColumns();
 				String commaSepColumns = StringUtils.join(columns, ",");
 				responseMap.put("headers", commaSepColumns);
-				responseMap.put("success", "true");
 				success = true;
 			}
 		} else {

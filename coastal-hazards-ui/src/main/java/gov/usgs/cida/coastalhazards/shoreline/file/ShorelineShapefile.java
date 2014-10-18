@@ -4,7 +4,6 @@ import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
-import gov.usgs.cida.owsutils.commons.io.FileHelper;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import java.io.File;
@@ -59,12 +58,12 @@ public class ShorelineShapefile extends ShorelineFile {
 		ZipFile zFile = new ZipFile(zipFile);
 		Enumeration<? extends ZipEntry> entries = zFile.entries();
 		List<String> extensions = new ArrayList<>(zFile.size());
-		List<String> requiredFiles = Arrays.asList(new String[]{SHP, SHX, DBF, PRJ});
+		List<String> requiredFilesList = Arrays.asList(requiredFiles);
 		while (entries.hasMoreElements()) {
 			ZipEntry ze = entries.nextElement();
 			extensions.add(FilenameUtils.getExtension(ze.getName()));
 		}
-		if (!extensions.containsAll(requiredFiles)) {
+		if (!extensions.containsAll(requiredFilesList)) {
 			throw new ShorelineFileFormatException("Missing mandatory files within shapefile. One of: .shp, .shx, .dbf");
 		}
 		if (Collections.frequency(extensions, SHP) > 1
