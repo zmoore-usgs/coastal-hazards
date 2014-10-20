@@ -903,10 +903,10 @@ var Transects = {
 
 						excludedDates.each(function (date) {
 							filter += '<ogc:Not>' +
-								'<ogc:PropertyIsLike  wildCard="*" singleChar="." escape="!">' +
+								'<ogc:PropertyIsEqualTo>' +
 								'<ogc:PropertyName>' + property + '</ogc:PropertyName>' +
 								'<ogc:Literal>' + date + '</ogc:Literal>' +
-								'</ogc:PropertyIsLike>' +
+								'</ogc:PropertyIsEqualTo>' +
 								'</ogc:Not>'
 						})
 
