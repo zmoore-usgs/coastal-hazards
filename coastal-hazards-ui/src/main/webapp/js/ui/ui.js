@@ -464,7 +464,7 @@ var UI = function () {
 
 				$('.btn-year-toggle').click(function (event) {
 					var date = $(event.target).attr('date');
-					var toggle = $('#shoreline-table-tabcontent>#' + $(event.target).attr('layer').split(':')[1] + ' .feature-toggle').filter(function () {
+					var toggle = $('#shoreline-table-tabcontent>#' + $('#shorelines-list option:selected').text() + ' .feature-toggle').filter(function () {
 						return Date.parse($(this).data('date')) === Date.parse(date);
 					});
 
