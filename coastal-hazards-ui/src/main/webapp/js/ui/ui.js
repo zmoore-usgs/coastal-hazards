@@ -427,7 +427,7 @@ var UI = function () {
 					});
 
 					var config = CONFIG.tempSession.getStage(Shorelines.stage);
-					var date = new Date(feature.attributes[groupingColumn]).format(config.dateFormat);
+					var date = Date.create(feature.attributes[groupingColumn]).format(config.dateFormat);
 					var isVisible = CONFIG.tempSession.getDisabledDatesForShoreline(layerName).indexOf(date) === -1;
 					var disableButton = $('<button />')
 						.addClass('btn btn-year-toggle')
