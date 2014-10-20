@@ -107,8 +107,10 @@ public abstract class ShorelineFileDao {
 					.append(segmentId).append(",")
 					.append("ST_GeomFromText('POINT(").append(XYUncy[0]).append(" ").append(XYUncy[1]).append(")',").append(DATABASE_PROJECTION).append("),")
 					.append(XYUncy[2])
-					.append(")");
+					.append("),");
 		}
+		
+		sql.deleteCharAt(sql.length() - 1);
 		
 		try (Statement st = connection.createStatement()) {
 			return st.execute(sql.toString());
