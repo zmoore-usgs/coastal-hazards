@@ -171,7 +171,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 		return AttributeGetter.extractBooleanValue(value, defaultValue);
 	}
 
-	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
+	private boolean insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
 		double x = sf.getBounds().getMaxX();
 		double y = sf.getBounds().getMaxY();
 		double uncertainty = getDoubleValue(uncertaintyFieldName, sf);
