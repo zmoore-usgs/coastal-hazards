@@ -83,7 +83,7 @@ var Shorelines = {
 			boxLayer.addMarker(box);
 		});
 		
-		$.get('templates/column-matching-modal.html').done(function(data) {
+		$.get('templates/column-matching-modal.mustache').done(function(data) {
 			Shorelines.columnMatchingTemplate = Handlebars.compile(data);
 		});
 		
