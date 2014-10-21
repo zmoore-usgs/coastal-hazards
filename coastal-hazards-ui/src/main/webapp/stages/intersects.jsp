@@ -24,6 +24,9 @@
 						&nbsp;Calculate Results
 					</button>
 				</div>
+				<div id="intersections-management-panel-well" class="well span6">
+					<button class="btn btn-success" disabled id="intersections-downloadbutton"><i class="icon-arrow-down icon-white"></i>Download</button>
+				</div>
 			</div>
 		</div>
 	</div>
