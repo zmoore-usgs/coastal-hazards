@@ -18,7 +18,7 @@ var OWS = function(endpoint) {
     
     // An object to hold the return of a filtered WFS getFeature response
     me.filteredFeature = Object.extended();
-    
+	
     LOG.debug('OWS.js::constructor: OWS class initialized.');
     return $.extend(me, {
         importFile : function(args) {
@@ -376,7 +376,7 @@ var OWS = function(endpoint) {
             var context = args.context || this;
             var callbacks = args.callbacks || [];
             var errorCallbacks = args.errorCallbacks || [];
-            if (args.layer.split(':')[0] == CONFIG.tempSession.getCurrentSessionKey()) {
+            if (args.layer.split(':')[0] === CONFIG.tempSession.getCurrentSessionKey()) {
                 var url = me.geoserverProxyEndpoint + CONFIG.tempSession.getCurrentSessionKey() + '/wfs';
                 var wfst = '<wfs:Transaction service="WFS" version="1.1.0" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">' + 
                 '<wfs:Delete typeName="feature:'+layerName+'">' + 
@@ -464,7 +464,7 @@ var OWS = function(endpoint) {
                 request : wps,
                 callbacks : args.callbacks || [],
                 context : args.context || this
-            })
+            });
         },
         appendAttributesToLayer : function(args) {
             var wps = CONFIG.ows.createAppendAttributesToLayerWPSXML(args);

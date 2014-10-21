@@ -2,8 +2,22 @@ var Transects = {
 	stage: 'transects',
 	suffixes: ['_lt', '_st', '_transects'],
 	reservedColor: '#D95F02',
-	defaultSpacing: 500,
-	$downloadButton: $('#transects-downloadbutton'),
+	DEFAULT_SPACING: 500,
+	NAME_CONTROL_SNAP: 'snap-control',
+	NAME_CONTROL_EDIT: 'transects-edit-control',
+	NAME_CONTROL_HIGHLIGHT: 'transects-highlight-control',
+	NAME_CONTROL_SELECT: 'transects-select-control',
+	NAME_LAYER_ANGLE: 'transects-angle-layer',
+	NAME_LAYER_EDIT: 'transects-edit-layer',
+	$buttonDownload: $('#transects-downloadbutton'),
+	$buttonToggleEdit: $('#transect-edit-form-toggle'),
+	$buttonTransectsCreateToggle: $('#create-transects-toggle'),
+	$buttonTransectsCreateInput: $('#create-transects-input-button'),
+	$buttonTransectsCreate: $('#create-transects-button'),
+	$buttonTransectsAddButton: $('#transects-edit-add-button'),
+	$buttonTransectsSave: $('#transects-edit-save-button'),
+	$containerTransectsEdit: $("#transects-edit-container"),
+	$transectListbox : $("#transects-list"),
 	description: {
 		'stage': '<p>Transects are cast perpendicular to the workspace baseline, at user-defined intervals.<br /> The intersections between the transects and shorelines are used to calculate erosion and deposition rates.</p><p>Add a pre-cast group of transects to your workspace with the selection box above or upload your own zipped shapefile containing a set of transects with the Manage tab. </p><p>Alternatively, create or modify transects with the editing and transect casting tools that are located within the Manage tab.</p><hr />Select existing transects, or generate new transects from the workspace baseline. Transects are rays that are projected from the baseline, and the intersections between shorelines and transects are used to calculate rates of erosion and deposition.',
 		'view-tab': 'Select a published collection of shorelines to add to the workspace.',
@@ -12,12 +26,12 @@ var Transects = {
 		'calculate-button': 'Choose transect spacing and generate a new transects layer from the workspace baseline.'
 	},
 	appInit: function () {
-		$('#transect-edit-form-toggle').on('click', Transects.editButtonToggled);
-		$('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
-		$('#create-transects-input-button').on('click', Transects.createTransectSubmit);
-		$('#transects-edit-add-button').on('click', Transects.addTransectButtonToggled);
+		Transects.$buttonToggleEdit.on('click', Transects.editButtonToggled);
+		Transects.$buttonTransectsCreateToggle.on('click', Transects.createTransectsButtonToggled);
+		Transects.$buttonTransectsCreateInput.on('click', Transects.createTransectSubmit);
+		Transects.$buttonTransectsAddButton.on('click', Transects.addTransectButtonToggled);
 
-		$('#create-transects-button').popover({
+		Transects.$buttonTransectsCreate.popover({
 			title: Transects.stage.capitalize() + ' Generate',
 			content: $('<div />')
 				.append($('<div />').html(Transects.description['calculate-button']))
@@ -33,24 +47,24 @@ var Transects = {
 		Transects.initializeUploader();
 
 		CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
-			title: 'transects-highlight-control',
+			title: Transects.NAME_CONTROL_HIGHLIGHT,
 			autoActivate: false,
 			hover: true,
 			highlightOnly: true
 		}));
 
 		CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
-			title: 'transects-select-control',
+			title: Transects.NAME_CONTROL_SELECT,
 			autoActivate: false,
 			box: false,
 			onSelect: function (feature) {
 				LOG.debug('Transects.js::SelectFeature.onSelect(): A feature was selected');
-				var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
+				var modifyControl = CONFIG.map.getMap().getControlsBy('id', Transects.NAME_CONTROL_EDIT)[0];
 				modifyControl.selectFeature(feature);
 				var selectedFeature = modifyControl.feature.clone();
 				var angleGeometry1 = selectedFeature.clone().geometry.components[0].resize(100, selectedFeature.geometry.components[0].getCentroid(), 1);
 				var angleGeometry2 = selectedFeature.clone().geometry.components[0].resize(-100, selectedFeature.geometry.components[0].getCentroid(), 1);
-				var angleLayer = new OpenLayers.Layer.Vector('transects-angle-layer', {
+				var angleLayer = new OpenLayers.Layer.Vector(Transects.NAME_LAYER_ANGLE, {
 					renderers: CONFIG.map.getRenderer(),
 					type: 'angle-guide',
 					style: {
@@ -61,21 +75,21 @@ var Transects = {
 				});
 				selectedFeature.geometry.addComponents([angleGeometry1, angleGeometry2]);
 				angleLayer.addFeatures([selectedFeature]);
-				angleLayer.type = "transects";
+				angleLayer.type = Transects.stage;
 				CONFIG.map.getMap().addLayer(angleLayer);
-				var snapControl = CONFIG.map.getMap().getControlsBy('id', 'snap-control')[0];
+				var snapControl = CONFIG.map.getMap().getControlsBy('id', Transects.NAME_CONTROL_SNAP)[0];
 				snapControl.addTargetLayer(angleLayer);
 			},
 			onUnselect: function (feature) {
 				LOG.debug('Transects.js::SelectFeature.onSelect(): A feature was unselected');
-				var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
+				var modifyControl = CONFIG.map.getMap().getControlsBy('id', Transects.NAME_CONTROL_EDIT)[0];
 				Transects.removeAngleLayer();
 				modifyControl.unselectFeature(feature);
 
 			}
 		}));
-		
-		Transects.$downloadButton.on('click', function () {
+
+		Transects.$buttonDownload.on('click', function () {
 			CONFIG.ows.downloadLayerAsShapefile($("#transects-list").val());
 		});
 
@@ -83,7 +97,7 @@ var Transects = {
 	enterStage: function () {
 		LOG.debug('Transects.js::enterStage');
 		CONFIG.ui.switchTab({
-			stage: 'transects',
+			stage: Transects.stage,
 			tab: 'view'
 		});
 
@@ -95,8 +109,8 @@ var Transects = {
 	},
 	leaveStage: function () {
 		LOG.debug('Transects.js::leaveStage');
-		if ($('#transect-edit-form-toggle').hasClass('active')) {
-			$('#transect-edit-form-toggle').trigger('click');
+		if (Transects.$buttonToggleEdit.hasClass('active')) {
+			Transects.$buttonToggleEdit.trigger('click');
 		}
 		Transects.removeEditControl();
 		Transects.removeSnapControl();
@@ -104,7 +118,7 @@ var Transects = {
 		Transects.deactivateSelectControl();
 		Transects.deactivateHighlightControl();
 		Transects.removeAngleLayer();
-		CONFIG.map.removeLayerByName('transects-edit-layer');
+		CONFIG.map.removeLayer(Transects.getEditLayer());
 	},
 	editButtonToggled: function (event) {
 		LOG.info('Transects.js::editButtonToggled');
@@ -115,126 +129,43 @@ var Transects = {
 
 			Transects.disableUpdateTransectsButton();
 
-			if ($('#create-transects-toggle').hasClass('active')) {
-				$('#create-transects-toggle').trigger('click');
+			if (Transects.$buttonTransectsCreateToggle.hasClass('active')) {
+				Transects.$buttonTransectsCreateToggle.trigger('click');
 			}
 
-			LOG.trace('Transects.js::editButtonToggled: Attempting to clone current active transects layer into an edit layer');
-			var originalLayer = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0].clone();
-			var oLayerPrefix = originalLayer.name.split(':')[0];
-			var oLayerTitle = originalLayer.name.split(':')[1];
-			var oLayerName = originalLayer.name;
-			var clonedLayer = new OpenLayers.Layer.Vector('transects-edit-layer', {
-				strategies: [new OpenLayers.Strategy.Fixed(), new OpenLayers.Strategy.Save()],
-				protocol: new OpenLayers.Protocol.WFS({
-					version: "1.1.0",
-					url: "geoserver/" + oLayerPrefix + "/wfs",
-					featureType: oLayerTitle,
-					featureNS: CONFIG.namespace[oLayerPrefix],
-					geometryName: "the_geom",
-					schema: "geoserver/" + oLayerPrefix + "/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + oLayerName,
-					srsName: CONFIG.map.getMap().getProjection()
-				}),
-				cloneOf: oLayerName,
-				renderers: CONFIG.map.getRenderer(),
-				displayInLayerSwitcher: false
-			});
-			clonedLayer.addFeatures(originalLayer.features);
-			clonedLayer.styleMap.styles['default'].defaultStyle.strokeWidth = 4;
-
-			var baselineLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
-			var snap = new OpenLayers.Control.Snapping({
-				id: 'snap-control',
-				layer: clonedLayer,
-				targets: [baselineLayer],
-				greedy: true,
-				tolerance: 1
-			});
-			snap.activate();
-			CONFIG.map.getMap().addControl(snap);
-
 			LOG.debug('Transects.js::editButtonToggled: Adding cloned layer to map');
-
-			clonedLayer.type = "transects";
+			var clonedLayer = Transects.cloneActiveLayer();
 			CONFIG.map.getMap().addLayer(clonedLayer);
 
-			LOG.debug('Transects.js::editButtonToggled: Adding clone control to map');
-			var mfControl = new OpenLayers.Control.ModifyFeature(
-				clonedLayer,
-				{
-					id: 'transects-edit-control',
-					deleteCodes: [8, 46, 48, 68],
-					standalone: true,
-					createVertices: false,
-					onModification: function (feature) {
-						var baseLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
-						var baseLayerFeatures = baseLayer.features;
-						var vertices = feature.geometry.components[0].components;
-						var connectedToBaseline = false;
+			LOG.debug('Transects.js::editButtonToggled: Create baseline snap control');
+			var baselineSnapControl = Transects.createBaselineSnapControl(clonedLayer);
+			CONFIG.map.getMap().addControl(baselineSnapControl);
 
-						Transects.enableUpdateTransectsButton();
 
-						baseLayerFeatures.each(function (f) {
-							var g = f.geometry;
-							vertices.each(function (vertex) {
-								LOG.debug(parseInt(g.distanceTo(vertex)));
-								if (parseInt(g.distanceTo(vertex)) <= 5) {
-									connectedToBaseline = true;
-								}
-							});
-						});
-						if (connectedToBaseline) {
-							feature.state = OpenLayers.State.UPDATE;
-							feature.style = {
-								strokeColor: '#0000FF'
-							};
-
-						} else {
-							feature.state = OpenLayers.State.DELETE;
-							feature.style = {
-								strokeColor: '#FF0000'
-							};
-						}
-						feature.layer.redraw();
-					},
-					handleKeypress: function (evt) {
-						var code = evt.keyCode;
-						if (this.feature && OpenLayers.Util.indexOf(this.deleteCodes, code) !== -1) {
-							var fid = this.feature.fid;
-							var originalLayer = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0];
-							var cloneLayer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
-							var originalFeature = originalLayer.getFeatureBy('fid', fid);
-							var cloneFeature = cloneLayer.getFeatureBy('fid', fid);
-							cloneFeature.state = OpenLayers.State.DELETE;
-							cloneFeature.style = {
-								strokeColor: '#FF0000'
-							};
-							originalFeature.style = {
-								strokeOpacity: 0
-							};
-							originalFeature.layer.redraw();
-							cloneFeature.layer.redraw();
-							Transects.enableUpdateTransectsButton();
-						}
-					}
-				});
-			CONFIG.map.getMap().addControl(mfControl);
-			mfControl.activate();
-			mfControl.handlers.keyboard.activate();
-			var selectControl = Transects.getHighlightControl();
-			var highlightControl = CONFIG.map.getMap().getControlsBy('title', 'transects-highlight-control')[0];
-			selectControl.setLayer([clonedLayer]);
+			LOG.debug('Transects.js::editButtonToggled: Adding highlight control to map');
+			var highlightControl = Transects.getHighlightControl();
 			highlightControl.setLayer([clonedLayer]);
 			highlightControl.activate();
+
+			LOG.debug('Transects.js::editButtonToggled: Adding select control to map');
+			var selectControl = Transects.getSelectControl();
+			selectControl.setLayer([clonedLayer]);
 			selectControl.activate();
 
-			$("#transects-edit-container").removeClass('hidden');
-			$('#transects-edit-save-button').unbind('click', Transects.saveEditedLayer);
-			$('#transects-edit-save-button').on('click', Transects.saveEditedLayer);
+			LOG.debug('Transects.js::editButtonToggled: Adding modify control to map');
+			var modifyFeatureControl = Transects.createModifyFeatureControl(clonedLayer);
+			CONFIG.map.getMap().addControl(modifyFeatureControl);
+			modifyFeatureControl.activate();
+			modifyFeatureControl.handlers.keyboard.activate();
+
+
+			Transects.$containerTransectsEdit.removeClass('hidden');
+			Transects.$buttonTransectsSave.unbind('click', Transects.saveEditedLayer);
+			Transects.$buttonTransectsSave.on('click', Transects.saveEditedLayer);
 		} else {
 			LOG.debug('Transects.js::editButtonToggled: Edit form was toggled off');
-			$("#transects-edit-container").addClass('hidden');
-			CONFIG.map.removeLayerByName('transects-edit-layer');
+			Transects.$containerTransectsEdit.addClass('hidden');
+			CONFIG.map.removeLayer(Transects.getEditLayer());
 			Transects.removeEditControl();
 			Transects.removeSnapControl();
 			Transects.removeDrawControl();
@@ -243,9 +174,113 @@ var Transects = {
 			Transects.deactivateHighlightControl();
 		}
 	},
-	addTransectButtonToggled: function (event) {
+	cloneActiveLayer: function () {
+		var clonedOriginalLayer = Transects.getActiveLayer();
+		var oLayerName = clonedOriginalLayer.name;
+		var oLayerPrefix = oLayerName.split(':')[0];
+		var oLayerTitle = oLayerName.split(':')[1];
+		var clonedLayer = new OpenLayers.Layer.Vector(Transects.NAME_LAYER_EDIT, {
+			strategies: [new OpenLayers.Strategy.Fixed(), new OpenLayers.Strategy.Save()],
+			protocol: new OpenLayers.Protocol.WFS({
+				version: "1.1.0",
+				url: "geoserver/" + oLayerPrefix + "/wfs",
+				featureType: oLayerTitle,
+				featureNS: CONFIG.namespace[oLayerPrefix],
+				geometryName: "the_geom",
+				schema: "geoserver/" + oLayerPrefix + "/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + oLayerName,
+				srsName: CONFIG.map.getMap().getProjection()
+			}),
+			cloneOf: oLayerName,
+			renderers: CONFIG.map.getRenderer(),
+			displayInLayerSwitcher: false
+		});
+		clonedLayer.addFeatures(clonedOriginalLayer.features);
+		clonedLayer.styleMap.styles['default'].defaultStyle.strokeWidth = 4;
+		clonedLayer.type = Transects.stage;
+		return clonedLayer;
+	},
+	createModifyFeatureControl: function (cloneLayer) {
+		var mfControl = new OpenLayers.Control.ModifyFeature(
+			cloneLayer,
+			{
+				id: Transects.NAME_CONTROL_EDIT,
+				deleteCodes: [8, 46, 48, 68],
+				standalone: true,
+				createVertices: false,
+				onModification: function (feature) {
+					var baseLayer = Baseline.getActiveLayer();
+					var baseLayerFeatures = baseLayer.features;
+					var vertices = feature.geometry.components[0].components;
+					var connectedToBaseline = false;
+
+					Transects.enableUpdateTransectsButton();
+
+					baseLayerFeatures.each(function (f) {
+						var g = f.geometry;
+						vertices.each(function (vertex) {
+							LOG.debug(parseInt(g.distanceTo(vertex)));
+							if (parseInt(g.distanceTo(vertex)) <= 5) {
+								connectedToBaseline = true;
+							}
+						});
+					});
+					if (connectedToBaseline) {
+						feature.state = OpenLayers.State.UPDATE;
+						feature.style = {
+							strokeColor: '#0000FF'
+						};
+					} else {
+						feature.state = OpenLayers.State.DELETE;
+						feature.style = {
+							strokeColor: '#FF0000'
+						};
+					}
+					feature.layer.redraw();
+				},
+				handleKeypress: function (evt) {
+					var code = evt.keyCode;
+					if (this.feature && OpenLayers.Util.indexOf(this.deleteCodes, code) !== -1) {
+						var fid = this.feature.fid;
+						var originalLayer = Transects.getActiveLayer();
+						var cloneLayer = Transects.getEditLayer();
+						var originalFeature = originalLayer.getFeatureBy('fid', fid);
+						var cloneFeature = cloneLayer.getFeatureBy('fid', fid);
+						cloneFeature.state = OpenLayers.State.DELETE;
+						cloneFeature.style = {
+							strokeColor: '#FF0000'
+						};
+						originalFeature.style = {
+							strokeOpacity: 0
+						};
+						originalFeature.layer.redraw();
+						cloneFeature.layer.redraw();
+						Transects.enableUpdateTransectsButton();
+					}
+				}
+			});
+		return mfControl;
+	},
+	getActiveLayer: function () {
+		return CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0];
+	},
+	getEditLayer: function () {
+		return CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
+	},
+	createBaselineSnapControl: function (cloneLayer) {
+		var baselineLayer = Baseline.getActiveLayer();
+		var snapControl = new OpenLayers.Control.Snapping({
+			id: Transects.NAME_CONTROL_SNAP,
+			layer: cloneLayer,
+			targets: [baselineLayer],
+			greedy: true,
+			tolerance: 1
+		});
+		snapControl.activate();
+		return snapControl;
+	},
+	addTransectButtonToggled: function () {
 		if (!$(this).hasClass('active')) {
-			var cloneLayer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
+			var cloneLayer = Transects.getEditLayer();
 			Transects.deactivateSelectControl();
 			var drawControl = new OpenLayers.Control.DrawFeature(
 				cloneLayer,
@@ -350,7 +385,7 @@ var Transects = {
 	saveEditedLayer: function () {
 		LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
 
-		var layer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
+		var layer = Transects.getEditLayer();
 		var intersectsLayer = layer.cloneOf.replace('transects', 'intersects');
 		var resultsLayer = layer.cloneOf.replace('transects', 'rates');
 		var updatedFeatures = layer.features.filter(function (f) {
@@ -360,12 +395,12 @@ var Transects = {
 		});
 
 		// This will be a callback from WPS
-		var editCleanup = function (data, textStatus, jqXHR) {
+		var editCleanup = function (data) {
 			LOG.debug('Transects.js::saveEditedLayer: Receieved response from updateTransectsAndIntersections WPS');
 
 			Calculation.clear();
-			if ($('#transects-edit-add-button').hasClass('active')) {
-				$('#transects-edit-add-button').trigger('click');
+			if (Transects.$buttonTransectsAddButton.hasClass('active')) {
+				Transects.$buttonTransectsAddButton.trigger('click');
 			}
 			var intersectionsList = CONFIG.ui.populateFeaturesList({
 				caller: Calculation,
@@ -392,8 +427,8 @@ var Transects = {
 				CONFIG.map.removeLayerByName(layer.cloneOf);
 				Transects.refreshFeatureList({
 					selectLayer: layer.cloneOf
-				})
-				$('#transect-edit-form-toggle').trigger('click');
+				});
+				Transects.$buttonToggleEdit.trigger('click');
 
 				intersectionsList.val(intersectsLayer);
 				resultsList.val(resultsLayer);
@@ -411,7 +446,6 @@ var Transects = {
 
 		saveStrategy.events.register('success', null, function () {
 			LOG.debug('Baseline.js::saveEditedLayer: Transects layer was updated on OWS server. Refreshing layer list');
-
 			LOG.debug('Transects.js::saveEditedLayer: Removing associated intersections layer');
 			LOG.debug('Transects.js::saveEditedLayer: Calling updateTransectsAndIntersections WPS');
 			CONFIG.ows.updateTransectsAndIntersections({
@@ -529,7 +563,7 @@ var Transects = {
 		var layer = args.layer || $('#transects-list option:selected')[0].text;
 		var store = args.store || 'ch-input';
 		var callbacks = args.callbacks || [
-			function (data, textStatus, jqXHR) {
+			function () {
 				CONFIG.ui.showAlert({
 					message: 'Transect removed',
 					caller: Transects,
@@ -589,7 +623,7 @@ var Transects = {
 		LOG.info('Transects.js::listboxChanged: Transect listbox changed');
 		Transects.disableEditButton();
 		Transects.disableDownloadButton();
-		$("#transects-list option:not(:selected)").each(function (index, option) {
+		Transects.$transectListbox.find("option:not(:selected)").each(function (index, option) {
 			var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
 			if (layers.length) {
 				$(layers).each(function (i, l) {
@@ -599,12 +633,13 @@ var Transects = {
 				});
 			}
 		});
-		if ($("#transects-list option:selected")[0].value) {
-			var name = $("#transects-list option:selected")[0].value;
+		
+		var selectedValue = Transects.$transectListbox.find("option:selected")[0].value;
+		if (selectedValue) {
 			Transects.addTransects({
-				name: name
+				name: selectedValue
 			});
-			CONFIG.tempSession.getStage(Transects.stage).viewing = name;
+			CONFIG.tempSession.getStage(Transects.stage).viewing = selectedValue;
 			CONFIG.tempSession.persistSession();
 			Transects.enableEditButton();
 			Transects.enableDownloadButton();
@@ -612,11 +647,11 @@ var Transects = {
 	},
 	disableDownloadButton: function () {
 		"use strict";
-		this.$downloadButton.attr('disabled', 'disabled');
+		this.$buttonDownload.attr('disabled', 'disabled');
 	},
 	enableDownloadButton: function () {
 		"use strict";
-		this.$downloadButton.removeAttr('disabled');
+		this.$buttonDownload.removeAttr('disabled');
 	},
 	enableEditButton: function () {
 		$('#transect-edit-form-toggle').removeAttr('disabled');
@@ -650,7 +685,7 @@ var Transects = {
 
 	},
 	deactivateSelectControl: function () {
-		var control = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control');
+		var control = CONFIG.map.getMap().getControlsBy('title', Transects.NAME_CONTROL_SELECT);
 		if (control.length) {
 			control[0].deactivate();
 		}
@@ -665,37 +700,45 @@ var Transects = {
 		});
 	},
 	removeEditControl: function () {
-		var controlArr = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control');
+		var controlArr = CONFIG.map.getMap().getControlsBy('id', Transects.NAME_CONTROL_EDIT);
 		if (controlArr.length) {
 			controlArr[0].destroy();
 		}
 		CONFIG.map.removeControl({
-			id: 'transects-edit-control'
+			id: Transects.NAME_CONTROL_EDIT
 		});
 	},
 	removeSnapControl: function () {
-		var controlArr = CONFIG.map.getMap().getControlsBy('id', 'snap-control');
+		var controlArr = CONFIG.map.getMap().getControlsBy('id', Transects.NAME_CONTROL_SNAP);
 		if (controlArr.length) {
 			controlArr[0].destroy();
 		}
 		CONFIG.map.removeControl({
-			id: 'snap-control'
+			id: Transects.NAME_CONTROL_SNAP
 		});
 	},
 	removeAngleLayer: function () {
-		var layerArr = CONFIG.map.getMap().getLayersBy('name', 'transects-angle-layer');
+		var layerArr = CONFIG.map.getMap().getLayersBy('name', Transects.NAME_LAYER_ANGLE);
 		if (layerArr.length) {
 			var layer = layerArr[0];
-			var snapControlArr = CONFIG.map.getMap().getControlsBy('id', 'snap-control');
+			var snapControlArr = CONFIG.map.getMap().getControlsBy('id', Transects.NAME_CONTROL_SNAP);
 			if (snapControlArr.length) {
 				var snapControl = snapControlArr[0];
 				snapControl.removeTargetLayer(layer);
 			}
-			CONFIG.map.removeLayerByName('transects-angle-layer');
+			CONFIG.map.removeLayerByName(Transects.NAME_LAYER_ANGLE);
+		}
+	},
+	getSelectControl: function () {
+		var ca = CONFIG.map.getMap().getControlsBy('title', Transects.NAME_CONTROL_SELECT);
+		if (ca.length) {
+			return ca[0];
+		} else {
+			return null;
 		}
 	},
 	getHighlightControl: function () {
-		var ca = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control');
+		var ca = CONFIG.map.getMap().getControlsBy('title', Transects.NAME_CONTROL_HIGHLIGHT);
 		if (ca.length) {
 			return ca[0];
 		} else {
@@ -870,7 +913,7 @@ var Transects = {
 		var shorelines = args.shorelines;
 		var baseline = args.baseline;
 		var biasRef = args.biasRef;
-		var spacing = args.spacing ? args.spacing : Transects.defaultSpacing;
+		var spacing = args.spacing ? args.spacing : Transects.DEFAULT_SPACING;
 		var smoothing = args.smoothing || 0.0;
 		var layer = args.layer;
 		var farthest = args.farthest;
