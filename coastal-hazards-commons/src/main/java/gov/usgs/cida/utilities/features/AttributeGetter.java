@@ -106,16 +106,16 @@ public class AttributeGetter {
         }
     }
 	
-	public int getIntValue(String attribute, SimpleFeature feature) {
+	public Integer getIntValue(String attribute, SimpleFeature feature) {
 		Object value = getValue(attribute, feature);
 		return extractIntValue(value);
 	}
 	
-	public double getDoubleValue(String attribute, SimpleFeature feature) {
+	public Double getDoubleValue(String attribute, SimpleFeature feature) {
 		Object value = getValue(attribute, feature);
 		return extractDoubleValue(value);
 	}
-
+	
 	/**
 	 * Shoreline shapefiles will represent booleans as a 0 or 1 while intersect CSVs will 
 	 * represent them as TRUE or FALSE. This method gets the attribute as true/false from 0, 1, TRUE, or FALSE. Allows us
@@ -194,18 +194,18 @@ public class AttributeGetter {
     }
     
 
-	public static int extractIntValue(Object value) {
+	public static Integer extractIntValue(Object value) {
 		if (value instanceof Number) {
 			return ((Number)value).intValue();
 		} else {
-			throw new ClassCastException("This attribute is not an Integer");
+			return null;
 		}
 	}
-	public static double extractDoubleValue(Object value) {
+	public static Double extractDoubleValue(Object value) {
 		if (value instanceof Number) {
 			return ((Number)value).doubleValue();
 		} else {
-			throw new ClassCastException("This attribute is not a floating point value");
+			return null;
 		}
 	}
 	

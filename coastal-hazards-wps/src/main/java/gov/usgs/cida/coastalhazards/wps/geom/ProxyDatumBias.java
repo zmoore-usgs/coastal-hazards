@@ -38,10 +38,10 @@ public class ProxyDatumBias {
 	public static ProxyDatumBias fromFeature(SimpleFeature feature) {
 		SimpleFeatureType featureType = feature.getFeatureType();
 		AttributeGetter getter = new AttributeGetter(featureType);
-		double slopeVal = getter.getDoubleValue(Constants.AVG_SLOPE_ATTR, feature);
-		double biasVal = getter.getDoubleValue(Constants.BIAS_ATTR, feature);
-		double uncybVal = getter.getDoubleValue(Constants.BIAS_UNCY_ATTR, feature);
-		return new ProxyDatumBias((slopeVal), biasVal, uncybVal);
+		Double slopeVal = getter.getDoubleValue(Constants.AVG_SLOPE_ATTR, feature);
+		Double biasVal = getter.getDoubleValue(Constants.BIAS_ATTR, feature);
+		Double uncybVal = getter.getDoubleValue(Constants.BIAS_UNCY_ATTR, feature);
+		return new ProxyDatumBias(slopeVal, biasVal, uncybVal);
 	}
 
 }
