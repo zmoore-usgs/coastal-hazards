@@ -20,6 +20,10 @@ $(document).ready(function () {
 		timeout: CONFIG.ajaxTimeout
 	});
 
+	// Utility class for the user interface
+	splashUpdate("Initializing User Interface...");
+	CONFIG.ui = new UI();
+
 	splashUpdate("Initializing Sessions...");
 	try {
 		LOG.info('OnReady.js:: Initializing session objects');
@@ -33,36 +37,10 @@ $(document).ready(function () {
 		CONFIG.tempSession.persistSession();
 	} catch (e) {
 		LOG.error('OnReady.js:: Session could not be read correctly');
-		LOG.error(e);
-		// This could probably be hardcoded into index but... here it is
-		var modal = $('<div />').addClass('modal fade').attr('id', 'session-reset-modal')
-			.append($('<div />').addClass('modal-header')
-				.append($('<button />').attr({
-					'type': 'button',
-					'data-dismiss': 'modal',
-					'aria-hidden': 'true'
-				}).html('&times;').addClass('close'))
-				.append($('<h3 />').html('Invalid Session State')))
-			.append($('<div />').addClass('modal-body')
-				.append('<p />')
-				.html('Your session information is invalid or out of date. We strongly suggest you reset your session. You may also try reloading the application. We can not garuantee proper application functionality if you choose to keep your current session. For further information, check the browser logs.'))
-			.append($('<div />').addClass('modal-footer')
-				.append($('<a />').attr({
-					'href': '#',
-					'data-dismiss': 'modal',
-					'aria-hidden': 'true'
-				}).addClass('btn').html('Close'))
-				.append($('<a />').attr('href', '#').addClass('btn').html('Reload').on('click', function () {
-					location.reload();
-				}))
-				.append($('<a />').attr('href', '#').addClass('btn btn-primary').html('Reset Session').css('color', '#FFFFFF').on('click', function () {
-					localStorage.removeItem('coastal-hazards');
-					sessionStorage.removeItem('coastal-hazards');
-					location.reload(true);
-				})));
-		$('body').append(modal);
-		$('#application-overlay').fadeOut();
-		$('#session-reset-modal').modal('show');
+		LOG.error(e.message);
+		if (e.hasOwnProperty('func')) {
+			e.func();
+		}
 		return;
 	}
 
@@ -76,10 +54,6 @@ $(document).ready(function () {
 			$("#application-spinner").fadeOut();
 		});
 	};
-
-	// Utility class for the user interface
-	splashUpdate("Initializing User Interface...");
-	CONFIG.ui = new UI();
 
 	// Map interaction object. Holds the map and utilities 
 	splashUpdate("Initializing Map...");
@@ -113,8 +87,8 @@ $(document).ready(function () {
 			}
 		});
 	};
-	
-	var getPublishedLayers = function(){
+
+	var getPublishedLayers = function () {
 		CONFIG.ows.getWMSCapabilities({
 			namespace: CONFIG.name.published,
 			callbacks: {
@@ -142,8 +116,8 @@ $(document).ready(function () {
 			}
 		});
 	};
-	
-	var getPublishedLayers = function(){
+
+	var getPublishedLayers = function () {
 		CONFIG.ows.getWMSCapabilities({
 			namespace: CONFIG.name.published,
 			callbacks: {
@@ -171,8 +145,8 @@ $(document).ready(function () {
 			}
 		});
 	};
-	
-	var checkBiasWorkspace = function() {
+
+	var checkBiasWorkspace = function () {
 		CONFIG.ows.getWMSCapabilities({
 			namespace: CONFIG.name.proxydatumbias,
 			callbacks: {
@@ -189,7 +163,7 @@ $(document).ready(function () {
 								headerHtml: 'Unable to interrogate OWS server',
 								bodyHtml: 'The application could not interrogate the OWS server to get ' + CONFIG.name.proxydatumbias + ' layers.'
 							});
-						} 
+						}
 					}
 				]
 			}
@@ -213,11 +187,11 @@ $(document).ready(function () {
 					// At this point, we won't be able to properly run the application
 					// so just show the error without removing the splash screen
 					var errorMessage = '<br /> Error: ';
-					
+
 					if (responseObj && responseObj.data && responseObj.data.responseText) {
 						errorMessage += responseObj.data.responseText;
 					}
-					
+
 					splashUpdate("The OWS server could not be contacted. The application cannot be loaded. " + errorMessage);
 					CONFIG.ui.removeSplashSpinner();
 				}

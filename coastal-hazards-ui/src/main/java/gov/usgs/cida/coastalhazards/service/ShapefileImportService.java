@@ -59,7 +59,6 @@ public class ShapefileImportService extends HttpServlet {
 	// that if this servlet is serialized (if this application is clustered), this
 	// mioght become a problem
 	private transient GeoserverHandler geoserverHandler = null;
-	private transient GeoServerRESTManager gsrm = null;
 
 	@Override
 	public void init() throws ServletException {
@@ -71,11 +70,6 @@ public class ShapefileImportService extends HttpServlet {
 		geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
 		geoserverDataDir = PropertyUtil.getProperty(Property.GEOSERVER_DATA_DIRECTORY);
 		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
-		try {
-			gsrm = new GeoServerRESTManager(new URL(geoserverEndpoint), geoserverUsername, geoserverPassword);
-		} catch (MalformedURLException ex) {
-			LOG.error("Could not initialize Geoserver REST Manager. Application will not be able to handle shapefile uploads", ex);
-		}
 	}
 
 	protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, IllegalArgumentException {

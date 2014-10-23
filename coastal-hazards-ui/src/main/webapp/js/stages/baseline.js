@@ -16,6 +16,7 @@ var Baseline = {
 	baselineRemoveButton: $('#baseline-remove-btn'),
 	baselineEditButton: $('#baseline-edit-button'),
 	baselineEditMenu: $('#baseline-edit-menu'),
+	$downloadButton: $('#baseline-downloadbutton'),
 	appInit: function () {
 		"use strict";
 		// Default value for new drawn base layer is random. If a shoreline is chosen,
@@ -109,6 +110,9 @@ var Baseline = {
 			delay: {
 				show: CONFIG.popupHoverDelay
 			}
+		});
+		Baseline.$downloadButton.on('click', function () {
+			CONFIG.ows.downloadLayerAsShapefile($("#baseline-list").val());
 		});
 	},
 	enterStage: function () {
@@ -387,12 +391,14 @@ var Baseline = {
 			}
 
 			Transects.enableCreateTransectsButton();
+			this.enableDownloadButton();
 		} else {
 			LOG.debug('Baseline.js::baselineSelected: Baseline de-selected. Hiding create transects panel and disabling create transects button');
 			if (!$('#create-transects-panel-well').hasClass('hidden')) {
 				$('#create-transects-toggle').click();
 			}
 			Transects.disableCreateTransectsButton();
+			this.disableDownloadButton();
 		}
 	},
 	editButtonToggled: function (event) {
@@ -575,30 +581,30 @@ var Baseline = {
 			target.addClass('active');
 			$('.baseline-edit-container-instructions').addClass('hidden');
 			switch (targetId) {
-			case 'baseline-edit-create-vertex' :
-				modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
-				modifyControl.mode.createVertices = true;
-				$('#baseline-edit-container-instructions-vertex').removeClass('hidden');
-				break;
-			case 'baseline-edit-rotate' :
-				modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
-				modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-				$('#baseline-edit-container-instructions-rotate').removeClass('hidden');
-				break;
-			case 'baseline-edit-drag':
-				modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
-				modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-				$('#baseline-edit-container-instructions-drag').removeClass('hidden');
-				break;
-			case 'baseline-edit-resize-w-aspect' :
-				modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
-				modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-			case 'baseline-edit-resize':
-				modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
-				$('#baseline-edit-container-instructions-resize').removeClass('hidden');
-				break;
-			default :
-				$('#baseline-edit-container-instructions-initial').removeClass('hidden');
+				case 'baseline-edit-create-vertex' :
+					modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+					modifyControl.mode.createVertices = true;
+					$('#baseline-edit-container-instructions-vertex').removeClass('hidden');
+					break;
+				case 'baseline-edit-rotate' :
+					modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
+					modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+					$('#baseline-edit-container-instructions-rotate').removeClass('hidden');
+					break;
+				case 'baseline-edit-drag':
+					modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
+					modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+					$('#baseline-edit-container-instructions-drag').removeClass('hidden');
+					break;
+				case 'baseline-edit-resize-w-aspect' :
+					modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+					modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+				case 'baseline-edit-resize':
+					modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+					$('#baseline-edit-container-instructions-resize').removeClass('hidden');
+					break;
+				default :
+					$('#baseline-edit-container-instructions-initial').removeClass('hidden');
 			}
 
 			modifyControl.activate();
@@ -720,38 +726,38 @@ var Baseline = {
 							}
 						}
 					}],
-					doneButtonText: 'Cancel',
-					callbacks: [
-						function () {
-							// Test that the user has entered a valid character
-							$('#baseline-name-textbox').keypress(function (event) {
-								var createArrayRange = function (n1, n2) {
-									var arr = [];
-									while (n1 < n2) {
-										arr.push(n1++);
-									}
-									return arr;
-								};
-								// http://www.asciitable.com/
-								// 48 - 57 = digits
-								// 65 - 90 = uppercase alpha
-								// 97 - 122 = lowercase alpha
-								// 8 = backspace
-								// 95 = underscore
-								var validKeyCodes = [].add(createArrayRange(48, 57)).add(createArrayRange(65, 90)).add(createArrayRange(97, 122)).add([8, 95]);
-								if (!validKeyCodes.find(event.which)) {
-									event.preventDefault();
-									return false;
+				doneButtonText: 'Cancel',
+				callbacks: [
+					function () {
+						// Test that the user has entered a valid character
+						$('#baseline-name-textbox').keypress(function (event) {
+							var createArrayRange = function (n1, n2) {
+								var arr = [];
+								while (n1 < n2) {
+									arr.push(n1++);
 								}
-							});
-							$('#baseline-name-textbox').on('change', function (event) {
-								var value = event.currentTarget.value;
-								if (/^[0-9]/.test(event.currentTarget.value)) {
-									$('#baseline-name-textbox').val(value.substring(1));
-								}
-							});
-						}
-					]
+								return arr;
+							};
+							// http://www.asciitable.com/
+							// 48 - 57 = digits
+							// 65 - 90 = uppercase alpha
+							// 97 - 122 = lowercase alpha
+							// 8 = backspace
+							// 95 = underscore
+							var validKeyCodes = [].add(createArrayRange(48, 57)).add(createArrayRange(65, 90)).add(createArrayRange(97, 122)).add([8, 95]);
+							if (!validKeyCodes.find(event.which)) {
+								event.preventDefault();
+								return false;
+							}
+						});
+						$('#baseline-name-textbox').on('change', function (event) {
+							var value = event.currentTarget.value;
+							if (/^[0-9]/.test(event.currentTarget.value)) {
+								$('#baseline-name-textbox').val(value.substring(1));
+							}
+						});
+					}
+				]
 			});
 		}
 	},
@@ -921,7 +927,7 @@ var Baseline = {
 								});
 							}
 						}]
-					});
+				});
 			} else {
 				CONFIG.ows.importFile({
 					'file-token': '', // Not including a file token denotes a new, blank file should be imported
@@ -962,6 +968,14 @@ var Baseline = {
 	enableRemoveButton: function () {
 		"use strict";
 		$('#baseline-remove-btn').removeAttr('disabled');
+	},
+	disableDownloadButton: function () {
+		"use strict";
+		this.$downloadButton.attr('disabled', 'disabled');
+	},
+	enableDownloadButton: function () {
+		"use strict";
+		this.$downloadButton.removeAttr('disabled');
 	},
 	getHighlightControl: function () {
 		"use strict";

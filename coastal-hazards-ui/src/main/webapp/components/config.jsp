@@ -67,6 +67,7 @@
 		'EPR': {
 			longName: 'End point rate',
 			units: 'm yr^-1',
+			uncertainty: 'ECI',
 			invert: false
 		}
 	};

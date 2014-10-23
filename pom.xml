@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.usgs.cida.coastalhazards</groupId>
 	<artifactId>coastal-hazards</artifactId>
-	<version>1.1.15-SNAPSHOT</version>
+	<version>1.1.16-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Coastal Hazards</name>
   
@@ -108,6 +108,7 @@
 		<slf4j.version>1.7.5</slf4j.version>
 		<version.sugarjs>1.4.1</version.sugarjs>
 		<version.jquery>2.1.1</version.jquery>
+		<version.jquery.ui>1.11.1</version.jquery.ui>
 		<version.bootstrap>3.1.1</version.bootstrap>
 		<version.fontawesome>4.0.3</version.fontawesome>
 		<version.openlayers>2.13.1</version.openlayers>
@@ -310,7 +311,7 @@
 			<dependency>
 				<groupId>gov.usgs.cida.owsutils</groupId>
 				<artifactId>cida-owsutils-geoserver</artifactId>
-				<version>1.0.6-SNAPSHOT</version>
+				<version>1.0.5</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>commons-lang</artifactId>
@@ -321,7 +322,7 @@
 			<dependency>
 				<groupId>gov.usgs.cida.owsutils</groupId>
 				<artifactId>cida-owsutils-commons</artifactId>
-				<version>1.0.6-SNAPSHOT</version>
+				<version>1.0.6</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openid4java</groupId>
@@ -363,6 +364,11 @@
 				<artifactId>dygraphs-core</artifactId>
 				<version>20130314-2</version>
 				<type>war</type>
+			</dependency>
+			<dependency>
+				<groupId>org.webjars</groupId>
+				<artifactId>jquery-ui</artifactId>
+				<version>${version.jquery.ui}</version>
 			</dependency>
 			<dependency>
 				<groupId>gov.usgs.cida.jslibs</groupId>
