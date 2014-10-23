@@ -6,6 +6,7 @@ var ProxyDatumBias = {
 	stage: 'bias',
 	suffixes: ['_bias'],
 	mandatoryColumns: ['the_geom', 'segment_id', 'bias', 'avg_slope', 'uncyb'],
+	columnMatchingTemplate: undefined,
 	description: {
 		'stage': '<p>Need description of PDB step here.',
 		'view-tab': 'Select a published collection of bias lines/points to add to the workspace.',
@@ -16,6 +17,10 @@ var ProxyDatumBias = {
 		ProxyDatumBias.initializeUploader();
 
 		$('#bias-remove-btn').on('click', ProxyDatumBias.removeResource);
+
+		$.get('templates/column-matching-modal.mustache').done(function(data) {
+			ProxyDatumBias.columnMatchingTemplate = Handlebars.compile(data);
+		});
 
 		ProxyDatumBias.enterStage();
 	},
@@ -80,6 +85,7 @@ var ProxyDatumBias = {
 									layerName: layerName,
 									columns: layerColumns,
 									caller: ProxyDatumBias,
+									template : ProxyDatumBias.columnMatchingTemplate,
 									continueCallback: function () {
 										ProxyDatumBias.addLayerToMap({
 											layer: layer,
