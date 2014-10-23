@@ -2,6 +2,7 @@ var Calculation = {
 	stage: 'calculation',
 	reservedColor: '#1B9E77',
 	suffixes: ['_intersects'],
+	$intersectionListbox: $("#intersections-list"),
 	description: {
 		'stage': '<p>Rates or erosion or deposition are calculated at the location of each transect using the user-defined statistics and parameters found within the Manage tab.</p><hr />DSAS rates can be calculated using the collection of features in the current workspace.',
 		'view-tab': '',
@@ -56,6 +57,14 @@ var Calculation = {
 			Calculation.disableDownloadButton();
 		}
 		CONFIG.tempSession.persistSession();
+	},
+	updateListboxWithValue: function (value) {
+		if (value) {
+			var option = Calculation.$intersectionListbox.find('option[value="' + value + '"]');
+			if (option) {
+				Calculation.$intersectionListbox.val(value).change();
+			}
+		}
 	},
 	addIntersections: function (args) {
 		var intersections = new OpenLayers.Layer.WMS(
@@ -114,7 +123,7 @@ var Calculation = {
 			'</UserStyle>' +
 			'</NamedLayer>' +
 			'</StyledLayerDescriptor>';
-		
+
 		return sldBody;
 	},
 	getActive: function () {

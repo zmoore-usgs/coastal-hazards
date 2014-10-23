@@ -41,6 +41,7 @@
 				</div>
 				<button class="btn btn-success" id="transects-edit-save-button" title="Update Modified Transect">Update Transect</button>
 				<button class="btn btn-success" id="transects-edit-add-button" title="Add Transect" data-toggle="button">Add Transect</button>
+				<button class="btn btn-success" id="transects-edit-crop-button" title="Crop Transect" data-toggle="button">Crop Transects</button>
 			</div>
 
 			<div id="create-transects-panel-well" class="row-fluid  hidden">

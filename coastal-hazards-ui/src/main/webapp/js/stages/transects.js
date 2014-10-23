@@ -15,9 +15,10 @@ var Transects = {
 	$buttonTransectsCreateInput: $('#create-transects-input-button'),
 	$buttonTransectsCreate: $('#create-transects-button'),
 	$buttonTransectsAddButton: $('#transects-edit-add-button'),
+	$buttonTransectsCropButton: $('#transects-edit-crop-button'),
 	$buttonTransectsSave: $('#transects-edit-save-button'),
 	$containerTransectsEdit: $("#transects-edit-container"),
-	$transectListbox : $("#transects-list"),
+	$transectListbox: $("#transects-list"),
 	description: {
 		'stage': '<p>Transects are cast perpendicular to the workspace baseline, at user-defined intervals.<br /> The intersections between the transects and shorelines are used to calculate erosion and deposition rates.</p><p>Add a pre-cast group of transects to your workspace with the selection box above or upload your own zipped shapefile containing a set of transects with the Manage tab. </p><p>Alternatively, create or modify transects with the editing and transect casting tools that are located within the Manage tab.</p><hr />Select existing transects, or generate new transects from the workspace baseline. Transects are rays that are projected from the baseline, and the intersections between shorelines and transects are used to calculate rates of erosion and deposition.',
 		'view-tab': 'Select a published collection of shorelines to add to the workspace.',
@@ -30,6 +31,7 @@ var Transects = {
 		Transects.$buttonTransectsCreateToggle.on('click', Transects.createTransectsButtonToggled);
 		Transects.$buttonTransectsCreateInput.on('click', Transects.createTransectSubmit);
 		Transects.$buttonTransectsAddButton.on('click', Transects.addTransectButtonToggled);
+		Transects.$buttonTransectsCropButton.on('click', Transects.cropTransectsButtonToggled);
 
 		Transects.$buttonTransectsCreate.popover({
 			title: Transects.stage.capitalize() + ' Generate',
@@ -90,7 +92,7 @@ var Transects = {
 		}));
 
 		Transects.$buttonDownload.on('click', function () {
-			CONFIG.ows.downloadLayerAsShapefile($("#transects-list").val());
+			CONFIG.ows.downloadLayerAsShapefile(Transects.$transectListbox.val());
 		});
 
 	},
@@ -101,7 +103,7 @@ var Transects = {
 			tab: 'view'
 		});
 
-		if ($('#shorelines-list').val() && $('#baseline-list').val()) {
+		if ($('#shorelines-list').val() && Baseline.getActive()) {
 			Transects.enableUploadButton();
 		} else {
 			Transects.disableUploadButton();
@@ -261,10 +263,10 @@ var Transects = {
 		return mfControl;
 	},
 	getActiveLayer: function () {
-		return CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0];
+		return CONFIG.map.getMap().getLayersByName(Transects.getActive())[0];
 	},
 	getEditLayer: function () {
-		return CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
+		return CONFIG.map.getMap().getLayersByName(Transects.NAME_LAYER_EDIT)[0];
 	},
 	createBaselineSnapControl: function (cloneLayer) {
 		var baselineLayer = Baseline.getActiveLayer();
@@ -278,8 +280,50 @@ var Transects = {
 		snapControl.activate();
 		return snapControl;
 	},
+	cropTransectsButtonToggled: function () {
+		if (!$(this).hasClass('active')) {
+			Transects.removeDrawControl();
+			var cloneLayer = Transects.getEditLayer();
+			Transects.deactivateSelectControl();
+			var cropTransectsControl = new OpenLayers.Control.DrawFeature(
+				cloneLayer,
+				OpenLayers.Handler.Path,
+				{
+					id: 'transects-crop-control',
+					multi: false,
+					handlerOptions: {
+						maxVertices: 2,
+						dblclick: function (evt) {
+							// We do not want to begin drawing another transect
+							// on click. Therefore, when a double click does occur,
+							// destroy the point the first click made and get out
+							// of draw mode
+							this.destroyFeature(true);
+							return false;
+						}
+					},
+					featureAdded: function (addedFeature) {
+						var baseline = Baseline.getActiveLayer(),
+							editLayer = Transects.getEditLayer(),
+							editFeatureCount = editLayer.features.length,
+							baselineFeature = baseline.features.find(
+								function (baselineFeature) {
+									return baselineFeature.geometry.distanceTo(addedFeature.geometry) === 0;
+								}
+							);
+					}
+				}
+			);
+
+			CONFIG.map.addControl(cropTransectsControl);
+			cropTransectsControl.activate();
+		} else {
+			Transects.removeCropControl();
+		}
+	},
 	addTransectButtonToggled: function () {
 		if (!$(this).hasClass('active')) {
+			Transects.removeCropControl();
 			var cloneLayer = Transects.getEditLayer();
 			Transects.deactivateSelectControl();
 			var drawControl = new OpenLayers.Control.DrawFeature(
@@ -301,8 +345,8 @@ var Transects = {
 					},
 					featureAdded: function (addedFeature) {
 						LOG.debug('Transects.js::featureAdded: A new transect has been added');
-						var baseline = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
-						var editLayer = CONFIG.map.getMap().getLayersBy('name', "transects-edit-layer")[0];
+						var baseline = Baseline.getActiveLayer();
+						var editLayer = Transects.getEditLayer();
 
 						LOG.trace('Transects.js::featureAdded: Trying to figure out how many transects we have at this point');
 						var editFeatureCount = editLayer.features.length;
@@ -402,11 +446,14 @@ var Transects = {
 			if (Transects.$buttonTransectsAddButton.hasClass('active')) {
 				Transects.$buttonTransectsAddButton.trigger('click');
 			}
+
 			var intersectionsList = CONFIG.ui.populateFeaturesList({
 				caller: Calculation,
 				stage: 'intersections'
 			});
+
 			Results.clear();
+
 			var resultsList = CONFIG.ui.populateFeaturesList({
 				caller: Results
 			});
@@ -513,16 +560,16 @@ var Transects = {
 
 						if (selectLayer) {
 							LOG.info('Transects.js::refreshFeatureList: Auto-selecting layer ' + selectLayer);
-							$('#transects-list').children().each(function (i, v) {
+							Transects.$transectListbox.children().each(function (i, v) {
 								if (v.value === selectLayer) {
 									LOG.debug('Triggering "select" on featurelist option');
-									$('#transects-list').val(v.value);
+									Transects.$transectListbox.val(v.value);
 								}
 							});
 						} else {
-							$('#transects-list').val('');
+							Transects.$transectListbox.val('');
 						}
-						$('#transects-list').trigger('change');
+						Transects.$transectListbox.trigger('change');
 					}
 				],
 				error: [
@@ -549,7 +596,7 @@ var Transects = {
 					strokeWidth: 2
 				})
 			}),
-			type: 'transects',
+			type: Transects.stage,
 			displayInLayerSwitcher: false
 		});
 
@@ -560,7 +607,7 @@ var Transects = {
 	},
 	removeResource: function (args) {
 		args = args || {};
-		var layer = args.layer || $('#transects-list option:selected')[0].text;
+		var layer = args.layer || Transects.$transectListbox.find('option:selected')[0].text;
 		var store = args.store || 'ch-input';
 		var callbacks = args.callbacks || [
 			function () {
@@ -573,7 +620,7 @@ var Transects = {
 					}
 				});
 
-				$('#transects-list').val('');
+				Transects.$transectListbox.val('');
 				CONFIG.ui.switchTab({
 					caller: Transects,
 					tab: 'view'
@@ -612,7 +659,7 @@ var Transects = {
 		});
 	},
 	clear: function () {
-		$("#transects-list").val('');
+		Transects.$transectListbox.val('');
 		Transects.listboxChanged();
 	},
 	clearSubsequentStages: function () {
@@ -633,7 +680,7 @@ var Transects = {
 				});
 			}
 		});
-		
+
 		var selectedValue = Transects.$transectListbox.find("option:selected")[0].value;
 		if (selectedValue) {
 			Transects.addTransects({
@@ -643,6 +690,10 @@ var Transects = {
 			CONFIG.tempSession.persistSession();
 			Transects.enableEditButton();
 			Transects.enableDownloadButton();
+
+			// Update the interesects listbox in calculations if available
+			var intersections = selectedValue.substring(0, selectedValue.lastIndexOf('_') + 1) + 'intersects';
+			Calculation.updateListboxWithValue(intersections);
 		}
 	},
 	disableDownloadButton: function () {
@@ -697,6 +748,15 @@ var Transects = {
 		}
 		CONFIG.map.removeControl({
 			id: 'transects-draw-control'
+		});
+	},
+	removeCropControl: function () {
+		var controlArr = CONFIG.map.getMap().getControlsBy('id', 'transects-crop-control');
+		if (controlArr.length) {
+			controlArr[0].destroy();
+		}
+		CONFIG.map.removeControl({
+			id: 'transects-crop-control'
 		});
 	},
 	removeEditControl: function () {
@@ -829,9 +889,9 @@ var Transects = {
 												CONFIG.map.getMap().removeLayer(CONFIG.map.getMap().getLayersBy('type', 'intersects')[0]);
 											}
 
-											$('#transects-list').val(transectLayer);
+											Transects.$transectListbox.val(transectLayer);
 											$('#intersections-list').val(intersectionLayer);
-											$('#transects-list').trigger('change');
+											Transects.$transectListbox.trigger('change');
 											$('#intersections-list').trigger('change');
 											$('#stage-select-tablist a[href="#calculation"]').trigger('click');
 
@@ -872,7 +932,7 @@ var Transects = {
 		};
 
 		// Check if transects already exists in the select list
-		if ($('#transects-list option[value="' + CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_transects"]').length ||
+		if (Transects.$transectListbox.find('option[value="' + CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_transects"]').length ||
 			$('#intersections-list option[value="' + CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_intersects"]').length) {
 			CONFIG.ui.createModalWindow({
 				context: {
@@ -897,7 +957,7 @@ var Transects = {
 									store: 'ch-input',
 									layer: layerName + '_intersects'
 								},
-								function (data, textStatus, jqXHR) {
+								function () {
 									wpsProc();
 								}, 'json');
 							}, 'json');
@@ -950,8 +1010,8 @@ var Transects = {
 								'<ogc:PropertyName>' + property + '</ogc:PropertyName>' +
 								'<ogc:Literal>' + date + '</ogc:Literal>' +
 								'</ogc:PropertyIsEqualTo>' +
-								'</ogc:Not>'
-						})
+								'</ogc:Not>';
+						});
 
 						filter += '</ogc:And>' +
 							'</ogc:Filter>' +
@@ -968,7 +1028,7 @@ var Transects = {
 				'</wps:Body>' +
 				'</wps:Reference>' +
 				'</wps:Input>';
-		})
+		});
 
 		if (biasRef) {
 			request += '<wps:Input>' +
@@ -1057,6 +1117,6 @@ var Transects = {
 		}, args));
 	},
 	getActive: function () {
-		return $("#transects-list option:selected").first().val();
+		return Transects.$transectListbox.find("option:selected").first().val();
 	}
 };
