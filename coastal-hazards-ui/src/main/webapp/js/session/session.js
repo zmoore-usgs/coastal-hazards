@@ -133,7 +133,7 @@ CCH.Session = function (name, isPerm) {
 				message: 'Invalid Sessions Found',
 				func: function () {
 					// Session will need to be removed
-					$.get('templates/remove-session-modal.html')
+					$.get('templates/remove-session-modal.mustache')
 						.done(function (data) {
 							var modalId = 'modal-session-invalid-remove',
 								template = Handlebars.compile(data),

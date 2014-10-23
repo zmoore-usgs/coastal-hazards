@@ -22,7 +22,7 @@ var Calculation = {
 		CONFIG.ui.switchTab({
 			stage: 'intersections',
 			tab: 'view'
-		})
+		});
 	},
 	populateFeaturesList: function (args) {
 		CONFIG.ui.populateFeaturesList({
@@ -113,7 +113,8 @@ var Calculation = {
 			'</FeatureTypeStyle>' +
 			'</UserStyle>' +
 			'</NamedLayer>' +
-			'</StyledLayerDescriptor>'
+			'</StyledLayerDescriptor>';
+		
 		return sldBody;
 	},
 	getActive: function () {
@@ -127,4 +128,4 @@ var Calculation = {
 		"use strict";
 		this.$downloadButton.removeAttr('disabled');
 	}
-}
+};
