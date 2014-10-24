@@ -2,7 +2,6 @@ package gov.usgs.cida.coastalhazards.wps.geom;
 
 import gov.usgs.cida.utilities.features.AttributeGetter;
 import gov.usgs.cida.utilities.features.Constants;
-
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -13,11 +12,11 @@ import org.opengis.feature.simple.SimpleFeatureType;
 public class ProxyDatumBias {
 	
 	// Average slope preserved for later use
-	private double avgSlope;
-	private double bias;
-	private double uncyb;
+	private Double avgSlope;
+	private Double bias;
+	private Double uncyb;
 
-	public ProxyDatumBias(double averageSlope, double bias, double biasUncertainty) {
+	public ProxyDatumBias(Double averageSlope, Double bias, Double biasUncertainty) {
 		this.avgSlope = averageSlope;
 		this.bias = bias;
 		this.uncyb = biasUncertainty;

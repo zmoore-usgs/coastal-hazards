@@ -401,6 +401,9 @@ var Baseline = {
 			this.disableDownloadButton();
 		}
 	},
+	getActiveLayer: function () {
+		return CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
+	},
 	editButtonToggled: function (event) {
 		"use strict";
 		var activated = !$(event.target).hasClass('active');

@@ -94,35 +94,6 @@ $(document).ready(function () {
 			callbacks: {
 				success: [
 					function () {
-						LOG.debug('OnReady.js:: WMS Capabilities retrieved for published workspace');
-						interrogateSessionResources();
-						CONFIG.ui.precacheImages();
-						setupAjaxError();
-					}
-				],
-				error: [
-					function (responseObj) {
-						if (responseObj.data.status === 404) {
-							CONFIG.ui.createModalWindow({
-								headerHtml: 'Unable to interrogate OWS server',
-								bodyHtml: 'The application could not interrogate the OWS server to get published layers.'
-							});
-							interrogateSessionResources();
-							CONFIG.ui.precacheImages();
-						} else {
-						}
-					}
-				]
-			}
-		});
-	};
-
-	var getPublishedLayers = function () {
-		CONFIG.ows.getWMSCapabilities({
-			namespace: CONFIG.name.published,
-			callbacks: {
-				success: [
-					function () {
 						LOG.debug('OnReady.js:: WMS Capabilities retrieved for ' + CONFIG.name.published + ' workspace');
 						interrogateSessionResources();
 						CONFIG.ui.precacheImages();

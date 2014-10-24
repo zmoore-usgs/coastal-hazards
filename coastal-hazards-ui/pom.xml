@@ -15,7 +15,7 @@
 
 	<properties>
 		<slf4j.version>1.7.2</slf4j.version>
-		<version.bootstrap>2.3.2</version.bootstrap>
+		<version.dsasbootstrap>2.3.2</version.dsasbootstrap>
 		<version.bootstrap.switch>1.8</version.bootstrap.switch>
 		<version.handlebars>1.3.0</version.handlebars>
 	</properties>
@@ -98,7 +98,7 @@
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
-			<version>${version.bootstrap}</version>
+			<version>${version.dsasbootstrap}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
