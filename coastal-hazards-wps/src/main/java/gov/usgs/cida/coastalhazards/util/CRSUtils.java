@@ -284,10 +284,10 @@ public class CRSUtils {
 		if (first == null || second == null) {
 			isNewSegment = true;
 		} else if (getter.exists(SHORELINE_ID_ATTR) && getter.exists(SEGMENT_ID_ATTR)) {
-			isNewSegment = !((getter.getIntValue(SHORELINE_ID_ATTR, first) == getter.getIntValue(SHORELINE_ID_ATTR, second)) &&
-				(getter.getIntValue(SEGMENT_ID_ATTR, first) == getter.getIntValue(SEGMENT_ID_ATTR, second)));
+			isNewSegment = !((getter.getIntValue(SHORELINE_ID_ATTR, first).equals(getter.getIntValue(SHORELINE_ID_ATTR, second))) &&
+				(getter.getIntValue(SEGMENT_ID_ATTR, first).equals(getter.getIntValue(SEGMENT_ID_ATTR, second))));
 		} else if (getter.exists(SEGMENT_ID_ATTR)) {
-			isNewSegment = !(getter.getIntValue(SEGMENT_ID_ATTR, first) == getter.getIntValue(SEGMENT_ID_ATTR, second));
+			isNewSegment = !(getter.getIntValue(SEGMENT_ID_ATTR, first).equals(getter.getIntValue(SEGMENT_ID_ATTR, second)));
 		}
 		return isNewSegment;
 	}
