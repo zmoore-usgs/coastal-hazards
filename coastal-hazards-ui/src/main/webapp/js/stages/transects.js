@@ -471,6 +471,31 @@ var Transects = {
 				resultsList.val('');
 
 			} else {
+				LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
+				$.get('service/session', {
+					action: 'remove-layer',
+					workspace: CONFIG.tempSession.getCurrentSessionKey(),
+					store: 'ch-output',
+					layer: resultsLayer.split(':')[1]
+				},
+				function (data, textStatus, jqXHR) {
+					CONFIG.ows.getWMSCapabilities({
+						namespace: CONFIG.tempSession.getCurrentSessionKey(),
+						callbacks: {
+							success: [
+								CONFIG.tempSession.updateLayersFromWMS,
+								function () {
+									LOG.debug('Transects.js::saveEditedLayer: WMS Capabilities retrieved for your session');
+									Results.clear();
+								}
+							],
+							error: [function () {
+									LOG.warn('Transects.js::saveEditedLayer: There was an error in retrieving the WMS capabilities for your session. This is probably be due to a new session. Subsequent loads should not see this error');
+								}]
+						}
+					});
+				}, 'json');
+
 				CONFIG.map.removeLayerByName(layer.cloneOf);
 				Transects.refreshFeatureList({
 					selectLayer: layer.cloneOf
@@ -515,31 +540,6 @@ var Transects = {
 					]
 				}
 			});
-
-			LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
-			$.get('service/session', {
-				action: 'remove-layer',
-				workspace: CONFIG.tempSession.getCurrentSessionKey(),
-				store: 'ch-output',
-				layer: resultsLayer.split(':')[1]
-			},
-			function (data, textStatus, jqXHR) {
-				CONFIG.ows.getWMSCapabilities({
-					namespace: CONFIG.tempSession.getCurrentSessionKey(),
-					callbacks: {
-						success: [
-							CONFIG.tempSession.updateLayersFromWMS,
-							function () {
-								LOG.debug('Transects.js::saveEditedLayer: WMS Capabilities retrieved for your session');
-								Results.clear();
-							}
-						],
-						error: [function () {
-								LOG.warn('Transects.js::saveEditedLayer: There was an error in retrieving the WMS capabilities for your session. This is probably be due to a new session. Subsequent loads should not see this error');
-							}]
-					}
-				});
-			}, 'json');
 		});
 
 		saveStrategy.save();
