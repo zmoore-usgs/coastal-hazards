@@ -131,7 +131,7 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
             if (!CRS.equalsIgnoreMetadata(shorelinesCrs, REQUIRED_CRS_WGS84)) {
                 throw new UnsupportedCoordinateReferenceSystemException("Shorelines are not in accepted projection");
             }
-            CoordinateReferenceSystem utmCrs = UTMFinder.findUTMZoneCRSForCentroid((SimpleFeatureCollection)shorelines);
+            CoordinateReferenceSystem utmCrs = UTMFinder.findUTMZoneCRSForCentroid(shorelines);
             if (utmCrs == null) {
                 throw new IllegalStateException("Must have usable UTM zone to continue");
             }
