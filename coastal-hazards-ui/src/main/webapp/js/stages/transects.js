@@ -7,6 +7,7 @@ var Transects = {
 	NAME_CONTROL_EDIT: 'transects-edit-control',
 	NAME_CONTROL_HIGHLIGHT: 'transects-highlight-control',
 	NAME_CONTROL_SELECT: 'transects-select-control',
+	NAME_CONTROL_CROP: 'transects-crop-control',
 	NAME_LAYER_ANGLE: 'transects-angle-layer',
 	NAME_LAYER_EDIT: 'transects-edit-layer',
 	$buttonDownload: $('#transects-downloadbutton'),
@@ -283,37 +284,127 @@ var Transects = {
 	cropTransectsButtonToggled: function () {
 		if (!$(this).hasClass('active')) {
 			Transects.removeDrawControl();
-			var cloneLayer = Transects.getEditLayer();
+			var cloneLayer = Transects.getEditLayer(),
+				saveStrategy = cloneLayer.strategies.find(function (s) {
+					return s.CLASS_NAME === 'OpenLayers.Strategy.Save';
+				});
 			Transects.deactivateSelectControl();
-			var cropTransectsControl = new OpenLayers.Control.DrawFeature(
-				cloneLayer,
-				OpenLayers.Handler.Path,
-				{
-					id: 'transects-crop-control',
-					multi: false,
-					handlerOptions: {
-						maxVertices: 2,
-						dblclick: function (evt) {
-							// We do not want to begin drawing another transect
-							// on click. Therefore, when a double click does occur,
-							// destroy the point the first click made and get out
-							// of draw mode
-							this.destroyFeature(true);
-							return false;
+
+			// This is a horrible hack but Geoserver currently has a bug 
+			// ( https://jira.codehaus.org/browse/GEOS-6367 ) which prevents us
+			// from updating more than one transect in one call. Because of this,
+			// I have to call WFS-T update once per transect in recursive fashion
+			
+			// This flag tells the success callback that the save call was to
+			// update. The success callback branches on whether this flag is set and
+			// if there are more transects left in the array
+			saveStrategy.updating = true;
+			// Memoize the original save function because I'll be updating the 
+			// actual save function 
+			saveStrategy.innerSave = saveStrategy.save;
+			saveStrategy.save = function () {
+				// Set up a strategy-object scope array of transects that need to
+				// be updated via WFS. Do this the first time save() is called. I
+				// will be picking off from the top of the array in every iteration
+				// of this function call. until there's nothing left.
+				if (!this.updateFeatures) {
+					this.updateFeatures = this.layer.features.filter(function (f) {
+						return f.state === 'Update';
+					});
+				}
+
+				// Grab the next transect off the top of the stack
+				var nextTransect = this.updateFeatures.shift();
+				// Set a flag telling the success callback whether I'm done or not
+				this.hasMoreFeatures = this.updateFeatures.length > 0;
+				// Call the original save function
+				this.innerSave([nextTransect]);
+			};
+			
+			var cropTransectsControl = new OpenLayers.Control.Split({
+				layer: cloneLayer,
+				mutual: true,
+				deferDelete: true,
+				eventListeners: {
+					split: function (event) {
+						var splitTransects = event.features,
+							originalTransect = event.original,
+							baselineFeatureGeometry = Baseline.getActiveLayer().features[0].geometry,
+							// This function will reorder the split transects based
+							// on the closest to the baseline in ascending distance 
+							// order
+							sortedSplitTransects = splitTransects.sortBy(function (t) {
+								baselineFeatureGeometry.distanceTo(t.geometry);
+							}),
+							// Grab the transect that touches the baseline, pulling
+							// it out of the array
+							baselineConnectedTransect = sortedSplitTransects.shift(),
+							tIdx, transect;
+
+						// Tag the selected transect for use in the afterSplit event
+						baselineConnectedTransect.fid = originalTransect.fid;
+						baselineConnectedTransect.style = {
+							strokeColor: '#00FF00'
+						};
+
+						// For the transect piece that will be cut off, change the 
+						// stroke color to red
+						for (tIdx = 0; tIdx < sortedSplitTransects.length; tIdx++) {
+							transect = sortedSplitTransects[tIdx];
+							transect.style = {
+								strokeColor: '#FF0000'
+							};
 						}
+
+						originalTransect.layer.redraw();
+						event.object.layer.redraw();
 					},
-					featureAdded: function (addedFeature) {
-						var baseline = Baseline.getActiveLayer(),
-							editLayer = Transects.getEditLayer(),
-							editFeatureCount = editLayer.features.length,
-							baselineFeature = baseline.features.find(
-								function (baselineFeature) {
-									return baselineFeature.geometry.distanceTo(addedFeature.geometry) === 0;
-								}
-							);
+					aftersplit: function (event) {
+						var cloneLayer = event.object.layer,
+							// The slice control sets affected transects to the
+							// delete state. 
+							affectedTransects = cloneLayer.features.filter(function (t) {
+								return t.state === 'Delete';
+							}),
+							// The slice control also wants to add the split
+							// features to the layer
+							splitTransects = cloneLayer.features.filter(function (t) {
+								return t.state === 'Insert';
+							}),
+							tIdx,
+							transect,
+							croppedTransect;
+
+						// For each of the affected transects, change their state 
+						// and set the geometry to the cropped transect geometry
+						// created by the split. 
+						for (tIdx = 0; tIdx < affectedTransects.length; tIdx++) {
+							transect = affectedTransects[tIdx];
+							croppedTransect = splitTransects.find(function (t) {
+								return transect.fid === t.fid;
+							});
+							transect.state = OpenLayers.State.UPDATE;
+							transect.renderIntent = 'default';
+							transect.geometry = croppedTransect.geometry;
+							transect.bounds = croppedTransect.geometry.bounds;
+						}
+
+						// Update each of the split transects that the split control
+						// added to the clone layer to set the state to null
+						// so they don't get updated in the WFS-T update when
+						// the layer is saved 
+						$.each(splitTransects, function (i, t) {
+							t.state = null;
+						});
+
+						cloneLayer.redraw();
+						Transects.$buttonTransectsCropButton.click();
+						Transects.enableUpdateTransectsButton();
+						Transects.removeCropControl();
 					}
 				}
-			);
+			});
+			cropTransectsControl.id = Transects.NAME_CONTROL_CROP;
 
 			CONFIG.map.addControl(cropTransectsControl);
 			cropTransectsControl.activate();
@@ -426,17 +517,17 @@ var Transects = {
 			Transects.removeDrawControl();
 		}
 	},
-	saveEditedLayer: function () {
+	saveEditedLayer: function (args) {
 		LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
-
-		var layer = Transects.getEditLayer();
-		var intersectsLayer = layer.cloneOf.replace('transects', 'intersects');
-		var resultsLayer = layer.cloneOf.replace('transects', 'rates');
-		var updatedFeatures = layer.features.filter(function (f) {
-			return f.state;
-		}).map(function (f) {
-			return f.attributes.TransectID;
-		});
+		var layer = Transects.getEditLayer(),
+			intersectsLayer = layer.cloneOf.replace('transects', 'intersects'),
+			resultsLayer = layer.cloneOf.replace('transects', 'rates'),
+			updatedFeatures = layer.features.filter(function (f) {
+				return f.state;
+			})
+			.map(function (f) {
+				return f.attributes.TransectID;
+			});
 
 		// This will be a callback from WPS
 		var editCleanup = function (data) {
@@ -511,35 +602,41 @@ var Transects = {
 		};
 
 		var saveStrategy = layer.strategies.find(function (n) {
-			return n['CLASS_NAME'] === 'OpenLayers.Strategy.Save';
+			return n.CLASS_NAME === 'OpenLayers.Strategy.Save';
 		});
 
 		saveStrategy.events.remove('success');
-
 		saveStrategy.events.register('success', null, function () {
-			LOG.debug('Baseline.js::saveEditedLayer: Transects layer was updated on OWS server. Refreshing layer list');
-			LOG.debug('Transects.js::saveEditedLayer: Removing associated intersections layer');
-			LOG.debug('Transects.js::saveEditedLayer: Calling updateTransectsAndIntersections WPS');
-			CONFIG.ows.updateTransectsAndIntersections({
-				shorelines: Shorelines.getActive(),
-				baseline: Baseline.getActive(),
-				transects: Transects.getActive(),
-				intersections: Calculation.getActive(),
-				transectId: updatedFeatures,
-				farthest: $('#create-intersections-nearestfarthest-list').val(),
-				callbacks: {
-					success: [
-						function (data, textStatus, jqXHR) {
-							editCleanup(data, textStatus, jqXHR);
-						}
-					],
-					error: [
-						function (data, textStatus, jqXHR) {
-							editCleanup(data, textStatus, jqXHR);
-						}
-					]
-				}
-			});
+			// If I'm coming here from a transect crop call, these flags will be
+			// set. If there are more transects to crop, recurse back into the 
+			// save function (This is due to a bug in Geoserver).
+			if (this.updating && this.hasMoreFeatures) {
+				this.save();
+			} else {
+				LOG.debug('Baseline.js::saveEditedLayer: Transects layer was updated on OWS server. Refreshing layer list');
+				LOG.debug('Transects.js::saveEditedLayer: Removing associated intersections layer');
+				LOG.debug('Transects.js::saveEditedLayer: Calling updateTransectsAndIntersections WPS');
+				CONFIG.ows.updateTransectsAndIntersections({
+					shorelines: Shorelines.getActive(),
+					baseline: Baseline.getActive(),
+					transects: Transects.getActive(),
+					intersections: Calculation.getActive(),
+					transectId: updatedFeatures,
+					farthest: $('#create-intersections-nearestfarthest-list').val(),
+					callbacks: {
+						success: [
+							function (data, textStatus, jqXHR) {
+								editCleanup(data, textStatus, jqXHR);
+							}
+						],
+						error: [
+							function (data, textStatus, jqXHR) {
+								editCleanup(data, textStatus, jqXHR);
+							}
+						]
+					}
+				});
+			}
 		});
 
 		saveStrategy.save();
@@ -751,12 +848,13 @@ var Transects = {
 		});
 	},
 	removeCropControl: function () {
-		var controlArr = CONFIG.map.getMap().getControlsBy('id', 'transects-crop-control');
+		var controlArr = CONFIG.map.getMap().getControlsBy('id', Transects.NAME_CONTROL_CROP);
 		if (controlArr.length) {
+			controlArr[0].deactivate();
 			controlArr[0].destroy();
 		}
 		CONFIG.map.removeControl({
-			id: 'transects-crop-control'
+			id: Transects.NAME_CONTROL_CROP
 		});
 	},
 	removeEditControl: function () {
