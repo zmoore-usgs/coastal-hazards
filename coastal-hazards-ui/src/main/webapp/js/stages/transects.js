@@ -121,7 +121,6 @@ var Transects = {
 		Transects.deactivateSelectControl();
 		Transects.deactivateHighlightControl();
 		Transects.removeAngleLayer();
-		CONFIG.map.removeLayer(Transects.getEditLayer());
 	},
 	editButtonToggled: function (event) {
 		LOG.info('Transects.js::editButtonToggled');
@@ -168,13 +167,13 @@ var Transects = {
 		} else {
 			LOG.debug('Transects.js::editButtonToggled: Edit form was toggled off');
 			Transects.$containerTransectsEdit.addClass('hidden');
-			CONFIG.map.removeLayer(Transects.getEditLayer());
 			Transects.removeEditControl();
 			Transects.removeSnapControl();
 			Transects.removeDrawControl();
 			Transects.removeAngleLayer();
 			Transects.deactivateSelectControl();
 			Transects.deactivateHighlightControl();
+			Transects.getActiveLayer().refresh({force: true});
 		}
 	},
 	cloneActiveLayer: function () {
@@ -197,7 +196,7 @@ var Transects = {
 			renderers: CONFIG.map.getRenderer(),
 			displayInLayerSwitcher: false
 		});
-		clonedLayer.addFeatures(clonedOriginalLayer.features);
+		clonedLayer.addFeatures(clonedOriginalLayer.features.clone());
 		clonedLayer.styleMap.styles['default'].defaultStyle.strokeWidth = 4;
 		clonedLayer.type = Transects.stage;
 		return clonedLayer;
@@ -268,6 +267,14 @@ var Transects = {
 	},
 	getEditLayer: function () {
 		return CONFIG.map.getMap().getLayersByName(Transects.NAME_LAYER_EDIT)[0];
+	},
+	removeEditLayer: function () {
+		var editLayer = CONFIG.map.getMap().getLayersByName(Transects.NAME_LAYER_EDIT);
+		if (editLayer.length) {
+			$.each(editLayer, function(i, l) {
+				CONFIG.map.removeLayer(l);
+			});
+		}
 	},
 	createBaselineSnapControl: function (cloneLayer) {
 		var baselineLayer = Baseline.getActiveLayer();
@@ -534,16 +541,18 @@ var Transects = {
 			LOG.debug('Transects.js::saveEditedLayer: Receieved response from updateTransectsAndIntersections WPS');
 
 			Calculation.clear();
-			if (Transects.$buttonTransectsAddButton.hasClass('active')) {
-				Transects.$buttonTransectsAddButton.trigger('click');
-			}
+			Results.clear();
+			
+			$.each([Transects.$buttonTransectsAddButton, Transects.$buttonToggleEdit], function(i, $button){
+				if ($button.hasClass('active')) {
+					$button.trigger('click');
+				}
+			});
 
 			var intersectionsList = CONFIG.ui.populateFeaturesList({
 				caller: Calculation,
 				stage: 'intersections'
 			});
-
-			Results.clear();
 
 			var resultsList = CONFIG.ui.populateFeaturesList({
 				caller: Results
@@ -563,13 +572,14 @@ var Transects = {
 
 			} else {
 				LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
+				
 				$.get('service/session', {
 					action: 'remove-layer',
 					workspace: CONFIG.tempSession.getCurrentSessionKey(),
 					store: 'ch-output',
 					layer: resultsLayer.split(':')[1]
 				},
-				function (data, textStatus, jqXHR) {
+				function () {
 					CONFIG.ows.getWMSCapabilities({
 						namespace: CONFIG.tempSession.getCurrentSessionKey(),
 						callbacks: {
@@ -591,11 +601,13 @@ var Transects = {
 				Transects.refreshFeatureList({
 					selectLayer: layer.cloneOf
 				});
+				
 				Transects.$buttonToggleEdit.trigger('click');
 
 				intersectionsList.val(intersectsLayer);
 				resultsList.val(resultsLayer);
 			}
+			
 			Transects.enableUpdateTransectsButton();
 			intersectionsList.trigger('change');
 			resultsList.trigger('change');
@@ -858,10 +870,13 @@ var Transects = {
 		});
 	},
 	removeEditControl: function () {
+		Transects.removeEditLayer();
 		var controlArr = CONFIG.map.getMap().getControlsBy('id', Transects.NAME_CONTROL_EDIT);
 		if (controlArr.length) {
+			controlArr[0].deactivate();
 			controlArr[0].destroy();
 		}
+		
 		CONFIG.map.removeControl({
 			id: Transects.NAME_CONTROL_EDIT
 		});
