@@ -9,7 +9,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
-import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+import gov.usgs.cida.coastalhazards.exceptions.UnsupportedFeatureTypeException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;

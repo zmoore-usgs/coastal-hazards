@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.wps.exceptions;
+package gov.usgs.cida.coastalhazards.exceptions;
 
 /**
  *

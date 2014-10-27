@@ -135,7 +135,7 @@ public class IntersectionParserTest {
     public void mhwValueTranslationFromIntersectionLayerTest() throws IOException {
         FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollectionFromShp.getFeatureCollectionFromShp(shapefile);
         
-        Map<Integer, List<Intersection>> map = new TreeMap<Integer, List<Intersection>>();
+        Map<Integer, List<Intersection>> map = new TreeMap<>();
     	FeatureIterator<SimpleFeature> features = null;
 		try {
 			features = fc.features();
@@ -150,14 +150,14 @@ public class IntersectionParserTest {
 					trueMhwExistsInShapefile = true;
 				}
 				
-				assertFalse("Bias is not default", intersection.getBias() == Intersection.DEFAULT_BIAS);
-				assertFalse("Bias uncertainty is not default", intersection.getBias() == Intersection.DEFAULT_BIAS_UNCY);
+				assertFalse("Bias is not default", intersection.getBias() == Constants.DEFAULT_BIAS);
+				assertFalse("Bias uncertainty is not default", intersection.getBias() == Constants.DEFAULT_BIAS_UNCY);
 			}
 		} finally {
 			if (null != features) {
 				features.close();
 			}
-		}        
+		}
 		for (int key : map.keySet()) {
             List<Intersection> points = map.get(key);
             for (Intersection p : points) {

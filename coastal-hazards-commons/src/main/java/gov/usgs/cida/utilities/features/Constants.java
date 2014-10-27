@@ -82,8 +82,10 @@ public class Constants {
 	// new constants tied to point features
 	public static final String SHORELINE_ID_ATTR = "shoreline_id";
 	public static final String SEGMENT_ID_ATTR = "segment_id";
-    
-    public static final boolean DEFAULT_MHW_VALUE = false;
+
+	public static final boolean DEFAULT_MHW_VALUE = false;
+	public static final double DEFAULT_BIAS = 0.0d;
+	public static final double DEFAULT_BIAS_UNCY = 0.0d;
     
     // Per http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf (Page 7), need value less that -10^38
     public static final double  SHAPEFILE_NODATA = -1e39;

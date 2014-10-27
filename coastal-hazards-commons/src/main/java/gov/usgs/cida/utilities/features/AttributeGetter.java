@@ -1,7 +1,6 @@
 package gov.usgs.cida.utilities.features;
 
-import gov.usgs.cida.utilities.features.Constants;
-
+import gov.usgs.cida.coastalhazards.exceptions.AttributeNotANumberException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
@@ -106,12 +105,12 @@ public class AttributeGetter {
         }
     }
 	
-	public Integer getIntValue(String attribute, SimpleFeature feature) {
+	public int getIntValue(String attribute, SimpleFeature feature) throws AttributeNotANumberException {
 		Object value = getValue(attribute, feature);
 		return extractIntValue(value);
 	}
 	
-	public Double getDoubleValue(String attribute, SimpleFeature feature) {
+	public double getDoubleValue(String attribute, SimpleFeature feature) throws AttributeNotANumberException {
 		Object value = getValue(attribute, feature);
 		return extractDoubleValue(value);
 	}
@@ -147,12 +146,12 @@ public class AttributeGetter {
         return (null != actual && actual.equals(name));
     }
     
-    public boolean isGeom(PropertyDescriptor desc) {
+    public final boolean isGeom(PropertyDescriptor desc) {
         PropertyType propType = desc.getType();
         return (propType instanceof GeometryType);
     }
     
-    public boolean isDate(PropertyDescriptor desc) {
+    public final boolean isDate(PropertyDescriptor desc) {
         String name = desc.getName().getLocalPart();
         PropertyType propType = desc.getType();
         if (propType.getBinding() == java.util.Date.class 
@@ -170,7 +169,7 @@ public class AttributeGetter {
         return false;
     }
     
-    public boolean isUncertainty(PropertyDescriptor desc) {
+    public final boolean isUncertainty(PropertyDescriptor desc) {
         String name = desc.getName().getLocalPart();
         if ("uncertainty_".equalsIgnoreCase(name) || "uncertainty".equalsIgnoreCase(name) ||
                 "uncy_".equalsIgnoreCase(name) || "uncy".equalsIgnoreCase(name) ||
@@ -180,7 +179,7 @@ public class AttributeGetter {
         return false;
     }
     
-    public boolean isOrient(PropertyDescriptor desc) {
+    public final boolean isOrient(PropertyDescriptor desc) {
         String name = desc.getName().getLocalPart();
         if ("OFFshore".equalsIgnoreCase(name) || Constants.BASELINE_ORIENTATION_ATTR.equalsIgnoreCase(name)) {
             return true;
@@ -188,24 +187,24 @@ public class AttributeGetter {
         return false;
     }
     
-    public boolean isOther(PropertyDescriptor desc, String guess) {
+    public final boolean isOther(PropertyDescriptor desc, String guess) {
         String name = desc.getName().getLocalPart();
         return (guess.equalsIgnoreCase(name));
     }
     
 
-	public static Integer extractIntValue(Object value) {
+	public static int extractIntValue(Object value) throws AttributeNotANumberException {
 		if (value instanceof Number) {
 			return ((Number)value).intValue();
 		} else {
-			return null;
+			throw new AttributeNotANumberException("Attribute cannot be returned as integer");
 		}
 	}
-	public static Double extractDoubleValue(Object value) {
+	public static double extractDoubleValue(Object value) throws AttributeNotANumberException {
 		if (value instanceof Number) {
 			return ((Number)value).doubleValue();
 		} else {
-			return null;
+			throw new AttributeNotANumberException("Attribute cannot be returned as double");
 		}
 	}
 	

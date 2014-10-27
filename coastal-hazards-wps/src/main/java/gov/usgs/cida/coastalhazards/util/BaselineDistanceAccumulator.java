@@ -4,7 +4,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
-import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
+import gov.usgs.cida.coastalhazards.exceptions.PoorlyDefinedBaselineException;
 
 /**
  *
