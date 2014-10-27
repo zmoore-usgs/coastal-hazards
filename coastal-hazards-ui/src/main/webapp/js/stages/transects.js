@@ -173,7 +173,10 @@ var Transects = {
 			Transects.removeAngleLayer();
 			Transects.deactivateSelectControl();
 			Transects.deactivateHighlightControl();
-			Transects.getActiveLayer().refresh({force: true});
+			if (Transects.getActiveLayer()) {
+				Transects.getActiveLayer().refresh({force: true});
+			}
+
 		}
 	},
 	cloneActiveLayer: function () {
@@ -271,7 +274,7 @@ var Transects = {
 	removeEditLayer: function () {
 		var editLayer = CONFIG.map.getMap().getLayersByName(Transects.NAME_LAYER_EDIT);
 		if (editLayer.length) {
-			$.each(editLayer, function(i, l) {
+			$.each(editLayer, function (i, l) {
 				CONFIG.map.removeLayer(l);
 			});
 		}
@@ -301,7 +304,7 @@ var Transects = {
 			// ( https://jira.codehaus.org/browse/GEOS-6367 ) which prevents us
 			// from updating more than one transect in one call. Because of this,
 			// I have to call WFS-T update once per transect in recursive fashion
-			
+
 			// This flag tells the success callback that the save call was to
 			// update. The success callback branches on whether this flag is set and
 			// if there are more transects left in the array
@@ -327,7 +330,7 @@ var Transects = {
 				// Call the original save function
 				this.innerSave([nextTransect]);
 			};
-			
+
 			var cropTransectsControl = new OpenLayers.Control.Split({
 				layer: cloneLayer,
 				mutual: true,
@@ -542,8 +545,8 @@ var Transects = {
 
 			Calculation.clear();
 			Results.clear();
-			
-			$.each([Transects.$buttonTransectsAddButton, Transects.$buttonToggleEdit], function(i, $button){
+
+			$.each([Transects.$buttonTransectsAddButton, Transects.$buttonTransectsCropButton], function (i, $button) {
 				if ($button.hasClass('active')) {
 					$button.trigger('click');
 				}
@@ -572,7 +575,7 @@ var Transects = {
 
 			} else {
 				LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
-				
+
 				$.get('service/session', {
 					action: 'remove-layer',
 					workspace: CONFIG.tempSession.getCurrentSessionKey(),
@@ -586,7 +589,19 @@ var Transects = {
 							success: [
 								CONFIG.tempSession.updateLayersFromWMS,
 								function () {
+									Transects.refreshFeatureList({
+										selectLayer: layer.cloneOf
+									});
+									
+									CONFIG.map.removeLayerByName(layer.cloneOf);
+
+									Transects.$buttonToggleEdit.trigger('click');
+
+									intersectionsList.val(intersectsLayer);
+									resultsList.val(resultsLayer);
+									
 									LOG.debug('Transects.js::saveEditedLayer: WMS Capabilities retrieved for your session');
+									
 									Results.clear();
 								}
 							],
@@ -597,17 +612,9 @@ var Transects = {
 					});
 				}, 'json');
 
-				CONFIG.map.removeLayerByName(layer.cloneOf);
-				Transects.refreshFeatureList({
-					selectLayer: layer.cloneOf
-				});
-				
-				Transects.$buttonToggleEdit.trigger('click');
 
-				intersectionsList.val(intersectsLayer);
-				resultsList.val(resultsLayer);
 			}
-			
+
 			Transects.enableUpdateTransectsButton();
 			intersectionsList.trigger('change');
 			resultsList.trigger('change');
@@ -876,7 +883,7 @@ var Transects = {
 			controlArr[0].deactivate();
 			controlArr[0].destroy();
 		}
-		
+
 		CONFIG.map.removeControl({
 			id: Transects.NAME_CONTROL_EDIT
 		});
