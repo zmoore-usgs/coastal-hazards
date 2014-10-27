@@ -58,7 +58,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.index.strtree.STRtree;
 
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
-import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+import gov.usgs.cida.coastalhazards.exceptions.UnsupportedFeatureTypeException;
 import gov.usgs.cida.utilities.features.AttributeGetter;
 
 import org.geotools.data.simple.SimpleFeatureCollection;

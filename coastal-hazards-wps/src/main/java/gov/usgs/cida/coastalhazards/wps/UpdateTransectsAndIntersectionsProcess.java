@@ -9,16 +9,18 @@ import gov.usgs.cida.coastalhazards.util.BaselineDistanceAccumulator;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import gov.usgs.cida.coastalhazards.util.GeoserverUtils;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
-import gov.usgs.cida.coastalhazards.wps.exceptions.LayerDoesNotExistException;
-import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
-import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
+import gov.usgs.cida.coastalhazards.exceptions.LayerDoesNotExistException;
+import gov.usgs.cida.coastalhazards.exceptions.PoorlyDefinedBaselineException;
+import gov.usgs.cida.coastalhazards.exceptions.UnsupportedCoordinateReferenceSystemException;
 import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineSTRTreeBuilder;
 import gov.usgs.cida.coastalhazards.wps.geom.Transect;
 import gov.usgs.cida.utilities.features.AttributeGetter;
+
 import static gov.usgs.cida.utilities.features.Constants.BASELINE_DIST_ATTR;
 import static gov.usgs.cida.utilities.features.Constants.REQUIRED_CRS_WGS84;
 import static gov.usgs.cida.utilities.features.Constants.TRANSECT_ID_ATTR;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;

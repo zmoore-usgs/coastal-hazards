@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.wps.geom;
 
+import gov.usgs.cida.coastalhazards.exceptions.AttributeNotANumberException;
 import gov.usgs.cida.utilities.features.AttributeGetter;
 import gov.usgs.cida.utilities.features.Constants;
 import org.opengis.feature.simple.SimpleFeature;
@@ -12,11 +13,11 @@ import org.opengis.feature.simple.SimpleFeatureType;
 public class ProxyDatumBias {
 	
 	// Average slope preserved for later use
-	private Double avgSlope;
-	private Double bias;
-	private Double uncyb;
+	private double avgSlope;
+	private double bias;
+	private double uncyb;
 
-	public ProxyDatumBias(Double averageSlope, Double bias, Double biasUncertainty) {
+	public ProxyDatumBias(double averageSlope, double bias, double biasUncertainty) {
 		this.avgSlope = averageSlope;
 		this.bias = bias;
 		this.uncyb = biasUncertainty;
@@ -37,9 +38,25 @@ public class ProxyDatumBias {
 	public static ProxyDatumBias fromFeature(SimpleFeature feature) {
 		SimpleFeatureType featureType = feature.getFeatureType();
 		AttributeGetter getter = new AttributeGetter(featureType);
-		Double slopeVal = getter.getDoubleValue(Constants.AVG_SLOPE_ATTR, feature);
-		Double biasVal = getter.getDoubleValue(Constants.BIAS_ATTR, feature);
-		Double uncybVal = getter.getDoubleValue(Constants.BIAS_UNCY_ATTR, feature);
+		double slopeVal;
+		double biasVal;
+		double uncybVal;
+		try {
+			slopeVal = getter.getDoubleValue(Constants.AVG_SLOPE_ATTR, feature);
+		} catch (AttributeNotANumberException e) {
+			slopeVal = Double.NaN;
+		}
+		try {
+			biasVal = getter.getDoubleValue(Constants.BIAS_ATTR, feature);
+		} catch (AttributeNotANumberException e) {
+			biasVal = Double.NaN;
+		}
+		try {
+			uncybVal = getter.getDoubleValue(Constants.BIAS_UNCY_ATTR, feature);
+		} catch (AttributeNotANumberException e) {
+			uncybVal = Double.NaN;
+		}
+		
 		return new ProxyDatumBias(slopeVal, biasVal, uncybVal);
 	}
 

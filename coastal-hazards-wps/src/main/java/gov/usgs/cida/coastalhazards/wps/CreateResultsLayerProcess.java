@@ -53,9 +53,9 @@ import com.vividsolutions.jts.geom.Point;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
-import gov.usgs.cida.coastalhazards.wps.exceptions.InputFileFormatException;
-import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
-import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+import gov.usgs.cida.coastalhazards.exceptions.InputFileFormatException;
+import gov.usgs.cida.coastalhazards.exceptions.UnsupportedCoordinateReferenceSystemException;
+import gov.usgs.cida.coastalhazards.exceptions.UnsupportedFeatureTypeException;
 import gov.usgs.cida.utilities.features.AttributeGetter;
 import gov.usgs.cida.utilities.features.Constants;
 

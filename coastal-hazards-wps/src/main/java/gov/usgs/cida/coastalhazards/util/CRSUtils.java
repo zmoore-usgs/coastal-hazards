@@ -10,11 +10,14 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
-import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+import gov.usgs.cida.coastalhazards.exceptions.AttributeNotANumberException;
+import gov.usgs.cida.coastalhazards.exceptions.UnsupportedFeatureTypeException;
 import gov.usgs.cida.utilities.features.AttributeGetter;
 import gov.usgs.cida.utilities.features.Constants;
+
 import static gov.usgs.cida.utilities.features.Constants.SEGMENT_ID_ATTR;
 import static gov.usgs.cida.utilities.features.Constants.SHORELINE_ID_ATTR;
+
 import java.util.LinkedList;
 import java.util.List;
 import org.geotools.data.DataUtilities;
@@ -277,15 +280,17 @@ public class CRSUtils {
 
 	public static boolean isNewLineSegment(SimpleFeature first, SimpleFeature second, AttributeGetter getter) {
 		boolean isNewSegment = false;
-		if (first == null || second == null) {
+		try {
+			if (first == null || second == null) {
+				isNewSegment = true;
+			} else if (getter.exists(SHORELINE_ID_ATTR) && getter.exists(SEGMENT_ID_ATTR)) {
+				isNewSegment = !((getter.getIntValue(SHORELINE_ID_ATTR, first) == getter.getIntValue(SHORELINE_ID_ATTR, second))
+					&& (getter.getIntValue(SEGMENT_ID_ATTR, first) == getter.getIntValue(SEGMENT_ID_ATTR, second)));
+			} else if (getter.exists(SEGMENT_ID_ATTR)) {
+				isNewSegment = !(getter.getIntValue(SEGMENT_ID_ATTR, first) == getter.getIntValue(SEGMENT_ID_ATTR, second));
+			}
+		} catch (AttributeNotANumberException e) {
 			isNewSegment = true;
-		} else if (getter.exists(SHORELINE_ID_ATTR) && getter.exists(SEGMENT_ID_ATTR)) {
-			isNewSegment = !((getter.getIntValue(SHORELINE_ID_ATTR, first).equals(getter.getIntValue(SHORELINE_ID_ATTR, second)))
-					&& (getter.getIntValue(SEGMENT_ID_ATTR, first).equals(getter.getIntValue(SEGMENT_ID_ATTR, second))));
-			isNewSegment = !((getter.getIntValue(SHORELINE_ID_ATTR, first).equals(getter.getIntValue(SHORELINE_ID_ATTR, second))) &&
-				(getter.getIntValue(SEGMENT_ID_ATTR, first).equals(getter.getIntValue(SEGMENT_ID_ATTR, second))));
-		} else if (getter.exists(SEGMENT_ID_ATTR)) {
-			isNewSegment = !(getter.getIntValue(SEGMENT_ID_ATTR, first).equals(getter.getIntValue(SEGMENT_ID_ATTR, second)));
 		}
 		return isNewSegment;
 	}

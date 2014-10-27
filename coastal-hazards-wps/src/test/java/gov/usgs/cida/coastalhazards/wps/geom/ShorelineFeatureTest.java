@@ -51,7 +51,7 @@ public class ShorelineFeatureTest {
 				new Coordinate[]{new Coordinate(0,0), new Coordinate(0,1)}), geometryFactory);
 		ShorelineFeature instance = new ShorelineFeature(lineString, f1, f2);
 		double expResult = 1.5;
-		double result = instance.interpolate(point, attribute, getter);
+		double result = instance.interpolate(point, attribute, getter, 0.0d);
 		assertEquals(expResult, result, 0.01);
 	}
 	
@@ -66,7 +66,7 @@ public class ShorelineFeatureTest {
 				new Coordinate[]{new Coordinate(0,0), new Coordinate(0,1)}), geometryFactory);
 		ShorelineFeature instance = new ShorelineFeature(lineString, f1, f2);
 		double expResult = 1.0;
-		double result = instance.interpolate(point, attribute, getter);
+		double result = instance.interpolate(point, attribute, getter, 0.0d);
 		assertEquals(expResult, result, 0.01);
 	}
 	
@@ -81,7 +81,7 @@ public class ShorelineFeatureTest {
 				new Coordinate[]{new Coordinate(0,0), new Coordinate(0,1)}), geometryFactory);
 		ShorelineFeature instance = new ShorelineFeature(lineString, f1, f2);
 		double expResult = 2.0;
-		double result = instance.interpolate(point, attribute, getter);
+		double result = instance.interpolate(point, attribute, getter, 0.0d);
 		assertEquals(expResult, result, 0.01);
 	}
 	
@@ -96,7 +96,7 @@ public class ShorelineFeatureTest {
 				new Coordinate[]{new Coordinate(0,0), new Coordinate(0,1)}), geometryFactory);
 		ShorelineFeature instance = new ShorelineFeature(lineString, f1, f2);
 		double expResult = 1.25;
-		double result = instance.interpolate(point, attribute, getter);
+		double result = instance.interpolate(point, attribute, getter, 0.0d);
 		assertEquals(expResult, result, 0.01);
 	}
 	
