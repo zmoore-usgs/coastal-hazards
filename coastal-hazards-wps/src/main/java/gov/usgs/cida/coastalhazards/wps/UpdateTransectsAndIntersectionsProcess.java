@@ -71,7 +71,7 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
 	public UpdateTransectsAndIntersectionsProcess(Catalog catalog) {
 		this.catalog = catalog;
 		this.gsUtils = new GeoserverUtils(catalog);
-		this.filterFactory = CommonFactoryFinder.getFilterFactory2( null );
+		this.filterFactory = CommonFactoryFinder.getFilterFactory2(null);
 	}
 
 	@DescribeResult(name = "intersections", description = "intersection layer name")
@@ -118,7 +118,7 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
 			DataAccess<? extends FeatureType, ? extends Feature> transectDa = gsUtils.getDataAccess(transectDs, null);
 			SimpleFeatureStore transectStore = (SimpleFeatureStore) gsUtils.getFeatureSource(transectDa, transectLayer.getName());
 			transectStore.setTransaction(transaction);
-			
+
 			DataStoreInfo intersectionDs = gsUtils.getDataStoreByName(
 					intersectionLayer.getResource().getStore().getWorkspace().getName(),
 					intersectionLayer.getResource().getStore().getName());
@@ -141,73 +141,74 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
 			if (utmCrs == null) {
 				throw new IllegalStateException("Must have usable UTM zone to continue");
 			}
-			
+
 			SimpleFeatureCollection transformedBaseline = CRSUtils.transformFeatureCollection((SimpleFeatureCollection) baselineSource.getFeatures(), baselineSource.getInfo().getCRS(), utmCrs);
 			SimpleFeatureCollection transformedShorelines = CRSUtils.transformFeatureCollection(shorelines, REQUIRED_CRS_WGS84, utmCrs);
 
 			STRtree strtree = new ShorelineSTRTreeBuilder(transformedShorelines).build();
-			
+
 			List<SimpleFeature> newIntersectionFeatures = new LinkedList<>();
-			
-			
-			for (int id : transectIds) {
-				// use AttributeGetter to get real attr names
-				PropertyIsEqualTo transectFilter = filterFactory.equals(filterFactory.property(TRANSECT_ID_ATTR), filterFactory.literal(id));
-				PropertyIsEqualTo intersectionFilter = filterFactory.equals(filterFactory.property(TRANSECT_ID_ATTR), filterFactory.literal(id));
-				
-				try {
-					intersectionStore.removeFeatures(intersectionFilter);
-				} catch (Exception e) {
-					transaction.rollback();
-					throw e;
-				}
-				
-				Query query = new Query(transectStore.getName().getLocalPart(), transectFilter, 1, Query.ALL_NAMES, "Transect Filter");
-				SimpleFeatureCollection transectFeatures = transectStore.getFeatures(query);
-				
-				SimpleFeature transect = null;
-				try (SimpleFeatureIterator transectIterator = transectFeatures.features()) {
-					while (transectIterator.hasNext()) {
-						if (null == transect) {
-							// I want the transformed transect, I'm really only using the iterator to get the ID
-							transect = transectIterator.next();
-						} else {
-							throw new IllegalStateException("There shouldn't be more than one transect with the same id");
-						}
-					}
-				}
+			try {
+				for (int id : transectIds) {
+					// use AttributeGetter to get real attr names
+					PropertyIsEqualTo transectFilter = filterFactory.equals(filterFactory.property(TRANSECT_ID_ATTR), filterFactory.literal(id));
+					PropertyIsEqualTo intersectionFilter = filterFactory.equals(filterFactory.property(TRANSECT_ID_ATTR), filterFactory.literal(id));
 
-				if (null != transect) {
-					Transect transectObj = Transect.fromFeature(transect);
-
-					Map<DateTime, Intersection> newIntersections = Intersection.calculateIntersections(transectObj, strtree, useFarthest, intersectionAttr);
-					for (DateTime key : newIntersections.keySet()) {
-						Intersection newIntersection = newIntersections.get(key);
-						SimpleFeature newFeature = newIntersection.createFeature(intersectionStore.getSchema());
-						newIntersectionFeatures.add(newFeature);
-					}
-					Transect updatedTransect = updateTransectBaseDist(transectObj, transformedBaseline);
 					try {
-						transectStore.modifyFeatures(new NameImpl(BASELINE_DIST_ATTR), updatedTransect.getBaselineDistance(), transectFilter);
-
+						intersectionStore.removeFeatures(intersectionFilter);
 					} catch (Exception e) {
 						transaction.rollback();
 						throw e;
 					}
-				}
-			}
-			
-			SimpleFeatureCollection collection = DataUtilities.collection(newIntersectionFeatures);
-			try {
-				intersectionStore.addFeatures(collection);
-			} catch (Exception e) {
-				transaction.rollback();
-				throw e;
-			}
 
-			// rollback happens if any edit fails
-			transaction.commit();
-			transaction.close();
+					SimpleFeatureCollection transectFeatures = transectStore.getFeatures(transectFilter);
+
+					SimpleFeature transect = null;
+					try (SimpleFeatureIterator transectIterator = transectFeatures.features()) {
+						while (transectIterator.hasNext()) {
+							if (null == transect) {
+								// I want the transformed transect, I'm really only using the iterator to get the ID
+								transect = transectIterator.next();
+							} else {
+								throw new IllegalStateException("There shouldn't be more than one transect with the same id");
+							}
+						}
+					}
+
+					if (null != transect) {
+						Transect transectObj = Transect.fromFeature(transect);
+
+						Map<DateTime, Intersection> newIntersections = Intersection.calculateIntersections(transectObj, strtree, useFarthest, intersectionAttr);
+						for (DateTime key : newIntersections.keySet()) {
+							Intersection newIntersection = newIntersections.get(key);
+							SimpleFeature newFeature = newIntersection.createFeature(intersectionStore.getSchema());
+							newIntersectionFeatures.add(newFeature);
+						}
+						Transect updatedTransect = updateTransectBaseDist(transectObj, transformedBaseline);
+						try {
+							transectStore.modifyFeatures(new NameImpl(BASELINE_DIST_ATTR), updatedTransect.getBaselineDistance(), transectFilter);
+
+						} catch (Exception e) {
+							transaction.rollback();
+							throw e;
+						}
+					}
+					transaction.commit();
+				}
+
+				SimpleFeatureCollection collection = DataUtilities.collection(newIntersectionFeatures);
+				try {
+					intersectionStore.addFeatures(collection);
+					transaction.commit();
+				} catch (Exception e) {
+					transaction.rollback();
+					throw e;
+				}
+
+				// rollback happens if any edit fails
+			} finally {
+				transaction.close();
+			}
 			return intersectionStore.getInfo().getName();
 		}
 
