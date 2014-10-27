@@ -3,7 +3,8 @@ package gov.usgs.cida.coastalhazards.parser;
 import com.google.common.collect.Lists;
 
 import static gov.usgs.cida.utilities.features.Constants.*;
-import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+
+import gov.usgs.cida.coastalhazards.exceptions.UnsupportedFeatureTypeException;
 import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
 import gov.usgs.cida.utilities.features.AttributeGetter;
 

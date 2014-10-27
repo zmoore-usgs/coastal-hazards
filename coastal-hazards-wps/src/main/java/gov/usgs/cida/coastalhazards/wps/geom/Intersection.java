@@ -48,12 +48,14 @@ package gov.usgs.cida.coastalhazards.wps.geom;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.index.strtree.STRtree;
+import gov.usgs.cida.coastalhazards.exceptions.AttributeNotANumberException;
 
 import static gov.usgs.cida.utilities.features.Constants.*;
-import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+
+import gov.usgs.cida.coastalhazards.exceptions.UnsupportedFeatureTypeException;
 import gov.usgs.cida.utilities.features.AttributeGetter;
 import gov.usgs.cida.utilities.features.Constants;
-import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
+import gov.usgs.cida.coastalhazards.exceptions.PoorlyDefinedBaselineException;
 
 import java.util.Collection;
 import java.util.Date;
@@ -78,8 +80,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class Intersection {
-	public static final double DEFAULT_BIAS = 0.0d;
-	public static final double DEFAULT_BIAS_UNCY = 0.0d;
 	
 	private Point point;
 	private double distance;
@@ -157,15 +157,19 @@ public class Intersection {
 		this.date = parseDate(attGet.getValue(DATE_ATTR, intersectionFeature));
 		this.uncy = parseUncertainty(attGet.getValue(UNCY_ATTR, intersectionFeature));
 
-		double biasVal = DEFAULT_BIAS;
-		double uncybVal = DEFAULT_BIAS_UNCY;
+		double biasVal;
+		double uncybVal;
 		
-		if(attGet.getValue(BIAS_ATTR, intersectionFeature) != null) {
+		try {
 			biasVal = attGet.getDoubleValue(BIAS_ATTR, intersectionFeature);
+		} catch (AttributeNotANumberException e) {
+			biasVal = DEFAULT_BIAS;
 		}
 		
-		if(attGet.getValue(BIAS_UNCY_ATTR, intersectionFeature) != null) {
+		try {
 			uncybVal = attGet.getDoubleValue(BIAS_UNCY_ATTR, intersectionFeature);
+		} catch (AttributeNotANumberException e) {
+			uncybVal = DEFAULT_BIAS_UNCY;
 		}
 		
 		this.bias = new ProxyDatumBias(Double.NaN, biasVal, uncybVal);
@@ -328,7 +332,7 @@ public class Intersection {
                         * transect.getOriginCoord()
                         .distance(crossPoint.getCoordinate());
                 // use feature1 to get the date and MHW attribute (can't change within shoreline)
-                double interpolatedUncy = shoreline.interpolate(crossPoint, UNCY_ATTR, shorelineGetter);
+                double interpolatedUncy = shoreline.interpolate(crossPoint, UNCY_ATTR, shorelineGetter, 0.0d);
                 Intersection intersection = new Intersection(crossPoint, distance, shoreline.feature1,
                         interpolatedUncy, transect.getId(), intersectionGetter, shorelineGetter);
                 DateTime date = intersection.getDate();

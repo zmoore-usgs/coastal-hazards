@@ -2,7 +2,7 @@ package gov.usgs.cida.coastalhazards.util;
 
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
-import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
+import gov.usgs.cida.coastalhazards.exceptions.PoorlyDefinedBaselineException;
 
 /**
  *

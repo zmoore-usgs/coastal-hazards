@@ -17,8 +17,8 @@ import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import gov.usgs.cida.coastalhazards.util.GeomAsserts;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
-import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
-import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
+import gov.usgs.cida.coastalhazards.exceptions.PoorlyDefinedBaselineException;
+import gov.usgs.cida.coastalhazards.exceptions.UnsupportedCoordinateReferenceSystemException;
 import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
 import gov.usgs.cida.coastalhazards.wps.geom.ProxyDatumBias;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineFeature;
@@ -612,9 +612,9 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
 			LineString segment = feature.segment;
 			if (segment.intersects(line)) {
 				Point intersection = (Point)segment.intersection(line);
-				double slopeVal = feature.interpolate(intersection, AVG_SLOPE_ATTR, biasGetter);
-				double biasVal = feature.interpolate(intersection, BIAS_ATTR, biasGetter);
-				double uncybVal = feature.interpolate(intersection, BIAS_UNCY_ATTR, biasGetter);
+				double slopeVal = feature.interpolate(intersection, AVG_SLOPE_ATTR, biasGetter, Double.NaN);
+				double biasVal = feature.interpolate(intersection, BIAS_ATTR, biasGetter, DEFAULT_BIAS);
+				double uncybVal = feature.interpolate(intersection, BIAS_UNCY_ATTR, biasGetter, DEFAULT_BIAS_UNCY);
 				proxy = new ProxyDatumBias(slopeVal, biasVal, uncybVal);
 			}
 		}

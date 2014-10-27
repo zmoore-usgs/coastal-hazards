@@ -46,7 +46,7 @@
 
 package gov.usgs.cida.coastalhazards.util;
 
-import gov.usgs.cida.coastalhazards.wps.exceptions.LayerAlreadyExistsException;
+import gov.usgs.cida.coastalhazards.exceptions.LayerAlreadyExistsException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
