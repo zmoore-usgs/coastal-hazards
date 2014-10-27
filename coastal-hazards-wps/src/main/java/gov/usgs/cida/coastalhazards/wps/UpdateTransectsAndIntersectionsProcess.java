@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.wps;
 
+import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
@@ -19,6 +20,7 @@ import static gov.usgs.cida.utilities.features.Constants.BASELINE_DIST_ATTR;
 import static gov.usgs.cida.utilities.features.Constants.REQUIRED_CRS_WGS84;
 import static gov.usgs.cida.utilities.features.Constants.TRANSECT_ID_ATTR;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,11 +32,12 @@ import org.geotools.data.DataAccess;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureStore;
-import org.geotools.data.transform.TransformFeatureStore;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.FilterFactoryImpl;
 import org.geotools.process.factory.DescribeParameter;
@@ -45,11 +48,10 @@ import org.joda.time.DateTime;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
 import org.opengis.filter.FilterFactory;
-import org.opengis.filter.MultiValuedFilter;
-import org.opengis.filter.MultiValuedFilter.MatchAction;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.expression.PropertyName;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -64,12 +66,12 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
 
 	private Catalog catalog;
 	private GeoserverUtils gsUtils;
-	private FilterFactory filterFactory;
+	private FilterFactory2 filterFactory;
 
 	public UpdateTransectsAndIntersectionsProcess(Catalog catalog) {
 		this.catalog = catalog;
 		this.gsUtils = new GeoserverUtils(catalog);
-		this.filterFactory = new FilterFactoryImpl();
+		this.filterFactory = CommonFactoryFinder.getFilterFactory2( null );
 	}
 
 	@DescribeResult(name = "intersections", description = "intersection layer name")
@@ -107,6 +109,7 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
 				throw new LayerDoesNotExistException("Input layers must exist");
 			}
 
+			Arrays.sort(transectIds);
 			Transaction transaction = new DefaultTransaction("edit");
 
 			DataStoreInfo transectDs = gsUtils.getDataStoreByName(
@@ -115,7 +118,7 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
 			DataAccess<? extends FeatureType, ? extends Feature> transectDa = gsUtils.getDataAccess(transectDs, null);
 			SimpleFeatureStore transectStore = (SimpleFeatureStore) gsUtils.getFeatureSource(transectDa, transectLayer.getName());
 			transectStore.setTransaction(transaction);
-
+			
 			DataStoreInfo intersectionDs = gsUtils.getDataStoreByName(
 					intersectionLayer.getResource().getStore().getWorkspace().getName(),
 					intersectionLayer.getResource().getStore().getName());
@@ -138,16 +141,20 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
 			if (utmCrs == null) {
 				throw new IllegalStateException("Must have usable UTM zone to continue");
 			}
+			
 			SimpleFeatureCollection transformedBaseline = CRSUtils.transformFeatureCollection((SimpleFeatureCollection) baselineSource.getFeatures(), baselineSource.getInfo().getCRS(), utmCrs);
 			SimpleFeatureCollection transformedShorelines = CRSUtils.transformFeatureCollection(shorelines, REQUIRED_CRS_WGS84, utmCrs);
 
 			STRtree strtree = new ShorelineSTRTreeBuilder(transformedShorelines).build();
-			//DefaultFeatureCollection intersectionCollection = new DefaultFeatureCollection((SimpleFeatureCollection)intersectionStore.getFeatures());
+			
 			List<SimpleFeature> newIntersectionFeatures = new LinkedList<>();
+			
+			
 			for (int id : transectIds) {
 				// use AttributeGetter to get real attr names
 				PropertyIsEqualTo transectFilter = filterFactory.equals(filterFactory.property(TRANSECT_ID_ATTR), filterFactory.literal(id));
 				PropertyIsEqualTo intersectionFilter = filterFactory.equals(filterFactory.property(TRANSECT_ID_ATTR), filterFactory.literal(id));
+				
 				try {
 					intersectionStore.removeFeatures(intersectionFilter);
 				} catch (Exception e) {
@@ -155,12 +162,11 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
 					throw e;
 				}
 				
-				SimpleFeatureCollection transectFeatures = transectStore.getFeatures(transectFilter);
+				Query query = new Query(transectStore.getName().getLocalPart(), transectFilter, 1, Query.ALL_NAMES, "Transect Filter");
+				SimpleFeatureCollection transectFeatures = transectStore.getFeatures(query);
+				
 				SimpleFeature transect = null;
-
-				SimpleFeatureIterator transectIterator = null;
-				try {
-					transectIterator = transectFeatures.features();
+				try (SimpleFeatureIterator transectIterator = transectFeatures.features()) {
 					while (transectIterator.hasNext()) {
 						if (null == transect) {
 							// I want the transformed transect, I'm really only using the iterator to get the ID
@@ -168,10 +174,6 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
 						} else {
 							throw new IllegalStateException("There shouldn't be more than one transect with the same id");
 						}
-					}
-				} finally {
-					if (null != transectIterator) {
-						transectIterator.close();
 					}
 				}
 
@@ -187,13 +189,14 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
 					Transect updatedTransect = updateTransectBaseDist(transectObj, transformedBaseline);
 					try {
 						transectStore.modifyFeatures(new NameImpl(BASELINE_DIST_ATTR), updatedTransect.getBaselineDistance(), transectFilter);
-						
+
 					} catch (Exception e) {
 						transaction.rollback();
 						throw e;
 					}
 				}
 			}
+			
 			SimpleFeatureCollection collection = DataUtilities.collection(newIntersectionFeatures);
 			try {
 				intersectionStore.addFeatures(collection);
