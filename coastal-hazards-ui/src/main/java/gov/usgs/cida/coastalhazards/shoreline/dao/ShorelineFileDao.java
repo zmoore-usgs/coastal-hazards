@@ -95,23 +95,28 @@ public abstract class ShorelineFileDao {
 		return createdId;
 	}
 
-	protected int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, int segmentId, double x, double y, double uncertainty) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
-		StringBuilder sql = new StringBuilder("INSERT INTO shoreline_points (shoreline_id, segment_id, geom, uncy) ")
-				.append("VALUES (")
-				.append(shorelineId).append(",")
-				.append(segmentId).append(",")
-				.append("ST_GeomFromText('POINT(").append(x).append(" ").append(y).append(")',").append(DATABASE_PROJECTION).append("),")
-				.append(uncertainty).append(")");
-
-		try (Statement st = connection.createStatement()) {
-			if (st.execute(sql.toString())) {
-				return 1;
-			} else {
-				return 0;
-			}
-		}
+	protected boolean insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, int segmentId, double x, double y, double uncertainty) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
+		return insertPointsIntoShorelinePointsTable(connection, shorelineId, segmentId,new double[][]{new double[] {x,y,uncertainty}});
 	}
 
+	protected boolean insertPointsIntoShorelinePointsTable(Connection connection, long shorelineId, int segmentId, double[][] XYuncyArray) throws SQLException {
+		StringBuilder sql = new StringBuilder("INSERT INTO shoreline_points (shoreline_id, segment_id, geom, uncy) VALUES");
+		for (double[] XYUncy : XYuncyArray) {
+			sql.append("(")
+					.append(shorelineId).append(",")
+					.append(segmentId).append(",")
+					.append("ST_GeomFromText('POINT(").append(XYUncy[0]).append(" ").append(XYUncy[1]).append(")',").append(DATABASE_PROJECTION).append("),")
+					.append(XYUncy[2])
+					.append("),");
+		}
+		
+		sql.deleteCharAt(sql.length() - 1);
+		
+		try (Statement st = connection.createStatement()) {
+			return st.execute(sql.toString());
+		}
+	}
+	
 	/**
 	 * Inserts an attribute into the auxillary table
 	 *

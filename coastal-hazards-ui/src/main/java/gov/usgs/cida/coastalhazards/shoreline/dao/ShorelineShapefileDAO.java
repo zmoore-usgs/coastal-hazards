@@ -13,9 +13,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
@@ -67,6 +69,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 		File parentDirectory = shpFile.getParentFile();
 		deleteExistingPointFiles(parentDirectory);
 		String[][] fieldNames = null;
+		int MAX_POINTS_AT_ONCE = 500;
 
 		try (IterableShapefileReader isfr = new IterableShapefileReader(shpFile)) {
 			DbaseFileHeader dbfHeader = isfr.getDbfHeader();
@@ -89,7 +92,8 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 
 			FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollectionFromShp.getFeatureCollectionFromShp(pointsShapefile.toURI().toURL());
 			Class<?> dateType = fc.getSchema().getDescriptor(dateFieldName).getType().getBinding();
-			Class<?> uncertaintyType = fc.getSchema().getDescriptor(uncertaintyFieldName).getType().getBinding();
+			List<double[]> xyUncies = new ArrayList<>();
+
 			if (!fc.isEmpty()) {
 				ReprojectFeatureResults rfc = new ReprojectFeatureResults(fc, DefaultGeographicCRS.WGS84);
 				SimpleFeatureIterator iter = null;
@@ -108,6 +112,8 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 							mhw = getBooleanValue(mhwFieldName, sf, false);
 						}
 
+						xyUncies.add(getXYAndUncertaintyFromSimpleFeature(sf, uncertaintyFieldName));
+						
 						if (lastRecordId != recordId) {
 							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, baseFileName, orientation, "");
 
@@ -119,8 +125,19 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 							}
 
 							lastRecordId = recordId;
+							insertPointsIntoShorelinePointsTable(connection, shorelineId, recordId, xyUncies.toArray(new double[xyUncies.size()][]));
+							xyUncies.clear();
 						}
-						insertPointIntoShorelinePointsTable(connection, shorelineId, sf, uncertaintyFieldName, uncertaintyType);
+
+						if (xyUncies.size() == MAX_POINTS_AT_ONCE) {
+							insertPointsIntoShorelinePointsTable(connection, shorelineId, recordId, xyUncies.toArray(new double[xyUncies.size()][]));
+							xyUncies.clear();
+						}
+					}
+
+					if (xyUncies.size() > 0) {
+						insertPointsIntoShorelinePointsTable(connection, shorelineId, lastRecordId, xyUncies.toArray(new double[xyUncies.size()][]));
+						xyUncies.clear();
 					}
 
 					viewName = createViewAgainstWorkspace(connection, workspace, baseFileName);
@@ -171,12 +188,11 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 		return AttributeGetter.extractBooleanValue(value, defaultValue);
 	}
 
-	private int insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, SimpleFeature sf, String uncertaintyFieldName, Class<?> uncertaintyType) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
+	private double[] getXYAndUncertaintyFromSimpleFeature(SimpleFeature sf, String uncertaintyFieldName) {
 		double x = sf.getBounds().getMaxX();
 		double y = sf.getBounds().getMaxY();
 		double uncertainty = getDoubleValue(uncertaintyFieldName, sf);
-		int segmentId = getIntValue("segmentId", sf);
-		return insertPointIntoShorelinePointsTable(connection, shorelineId, segmentId, x, y, uncertainty);
+		return new double[]{x, y, uncertainty};
 	}
 
 	private Collection<File> deleteExistingPointFiles(File directory) {
