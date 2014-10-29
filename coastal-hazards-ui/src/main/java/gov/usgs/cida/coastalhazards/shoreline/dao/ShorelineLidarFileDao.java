@@ -117,7 +117,7 @@ public class ShorelineLidarFileDao extends ShorelineFileDao {
 						reprojectedY,
 						Double.valueOf(point[3]));
 			}
-			viewName = createViewAgainstWorkspace(connection, workspace, baseFileName);
+			viewName = createViewAgainstWorkspace(connection, workspace);
 		}
 		return viewName;
 	}

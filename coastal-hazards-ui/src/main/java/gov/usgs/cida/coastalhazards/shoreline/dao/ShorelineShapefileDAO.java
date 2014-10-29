@@ -140,7 +140,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 						xyUncies.clear();
 					}
 
-					viewName = createViewAgainstWorkspace(connection, workspace, baseFileName);
+					viewName = createViewAgainstWorkspace(connection, workspace);
 					if (StringUtils.isBlank(viewName)) {
 						throw new SQLException("Could not create view");
 					}

@@ -31,11 +31,16 @@ import org.slf4j.LoggerFactory;
 public abstract class ShorelineFileDao {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineFileDao.class);
-	protected String JNDI_NAME;
 	public final static int DATABASE_PROJECTION = 4326;
 	public final static String[] REQUIRED_FIELD_NAMES = new String[]{Constants.DB_DATE_ATTR, Constants.UNCY_ATTR, Constants.MHW_ATTR};
 	public final static String[] PROTECTED_WORKSPACES = new String[]{JNDISingleton.getInstance().getProperty("coastal-hazards.workspace.published", "published")};
+	protected String JNDI_NAME;
 
+	/**
+	 * Retrieves a connection from the database
+	 *
+	 * @return
+	 */
 	protected Connection getConnection() {
 		Connection con = null;
 		try {
@@ -50,12 +55,14 @@ public abstract class ShorelineFileDao {
 	}
 
 	/**
+	 * Inserts a shoreline into the shorelines table
 	 *
 	 * @param connection
 	 * @param workspace
 	 * @param date
 	 * @param mhw
 	 * @param source
+	 * @param name
 	 * @param shorelineType
 	 * @param auxillaryName
 	 * @return
@@ -96,9 +103,27 @@ public abstract class ShorelineFileDao {
 	}
 
 	protected boolean insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, int segmentId, double x, double y, double uncertainty) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
-		return insertPointsIntoShorelinePointsTable(connection, shorelineId, segmentId,new double[][]{new double[] {x,y,uncertainty}});
+		return insertPointsIntoShorelinePointsTable(connection, shorelineId, segmentId, new double[][]{new double[]{x, y, uncertainty}});
 	}
 
+	/**
+	 * Inserts an array of points into the shoreline points table
+	 *
+	 * @param connection
+	 * @param shorelineId
+	 * @param segmentId
+	 * @param XYuncyArray two-dimensional array of doubles and uncertainty. For
+	 * the inner array, the indexes map like so:
+	 * <br />
+	 * 1: X coordinate
+	 * <br />
+	 * 2: Y coordinate
+	 * <br />
+	 * 3: Uncertainty
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
 	protected boolean insertPointsIntoShorelinePointsTable(Connection connection, long shorelineId, int segmentId, double[][] XYuncyArray) throws SQLException {
 		StringBuilder sql = new StringBuilder("INSERT INTO shoreline_points (shoreline_id, segment_id, geom, uncy) VALUES");
 		for (double[] XYUncy : XYuncyArray) {
@@ -109,14 +134,14 @@ public abstract class ShorelineFileDao {
 					.append(XYUncy[2])
 					.append("),");
 		}
-		
+
 		sql.deleteCharAt(sql.length() - 1);
-		
+
 		try (Statement st = connection.createStatement()) {
 			return st.execute(sql.toString());
 		}
 	}
-	
+
 	/**
 	 * Inserts an attribute into the auxillary table
 	 *
@@ -151,12 +176,11 @@ public abstract class ShorelineFileDao {
 	 * @return
 	 * @throws SQLException
 	 */
-	protected String createViewAgainstWorkspace(Connection connection, String workspace, String name) throws SQLException {
-		String sql = "SELECT * FROM CREATE_WORKSPACE_VIEW(?, ?)";
+	protected String createViewAgainstWorkspace(Connection connection, String workspace) throws SQLException {
+		String sql = "SELECT * FROM CREATE_WORKSPACE_VIEW(?)";
 
 		try (PreparedStatement ps = connection.prepareStatement(sql)) {
 			ps.setString(1, workspace);
-			ps.setString(2, name.toLowerCase());
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					return rs.getString(1);
