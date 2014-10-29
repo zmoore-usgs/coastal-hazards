@@ -6,14 +6,8 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-	<comment>
-		Create the initial tables and stored procedures required for the application
-	</comment>
 	<include file="10addShorelineTables.xml" relativeToChangelogFile="true"/>
-	
-	<comment>
-		Update the stored procedure created in 10addShorelineTables.xml and 
-	</comment>
 	<include file="20updateWorkspaceShorelineView.xml" relativeToChangelogFile="true"/>
+	<include file="30createWorkspaceRenamingProc.xml" relativeToChangelogFile="true"/>
 	
 </databaseChangeLog>
