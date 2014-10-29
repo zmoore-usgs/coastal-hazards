@@ -55,6 +55,23 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 
 	public ShorelineShapefileDAO() {
 		this.JNDI_NAME = PropertyUtil.getProperty(Property.JDBC_NAME);
+		if (StringUtils.isBlank(ShorelineFileDao.PUBLISHED_WORKSPACE_NAME)) {
+			ShorelineFileDao.PUBLISHED_WORKSPACE_NAME = PropertyUtil.getProperty("coastal-hazards.workspace.published", "published");
+		}
+	}
+
+	/**
+	 * Initialize (or update) the published workspace by touching the view
+	 *
+	 * @return
+	 * @throws java.sql.SQLException
+	 * @see ShorelineFileDao#createViewAgainstWorkspace(java.sql.Connection,
+	 * java.lang.String)
+	 */
+	public String createViewAgainstPublishedWorkspace() throws SQLException {
+		try (Connection connection = getConnection()) {
+			return createViewAgainstWorkspace(connection, ShorelineFileDao.PUBLISHED_WORKSPACE_NAME);
+		}
 	}
 
 	@Override
@@ -113,7 +130,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 						}
 
 						xyUncies.add(getXYAndUncertaintyFromSimpleFeature(sf, uncertaintyFieldName));
-						
+
 						if (lastRecordId != recordId) {
 							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, baseFileName, orientation, "");
 

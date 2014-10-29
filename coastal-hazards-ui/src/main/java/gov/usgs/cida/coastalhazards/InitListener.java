@@ -2,9 +2,16 @@ package gov.usgs.cida.coastalhazards;
 
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
+import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineShapefileDAO;
+import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFileFactory;
+import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineGenericFile;
+import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -47,6 +54,15 @@ public class InitListener implements ServletContextListener {
 
 		if (!uploadDirFile.exists()) {
 			createDir(uploadDirFile);
+		}
+		
+		try {
+			new ShorelineShapefileDAO().createViewAgainstPublishedWorkspace();
+			ShorelineFileFactory.buildShorelineGenericFile().createOrUpdatePublishedWorkspaceOnGeoserver();
+		} catch (SQLException ex) {
+			LOGGER.warn("Could not access published workspace. This may affect the proper funcitoning of the application", ex);
+		} catch (IOException ex) {
+			LOGGER.warn("Could not create or update published workspace on Geoserver. This may affect the proper funcitoning of the application", ex);
 		}
 
 		// TODO- Create file cleanup service for work and upload directories

@@ -75,10 +75,12 @@ public class SessionService extends HttpServlet {
 						ShorelineShapefileDAO dao = new ShorelineShapefileDAO();
 						if (dao.removeShorelines(workspace, layer)) {
 							LOG.info("No more shorelines exist workspace {}. Will delete the view", workspace);
-							String viewName = workspace + "_" + layer + "_shorelines";
+							String viewName = workspace + "_shorelines";
 							dao.removeShorelineView(viewName);
 							LOG.info("Deleted view {}", viewName);
-							geoserverHandler.removeLayer(workspace, store, workspace + "_" + layer + "_shorelines");
+							if (dao.getShorelineCountInShorelineView(workspace) == 0) {
+								geoserverHandler.removeLayer(workspace, store, viewName);
+							}
 						}
 					} else {
 						geoserverHandler.removeLayer(workspace, store, layer);

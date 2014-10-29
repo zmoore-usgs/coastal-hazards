@@ -35,6 +35,7 @@ public abstract class ShorelineFileDao {
 	public final static String[] REQUIRED_FIELD_NAMES = new String[]{Constants.DB_DATE_ATTR, Constants.UNCY_ATTR, Constants.MHW_ATTR};
 	public final static String[] PROTECTED_WORKSPACES = new String[]{JNDISingleton.getInstance().getProperty("coastal-hazards.workspace.published", "published")};
 	protected String JNDI_NAME;
+	protected static String PUBLISHED_WORKSPACE_NAME;
 
 	/**
 	 * Retrieves a connection from the database
@@ -238,12 +239,35 @@ public abstract class ShorelineFileDao {
 		}
 	}
 
+	/**
+	 * Removes a shoreline view from the database
+	 *
+	 * @param view
+	 * @throws SQLException
+	 */
 	public void removeShorelineView(String view) throws SQLException {
 		String sql = "DROP VIEW IF EXISTS \"" + view + "\";";
 
 		try (Connection connection = getConnection()) {
 			try (Statement statement = connection.createStatement()) {
 				statement.execute(sql);
+			}
+		}
+	}
+
+	/**
+	 * Returns a row count of available points in a given shoreline view
+	 * @param workspace
+	 * @return
+	 * @throws SQLException 
+	 */
+	public int getShorelineCountInShorelineView(String workspace) throws SQLException {
+		String sql = "SELECT COUNT(id) FROM " + workspace + "_shorelines";
+
+		try (Connection connection = getConnection()) {
+			try (Statement ps = connection.prepareStatement(sql)) {
+				ResultSet resultSet = ps.getResultSet();
+				return resultSet.getInt(1);
 			}
 		}
 	}

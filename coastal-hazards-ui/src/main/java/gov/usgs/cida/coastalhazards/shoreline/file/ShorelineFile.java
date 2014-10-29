@@ -48,6 +48,7 @@ public abstract class ShorelineFile implements IShorelineFile {
 	static final String CPG = "cpg";
 	static final String CST = "cst";
 	static final String CSV = "csv";
+	static final String DB_SCHEMA_NAME = "public";
 	protected File baseDirectory;
 	protected File uploadDirectory;
 	protected File workDirectory;
@@ -159,7 +160,7 @@ public abstract class ShorelineFile implements IShorelineFile {
 			throw new IOException("Could not create workspace");
 		}
 
-		if (!geoserverHandler.createPGDatastoreInGeoserver(workspace, "shoreline", null, "public")) {
+		if (!geoserverHandler.createPGDatastoreInGeoserver(workspace, "shoreline", null, DB_SCHEMA_NAME)) {
 			throw new IOException("Could not create data store");
 		}
 

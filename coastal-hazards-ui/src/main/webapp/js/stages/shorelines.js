@@ -1,7 +1,4 @@
-/* global LOG */
-/* global CONFIG */
-/* global OpenLayers */
-/* global Handlebars */
+/* global LOG, CONFIG, OpenLayers, Handlebars */
 var Shorelines = {
 	stage: 'shorelines',
 	suffixes: ['_shorelines'],
@@ -13,6 +10,8 @@ var Shorelines = {
 	groupingColumn: 'date',
 	columnMatchingTemplate: undefined,
 	$downloadButton: $('#shorelines-downloadbutton'),
+	$removeButton: $('#shorelines-remove-btn'),
+	CONTROL_IDENTIFY_ID: 'shoreline-identify-control',
 	uploadRequest: {
 		'endpoint': 'service/stage-shoreline',
 		'paramsInBody': false,
@@ -35,8 +34,12 @@ var Shorelines = {
 	},
 	appInit: function () {
 		"use strict";
+		Shorelines.uploadRequest.params.workspace = CONFIG.tempSession.session.id;
+		Shorelines.initializeUploader();
+		
+		// Create an identification control when a user clicks on a shoreline
 		var getShorelineIdControl = new OpenLayers.Control.WMSGetFeatureInfo({
-			title: 'shoreline-identify-control',
+			title: Shorelines.CONTROL_IDENTIFY_ID,
 			layers: [],
 			queryVisible: true,
 			output: 'features',
@@ -47,20 +50,17 @@ var Shorelines = {
 				radius: 3
 			}
 		});
-		Shorelines.uploadRequest.params.workspace = CONFIG.tempSession.session.id;
-		Shorelines.initializeUploader();
 		getShorelineIdControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
 		CONFIG.map.addControl(getShorelineIdControl);
 
-		$('#shorelines-remove-btn').on('click', Shorelines.removeResource);
+		Shorelines.$removeButton.on('click', Shorelines.removeResource);
 
-		Shorelines.enterStage();
-
+		// Add a marker for each published shoreline 
 		var boxLayer = CONFIG.map.getShorelineBoxLayer();
 		CONFIG.ows.wmsCapabilities.published.capability.layers.findAll(function (l) {
 			return l.prefix === CONFIG.name.published && l.name.has('shoreline');
 		}).each(function (l) {
-			var lbbox = l.bbox['EPSG:3857'] ? l.bbox['EPSG:3857'].bbox : l.bbox['EPSG:900913'].bbox;
+			var lbbox = l.bbox['EPSG:4326'];
 			var bounds = OpenLayers.Bounds.fromArray(lbbox);
 			var box = new OpenLayers.Marker.Box(bounds);
 			box.setBorder('#FF0000', 1);
@@ -83,6 +83,7 @@ var Shorelines = {
 			boxLayer.addMarker(box);
 		});
 		
+		// Pre-compile the handlebars template for creating column matching windows
 		$.get('templates/column-matching-modal.mustache').done(function(data) {
 			Shorelines.columnMatchingTemplate = Handlebars.compile(data);
 		});
@@ -91,6 +92,8 @@ var Shorelines = {
 		Shorelines.$downloadButton.on('click', function() {
 			CONFIG.ows.downloadLayerAsShapefile($("#shorelines-list").val());
 		});
+		
+		Shorelines.enterStage();
 	},
 	enterStage: function () {
 		"use strict";
@@ -861,7 +864,7 @@ var Shorelines = {
 	},
 	getShorelineIdControl: function () {
 		"use strict";
-		return CONFIG.map.getControlBy('title', 'shoreline-identify-control');
+		return CONFIG.map.getControlBy('title', Shorelines.CONTROL_IDENTIFY_ID);
 	},
 	activateShorelineIdControl: function () {
 		"use strict";
