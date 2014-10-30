@@ -910,15 +910,45 @@ var Shorelines = {
 				var filterFunc = function (l) {
 					var layerBounds = OpenLayers.Bounds.fromArray(l.bbox[CONFIG.strings.epsg4326].bbox, true)
 						.transform(new OpenLayers.Projection(CONFIG.strings.epsg4326), new OpenLayers.Projection(CONFIG.strings.epsg900913));
-					return Shorelines.aoiBoundsSelected.intersectsBounds(layerBounds);
+					return l.name.endsWith('shorelines') && Shorelines.aoiBoundsSelected.intersectsBounds(layerBounds);
 				},
 					validPublishedLayers = CONFIG.ows.wmsCapabilities.published.capability.layers.filter(filterFunc),
 					validSessionLayers = CONFIG.ows.wmsCapabilities[CONFIG.tempSession.getCurrentSessionKey()].capability.layers.filter(filterFunc),
-					validLayers = validPublishedLayers.concat(validSessionLayers);
+					validLayers = validPublishedLayers.concat(validSessionLayers),
+					createGetFeaturesUrl = function (layer) {
+						var url = CONFIG.ows.geoserverProxyEndpoint + layer.prefix + '/ows?',
+							params = {
+								service : 'WFS',
+								version : '1.1.0',
+								request : 'GetFeature',
+								srsName : 'EPSG:4326',
+								propertyName : layer.prefix + ':date',
+								typeName : layer.prefix + ':' + layer.name,
+								bbox : Shorelines.aoiBoundsSelected.clone().transform(new OpenLayers.Projection(CONFIG.strings.epsg900913), new OpenLayers.Projection(CONFIG.strings.epsg4326)).toArray(true).toString()
+							};
+						return url + $.param(params);
+					},
+					ajaxCalls = validLayers.map(function (l) {
+						return $.ajax(createGetFeaturesUrl(l)).promise();
+					});
 
 				if (validLayers.length) {
 					CONFIG.map.getMap().zoomToExtent(Shorelines.aoiBoundsSelected, true);
-					CONFIG.map.getMap().addLayers(validLayers);
+					$.when.apply($, ajaxCalls).done(function() {
+						var dates = [];
+						$.each(arguments, function (i, r) {
+							var features = new OpenLayers.Format.GML.v3().read(r[0]);
+								dates = dates.union(features.map(function (f) {
+									var origDate = f.data.date;
+									
+									if (origDate.indexOf('Z') !== -1) {
+										origDate = origDate.substring(0, origDate.length - 1);
+									}
+									return Date.create(origDate);
+								}));
+						});
+					});
+					
 				} else {
 					CONFIG.ui.showAlert({
 						message: 'There is no data for the area of interest you selected<br />Try uploading data.',
