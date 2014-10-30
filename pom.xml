@@ -110,7 +110,7 @@
 		<version.jquery>2.1.1</version.jquery>
 		<version.jquery.ui>1.11.1</version.jquery.ui>
 		<version.bootstrap>3.1.1</version.bootstrap>
-		<version.fontawesome>4.0.3</version.fontawesome>
+		<version.fontawesome>4.2.0</version.fontawesome>
 		<version.openlayers>2.13.1</version.openlayers>
 		<gs.version>2.4.8</gs.version>
 		<gt.version>10.8</gt.version>
