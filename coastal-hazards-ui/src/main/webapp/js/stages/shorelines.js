@@ -9,9 +9,13 @@ var Shorelines = {
 	],
 	groupingColumn: 'date',
 	columnMatchingTemplate: undefined,
-	$downloadButton: $('#shorelines-downloadbutton'),
-	$removeButton: $('#shorelines-remove-btn'),
 	CONTROL_IDENTIFY_ID: 'shoreline-identify-control',
+	CONTROL_IDENTIFY_AOI_ID: 'shoreline-identify-aoi-control',
+	LAYER_AOI_NAME: 'layer-aoi-box',
+	$buttonSelectAOI: $('#shorelines-aoi-select-toggle'),
+	$buttonSelectAOIDone: $('#shorelines-aoi-select-done'),
+	$descriptionAOI: $('#description-aoi'),
+	aoiBoundsSelected: null,
 	uploadRequest: {
 		'endpoint': 'service/stage-shoreline',
 		'paramsInBody': false,
@@ -34,65 +38,46 @@ var Shorelines = {
 	},
 	appInit: function () {
 		"use strict";
-		Shorelines.uploadRequest.params.workspace = CONFIG.tempSession.session.id;
-		Shorelines.initializeUploader();
-		
-		// Create an identification control when a user clicks on a shoreline
-		var getShorelineIdControl = new OpenLayers.Control.WMSGetFeatureInfo({
-			title: Shorelines.CONTROL_IDENTIFY_ID,
-			layers: [],
-			queryVisible: true,
-			output: 'features',
-			drillDown: true,
-			maxFeatures: 1000,
-			infoFormat: 'application/vnd.ogc.gml',
-			vendorParams: {
-				radius: 3
-			}
-		});
-		getShorelineIdControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
-		CONFIG.map.addControl(getShorelineIdControl);
-
-		Shorelines.$removeButton.on('click', Shorelines.removeResource);
+		this.uploadRequest.params.workspace = CONFIG.tempSession.session.id;
+		this.initializeUploader();
+		this.bindSelectAOIButton();
+		this.bindSelectAOIDoneButton();
 
 		// Add a marker for each published shoreline 
-		var boxLayer = CONFIG.map.getShorelineBoxLayer();
-		CONFIG.ows.wmsCapabilities.published.capability.layers.findAll(function (l) {
-			return l.prefix === CONFIG.name.published && l.name.has('shoreline');
-		}).each(function (l) {
-			var lbbox = l.bbox['EPSG:4326'].bbox;
-			var bounds = OpenLayers.Bounds.fromArray(lbbox);
-			var box = new OpenLayers.Marker.Box(bounds);
-			box.setBorder('#FF0000', 1);
-			box.events.register('click', box, function () {
-				$("#shorelines-list").val(l.prefix + ':' + l.name).trigger('change');
-			});
-			box.events.register('mouseover', box, function () {
-				box.setBorder('#00FF00', 2);
-				$(box.div).css({
-					'cursor': 'pointer',
-					'border-style': 'dotted'
-				});
-			});
-			box.events.register('mouseout', box, function () {
-				box.setBorder('#FF0000', 1);
-				$(box.div).css({
-					'cursor': 'default'
-				});
-			});
-			boxLayer.addMarker(box);
-		});
-		
+//		var boxLayer = CONFIG.map.getShorelineBoxLayer();
+//		CONFIG.ows.wmsCapabilities.published.capability.layers.findAll(function (l) {
+//			return l.prefix === CONFIG.name.published && l.name.has('shoreline');
+//		}).each(function (l) {
+//			var boundsProjection = new OpenLayers.Projection('EPSG:4326'),
+//				mapProjection = new OpenLayers.Projection(CONFIG.map.getMap().getProjection()),
+//				lbbox = l.bbox['EPSG:4326'].bbox,
+//				bounds = OpenLayers.Bounds.fromArray(lbbox).transform(boundsProjection, mapProjection),
+//				box = new OpenLayers.Marker.Box(bounds);
+//			
+//			box.setBorder('#FF0000', 1);
+//			box.events.register('click', box, function () {
+//			});
+//			box.events.register('mouseover', box, function () {
+//				box.setBorder('#00FF00', 2);
+//				$(box.div).css({
+//					'cursor': 'pointer',
+//					'border-style': 'dotted'
+//				});
+//			});
+//			box.events.register('mouseout', box, function () {
+//				box.setBorder('#FF0000', 1);
+//				$(box.div).css({
+//					'cursor': 'default'
+//				});
+//			});
+//			boxLayer.addMarker(box);
+//		});
+
 		// Pre-compile the handlebars template for creating column matching windows
-		$.get('templates/column-matching-modal.mustache').done(function(data) {
+		$.get('templates/column-matching-modal.mustache').done(function (data) {
 			Shorelines.columnMatchingTemplate = Handlebars.compile(data);
 		});
-		
-		// Bind the download button to download whatever layer is in the dropdown listbox
-		Shorelines.$downloadButton.on('click', function() {
-			CONFIG.ows.downloadLayerAsShapefile($("#shorelines-list").val());
-		});
-		
+
 		Shorelines.enterStage();
 	},
 	enterStage: function () {
@@ -170,7 +155,7 @@ var Shorelines = {
 									layerName: layerName,
 									columns: layerColumns,
 									caller: Shorelines,
-									template : Shorelines.columnMatchingTemplate,
+									template: Shorelines.columnMatchingTemplate,
 									continueCallback: function () {
 										Shorelines.addLayerToMap({
 											layer: layer,
@@ -475,12 +460,12 @@ var Shorelines = {
 					mlBbox,
 					lbbox;
 				if (mapLayer) {
-					mlBbox = mapLayer.bbox['EPSG:4326'];
+					mlBbox = mapLayer.bbox[CONFIG.strings.epsg4326];
 
 					if (mlBbox) {
 						lbbox = mlBbox.bbox;
 						bounds.extend(new OpenLayers.Bounds(lbbox[1], lbbox[0], lbbox[3], lbbox[2]).
-							transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")));
+							transform(new OpenLayers.Projection(CONFIG.strings.epsg4326), new OpenLayers.Projection(CONFIG.strings.epsg900913)));
 
 						if (layer.events.listeners.loadend.length) {
 							layer.events.unregister('added', layer, Shorelines.zoomToLayer);
@@ -501,7 +486,6 @@ var Shorelines = {
 		LOG.info('Shorelines.js::createFeatureTable:: Creating color feature table');
 		var navTabs = $('#shoreline-table-navtabs');
 		var tabContent = $('#shoreline-table-tabcontent');
-		var shorelineList = $('#shorelines-list');
 		var layerPrefix = event.object.prefix;
 		var layerName = event.object.params.LAYERS;
 
@@ -545,7 +529,6 @@ var Shorelines = {
 			if (checked) {
 				checkbox.attr('checked', 'checked');
 			}
-
 
 			toggleDiv.append(checkbox);
 
@@ -751,7 +734,6 @@ var Shorelines = {
 			type: 'numeric'
 		});
 
-		//        $("table.tablesorter").trigger('destroy');
 		$("table").tablesorter({
 			headers: {
 				0: {
@@ -765,97 +747,91 @@ var Shorelines = {
 		$("#shorelines-list").val('');
 		Shorelines.listboxChanged();
 	},
-	listboxChanged: function () {
-		"use strict";
-		LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
-		CONFIG.map.getShorelineBoxLayer().setVisibility(true);
-		Shorelines.disableRemoveButton();
-		Shorelines.disableDownloadButton();
-		LOG.debug('Shorelines.js::listboxChanged: Removing all shorelines from map that were not selected');
-		$("#shorelines-list option:not(:selected)").each(function (index, option) {
-			var layerName = (option.value || ':').split(':')[1],
-				layers = CONFIG.map.getMap().getLayersBy('name', layerName);
-			if (layers.length) {
-				$(layers).each(function (i, layer) {
-					CONFIG.map.getMap().removeLayer(layer);
-
-					var idControl = Shorelines.getShorelineIdControl();
-					var controlLayerIndex = idControl.layers.indexOf(layer);
-					if (controlLayerIndex !== -1) {
-						idControl.layers = idControl.layers.removeAt(controlLayerIndex);
-					}
-				});
-			}
-		});
-
-		var layerInfos = [];
-		var stage = CONFIG.tempSession.getStage(Shorelines.stage);
-		stage.viewing = [];
-		if ($("#shorelines-list option:selected").val()) {
-			CONFIG.map.getShorelineBoxLayer().setVisibility(false);
-			$("#shorelines-list option:selected").each(function (index, option) {
-				LOG.debug('Shorelines.js::shorelineSelected: A shoreline (' + option.text + ') was selected from the select list');
-				var layerFullName = option.value;
-				var layerNamespace = layerFullName.split(':')[0];
-				var layerTitle = layerFullName.split(':')[1];
-				var layer = CONFIG.ows.getLayerByName({
-					layerNS: layerNamespace,
-					layerName: layerTitle
-				});
-				layerInfos.push(layer);
-				stage.viewing.push(layerFullName);
-				if (layerFullName.has(CONFIG.tempSession.getCurrentSessionKey())) {
-					Shorelines.enableRemoveButton();
-					Shorelines.enableDownloadButton();
-				}
-			});
-		}
-		CONFIG.tempSession.persistSession();
-
-		CONFIG.map.getShorelineBoxLayer().setZIndex(1000);
-
-		// Provide default names for base layers and transects
-		var derivedName = '';
-		var selectedLayers = stage.viewing;
-		var getSeries = function (series) {
-			var skey = CONFIG.tempSession.getCurrentSessionKey();
-			var startPoint = series.has(skey) ? skey.length : 0;
-			return series.substr(startPoint, series.lastIndexOf('_') - startPoint);
-		};
-		if (selectedLayers.length === 0) {
-			derivedName += Util.getRandomLorem();
-		}
-
-		if (selectedLayers.length > 0) {
-			derivedName += getSeries(selectedLayers[0].split(':')[1]);
-		}
-
-		if (selectedLayers.length > 1) {
-			derivedName += '_' + getSeries(selectedLayers[1].split(':')[1]);
-		}
-
-		if (selectedLayers.length > 2) {
-			derivedName += '_etal';
-		}
-
-		$('#baseline-draw-form-name').val(derivedName);
-		$('#create-transects-input-name').val(derivedName);
-		$('#results-form-name').val(derivedName);
-
-		if (layerInfos.length) {
-			Shorelines.addShorelines(layerInfos);
-		} else {
-			LOG.debug('Shorelines.js::shorelineSelected: All shorelines in shoreline list are deselected.');
-			$('#shoreline-table-navtabs').children().remove();
-			$('#shoreline-table-tabcontent').children().remove();
-		}
-	},
-	populateFeaturesList: function () {
-		"use strict";
-		CONFIG.ui.populateFeaturesList({
-			caller: Shorelines
-		});
-	},
+//	listboxChanged: function () {
+//		"use strict";
+//		LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
+//		CONFIG.map.getShorelineBoxLayer().setVisibility(true);
+//		Shorelines.disableRemoveButton();
+//		Shorelines.disableDownloadButton();
+//		LOG.debug('Shorelines.js::listboxChanged: Removing all shorelines from map that were not selected');
+//		$("#shorelines-list option:not(:selected)").each(function (index, option) {
+//			var layerName = (option.value || ':').split(':')[1],
+//				layers = CONFIG.map.getMap().getLayersBy('name', layerName);
+//			if (layers.length) {
+//				$(layers).each(function (i, layer) {
+//					CONFIG.map.getMap().removeLayer(layer);
+//
+//					var idControl = Shorelines.getShorelineIdControl();
+//					var controlLayerIndex = idControl.layers.indexOf(layer);
+//					if (controlLayerIndex !== -1) {
+//						idControl.layers = idControl.layers.removeAt(controlLayerIndex);
+//					}
+//				});
+//			}
+//		});
+//
+//		var layerInfos = [];
+//		var stage = CONFIG.tempSession.getStage(Shorelines.stage);
+//		stage.viewing = [];
+//		if ($("#shorelines-list option:selected").val()) {
+//			CONFIG.map.getShorelineBoxLayer().setVisibility(false);
+//			$("#shorelines-list option:selected").each(function (index, option) {
+//				LOG.debug('Shorelines.js::shorelineSelected: A shoreline (' + option.text + ') was selected from the select list');
+//				var layerFullName = option.value;
+//				var layerNamespace = layerFullName.split(':')[0];
+//				var layerTitle = layerFullName.split(':')[1];
+//				var layer = CONFIG.ows.getLayerByName({
+//					layerNS: layerNamespace,
+//					layerName: layerTitle
+//				});
+//				layerInfos.push(layer);
+//				stage.viewing.push(layerFullName);
+//				if (layerFullName.has(CONFIG.tempSession.getCurrentSessionKey())) {
+//					Shorelines.enableRemoveButton();
+//					Shorelines.enableDownloadButton();
+//				}
+//			});
+//		}
+//		CONFIG.tempSession.persistSession();
+//
+//		CONFIG.map.getShorelineBoxLayer().setZIndex(1000);
+//
+//		// Provide default names for base layers and transects
+//		var derivedName = '';
+//		var selectedLayers = stage.viewing;
+//		var getSeries = function (series) {
+//			var skey = CONFIG.tempSession.getCurrentSessionKey();
+//			var startPoint = series.has(skey) ? skey.length : 0;
+//			return series.substr(startPoint, series.lastIndexOf('_') - startPoint);
+//		};
+//		if (selectedLayers.length === 0) {
+//			derivedName += Util.getRandomLorem();
+//		}
+//
+//		if (selectedLayers.length > 0) {
+//			derivedName += getSeries(selectedLayers[0].split(':')[1]);
+//		}
+//
+//		if (selectedLayers.length > 1) {
+//			derivedName += '_' + getSeries(selectedLayers[1].split(':')[1]);
+//		}
+//
+//		if (selectedLayers.length > 2) {
+//			derivedName += '_etal';
+//		}
+//
+//		$('#baseline-draw-form-name').val(derivedName);
+//		$('#create-transects-input-name').val(derivedName);
+//		$('#results-form-name').val(derivedName);
+//
+//		if (layerInfos.length) {
+//			Shorelines.addShorelines(layerInfos);
+//		} else {
+//			LOG.debug('Shorelines.js::shorelineSelected: All shorelines in shoreline list are deselected.');
+//			$('#shoreline-table-navtabs').children().remove();
+//			$('#shoreline-table-tabcontent').children().remove();
+//		}
+//	},
 	initializeUploader: function (args) {
 		"use strict";
 		CONFIG.ui.initializeUploader($.extend({
@@ -864,7 +840,24 @@ var Shorelines = {
 	},
 	getShorelineIdControl: function () {
 		"use strict";
-		return CONFIG.map.getControlBy('title', Shorelines.CONTROL_IDENTIFY_ID);
+		var shorelineIdControl = CONFIG.map.getControlBy('title', Shorelines.CONTROL_IDENTIFY_ID);
+		if (!shorelineIdControl) {
+			shorelineIdControl = new OpenLayers.Control.WMSGetFeatureInfo({
+				title: Shorelines.CONTROL_IDENTIFY_ID,
+				layers: [],
+				queryVisible: true,
+				output: 'features',
+				drillDown: true,
+				maxFeatures: 1000,
+				infoFormat: 'application/vnd.ogc.gml',
+				vendorParams: {
+					radius: 3
+				}
+			});
+			shorelineIdControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
+			CONFIG.map.addControl(shorelineIdControl);
+		}
+		return shorelineIdControl;
 	},
 	activateShorelineIdControl: function () {
 		"use strict";
@@ -890,83 +883,182 @@ var Shorelines = {
 		"use strict";
 		$('#FramedCloud_close').trigger('click');
 	},
-	disableDownloadButton: function () {
-		"use strict";
-		this.$downloadButton.attr('disabled', 'disabled');
+	bindSelectAOIButton: function () {
+		this.$buttonSelectAOI.on('click', function (e) {
+			if ($(e.target).hasClass('active')) {
+				Shorelines.deactivateSelectAOIControl();
+			} else {
+				Shorelines.activateSelectAOIControl();
+			}
+		});
 	},
-	enableDownloadButton: function () {
-		"use strict";
-		this.$downloadButton.removeAttr('disabled');
-	},
-	disableRemoveButton: function () {
-		"use strict";
-		$('#shorelines-remove-btn').attr('disabled', 'disabled');
-	},
-	enableRemoveButton: function () {
-		"use strict";
-		$('#shorelines-remove-btn').removeAttr('disabled');
-	},
-	removeResource: function (args) {
-		"use strict";
-		args = args || {};
-		var layer = args.layer || $('#shorelines-list option:selected')[0].text,
-			store = args.store || 'shorelines',
-			cutOffIndex = layer.lastIndexOf(Shorelines.suffixes[0]),
-			callbacks = args.callbacks || [
-				function (data, textStatus, jqXHR) {
-					CONFIG.ui.showAlert({
-						message: 'Shorelines removed',
-						caller: Shorelines,
-						displayTime: 4000,
-						style: {
-							classes: ['alert-success']
-						}
-					});
-					CONFIG.ows.getWMSCapabilities({
-						namespace: CONFIG.tempSession.getCurrentSessionKey(),
-						callbacks: {
-							success: [
-								function () {
-									$('#shorelines-list').val('');
-									$('#shorelines-list').trigger('change');
-									CONFIG.ui.switchTab({
-										caller: Shorelines,
-										tab: 'view'
-									});
-									Shorelines.populateFeaturesList();
-								}
-							]
-						}
-					});
-
+	bindSelectAOIDoneButton: function () {
+		this.$buttonSelectAOIDone.on('click', function (e) {
+			var boxLayer = Shorelines.getAOISelectionLayer(),
+				boxLayer;
+			if (boxLayer) {
+				if (boxLayer.features && boxLayer.features.length) {
+					Shorelines.aoiBoundsSelected = boxLayer.features[0].geometry.bounds;
+				} else {
+					Shorelines.aoiBoundsSelected = null;
 				}
-			];
+			}
 
-		// I don't want the '_shorelines' suffix going into the removeResource function
-		if (cutOffIndex !== -1) {
-			layer = layer.substring(0, cutOffIndex);
-		}
+			Shorelines.$buttonSelectAOI.trigger('click');
 
-		try {
-			CONFIG.tempSession.removeResource({
-				store: store,
-				layer: layer,
-				extraParams: {
-					isShoreline: 'true'
+			if (Shorelines.aoiBoundsSelected) {
+				var filterFunc = function (l) {
+					var layerBounds = OpenLayers.Bounds.fromArray(l.bbox[CONFIG.strings.epsg4326].bbox, true)
+						.transform(new OpenLayers.Projection(CONFIG.strings.epsg4326), new OpenLayers.Projection(CONFIG.strings.epsg900913));
+					return Shorelines.aoiBoundsSelected.intersectsBounds(layerBounds);
 				},
-				callbacks: callbacks
-			});
-		} catch (ex) {
-			CONFIG.ui.showAlert({
-				message: 'Unable to remove resource - ' + ex,
-				caller: Shorelines,
-				displayTime: 4000,
-				style: {
-					classes: ['alert-error']
+					validPublishedLayers = CONFIG.ows.wmsCapabilities.published.capability.layers.filter(filterFunc),
+					validSessionLayers = CONFIG.ows.wmsCapabilities[CONFIG.tempSession.getCurrentSessionKey()].capability.layers.filter(filterFunc),
+					validLayers = validPublishedLayers.concat(validSessionLayers);
+
+				if (validLayers.length) {
+					CONFIG.map.getMap().zoomToExtent(Shorelines.aoiBoundsSelected, true);
+					CONFIG.map.getMap().addLayers(validLayers);
+				} else {
+					CONFIG.ui.showAlert({
+						message: 'There is no data for the area of interest you selected<br />Try uploading data.',
+						caller: Shorelines,
+						displayTime: 3000,
+						style: {
+							classes: ['alert-warn']
+						}
+					});
 				}
-			});
+
+			} else {
+				CONFIG.ui.showAlert({
+					message: 'You have not selected an area of interest',
+					caller: Shorelines,
+					displayTime: 3000,
+					style: {
+						classes: ['alert-warn']
+					}
+				});
+			}
+		});
+	},
+	activateSelectAOIControl: function () {
+		this.$descriptionAOI.removeClass('hidden');
+		var boxLayer = new OpenLayers.Layer.Vector(Shorelines.LAYER_AOI_NAME),
+			aoiIdControl = new OpenLayers.Control.DrawFeature(boxLayer,
+				OpenLayers.Handler.RegularPolygon,
+				{
+					title: Shorelines.CONTROL_IDENTIFY_AOI_ID,
+					handlerOptions: {
+						sides: 4,
+						irregular: true
+					}
+				});
+
+		// I really only want one box on a layer at any given time
+		boxLayer.events.register('beforefeatureadded', null, function (e) {
+			e.object.removeAllFeatures();
+		});
+
+		CONFIG.map.getMap().addLayers([boxLayer]);
+		CONFIG.map.getMap().addControl(aoiIdControl);
+		aoiIdControl.activate();
+	},
+	deactivateSelectAOIControl: function () {
+		this.$descriptionAOI.addClass('hidden');
+		var shorelineIdAOIControl = CONFIG.map.getControlBy('title', Shorelines.CONTROL_IDENTIFY_AOI_ID),
+			layer;
+
+		if (shorelineIdAOIControl) {
+			layer = shorelineIdAOIControl.layer;
+			CONFIG.map.removeLayer(layer, false);
+			shorelineIdAOIControl.destroy();
 		}
 	},
+	getAOISelectionLayer: function () {
+		var results = CONFIG.map.getMap().getLayersBy('name', Shorelines.LAYER_AOI_NAME);
+		if (results.length) {
+			return results[0];
+		}
+		return null;
+	},
+//	disableDownloadButton: function () {
+//		"use strict";
+//		this.$downloadButton.attr('disabled', 'disabled');
+//	},
+//	enableDownloadButton: function () {
+//		"use strict";
+//		this.$downloadButton.removeAttr('disabled');
+//	},
+//	disableRemoveButton: function () {
+//		"use strict";
+//		$('#shorelines-remove-btn').attr('disabled', 'disabled');
+//	},
+//	enableRemoveButton: function () {
+//		"use strict";
+//		$('#shorelines-remove-btn').removeAttr('disabled');
+//	},
+//	removeResource: function (args) {
+//		"use strict";
+//		args = args || {};
+//		var layer = args.layer || $('#shorelines-list option:selected')[0].text,
+//			store = args.store || 'shorelines',
+//			cutOffIndex = layer.lastIndexOf(Shorelines.suffixes[0]),
+//			callbacks = args.callbacks || [
+//				function (data, textStatus, jqXHR) {
+//					CONFIG.ui.showAlert({
+//						message: 'Shorelines removed',
+//						caller: Shorelines,
+//						displayTime: 4000,
+//						style: {
+//							classes: ['alert-success']
+//						}
+//					});
+//					CONFIG.ows.getWMSCapabilities({
+//						namespace: CONFIG.tempSession.getCurrentSessionKey(),
+//						callbacks: {
+//							success: [
+//								function () {
+//									$('#shorelines-list').val('');
+//									$('#shorelines-list').trigger('change');
+//									CONFIG.ui.switchTab({
+//										caller: Shorelines,
+//										tab: 'view'
+//									});
+//									Shorelines.populateFeaturesList();
+//								}
+//							]
+//						}
+//					});
+//
+//				}
+//			];
+//
+//		// I don't want the '_shorelines' suffix going into the removeResource function
+//		if (cutOffIndex !== -1) {
+//			layer = layer.substring(0, cutOffIndex);
+//		}
+//
+//		try {
+//			CONFIG.tempSession.removeResource({
+//				store: store,
+//				layer: layer,
+//				extraParams: {
+//					isShoreline: 'true'
+//				},
+//				callbacks: callbacks
+//			});
+//		} catch (ex) {
+//			CONFIG.ui.showAlert({
+//				message: 'Unable to remove resource - ' + ex,
+//				caller: Shorelines,
+//				displayTime: 4000,
+//				style: {
+//					classes: ['alert-error']
+//				}
+//			});
+//		}
+//	},
 	getActive: function () {
 		"use strict";
 		return $('#shorelines-list').children(':selected').map(function (i, v) {
@@ -1089,7 +1181,7 @@ var Shorelines = {
 											layerName: token,
 											columns: layerColumns,
 											caller: Shorelines,
-											template : Shorelines.columnMatchingTemplate,
+											template: Shorelines.columnMatchingTemplate,
 											continueCallback: function () {
 												doUpload();
 											},

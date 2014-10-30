@@ -10,7 +10,26 @@
 	</ul>
 	<div class="tab-content">
 		<div class="tab-pane active" id="shorelines-view-tab">
-			<select id="shorelines-list" class="feature-list"></select>
+			<p class="text-center">
+				<button data-toggle="button" class="btn btn-success" id="shorelines-aoi-select-toggle">
+					<i class="fa fa-map-marker icon-white"></i> Select Area Of Interest
+				</button>
+			</p>
+			<div id="description-aoi" class="well hidden">
+				<h3>Selecting An Area Of Interest</h3>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin 
+					pretium varius ipsum, sit amet sollicitudin mauris tristique non. 
+					Sed ligula leo, ullamcorper non felis sit amet, facilisis luctus dui. 
+					Aliquam vel magna nunc. Mauris quam arcu, viverra id lacus sodales, 
+					imperdiet cursus magna. In vel efficitur lacus.
+				</p>
+				<p class="text-center">
+					<button class="btn btn-success" id="shorelines-aoi-select-done">
+						<i class="fa fa-check icon-white"></i> I'm Done
+					</button>
+				</p>
+			</div>
 			<div class="tabbable">
 				<ul class="nav nav-tabs" id="shoreline-table-navtabs">
 				</ul>
@@ -21,11 +40,6 @@
 		<div class="tab-pane" id="shorelines-manage-tab">
 			<div id="shorelines-uploader" class="uploader"></div>
 			<button class="btn btn-success" id="shorelines-triggerbutton"><i class="icon-arrow-up icon-white"></i>Upload</button>
-			<button class="btn btn-success" disabled id="shorelines-downloadbutton"><i class="icon-arrow-down icon-white"></i>Download</button>
-			<button id="shorelines-remove-btn" disabled class="btn btn-success">
-				<i class="icon-remove icon-white"></i>
-				&nbsp;Remove
-			</button>
 		</div>
 	</div>
 </div> <!-- /Shorelines -->

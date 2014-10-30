@@ -35,7 +35,7 @@ var Baseline = {
 		var drawLayer = new OpenLayers.Layer.Vector("baseline-draw-layer", {
 			displayInLayerSwitcher: false,
 			strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
-			projection: new OpenLayers.Projection('EPSG:3857'),
+			projection: new OpenLayers.Projection(CONFIG.strings.epsg3857),
 			protocol: new OpenLayers.Protocol.WFS({
 				version: "1.1.0",
 				url: "geoserver/ows",

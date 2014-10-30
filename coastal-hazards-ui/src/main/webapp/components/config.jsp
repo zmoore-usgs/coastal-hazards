@@ -1,9 +1,9 @@
 <%@page import="gov.usgs.cida.coastalhazards.service.util.Property"%>
 <%@page import="gov.usgs.cida.coastalhazards.service.util.PropertyUtil"%>
-<%!    
-    boolean development = Boolean.parseBoolean(PropertyUtil.getProperty(Property.DEVELOPMENT));
-    String geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
-    String n52Endpoint = PropertyUtil.getProperty(Property.N52_ENDPOINT);
+<%!
+	boolean development = Boolean.parseBoolean(PropertyUtil.getProperty(Property.DEVELOPMENT));
+	String geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
+	String n52Endpoint = PropertyUtil.getProperty(Property.N52_ENDPOINT);
 %>
 <script type="text/javascript">
 	splashUpdate("Setting configuration...");
@@ -24,6 +24,11 @@
 	CONFIG.name = {};
 	CONFIG.name.published = 'published';
 	CONFIG.name.proxydatumbias = 'proxydatumbias';
+	CONFIG.strings = {
+		epsg4326: 'EPSG:4326',
+		epsg900913: 'EPSG:900913',
+		epsg3857: 'EPSG:3857'
+	};
 	CONFIG.dateFormat = {
 		padded: '{yyyy}-{MM}-{dd}',
 		nonPadded: '{yyyy}-{M}-{d}'
@@ -72,7 +77,7 @@
 		}
 	};
 
-	JSON.stringify = JSON.stringify || function(obj) {
+	JSON.stringify = JSON.stringify || function (obj) {
 		var t = typeof (obj);
 		if (t !== "object" || obj === null) {
 			// simple data type
@@ -85,7 +90,7 @@
 			var n, v, json = [], arr = (obj && obj.constructor === Array);
 			for (n in obj) {
 				v = obj[n];
-				t = typeof(v);
+				t = typeof (v);
 				if (t === "string")
 					v = '"' + v + '"';
 				else if (t === "object" && v !== null)

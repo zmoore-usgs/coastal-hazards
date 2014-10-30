@@ -110,7 +110,7 @@ CCH.Session = function (name, isPerm) {
 					return false;
 				}
 			}
-			
+
 			return true;
 		};
 		return verifySessionId(sessionsObj.id);
@@ -241,6 +241,36 @@ CCH.Session = function (name, isPerm) {
 			return me.session[stage][config.name];
 		};
 
+		me.updateSessionFromWMS = function (args) {
+			var wmsCapabilities = CONFIG.ows.wmsCapabilities,
+				currentSessionKey = CONFIG.tempSession.getCurrentSessionKey(),
+				stage = args.stage,
+				suffixes = stage.suffixes;
+
+			wmsCapabilities.keys().each(function (layerNS) {
+				var cap = wmsCapabilities[layerNS];
+				var layers = cap.capability.layers;
+
+				layers.each(function (layer) {
+					var title = layer.title;
+					if (layerNS === CONFIG.name.published || layerNS === CONFIG.name.proxydatumbias || layerNS === currentSessionKey) {
+						var type = title.substr(title.lastIndexOf('_'));
+						if (suffixes.length === 0 || suffixes.indexOf(type.toLowerCase()) !== -1) {
+							var layerFullName = layer.prefix + ':' + layer.name;
+							var sessionStage = CONFIG.tempSession.getStage(stage.stage);
+							var lIdx = sessionStage.layers.findIndex(function (l) {
+								return l === layerFullName;
+							});
+							if (lIdx === -1) {
+								sessionStage.layers.push(layerFullName);
+							}
+							CONFIG.tempSession.persistSession();
+						}
+					}
+				});
+			});
+		};
+
 		me.updateLayersFromWMS = function (args) {
 			LOG.debug('Session.js::updateLayersFromWMS');
 
@@ -313,7 +343,7 @@ CCH.Session = function (name, isPerm) {
 			} else {
 				LOG.info('Session.js::updateLayersFromWMS: Could not find any layers for this session. Removing any existing layers in session object');
 			}
-			
+
 			me.persistSession();
 		};
 

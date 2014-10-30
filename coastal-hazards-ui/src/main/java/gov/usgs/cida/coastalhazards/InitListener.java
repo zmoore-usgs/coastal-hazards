@@ -53,8 +53,10 @@ public class InitListener implements ServletContextListener {
 		}
 
 		try {
+			LOGGER.info("Updating published workspace in database");
 			new ShorelineShapefileDAO().createViewAgainstPublishedWorkspace();
 			
+			LOGGER.info("Updating published workspace in Geoserver");
 			String geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
 			String geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
 			String geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);

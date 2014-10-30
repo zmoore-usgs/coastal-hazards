@@ -69,7 +69,14 @@ $(document).ready(function () {
 		var loadApp = function (data, textStatus, jqXHR) {
 			CONFIG.ui.work_stages_objects.each(function (stage) {
 				stage.appInit();
-				stage.populateFeaturesList(data, textStatus, jqXHR);
+				
+				if (typeof stage.populateFeaturesList === 'function') {
+					stage.populateFeaturesList(data, textStatus, jqXHR);
+				}
+				
+				CONFIG.tempSession.updateSessionFromWMS({
+					stage: stage
+				});
 			});
 
 			$('.qq-upload-button').addClass('btn btn-success');
