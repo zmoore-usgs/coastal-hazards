@@ -5,6 +5,7 @@ import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
+import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.features.AttributeGetter;
 import gov.usgs.cida.utilities.features.Constants;
 import java.io.File;
@@ -55,9 +56,6 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 
 	public ShorelineShapefileDAO() {
 		this.JNDI_NAME = PropertyUtil.getProperty(Property.JDBC_NAME);
-		if (StringUtils.isBlank(ShorelineFileDao.PUBLISHED_WORKSPACE_NAME)) {
-			ShorelineFileDao.PUBLISHED_WORKSPACE_NAME = PropertyUtil.getProperty("coastal-hazards.workspace.published", "published");
-		}
 	}
 
 	/**
@@ -70,7 +68,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 	 */
 	public String createViewAgainstPublishedWorkspace() throws SQLException {
 		try (Connection connection = getConnection()) {
-			return createViewAgainstWorkspace(connection, ShorelineFileDao.PUBLISHED_WORKSPACE_NAME);
+			return createViewAgainstWorkspace(connection, GeoserverHandler.PUBLISHED_WORKSPACE_NAME);
 		}
 	}
 

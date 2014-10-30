@@ -1,7 +1,10 @@
 package gov.usgs.cida.coastalhazards.shoreline.dao;
 
+import gov.usgs.cida.coastalhazards.service.util.Property;
+import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
+import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.features.Constants;
 import java.io.File;
 import java.io.IOException;
@@ -33,9 +36,9 @@ public abstract class ShorelineFileDao {
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineFileDao.class);
 	public final static int DATABASE_PROJECTION = 4326;
 	public final static String[] REQUIRED_FIELD_NAMES = new String[]{Constants.DB_DATE_ATTR, Constants.UNCY_ATTR, Constants.MHW_ATTR};
-	public final static String[] PROTECTED_WORKSPACES = new String[]{JNDISingleton.getInstance().getProperty("coastal-hazards.workspace.published", "published")};
+	public final static String DB_SCHEMA_NAME = PropertyUtil.getProperty(Property.DB_SCHEMA_NAME, "public");
+	public final static String[] PROTECTED_WORKSPACES = new String[]{GeoserverHandler.PUBLISHED_WORKSPACE_NAME};
 	protected String JNDI_NAME;
-	protected static String PUBLISHED_WORKSPACE_NAME;
 
 	/**
 	 * Retrieves a connection from the database

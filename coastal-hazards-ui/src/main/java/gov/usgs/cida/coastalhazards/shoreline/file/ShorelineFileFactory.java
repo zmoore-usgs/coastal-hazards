@@ -70,15 +70,6 @@ public class ShorelineFileFactory {
 		init(requestWorkspace);
 	}
 
-	/**
-	 * Creates a generic 
-	 * @param workspace
-	 * @return 
-	 */
-	public static ShorelineGenericFile buildShorelineGenericFile() {
-		return new ShorelineGenericFile();
-	}
-	
 	private void init(String workspace) {
 		this.baseDirectory = new File(PropertyUtil.getProperty(Property.DIRECTORIES_BASE, FileUtils.getTempDirectory().getAbsolutePath()));
 		this.uploadDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD));

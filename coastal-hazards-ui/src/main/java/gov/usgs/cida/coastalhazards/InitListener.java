@@ -3,15 +3,11 @@ package gov.usgs.cida.coastalhazards;
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineShapefileDAO;
-import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFileFactory;
-import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineGenericFile;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -34,12 +30,12 @@ public class InitListener implements ServletContextListener {
 		String key = Property.JDBC_NAME.getKey();
 		String initParameter = sc.getInitParameter(key);
 		System.setProperty(key, initParameter);
-		
+
 		String baseDir = PropertyUtil.getProperty(Property.DIRECTORIES_BASE, FileUtils.getTempDirectoryPath() + "/coastal-hazards");
 		String workDir = PropertyUtil.getProperty(Property.DIRECTORIES_WORK, "/work");
 		String uploadDir = PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD, "/upload");
 		File baseDirFile, workDirFile, uploadDirFile;
-		
+
 		baseDirFile = new File(baseDir);
 		workDirFile = new File(baseDirFile, workDir);
 		uploadDirFile = new File(baseDirFile, uploadDir);
@@ -55,10 +51,15 @@ public class InitListener implements ServletContextListener {
 		if (!uploadDirFile.exists()) {
 			createDir(uploadDirFile);
 		}
-		
+
 		try {
 			new ShorelineShapefileDAO().createViewAgainstPublishedWorkspace();
-			ShorelineFileFactory.buildShorelineGenericFile().createOrUpdatePublishedWorkspaceOnGeoserver();
+			
+			String geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
+			String geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
+			String geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
+			GeoserverHandler geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
+			geoserverHandler.createOrUpdatePublishedWorkspaceOnGeoserver();
 		} catch (SQLException ex) {
 			LOGGER.warn("Could not access published workspace. This may affect the proper funcitoning of the application", ex);
 		} catch (IOException ex) {

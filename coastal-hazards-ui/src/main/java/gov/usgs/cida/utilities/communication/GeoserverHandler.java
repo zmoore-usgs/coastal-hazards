@@ -3,6 +3,7 @@ package gov.usgs.cida.utilities.communication;
 import com.vividsolutions.jts.geom.Envelope;
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
+import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
 import gov.usgs.cida.utilities.xml.XMLUtils;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
@@ -63,7 +64,7 @@ import org.w3c.dom.NodeList;
  */
 public class GeoserverHandler {
 
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GeoserverHandler.class);
+	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(GeoserverHandler.class);
 	private static final String PARAM_POST = "POST";
 	private static final String PARAM_PUT = "PUT";
 	private static final String PARAM_GET = "GET";
@@ -76,6 +77,7 @@ public class GeoserverHandler {
 	private static final String OUTPUT_STORE_NAME = "ch-output";
 	private static final int PARAM_SERVER_OK = 200;
 	private static final int PARAM_SERVER_NOT_FOUND = 404;
+	public static final String PUBLISHED_WORKSPACE_NAME = PropertyUtil.getProperty("coastal-hazards.workspace.published", "published");
 	private String url;
 	private String user;
 	private String password;
@@ -85,10 +87,11 @@ public class GeoserverHandler {
 		this.url = fixURL(url); // ensure url ends with a '/'
 		this.user = user;
 		this.password = password;
+
 		try {
 			gsrm = new GeoServerRESTManager(new URL(url), user, password);
 		} catch (MalformedURLException ex) {
-			LOG.error("Could not initialize Geoserver REST Manager. Application may have issues communicating with GeoServer", ex);
+			LOGGER.error("Could not initialize Geoserver REST Manager. Application may have issues communicating with GeoServer", ex);
 		}
 	}
 
@@ -192,12 +195,12 @@ public class GeoserverHandler {
 	public void createDataStoreFromShapefile(String shapefilePath, String layer,
 			String workspace, String nativeCRS, String declaredCRS) throws IOException {
 
-		LOG.debug("Creating data store on WFS server located at: " + url);
+		LOGGER.debug("Creating data store on WFS server located at: " + url);
 
 		String workspacesPath = PARAM_REST_WORKSPACES;
 		if (!workspaceExists(workspace)) {
 			String workspaceXML = createWorkspaceXML(workspace);
-			LOG.debug("Sending XML to GeoServer to create workspace: " + workspace + ". Response follows.");
+			LOGGER.debug("Sending XML to GeoServer to create workspace: " + workspace + ". Response follows.");
 			HttpResponse htr = sendRequest(workspacesPath, PARAM_POST, PARAM_TEXT_XML, workspaceXML);
 		}
 
@@ -231,7 +234,7 @@ public class GeoserverHandler {
 				"<layer><defaultStyle><name>polygon</name></defaultStyle>"
 				+ "<enabled>true</enabled></layer>");
 
-		LOG.debug("Datastore successfully created on WFS server located at: " + url);
+		LOGGER.debug("Datastore successfully created on WFS server located at: " + url);
 	}
 
 	String getNameSpaceXML(String workspace) throws IOException {
@@ -249,17 +252,17 @@ public class GeoserverHandler {
 	public void deleteOutdatedDataStores(long maximumFileAge, String... workspaces)
 			throws IOException, XPathExpressionException {
 
-		LOG.info("Wiping old files task for existing workspaces.");
+		LOGGER.info("Wiping old files task for existing workspaces.");
 
 		long now = new Date().getTime();
 
 		for (String workspace : workspaces) {
 			if (!workspaceExists(workspace)) {
-				LOG.info("Workspace '" + workspace + "' does not exist on Geoserver. Skipping.");
+				LOGGER.info("Workspace '" + workspace + "' does not exist on Geoserver. Skipping.");
 				continue;
 			}
 
-			LOG.info("Checking workspace: " + workspace);
+			LOGGER.info("Checking workspace: " + workspace);
 			List<String> dataStoreNames = listDataStores(workspace);
 			// Check the data stores in this workspace
 			for (String dataStore : dataStoreNames) {
@@ -273,13 +276,13 @@ public class GeoserverHandler {
 				boolean deleteFromGeoserver = false;
 				if (diskLocationFileObject.exists()) {
 					if (diskLocationFileObject.lastModified() < now - maximumFileAge) {
-						LOG.info("File " + diskLocationFileObject.getPath()
+						LOGGER.info("File " + diskLocationFileObject.getPath()
 								+ " older than cutoff. Will remove from Geoserver.");
 
 						deleteFromGeoserver = true;
 					}
 				} else {
-					LOG.info("File " + diskLocationFileObject.getPath()
+					LOGGER.info("File " + diskLocationFileObject.getPath()
 							+ " not found on disk. Will remove from Geoserver.");
 
 					deleteFromGeoserver = true;
@@ -314,13 +317,13 @@ public class GeoserverHandler {
 			try {
 				FileUtils.deleteDirectory(diskLocationFileObject);
 			} catch (IOException e) {
-				LOG.warn("An error occurred while trying to delete directory"
+				LOGGER.warn("An error occurred while trying to delete directory"
 						+ diskLocationFileObject.getPath() + ". This may need to "
 						+ "be deleted manually. \nError: " + e.getMessage() + "\nContinuing.");
 			}
 		} else {
 			if (!FileUtils.deleteQuietly(new File(diskLocationFileObject.getParent()))) {
-				LOG.warn("Could not fully remove the directory: "
+				LOGGER.warn("Could not fully remove the directory: "
 						+ diskLocationFileObject.getParent() + "\nPossibly files left over.");
 			}
 		}
@@ -362,19 +365,19 @@ public class GeoserverHandler {
 	}
 
 	boolean deleteLayer(String layerName, boolean recursive) throws IOException {
-		LOG.info("Deleting layer '" + layerName + "'");
+		LOGGER.info("Deleting layer '" + layerName + "'");
 		int responseCode = getResponseCode("rest/layers/" + layerName
 				+ ((recursive) ? "?recurse=true" : ""), PARAM_DELETE);
 
 		switch (responseCode) {
 			case PARAM_SERVER_OK:
-				LOG.info("Layer '" + layerName + "' was successfully deleted.");
+				LOGGER.info("Layer '" + layerName + "' was successfully deleted.");
 				break;
 			case PARAM_SERVER_NOT_FOUND:
-				LOG.info("Layer '" + layerName + "' was not found on server.");
+				LOGGER.info("Layer '" + layerName + "' was not found on server.");
 				break;
 			default:
-				LOG.info("Layer '" + layerName + "' could not be deleted.");
+				LOGGER.info("Layer '" + layerName + "' could not be deleted.");
 		}
 
 		return isSuccessResponse(responseCode);
@@ -383,20 +386,20 @@ public class GeoserverHandler {
 	boolean deleteDataStore(String workspace, String dataStore)
 			throws IOException, XPathExpressionException {
 
-		LOG.info("Deleting datastore '" + dataStore + "' under workspace '" + workspace + "'");
+		LOGGER.info("Deleting datastore '" + dataStore + "' under workspace '" + workspace + "'");
 
 		int responseCode = getResponseCode(PARAM_REST_WORKSPACES + workspace
 				+ PARAM_DATASTORES + dataStore + "?recurse=true", PARAM_DELETE);
 
 		switch (responseCode) {
 			case PARAM_SERVER_OK:
-				LOG.info("Datastore '" + workspace + ":" + dataStore + "' was successfully deleted.");
+				LOGGER.info("Datastore '" + workspace + ":" + dataStore + "' was successfully deleted.");
 				break;
 			case PARAM_SERVER_NOT_FOUND:
-				LOG.info("Datastore '" + workspace + ":" + dataStore + "' was not found on server.");
+				LOGGER.info("Datastore '" + workspace + ":" + dataStore + "' was not found on server.");
 				break;
 			default:
-				LOG.info("Datastore '" + workspace + ":" + dataStore + "' could not be deleted.");
+				LOGGER.info("Datastore '" + workspace + ":" + dataStore + "' could not be deleted.");
 		}
 
 		return isSuccessResponse(responseCode);
@@ -409,7 +412,7 @@ public class GeoserverHandler {
 	boolean deleteFeatureType(String workspace, String dataStore, String featureType, boolean recursive)
 			throws IOException {
 
-		LOG.info("Deleting feature type '" + workspace + ":" + featureType + "'");
+		LOGGER.info("Deleting feature type '" + workspace + ":" + featureType + "'");
 
 		int responseCode = getResponseCode(PARAM_REST_WORKSPACES + workspace
 				+ PARAM_DATASTORES + dataStore + "/featuretypes/" + featureType
@@ -417,13 +420,13 @@ public class GeoserverHandler {
 
 		switch (responseCode) {
 			case PARAM_SERVER_OK:
-				LOG.info("Feature type '" + workspace + ":" + featureType + "' was successfully deleted.");
+				LOGGER.info("Feature type '" + workspace + ":" + featureType + "' was successfully deleted.");
 				break;
 			case PARAM_SERVER_NOT_FOUND:
-				LOG.info("Feature type '" + workspace + ":" + featureType + "' was not found on server.");
+				LOGGER.info("Feature type '" + workspace + ":" + featureType + "' was not found on server.");
 				break;
 			default:
-				LOG.info("Feature type '" + workspace + ":" + featureType + "' could not be deleted.");
+				LOGGER.info("Feature type '" + workspace + ":" + featureType + "' could not be deleted.");
 		}
 
 		return isSuccessResponse(responseCode);
@@ -574,7 +577,7 @@ public class GeoserverHandler {
 			((HttpEntityEnclosingRequestBase) request).setEntity(contentEntity);
 		}
 		HttpResponse response = client.execute(request);
-		LOG.debug("Response: " + response.getStatusLine().getReasonPhrase() + " " + response.getStatusLine().getStatusCode());
+		LOGGER.debug("Response: " + response.getStatusLine().getReasonPhrase() + " " + response.getStatusLine().getStatusCode());
 		return response;
 	}
 
@@ -680,7 +683,7 @@ public class GeoserverHandler {
 				try {
 					_nsURI = new URI(uriStr);
 				} catch (URISyntaxException ex) {
-					LOG.info("Could not create namespace URI from {}", uriStr);
+					LOGGER.info("Could not create namespace URI from {}", uriStr);
 				}
 			}
 			return gsrm.getPublisher().createWorkspace(workspace, _nsURI);
@@ -728,7 +731,7 @@ public class GeoserverHandler {
 			// I've since changed the session to be all lowercase anyway, but keeping
 			// this here as a mark of shame against Geoserver. FOR SHAME!
 			fte.setName(layerName);
-			fte.setTitle(layerName.substring(workspace.length() + 1));
+			fte.setTitle(layerName);
 
 			GSLayerEncoder le = new GSLayerEncoder();
 			le.setEnabled(true);
@@ -766,7 +769,7 @@ public class GeoserverHandler {
 		try {
 			reloaded = gsrm.getPublisher().reloadStore(workspace, storename, GeoServerRESTPublisher.StoreType.DATASTORES);
 		} catch (IllegalArgumentException | MalformedURLException ex) {
-			LOG.info("Could not reload Geoserver store", ex);
+			LOGGER.info("Could not reload Geoserver store", ex);
 		}
 		return reloaded;
 	}
@@ -897,5 +900,25 @@ public class GeoserverHandler {
 		publisher.reloadStore(workspace, store, GeoServerRESTPublisher.StoreType.DATASTORES);
 		publisher.reload();
 		return success;
+	}
+
+	public void createOrUpdatePublishedWorkspaceOnGeoserver() throws IOException {
+		if (!createWorkspaceInGeoserver(PUBLISHED_WORKSPACE_NAME, null)) {
+			throw new IOException("Could not create workspace");
+		}
+
+		if (!createPGDatastoreInGeoserver(PUBLISHED_WORKSPACE_NAME, "shoreline", null, ShorelineFileDao.DB_SCHEMA_NAME)) {
+			throw new IOException("Could not create data store");
+		}
+
+		if (!createShorelineLayerInGeoserver(PUBLISHED_WORKSPACE_NAME, "shoreline", PUBLISHED_WORKSPACE_NAME + "_shorelines")) {
+			throw new IOException("Could not create shoreline layer");
+		}
+
+		if (touchWorkspace(PUBLISHED_WORKSPACE_NAME)) {
+			LOGGER.debug("Geoserver workspace {} updated", PUBLISHED_WORKSPACE_NAME);
+		} else {
+			LOGGER.debug("Geoserver workspace {} could not be updated", PUBLISHED_WORKSPACE_NAME);
+		}
 	}
 }

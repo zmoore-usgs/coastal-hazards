@@ -60,7 +60,7 @@ var Shorelines = {
 		CONFIG.ows.wmsCapabilities.published.capability.layers.findAll(function (l) {
 			return l.prefix === CONFIG.name.published && l.name.has('shoreline');
 		}).each(function (l) {
-			var lbbox = l.bbox['EPSG:4326'];
+			var lbbox = l.bbox['EPSG:4326'].bbox;
 			var bounds = OpenLayers.Bounds.fromArray(lbbox);
 			var box = new OpenLayers.Marker.Box(bounds);
 			box.setBorder('#FF0000', 1);
