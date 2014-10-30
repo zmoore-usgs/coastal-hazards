@@ -7,6 +7,7 @@ var ProxyDatumBias = {
 	suffixes: ['_bias'],
 	mandatoryColumns: ['the_geom', 'segment_id', 'bias', 'avg_slope', 'uncyb'],
 	columnMatchingTemplate: undefined,
+	$removeButton: $('#bias-remove-btn'),
 	description: {
 		'stage': '<p>Need description of PDB step here.',
 		'view-tab': 'Select a published collection of bias lines/points to add to the workspace.',
@@ -15,14 +16,35 @@ var ProxyDatumBias = {
 	},
 	appInit: function () {
 		ProxyDatumBias.initializeUploader();
+		
+		ProxyDatumBias.$removeButton.on('click', ProxyDatumBias.removeResource);
 
-		$('#bias-remove-btn').on('click', ProxyDatumBias.removeResource);
-
-		$.get('templates/column-matching-modal.mustache').done(function(data) {
+		$.get('templates/column-matching-modal.mustache').done(function (data) {
 			ProxyDatumBias.columnMatchingTemplate = Handlebars.compile(data);
 		});
 
-		ProxyDatumBias.enterStage();
+		CONFIG.ows.getWMSCapabilities({
+			namespace: ProxyDatumBias.overrideWorkspace,
+			callbacks: {
+				success: [
+					function () {
+						LOG.trace('OnReady.js:: WMS Capabilities retrieved for ' 
+							+ ProxyDatumBias.overrideWorkspace 
+							+ ' workspace');
+					}
+				],
+				error: [
+					function () {
+						CONFIG.ui.createModalWindow({
+							headerHtml: 'Unable to interrogate OWS server',
+							bodyHtml: 'The application could not interrogate the OWS server to get ' 
+								+ ProxyDatumBias.overrideWorkspace 
+								+ ' layers.'
+						});
+					}
+				]
+			}
+		});
 	},
 	enterStage: function () {
 		LOG.debug('bias.js::enterStage');
@@ -85,7 +107,7 @@ var ProxyDatumBias = {
 									layerName: layerName,
 									columns: layerColumns,
 									caller: ProxyDatumBias,
-									template : ProxyDatumBias.columnMatchingTemplate,
+									template: ProxyDatumBias.columnMatchingTemplate,
 									continueCallback: function () {
 										ProxyDatumBias.addLayerToMap({
 											layer: layer,
@@ -252,10 +274,10 @@ var ProxyDatumBias = {
 		$('#FramedCloud_close').trigger('click');
 	},
 	disableRemoveButton: function () {
-		$('#bias-remove-btn').attr('disabled', 'disabled');
+		ProxyDatumBias.$removeButton.attr('disabled', 'disabled');
 	},
 	enableRemoveButton: function () {
-		$('#bias-remove-btn').removeAttr('disabled');
+		ProxyDatumBias.$removeButton.removeAttr('disabled');
 	},
 	removeResource: function (args) {
 		args = args || {};

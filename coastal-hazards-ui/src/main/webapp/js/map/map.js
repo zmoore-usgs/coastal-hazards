@@ -132,6 +132,7 @@ var Map = function() {
 	
     LOG.debug('Map.js::constructor: Map class initialized.');
     return $.extend(me, {
+		$mapDiv : $('#map'),
         getMap : function() {
             return me.map;
         },

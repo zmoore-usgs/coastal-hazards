@@ -1,4 +1,4 @@
-/* global CONFIG */
+/* global CONFIG, Map */
 var UI = function () {
 	"use strict";
 	LOG.info('UI.js::constructor: UI class is initializing.');
@@ -67,7 +67,7 @@ var UI = function () {
 				$('#nav-list').css('min-height', contentRowHeight);
 				$('#toolbox-span').css('min-height', contentRowHeight);
 				$('#map-span').css('min-height', contentRowHeight);
-				$('#map').css('height', contentRowHeight);
+				CONFIG.map.$mapDiv.css('height', contentRowHeight);
 				CONFIG.map.getMap().updateSize();
 
 				// Move the zoom control over to the right

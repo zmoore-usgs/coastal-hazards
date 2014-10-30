@@ -184,22 +184,25 @@ var OWS = function(endpoint) {
             });
         },
         getWFSCapabilities : function(args) {
+			LOG.info('OWS.js::getWFSCapabilities');
             args = args || {};
+			
 			var callbacks = args.callbacks || {},
 				sucessCallbacks = callbacks.success || [],
 				errorCallbacks = callbacks.error || [];
+			
             $.ajax(me.wfsGetCapsUrl, {
                 context: args,
-                success : function(data, textStatus, jqXHR) {
+                success : function(data) {
                     var getCapsResponse = new OpenLayers.Format.WFSCapabilities.v1_1_0().read(data); 
                     me.wfsCapabilities = getCapsResponse;
                     me.wfsCapabilitiesXML = data;
-                    $(sucessCallbacks).each(function(index, callback) {
+                    $.each(sucessCallbacks, function(index, callback) {
                         callback(getCapsResponse, this);
                     });
                 },
                 error : function(data,textStatus, jqXHR) {
-                    $(errorCallbacks).each(function(i, callback) {
+                    $.each(errorCallbacks, function(i, callback) {
 						callback({
 							data : data, 
 							textStatus : textStatus,
