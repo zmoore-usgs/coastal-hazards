@@ -3,7 +3,6 @@ package gov.usgs.cida.coastalhazards.shoreline.dao;
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
-import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.features.Constants;
 import java.io.File;

@@ -1,3 +1,5 @@
+<%@page import="gov.usgs.cida.utilities.features.Constants"%>
+<%@page import="gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile"%>
 <%@page import="gov.usgs.cida.coastalhazards.service.util.Property"%>
 <%@page import="gov.usgs.cida.coastalhazards.service.util.PropertyUtil"%>
 <%!
@@ -27,7 +29,24 @@
 	CONFIG.strings = {
 		epsg4326: 'EPSG:4326',
 		epsg900913: 'EPSG:900913',
-		epsg3857: 'EPSG:3857'
+		epsg3857: 'EPSG:3857',
+		columnAttrNames: {
+			'LRR': '<%= Constants.LRR_ATTR%>',
+			'WLR': '<%= Constants.WLR_ATTR%>',
+			'SCE': '<%= Constants.SCE_ATTR%>',
+			'NSM': '<%= Constants.NSM_ATTR%>',
+			'EPR': '<%= Constants.EPR_ATTR%>',
+			'LCI': '<%= Constants.LCI_ATTR%>',
+			'WCI': '<%= Constants.WCI_ATTR%>',
+			'ECI': '<%= Constants.ECI_ATTR%>',
+			'MHW': '<%= Constants.MHW_ATTR%>',
+			'SurveyID': '<%= Constants.SURVEY_ID_ATTR%>',
+			'distance' : '<%= Constants.DISTANCE_ATTR%>',
+			'defaultDirection' : '<%= Constants.DEFAULT_D_ATTR%>',
+			'name' : '<%= Constants.NAME_ATTR%>',
+			'source' : '<%= Constants.SOURCE_ATTR%>',
+			'biasUncertainty' : '<%= Constants.BIAS_UNCY_ATTR%>'
+		}
 	};
 	CONFIG.dateFormat = {
 		padded: '{yyyy}-{MM}-{dd}',
@@ -45,38 +64,37 @@
 	// Sets the AJAX Timeout in milliseconds
 	CONFIG.ajaxTimeout = 300000;
 	CONFIG.graph = Object.extended();
-	CONFIG.graph.enabled = 'LRR';
+	CONFIG.graph.enabled = CONFIG.strings.columnAttrNames.LRR;
 	CONFIG.graph.displayMap = {
-		'LRR': {
+		'<%= Constants.LRR_ATTR%>': {
 			longName: 'Linear regression rate +/- LCI',
 			units: 'm yr^-1',
-			uncertainty: 'LCI',
+			uncertainty: CONFIG.strings.columnAttrNames.LCI,
 			invert: true
 		},
-		'WLR': {
+		'<%= Constants.WLR_ATTR%>': {
 			longName: 'Weighted linear regression rate +/i WCI',
 			units: 'm yr^-1',
-			uncertainty: 'WCI',
+			uncertainty: CONFIG.strings.columnAttrNames.WCI,
 			invert: true
 		},
-		'SCE': {
+		'<%= Constants.SCE_ATTR%>': {
 			longName: 'Shoreline change envelope',
 			units: 'm',
 			invert: false
 		},
-		'NSM': {
+		'<%= Constants.NSM_ATTR%>': {
 			longName: 'Net shoreline movement',
 			units: 'm',
 			invert: false
 		},
-		'EPR': {
+		'<%= Constants.EPR_ATTR%>': {
 			longName: 'End point rate',
 			units: 'm yr^-1',
-			uncertainty: 'ECI',
+			uncertainty: CONFIG.strings.columnAttrNames.ECI,
 			invert: false
 		}
 	};
-
 	JSON.stringify = JSON.stringify || function (obj) {
 		var t = typeof (obj);
 		if (t !== "object" || obj === null) {

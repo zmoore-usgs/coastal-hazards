@@ -4,10 +4,10 @@
 			There is a possible attribute mismatch between the resource you are 
 			trying to view and what is considered a valid {{stage}} resource.
 			<br /><br />
-			Required Attributes:
+			Optional Attributes:
 			<ul>
 				{{#each defaultingColumns}}
-				<li>{{attr}} - Default Value {{defaultValue}}</li>
+				<li>{{attr}}{{printDefaultValue}}</li>
 				{{/each}}
 			</ul>
 			<br /><br />

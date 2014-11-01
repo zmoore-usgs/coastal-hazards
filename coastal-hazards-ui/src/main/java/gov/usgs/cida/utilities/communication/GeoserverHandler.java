@@ -719,26 +719,28 @@ public class GeoserverHandler {
 	}
 
 	public boolean createShorelineLayerInGeoserver(String workspace, String storename, String layerName) {
-		if (gsrm.getReader().getLayer(workspace, layerName) == null) {
-			GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
-			fte.setSRS("EPSG:4326");
-			fte.setNativeCRS("EPSG:4326");
-			fte.setEnabled(true);
-			fte.setProjectionPolicy(GSResourceEncoder.ProjectionPolicy.FORCE_DECLARED);
-			// Why is this lower-cased you might ask?
-			// http://permalink.gmane.org/gmane.comp.gis.geoserver.user/29227
-			// If this is sent in its normal case, Geoserver <-> Postgres errors aplenty
-			// I've since changed the session to be all lowercase anyway, but keeping
-			// this here as a mark of shame against Geoserver. FOR SHAME!
-			fte.setName(layerName);
-			fte.setTitle(layerName);
-
-			GSLayerEncoder le = new GSLayerEncoder();
-			le.setEnabled(true);
-			le.setQueryable(Boolean.TRUE);
-			return gsrm.getPublisher().publishDBLayer(workspace, storename, fte, le);
+		GeoServerRESTPublisher publisher = gsrm.getPublisher();
+		if (gsrm.getReader().getLayer(workspace, layerName) != null) {
+			publisher.removeLayer(workspace, layerName);
 		}
-		return true;
+
+		GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
+		fte.setSRS("EPSG:4326");
+		fte.setNativeCRS("EPSG:4326");
+		fte.setEnabled(true);
+		fte.setProjectionPolicy(GSResourceEncoder.ProjectionPolicy.FORCE_DECLARED);
+			// Why is this lower-cased you might ask?
+		// http://permalink.gmane.org/gmane.comp.gis.geoserver.user/29227
+		// If this is sent in its normal case, Geoserver <-> Postgres errors aplenty
+		// I've since changed the session to be all lowercase anyway, but keeping
+		// this here as a mark of shame against Geoserver. FOR SHAME!
+		fte.setName(layerName);
+		fte.setTitle(layerName);
+
+		GSLayerEncoder le = new GSLayerEncoder();
+		le.setEnabled(true);
+		le.setQueryable(Boolean.TRUE);
+		return gsrm.getPublisher().publishDBLayer(workspace, storename, fte, le);
 	}
 
 	/**

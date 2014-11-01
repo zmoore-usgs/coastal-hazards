@@ -6,6 +6,7 @@ import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatExcep
 import gov.usgs.cida.owsutils.commons.io.FileHelper;
 import gov.usgs.cida.owsutils.commons.shapefile.ProjectionUtils;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
+import gov.usgs.cida.utilities.features.Constants;
 import gov.usgs.cida.utilities.file.TokenToFileSingleton;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -56,6 +57,14 @@ public abstract class ShorelineFile implements IShorelineFile {
 	protected String token;
 	protected Map<String, File> fileMap;
 	protected String workspace;
+	public static final String[] AUXILLARY_ATTRIBUTES = new String[]{
+		Constants.SURVEY_ID_ATTR,
+		Constants.DISTANCE_ATTR,
+		Constants.DEFAULT_D_ATTR,
+		Constants.NAME_ATTR,
+		Constants.BIAS_UNCY_ATTR,
+		Constants.MHW_ATTR
+	};
 
 	public static enum ShorelineType {
 

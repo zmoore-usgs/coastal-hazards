@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.shoreline.dao;
 
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
+import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile;
 import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
@@ -52,7 +53,6 @@ import org.slf4j.LoggerFactory;
 public class ShorelineShapefileDAO extends ShorelineFileDao {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineShapefileDAO.class);
-	private static final String[] AUXILLARY_ATTRIBUTES = new String[]{"surveyID", "shoreInd", "defaultD", "defaultd", "name"};
 
 	public ShorelineShapefileDAO() {
 		this.JNDI_NAME = PropertyUtil.getProperty(Property.JDBC_NAME);
@@ -119,7 +119,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 					long shorelineId = 0;
 					while (iter.hasNext()) {
 						SimpleFeature sf = iter.next();
-						int recordId = getIntValue("recordId", sf);
+						int recordId = getIntValue(Constants.RECORD_ID_ATTR, sf);
 						boolean mhw = false;
 						Date date = getDateFromFC(dateFieldName, sf, dateType);
 						String source = getSourceFromFC(sf);
@@ -243,7 +243,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 	private String getSourceFromFC(SimpleFeature sf) {
 		String source = "";
 		for (AttributeDescriptor d : sf.getFeatureType().getAttributeDescriptors()) {
-			if ("source".equalsIgnoreCase(d.getLocalName()) || ("src".equalsIgnoreCase(d.getLocalName()))) {
+			if (Constants.SOURCE_ATTR.equalsIgnoreCase(d.getLocalName()) || (Constants.SOURCE_ABBRV_ATTR.equalsIgnoreCase(d.getLocalName()))) {
 				return (String) sf.getAttribute(d.getLocalName());
 			}
 		}
@@ -259,24 +259,26 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 		// @ (Timestamp) = java.sql.Timestamp (With time)
 		// Unknown		 = String
 		Map<String, String> auxillaryAttributes = new HashMap<>();
-		for (String attribute : AUXILLARY_ATTRIBUTES) {
+		for (String attribute : ShorelineFile.AUXILLARY_ATTRIBUTES) {
 			for (String[] fname : fieldNames) {
 				String fieldName = fname[0];
 				char fieldType = fname[1].charAt(0);
-				if (fieldName.trim().replaceAll("_", "").equalsIgnoreCase(attribute.trim())) {
+				String cleanedFieldName = fieldName.trim().replaceAll("_", "");
+				String cleanedAttribute = attribute.trim().replaceAll("_", "");
+				if (cleanedFieldName.equalsIgnoreCase(cleanedAttribute)) {
 					Object attrObj = sf.getAttribute(fieldName);
 					if (attrObj != null) {
 						switch (fieldType) {
 							case 'D':
 							case '@':
-								auxillaryAttributes.put(fieldName.toLowerCase(), String.valueOf(((Date) attrObj).getTime()));
+								auxillaryAttributes.put(attribute.toLowerCase(), String.valueOf(((Date) attrObj).getTime()));
 								break;
 							case 'L':
 							case 'N':
 							case 'F':
 							case 'C':
 							default:
-								auxillaryAttributes.put(fieldName.toLowerCase(), String.valueOf(sf.getAttribute(fieldName)));
+								auxillaryAttributes.put(attribute.toLowerCase(), String.valueOf(sf.getAttribute(fieldName)));
 						}
 					}
 				}

@@ -4,8 +4,12 @@ var Shorelines = {
 	suffixes: ['_shorelines'],
 	mandatoryColumns: ['date', 'uncy'],
 	defaultingColumns: [
-		{attr: 'MHW', defaultValue: "0"},
-		{attr: 'source', defaultValue: ''}
+		{attr: CONFIG.strings.columnAttrNames.MHW, defaultValue: "0"},
+		{attr: CONFIG.strings.columnAttrNames.source, defaultValue: ''},
+		{attr: CONFIG.strings.columnAttrNames.name, defaultValue: ''},
+		{attr: CONFIG.strings.columnAttrNames.distance, defaultValue: ''},
+		{attr: CONFIG.strings.columnAttrNames.defaultDirection, defaultValue: ''},
+		{attr: CONFIG.strings.columnAttrNames.biasUncertainty, defaultValue: ''}
 	],
 	groupingColumn: 'date',
 	columnMatchingTemplate: undefined,
@@ -49,6 +53,13 @@ var Shorelines = {
 		// Pre-compile the handlebars template for creating column matching windows
 		$.get('templates/column-matching-modal.mustache').done(function (data) {
 			Shorelines.columnMatchingTemplate = Handlebars.compile(data);
+			Handlebars.registerHelper('printDefaultValue', function () {
+				if (this.defaultValue) {
+					return new Handlebars.SafeString(' Default: "' + this.defaultValue + '"');
+				} else {
+					return '';
+				}
+			});
 		});
 		$.get('templates/shoreline-feature-table-row.mustache').done(function (data) {
 			Shorelines.featureTableRowTemplate = Handlebars.compile(data);
@@ -1092,7 +1103,7 @@ var Shorelines = {
 						// I need to create a dates array here 
 						for (aIdx = 0; aIdx < arguments.length; aIdx++) {
 							var r = Array.isArray(arguments[0]) ? arguments[aIdx][0] : arguments[0];
-							
+
 							// For each argument I want to read the response into 
 							// a features array 
 							var features = new OpenLayers.Format.GML.v3().read(r);
@@ -1286,6 +1297,7 @@ var Shorelines = {
 			var success = responseJSON.success;
 			if (success === 'true') {
 				var token = responseJSON.token;
+				
 				Shorelines.getShorelineHeaderColumnNames({
 					token: token,
 					callbacks: {
@@ -1348,7 +1360,6 @@ var Shorelines = {
 											success: function (data) {
 												var layerName = data.layer,
 													workspace = CONFIG.tempSession.session.id;
-
 												CONFIG.ows.getWMSCapabilities({
 													namespace: workspace,
 													layerName: layerName,
