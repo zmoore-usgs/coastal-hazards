@@ -428,7 +428,7 @@ var UI = function () {
 
 					var config = CONFIG.tempSession.getStage(Shorelines.stage);
 					var date = Date.create(feature.attributes[groupingColumn]).format(config.dateFormat);
-					var isVisible = CONFIG.tempSession.getDisabledDatesForShoreline(layerName).indexOf(date) === -1;
+					var isVisible = !CONFIG.tempSession.isDateDisabled(date);
 					var disableButton = $('<button />')
 						.addClass('btn btn-year-toggle')
 						.attr({
@@ -463,22 +463,9 @@ var UI = function () {
 					));
 
 				$('.btn-year-toggle').click(function (event) {
-					var date = $(event.target).attr('date');
-					var toggle = $('#shoreline-table-tabcontent>#' + $('#shorelines-list option:selected').text() + ' .feature-toggle').filter(function () {
-						return Date.parse($(this).data('date')) === Date.parse(date);
-					});
-
-					var allButtonsOfSameYear = $('.btn-year-toggle[date="' + date + '"]');
-					if (toggle.bootstrapSwitch('status')) {
-						allButtonsOfSameYear.removeClass('btn-success');
-						allButtonsOfSameYear.addClass('btn-danger');
-						allButtonsOfSameYear.html('Enable');
-					} else {
-						allButtonsOfSameYear.removeClass('btn-danger');
-						allButtonsOfSameYear.addClass('btn-success');
-						allButtonsOfSameYear.html('Disable');
-					}
-
+					var date = $(event.target).attr('date'),
+						toggle = Shorelines.$shorelineFeatureTableContainer
+						.find('table > tbody div[data-date="' + date + '"]');
 					toggle.bootstrapSwitch('toggleState');
 				});
 
@@ -598,13 +585,13 @@ var UI = function () {
 				cancelCallback = args.cancelCallback ? args.cancelCallback : Util.noopFunction,
 				continueCallback = args.continueCallback,
 				updateCallback = args.updateCallback;
-			
+
 			var html = template({
 				stage: caller.stage,
 				defaultingColumns: caller.defaultingColumns,
 				layerName: layerName,
-				columnKeys: columns.keys(), 
-				mandatoryColumns: caller.mandatoryColumns, 
+				columnKeys: columns.keys(),
+				mandatoryColumns: caller.mandatoryColumns,
 				defaultColumns: caller.defaultingColumns
 			});
 

@@ -136,7 +136,7 @@ select option.session-layer{
 }
 
 /* ---------------------------------------------------------------------- Shorelines */
-.shoreline-feature-table {
+#shorelines-feature-table-container {
     height: 16.25em;
     overflow : scroll;
 }

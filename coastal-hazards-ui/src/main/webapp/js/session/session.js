@@ -387,13 +387,18 @@ CCH.Session = function (name, isPerm) {
 			me.save();
 		};
 
-		me.getDisabledDatesForShoreline = function (shoreline) {
-			if (!me.session.stage[Shorelines.stage][shoreline]) {
-				me.session.stage[Shorelines.stage][shoreline] = Object.extended({
-					'dates-disabled': []
-				});
+		me.getDisabledDates = function () {
+			return me.session.stage[Shorelines.stage].datesDisabled;
+		};
+		me.setDisabledDates = function (dates) {
+			if (Array.isArray(dates)) {
+				me.session.stage[Shorelines.stage].datesDisabled = dates;
 			}
-			return me.session.stage[Shorelines.stage][shoreline]['dates-disabled'];
+			return me.getDisabledDates();
+		};
+		
+		me.isDateDisabled = function (date) {
+			return me.session.stage[Shorelines.stage].datesDisabled.indexOf(date) !== -1;
 		};
 
 	}
