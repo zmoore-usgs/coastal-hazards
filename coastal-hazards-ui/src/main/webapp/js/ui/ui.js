@@ -41,6 +41,12 @@ var UI = function () {
 	LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
 		appInit: function () {
+			// bias stage not shown when not admin
+			if (!CONFIG.isAdmin) {
+				me.work_stages.shift();
+				me.work_stages_objects.shift();
+			}
+			
 			this.bindWindowResize();
 			this.addIntroContent();
 			$(window).resize();

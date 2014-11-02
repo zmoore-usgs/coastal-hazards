@@ -109,6 +109,7 @@ var Shorelines = {
 		LOG.debug('Shorelines.js::leaveStage');
 		Shorelines.deactivateShorelineIdControl();
 		Shorelines.closeShorelineIdWindows();
+		Shorelines.toggleBindSelectAOIButton(false);
 	},
 	/**
 	 * Calls DescribeFeatureType against OWS service and tries to add the layer(s) to the map 
@@ -1044,6 +1045,16 @@ var Shorelines = {
 				Shorelines.activateSelectAOIControl();
 			}
 		});
+	},
+	toggleBindSelectAOIButton: function (toggleOn) {
+		var isActive = Shorelines.$buttonSelectAOI.hasClass('active');
+		if (toggleOn === true && !isActive) {
+			Shorelines.$buttonSelectAOI.trigger('click');
+		}
+		
+		if (!toggleOn === false && isActive) {
+			Shorelines.$buttonSelectAOI.trigger('click');
+		}
 	},
 	bindSelectAOIDoneButton: function () {
 		this.$buttonSelectAOIDone.on('click', function (e) {
