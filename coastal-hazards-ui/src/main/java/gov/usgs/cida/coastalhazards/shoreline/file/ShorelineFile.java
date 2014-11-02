@@ -1,11 +1,12 @@
 package gov.usgs.cida.coastalhazards.shoreline.file;
 
 import com.google.gson.Gson;
-import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
+import gov.usgs.cida.coastalhazards.dao.postgres.PostgresDAO;
+import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineFileDAO;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.owsutils.commons.io.FileHelper;
 import gov.usgs.cida.owsutils.commons.shapefile.ProjectionUtils;
-import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.features.Constants;
 import gov.usgs.cida.utilities.file.TokenToFileSingleton;
 import java.io.File;
@@ -52,8 +53,8 @@ public abstract class ShorelineFile implements IShorelineFile {
 	protected File baseDirectory;
 	protected File uploadDirectory;
 	protected File workDirectory;
-	protected GeoserverHandler geoserverHandler;
-	protected ShorelineFileDao dao;
+	protected GeoserverDAO geoserverHandler;
+	protected ShorelineFileDAO dao;
 	protected String token;
 	protected Map<String, File> fileMap;
 	protected String workspace;
@@ -155,8 +156,12 @@ public abstract class ShorelineFile implements IShorelineFile {
 		if (StringUtils.isNotBlank(columnsString)) {
 			columns = new Gson().fromJson(columnsString, Map.class);
 		}
-
-		return importToDatabase(columns);
+		
+		String result = importToDatabase(columns);
+		
+		new PostgresDAO().optimizeTables();
+		
+		return result;
 	}
 
 	@Override
@@ -168,11 +173,11 @@ public abstract class ShorelineFile implements IShorelineFile {
 			throw new IOException("Could not create workspace");
 		}
 
-		if (!geoserverHandler.createPGDatastoreInGeoserver(workspace, "shoreline", null, ShorelineFileDao.DB_SCHEMA_NAME)) {
+		if (!geoserverHandler.createPGDatastoreInGeoserver(workspace, "shoreline", null, ShorelineFileDAO.DB_SCHEMA_NAME)) {
 			throw new IOException("Could not create data store");
 		}
 
-		if (!geoserverHandler.createShorelineLayerInGeoserver(workspace, "shoreline", viewname)) {
+		if (!geoserverHandler.createLayerInGeoserver(workspace, "shoreline", viewname)) {
 			throw new IOException("Could not create shoreline layer");
 		}
 

@@ -2,10 +2,10 @@ package gov.usgs.cida.coastalhazards.shoreline.file;
 
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
-import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
+import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineFileDAO;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
-import gov.usgs.cida.utilities.communication.GeoserverHandler;
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -73,7 +73,7 @@ public class ShorelineShapefile extends ShorelineFile {
 		}
 	}
 
-	public ShorelineShapefile(GeoserverHandler gsHandler, ShorelineFileDao dao, String workspace) {
+	public ShorelineShapefile(GeoserverDAO gsHandler, ShorelineFileDAO dao, String workspace) {
 		this.baseDirectory = new File(PropertyUtil.getProperty(Property.DIRECTORIES_BASE, System.getProperty("java.io.tmpdir")));
 		this.uploadDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD));
 		this.workDirectory = new File(baseDirectory, PropertyUtil.getProperty(Property.DIRECTORIES_WORK));

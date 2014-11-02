@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.shoreline.dao;
+package gov.usgs.cida.coastalhazards.dao.shoreline;
 
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
@@ -6,7 +6,7 @@ import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile;
 import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
-import gov.usgs.cida.utilities.communication.GeoserverHandler;
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
 import gov.usgs.cida.utilities.features.AttributeGetter;
 import gov.usgs.cida.utilities.features.Constants;
 import java.io.File;
@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author isuftin
  */
-public class ShorelineShapefileDAO extends ShorelineFileDao {
+public class ShorelineShapefileDAO extends ShorelineFileDAO {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineShapefileDAO.class);
 
@@ -68,7 +68,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDao {
 	 */
 	public String createViewAgainstPublishedWorkspace() throws SQLException {
 		try (Connection connection = getConnection()) {
-			return createViewAgainstWorkspace(connection, GeoserverHandler.PUBLISHED_WORKSPACE_NAME);
+			return createViewAgainstWorkspace(connection, GeoserverDAO.PUBLISHED_WORKSPACE_NAME);
 		}
 	}
 

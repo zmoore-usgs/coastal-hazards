@@ -93,6 +93,9 @@ public class ShorelineStagingService extends HttpServlet {
 					// Do the actual import into the database
 					String viewName = shorelineFile.importToDatabase(request);
 					
+					
+					
+					
 					// Now that the shapefile is in the database, import to Geoserver
 					shorelineFile.importToGeoserver(viewName);
 					

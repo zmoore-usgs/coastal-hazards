@@ -2,8 +2,8 @@ package gov.usgs.cida.coastalhazards;
 
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
-import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineShapefileDAO;
-import gov.usgs.cida.utilities.communication.GeoserverHandler;
+import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineShapefileDAO;
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -60,7 +60,7 @@ public class InitListener implements ServletContextListener {
 			String geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
 			String geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
 			String geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
-			GeoserverHandler geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
+			GeoserverDAO geoserverHandler = new GeoserverDAO(geoserverEndpoint, geoserverUsername, geoserverPassword);
 			geoserverHandler.createOrUpdatePublishedWorkspaceOnGeoserver();
 		} catch (SQLException ex) {
 			LOGGER.warn("Could not access published workspace. This may affect the proper funcitoning of the application", ex);

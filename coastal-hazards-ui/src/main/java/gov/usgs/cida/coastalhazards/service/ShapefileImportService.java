@@ -2,8 +2,8 @@ package gov.usgs.cida.coastalhazards.service;
 
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
-import gov.usgs.cida.utilities.communication.GeoserverHandler;
-import gov.usgs.cida.utilities.communication.GeoserverHandler.DBaseColumn.ColumnType;
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO.DBaseColumn.ColumnType;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.file.FileHelper;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
@@ -55,10 +55,10 @@ public class ShapefileImportService extends HttpServlet {
 	private String geoserverUsername = null;
 	private String geoserverPassword = null;
 	private String geoserverDataDir = null;
-	// GeoserverHandler and GeoServerRESTManager are non-serializable. This means
+	// GeoserverDAO and GeoServerRESTManager are non-serializable. This means
 	// that if this servlet is serialized (if this application is clustered), this
 	// mioght become a problem
-	private transient GeoserverHandler geoserverHandler = null;
+	private transient GeoserverDAO geoserverHandler = null;
 
 	@Override
 	public void init() throws ServletException {
@@ -69,7 +69,7 @@ public class ShapefileImportService extends HttpServlet {
 		geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
 		geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
 		geoserverDataDir = PropertyUtil.getProperty(Property.GEOSERVER_DATA_DIRECTORY);
-		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
+		geoserverHandler = new GeoserverDAO(geoserverEndpoint, geoserverUsername, geoserverPassword);
 	}
 
 	protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, IllegalArgumentException {
@@ -83,7 +83,7 @@ public class ShapefileImportService extends HttpServlet {
 		String name;
 		Map<String, String> responseMap = new HashMap<>();
 
-		List<GeoserverHandler.DBaseColumn> dbcList = new ArrayList<>();
+		List<GeoserverDAO.DBaseColumn> dbcList = new ArrayList<>();
 
 		if (extraColumns != null) {
 			for (String extraColumn : extraColumns) {
@@ -138,7 +138,7 @@ public class ShapefileImportService extends HttpServlet {
 						return;
 					}
 				}
-				GeoserverHandler.DBaseColumn dbc = new GeoserverHandler.DBaseColumn(ct, columnName, fieldLength, decimalCount);
+				GeoserverDAO.DBaseColumn dbc = new GeoserverDAO.DBaseColumn(ct, columnName, fieldLength, decimalCount);
 				dbcList.add(dbc);
 			}
 		}

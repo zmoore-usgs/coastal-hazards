@@ -1,9 +1,9 @@
-package gov.usgs.cida.utilities.communication;
+package gov.usgs.cida.coastalhazards.dao.geoserver;
 
 import com.vividsolutions.jts.geom.Envelope;
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
-import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineFileDao;
+import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineFileDAO;
 import gov.usgs.cida.utilities.xml.XMLUtils;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
@@ -64,9 +64,9 @@ import org.w3c.dom.NodeList;
  *
  * @author isuftin, jiwalker
  */
-public class GeoserverHandler {
+public class GeoserverDAO {
 
-	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(GeoserverHandler.class);
+	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(GeoserverDAO.class);
 	private static final String PARAM_POST = "POST";
 	private static final String PARAM_PUT = "PUT";
 	private static final String PARAM_GET = "GET";
@@ -86,7 +86,7 @@ public class GeoserverHandler {
 	private String password;
 	private GeoServerRESTManager gsrm = null;
 
-	public GeoserverHandler(String url, String user, String password) {
+	public GeoserverDAO(String url, String user, String password) {
 		this.url = fixURL(url); // ensure url ends with a '/'
 		this.user = user;
 		this.password = password;
@@ -524,25 +524,24 @@ public class GeoserverHandler {
 
 	/**
 	 * Recalculates a given layer's bounding boxes.
-	 * 
-	 * This is a horrible hack.
-	 * When adding data to an underlying view in PostGIS and updating Geoserver, 
-	 * Geoserver does not update the computer bounding boxes. There is also no direct
-	 * REST command to do so. There is, however, a PUT REST call for featuretypes
-	 * in which you can also pass in a request in the URL to do the recalculation
-	 * of the featuretype. 
-	 * 
-	 * I essentially PUT the layer's own name to trigger it to update (and recalculate)
-	 * itself. Unfortunately, unless I explicitly tell the PUT featureType to remain
-	 * enabled, this command also disables the layer. 
-	 * 
+	 *
+	 * This is a horrible hack. When adding data to an underlying view in
+	 * PostGIS and updating Geoserver, Geoserver does not update the computer
+	 * bounding boxes. There is also no direct REST command to do so. There is,
+	 * however, a PUT REST call for featuretypes in which you can also pass in a
+	 * request in the URL to do the recalculation of the featuretype.
+	 *
+	 * I essentially PUT the layer's own name to trigger it to update (and
+	 * recalculate) itself. Unfortunately, unless I explicitly tell the PUT
+	 * featureType to remain enabled, this command also disables the layer.
+	 *
 	 * @param workspace
 	 * @param storeName
 	 * @param layerName
-	 * @return 
+	 * @return
 	 */
 	public boolean recalculateLayerBoundingBox(String workspace, String storeName, String layerName) {
-		String content = "<featureType><name>"+layerName+"</name><enabled>true</enabled></featureType>";
+		String content = "<featureType><name>" + layerName + "</name><enabled>true</enabled></featureType>";
 		String path = "rest/workspaces/" + workspace + "/datastores/" + storeName + "/featuretypes/" + layerName + "?recalculate=nativebbox,latlonbbox";
 		try {
 			HttpResponse response = sendRequest(path, PARAM_PUT, PARAM_APPLICATION_XML, content);
@@ -552,7 +551,7 @@ public class GeoserverHandler {
 			return false;
 		}
 	}
-	
+
 	/**
 	 *
 	 * @param path
@@ -752,8 +751,7 @@ public class GeoserverHandler {
 		return true;
 	}
 
-	public boolean createShorelineLayerInGeoserver(String workspace, String storename, String layerName) {
-		GeoServerRESTPublisher publisher = gsrm.getPublisher();
+	public boolean createLayerInGeoserver(String workspace, String storename, String layerName) {
 		if (gsrm.getReader().getLayer(workspace, layerName) == null) {
 			GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
 			fte.setSRS("EPSG:4326");
@@ -944,11 +942,11 @@ public class GeoserverHandler {
 			throw new IOException("Could not create workspace");
 		}
 
-		if (!createPGDatastoreInGeoserver(PUBLISHED_WORKSPACE_NAME, "shoreline", null, ShorelineFileDao.DB_SCHEMA_NAME)) {
+		if (!createPGDatastoreInGeoserver(PUBLISHED_WORKSPACE_NAME, "shoreline", null, ShorelineFileDAO.DB_SCHEMA_NAME)) {
 			throw new IOException("Could not create data store");
 		}
 
-		if (!createShorelineLayerInGeoserver(PUBLISHED_WORKSPACE_NAME, "shoreline", PUBLISHED_WORKSPACE_NAME + "_shorelines")) {
+		if (!createLayerInGeoserver(PUBLISHED_WORKSPACE_NAME, "shoreline", PUBLISHED_WORKSPACE_NAME + "_shorelines")) {
 			throw new IOException("Could not create shoreline layer");
 		}
 
