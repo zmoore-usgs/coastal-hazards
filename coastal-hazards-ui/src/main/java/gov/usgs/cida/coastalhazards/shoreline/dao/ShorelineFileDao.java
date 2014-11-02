@@ -273,6 +273,10 @@ public abstract class ShorelineFileDao {
 			}
 		}
 	}
+	
+//	public String[] getAvailableAuxillaryAttributes(String workspace) {
+//		String sql = 
+//	}
 
 	/**
 	 * Imports the shoreline file into the database. Returns the name of the

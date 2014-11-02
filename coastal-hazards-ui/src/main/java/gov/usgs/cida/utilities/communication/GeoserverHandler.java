@@ -30,6 +30,8 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.xpath.XPathExpressionException;
@@ -71,6 +73,7 @@ public class GeoserverHandler {
 	private static final String PARAM_DELETE = "DELETE";
 	private static final String PARAM_REST_WORKSPACES = "rest/workspaces/";
 	private static final String PARAM_TEXT_XML = "text/xml";
+	private static final String PARAM_APPLICATION_XML = "application/xml";
 	private static final String PARAM_DOT_XML = ".xml";
 	private static final String PARAM_DATASTORES = "/datastores/";
 	private static final String INPUT_STORE_NAME = "ch-input";
@@ -520,6 +523,37 @@ public class GeoserverHandler {
 	}
 
 	/**
+	 * Recalculates a given layer's bounding boxes.
+	 * 
+	 * This is a horrible hack.
+	 * When adding data to an underlying view in PostGIS and updating Geoserver, 
+	 * Geoserver does not update the computer bounding boxes. There is also no direct
+	 * REST command to do so. There is, however, a PUT REST call for featuretypes
+	 * in which you can also pass in a request in the URL to do the recalculation
+	 * of the featuretype. 
+	 * 
+	 * I essentially PUT the layer's own name to trigger it to update (and recalculate)
+	 * itself. Unfortunately, unless I explicitly tell the PUT featureType to remain
+	 * enabled, this command also disables the layer. 
+	 * 
+	 * @param workspace
+	 * @param storeName
+	 * @param layerName
+	 * @return 
+	 */
+	public boolean recalculateLayerBoundingBox(String workspace, String storeName, String layerName) {
+		String content = "<featureType><name>"+layerName+"</name><enabled>true</enabled></featureType>";
+		String path = "rest/workspaces/" + workspace + "/datastores/" + storeName + "/featuretypes/" + layerName + "?recalculate=nativebbox,latlonbbox";
+		try {
+			HttpResponse response = sendRequest(path, PARAM_PUT, PARAM_APPLICATION_XML, content);
+			return response.getStatusLine().getStatusCode() == 200;
+		} catch (IOException ex) {
+			LOGGER.warn("Could not recalculate bounding box for layer " + layerName, ex);
+			return false;
+		}
+	}
+	
+	/**
 	 *
 	 * @param path
 	 * @param requestMethod
@@ -720,27 +754,28 @@ public class GeoserverHandler {
 
 	public boolean createShorelineLayerInGeoserver(String workspace, String storename, String layerName) {
 		GeoServerRESTPublisher publisher = gsrm.getPublisher();
-		if (gsrm.getReader().getLayer(workspace, layerName) != null) {
-			publisher.removeLayer(workspace, layerName);
-		}
-
-		GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
-		fte.setSRS("EPSG:4326");
-		fte.setNativeCRS("EPSG:4326");
-		fte.setEnabled(true);
-		fte.setProjectionPolicy(GSResourceEncoder.ProjectionPolicy.FORCE_DECLARED);
+		if (gsrm.getReader().getLayer(workspace, layerName) == null) {
+			GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
+			fte.setSRS("EPSG:4326");
+			fte.setNativeCRS("EPSG:4326");
+			fte.setEnabled(true);
+			fte.setProjectionPolicy(GSResourceEncoder.ProjectionPolicy.FORCE_DECLARED);
 			// Why is this lower-cased you might ask?
-		// http://permalink.gmane.org/gmane.comp.gis.geoserver.user/29227
-		// If this is sent in its normal case, Geoserver <-> Postgres errors aplenty
-		// I've since changed the session to be all lowercase anyway, but keeping
-		// this here as a mark of shame against Geoserver. FOR SHAME!
-		fte.setName(layerName);
-		fte.setTitle(layerName);
+			// http://permalink.gmane.org/gmane.comp.gis.geoserver.user/29227
+			// If this is sent in its normal case, Geoserver <-> Postgres errors aplenty
+			// I've since changed the session to be all lowercase anyway, but keeping
+			// this here as a mark of shame against Geoserver. FOR SHAME!
+			fte.setName(layerName);
+			fte.setTitle(layerName);
 
-		GSLayerEncoder le = new GSLayerEncoder();
-		le.setEnabled(true);
-		le.setQueryable(Boolean.TRUE);
-		return gsrm.getPublisher().publishDBLayer(workspace, storename, fte, le);
+			GSLayerEncoder le = new GSLayerEncoder();
+			le.setEnabled(true);
+			le.setQueryable(Boolean.TRUE);
+			return gsrm.getPublisher().publishDBLayer(workspace, storename, fte, le);
+		} else {
+			recalculateLayerBoundingBox(workspace, storename, layerName);
+		}
+		return true;
 	}
 
 	/**
