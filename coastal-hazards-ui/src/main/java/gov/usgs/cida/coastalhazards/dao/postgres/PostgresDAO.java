@@ -9,6 +9,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -231,10 +237,148 @@ public class PostgresDAO {
 			connection.createStatement().execute(sql);
 		}
 	}
-	
+
 	public void optimizeTables() throws SQLException {
 		optimizeTable("shoreline_points");
 		optimizeTable("shorelines");
 		optimizeTable("shoreline_auxillary_attrs");
 	}
+
+	/**
+	 * Inserts an attribute into the auxillary table
+	 *
+	 * @param connection
+	 * @param shorelineId
+	 * @param name
+	 * @param value
+	 * @return
+	 * @throws SQLException besides the normal reasons, this may be thrown if
+	 * the element already exists in the table - for instance if the auxillary
+	 * element was repeated earlier in the shoreline file
+	 */
+	public int insertAuxillaryAttribute(Connection connection, long shorelineId, String name, String value) throws SQLException {
+		String sql = "INSERT INTO shoreline_auxillary_attrs " + "(shoreline_id, attr_name, value) " + "VALUES (?,?,?)";
+		try (final PreparedStatement st = connection.prepareStatement(sql)) {
+			st.setLong(1, shorelineId);
+			st.setString(2, name);
+			st.setString(3, value);
+			return st.executeUpdate();
+		}
+	}
+
+	/**
+	 * Gets available auxillary value names for a given workspace
+	 *
+	 * @param workspaceName
+	 * @return
+	 * @throws SQLException
+	 */
+	public String[] getAvailableAuxillaryNamesFromWorkspace(String workspaceName) throws SQLException {
+		String sql = "SELECT DISTINCT a.attr_name "
+				+ "FROM shoreline_auxillary_attrs a "
+				+ "JOIN shorelines s "
+				+ "ON a.shoreline_id = s.id "
+				+ "WHERE s.workspace = ?";
+
+		List<String> auxNames = new ArrayList<>();
+		try (Connection connection = getConnection()) {
+			try (PreparedStatement ps = connection.prepareStatement(sql)) {
+				ps.setString(1, workspaceName);
+				ResultSet resultSet = ps.executeQuery();
+				while (resultSet.next()) {
+					auxNames.add(resultSet.getString(1));
+				}
+			}
+		}
+		return auxNames.toArray(new String[auxNames.size()]);
+	}
+
+	/**
+	 * Gets available auxillary value names for a given workspace
+	 *
+	 * @param workspaceName
+	 * @param auxName
+	 * @return
+	 * @throws SQLException
+	 */
+	public String[] getAvailableAuxillaryValuesFromWorkspace(String workspaceName, String auxName) throws SQLException {
+		String sql = "SELECT DISTINCT a.value "
+				+ "FROM shoreline_auxillary_attrs a "
+				+ "JOIN shorelines s "
+				+ "ON a.shoreline_id = s.id "
+				+ "WHERE s.workspace = ? "
+				+ "AND a.attr_name = ?";
+
+		List<String> auxValues = new ArrayList<>();
+		try (Connection connection = getConnection()) {
+			try (PreparedStatement ps = connection.prepareStatement(sql)) {
+				ps.setString(1, workspaceName);
+				ps.setString(2, auxName);
+				ResultSet resultSet = ps.executeQuery();
+				while (resultSet.next()) {
+					auxValues.add(resultSet.getString(1));
+				}
+			}
+		}
+		return auxValues.toArray(new String[auxValues.size()]);
+	}
+
+	/**
+	 * Updates the shorelines table's auxillary_name column
+	 *
+	 * @param workspaceName
+	 * @param auxName
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean updateShorelineAuxillaryName(String workspaceName, String auxName) throws SQLException {
+		if (StringUtils.isNotBlank(workspaceName) && !"published".equals(workspaceName.trim().toLowerCase())) {
+			String sql = "UPDATE shorelines "
+					+ "SET auxillary_name =  ? "
+					+ "WHERE workspace = ?";
+
+			String[] availableAuxNames = getAvailableAuxillaryNamesFromWorkspace(workspaceName);
+			if (!Arrays.asList(availableAuxNames).contains(auxName)) {
+				LOGGER.info("workspace {} does not contain auxillary name {}", workspaceName, auxName);
+				return false;
+			}
+
+			try (Connection connection = getConnection()) {
+				try (PreparedStatement ps = connection.prepareStatement(sql)) {
+					ps.setString(1, auxName);
+					ps.setString(2, workspaceName);
+					int rowsUpdated = ps.executeUpdate();
+					return rowsUpdated > 0;
+				}
+			}
+		} else {
+			return false;
+		}
+	}
+
+	public Map<String, String> getShorelineDateToAuxValueMap(String workspaceName) throws SQLException {
+		Map<String, String> d2a = new HashMap<>();
+		String sql = "SELECT DISTINCT s.date, a.value "
+				+ "FROM shoreline_auxillary_attrs a "
+				+ "JOIN shorelines s "
+				+ "ON a.shoreline_id = s.id "
+				+ "AND a.attr_name = s.auxillary_name "
+				+ "WHERE s.workspace = ? "
+				+ "ORDER BY s.date";
+		try (Connection connection = getConnection()) {
+			try (PreparedStatement ps = connection.prepareStatement(sql)) {
+				ps.setString(1, workspaceName);
+				ResultSet rs = ps.executeQuery();
+				SimpleDateFormat df = new SimpleDateFormat("YYYY-MM-dd");
+				while (rs.next()) {
+					Date date = rs.getDate(1);
+					String value = rs.getString(2);
+					String dateStr = df.format(date);
+					d2a.put(dateStr, value);
+				}
+			}
+		}
+		return d2a;
+	}
+
 }

@@ -85,7 +85,7 @@ public class ShorelineLidarFileDAO extends ShorelineFileDAO {
 							true, //lidar always has MHW = true 
 							shorelineFile.getName(),
 							baseFileName,
-							"",
+							null,
 							Constants.MHW_ATTR);
 					shorelineDateToIdMap.put(shorelineDate, shorelineId);
 				} else {

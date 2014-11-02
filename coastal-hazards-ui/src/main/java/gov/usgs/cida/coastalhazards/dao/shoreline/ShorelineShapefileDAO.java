@@ -130,12 +130,14 @@ public class ShorelineShapefileDAO extends ShorelineFileDAO {
 						xyUncies.add(getXYAndUncertaintyFromSimpleFeature(sf, uncertaintyFieldName));
 
 						if (lastRecordId != recordId) {
-							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, baseFileName, orientation, "");
+							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, baseFileName, orientation, null);
 
 							if (fieldNames != null && fieldNames.length > 0) {
 								Map<String, String> auxCols = getAuxillaryColumnsFromFC(sf, fieldNames);
 								for (Entry<String, String> auxEntry : auxCols.entrySet()) {
-									insertAuxillaryAttribute(connection, shorelineId, auxEntry.getKey(), auxEntry.getValue());
+									if (StringUtils.isNotBlank(auxEntry.getValue())) {
+										insertAuxillaryAttribute(connection, shorelineId, auxEntry.getKey(), auxEntry.getValue());
+									}
 								}
 							}
 

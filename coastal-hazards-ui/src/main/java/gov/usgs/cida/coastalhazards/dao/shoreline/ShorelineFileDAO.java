@@ -1,18 +1,16 @@
 package gov.usgs.cida.coastalhazards.dao.shoreline;
 
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
+import gov.usgs.cida.coastalhazards.dao.postgres.PostgresDAO;
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
-import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
-import gov.usgs.cida.coastalhazards.dao.postgres.PostgresDAO;
 import gov.usgs.cida.utilities.features.Constants;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
@@ -117,16 +115,7 @@ public abstract class ShorelineFileDAO {
 	 * element was repeated earlier in the shoreline file
 	 */
 	protected int insertAuxillaryAttribute(Connection connection, long shorelineId, String name, String value) throws SQLException {
-		String sql = "INSERT INTO shoreline_auxillary_attrs "
-				+ "(shoreline_id, attr_name, value) "
-				+ "VALUES (?,?,?)";
-
-		try (PreparedStatement st = connection.prepareStatement(sql)) {
-			st.setLong(1, shorelineId);
-			st.setString(2, name);
-			st.setString(3, value);
-			return st.executeUpdate();
-		}
+		return pgDao.insertAuxillaryAttribute(connection, shorelineId, name, value);
 	}
 
 	/**

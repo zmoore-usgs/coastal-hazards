@@ -249,7 +249,6 @@ var Shorelines = {
 				isBaseLayer: false,
 				unsupportedBrowsers: [],
 				colorGroups: colorDatePairings,
-//				describedFeatures: features,
 				tileOptions: {
 					// http://www.faqs.org/rfcs/rfc2616.html
 					// This will cause any request larger than this many characters to be a POST
@@ -260,18 +259,18 @@ var Shorelines = {
 				ratio: 1,
 				groupByAttribute: 'date',
 				layerType: Shorelines.stage,
-//				groups: groups,
 				displayInLayerSwitcher: false
 			});
 
 		Shorelines.getShorelineIdControl().layers.push(wmsLayer);
 		wmsLayer.events.register("loadend", wmsLayer, function (e) {
 			Shorelines.updateFeatureTable(e);
-			Shorelines.showFeatureTable()
+			Shorelines.showFeatureTable();
 		});
 		wmsLayer.events.register("added", wmsLayer, Shorelines.zoomToLayer);
 		CONFIG.map.getMap().addLayer(wmsLayer);
 		wmsLayer.redraw(true);
+		return wmsLayer;
 	},
 	/**
 	 * 
@@ -1082,15 +1081,16 @@ var Shorelines = {
 					bounds = Shorelines.aoiBoundsSelected.clone(),
 					boundsString = bounds.transform(new OpenLayers.Projection(CONFIG.strings.epsg900913), new OpenLayers.Projection(CONFIG.strings.epsg4326)).toArray(true).toString(),
 					createGetFeaturesUrl = function (layer) {
-						var url = CONFIG.ows.geoserverProxyEndpoint + layer.prefix + '/ows?',
+						var layerPrefix = layer.prefix,
+							url = CONFIG.ows.geoserverProxyEndpoint + layerPrefix + '/ows?',
 							params = {
 								service: 'WFS',
 								version: '1.1.0',
 								request: 'GetFeature',
 								srsName: 'EPSG:4326',
-								propertyName: layer.prefix + ':date',
-								sortBy: layer.prefix + ':date',
-								typeName: layer.prefix + ':' + layer.name,
+								propertyName: layerPrefix,
+								sortBy: layerPrefix + ':date',
+								typeName: layerPrefix + ':' + layer.name,
 								bbox: boundsString
 							};
 						return url + $.param(params);
@@ -1142,7 +1142,7 @@ var Shorelines = {
 								bounds = dataObj.bounds;
 
 							// I also want to add the WMS layer to the map
-							Shorelines.addLayerToMap({
+							var wmsLayer = Shorelines.addLayerToMap({
 								name: layerInfo.name,
 								prefix: layerInfo.prefix,
 								title: layerInfo.title,
@@ -1194,7 +1194,7 @@ var Shorelines = {
 		drawBoxLayer.events.register('beforefeatureadded', null, function (e) {
 			e.object.removeAllFeatures();
 		});
-		Shorelines.hideFeatureTable(true)
+		Shorelines.hideFeatureTable(true);
 		Shorelines.removeShorelineLayers();
 		CONFIG.map.getMap().addLayers([drawBoxLayer]);
 		CONFIG.map.getMap().addControl(aoiIdControl);

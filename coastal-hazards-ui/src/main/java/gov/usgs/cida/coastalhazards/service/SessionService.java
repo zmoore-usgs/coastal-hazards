@@ -1,9 +1,9 @@
 package gov.usgs.cida.coastalhazards.service;
 
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
+import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineShapefileDAO;
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
-import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineShapefileDAO;
-import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import java.io.IOException;
 import java.net.MalformedURLException;
