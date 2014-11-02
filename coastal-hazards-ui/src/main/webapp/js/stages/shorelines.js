@@ -266,7 +266,7 @@ var Shorelines = {
 		Shorelines.getShorelineIdControl().layers.push(wmsLayer);
 		wmsLayer.events.register("loadend", wmsLayer, function (e) {
 			Shorelines.updateFeatureTable(e);
-			Shorelines.$shorelineFeatureTableContainer.removeClass('hidden');
+			Shorelines.showFeatureTable()
 		});
 		wmsLayer.events.register("added", wmsLayer, Shorelines.zoomToLayer);
 		CONFIG.map.getMap().addLayer(wmsLayer);
@@ -1088,7 +1088,7 @@ var Shorelines = {
 						var context = {
 							layer: l,
 							bounds: boundsString
-						}
+						};
 						return $.ajax(createGetFeaturesUrl(l), {context: context}).promise();
 					});
 
@@ -1168,8 +1168,8 @@ var Shorelines = {
 	},
 	activateSelectAOIControl: function () {
 		this.$descriptionAOI.removeClass('hidden');
-		var boxLayer = new OpenLayers.Layer.Vector(Shorelines.LAYER_AOI_NAME),
-			aoiIdControl = new OpenLayers.Control.DrawFeature(boxLayer,
+		var drawBoxLayer = new OpenLayers.Layer.Vector(Shorelines.LAYER_AOI_NAME),
+			aoiIdControl = new OpenLayers.Control.DrawFeature(drawBoxLayer,
 				OpenLayers.Handler.RegularPolygon,
 				{
 					title: Shorelines.CONTROL_IDENTIFY_AOI_ID,
@@ -1180,11 +1180,12 @@ var Shorelines = {
 				});
 
 		// I really only want one box on a layer at any given time
-		boxLayer.events.register('beforefeatureadded', null, function (e) {
+		drawBoxLayer.events.register('beforefeatureadded', null, function (e) {
 			e.object.removeAllFeatures();
 		});
-
-		CONFIG.map.getMap().addLayers([boxLayer]);
+		Shorelines.hideFeatureTable(true)
+		Shorelines.removeShorelineLayers();
+		CONFIG.map.getMap().addLayers([drawBoxLayer]);
 		CONFIG.map.getMap().addControl(aoiIdControl);
 		aoiIdControl.activate();
 	},
@@ -1205,6 +1206,21 @@ var Shorelines = {
 			return results[0];
 		}
 		return null;
+	},
+	showFeatureTable: function () {
+		Shorelines.$shorelineFeatureTableContainer.removeClass('hidden');
+	},
+	hideFeatureTable: function (clear) {
+		Shorelines.$shorelineFeatureTableContainer.addClass('hidden');
+		if (clear) {
+			Shorelines.$shorelineFeatureTableContainer.find('tbody').empty();
+		}
+	},
+	removeShorelineLayers : function () {
+		var layers = CONFIG.map.getMap().getLayersBy('layerType', Shorelines.stage);
+		layers.forEach(function(layer) {
+			CONFIG.map.getMap().removeLayer(layer);
+		});
 	},
 //	disableDownloadButton: function () {
 //		"use strict";
@@ -1297,7 +1313,7 @@ var Shorelines = {
 			var success = responseJSON.success;
 			if (success === 'true') {
 				var token = responseJSON.token;
-				
+
 				Shorelines.getShorelineHeaderColumnNames({
 					token: token,
 					callbacks: {
