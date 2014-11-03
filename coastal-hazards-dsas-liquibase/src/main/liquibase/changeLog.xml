@@ -9,5 +9,6 @@
 	<include file="10addShorelineTables.xml" relativeToChangelogFile="true"/>
 	<include file="20updateWorkspaceShorelineView.xml" relativeToChangelogFile="true"/>
 	<include file="30createWorkspaceRenamingProc.xml" relativeToChangelogFile="true"/>
+	<include file="40createGISTIndexOnPointsTable.xml" relativeToChangelogFile="true"/>
 	
 </databaseChangeLog>
