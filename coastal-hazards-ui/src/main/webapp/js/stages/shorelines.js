@@ -84,14 +84,6 @@ var Shorelines = {
 			sessionStage.datesDisabled = [];
 		}
 
-		if (!sessionStage.auxCols) {
-			sessionStage.auxCols = [];
-		}
-
-		if (!sessionStage.auxCur) {
-			sessionStage.auxCur = '';
-		}
-
 		// Remove individual shorelines layers from session 
 		Object.keys(sessionStage).forEach(function (k) {
 			if (k.indexOf(':') !== -1) {
@@ -106,7 +98,7 @@ var Shorelines = {
 
 		CONFIG.tempSession.persistSession();
 
-		Shorelines.updateSessionWithAuxillaryColumns();
+		Shorelines.getAvailableAuxillaryColumns();
 
 	},
 	enterStage: function () {
@@ -125,7 +117,7 @@ var Shorelines = {
 		Shorelines.closeShorelineIdWindows();
 		Shorelines.toggleBindSelectAOIButton(false);
 	},
-	updateSessionWithAuxillaryColumns: function () {
+	getAvailableAuxillaryColumns: function () {
 		LOG.debug('Shorelines.js::updateSessionWithAuxillaryColumns');
 		$.get(this.shorelinesServiceEndpoint + '?', {
 			'action': 'getAuxillaryNames',
@@ -134,8 +126,6 @@ var Shorelines = {
 			Shorelines.hideSortingSelectionContainer();
 			if (status === 'success' && obj.success === 'true') {
 				var names = JSON.parse(obj.names);
-				CONFIG.tempSession.getStage(Shorelines.stage).auxCols = names;
-				CONFIG.tempSession.persistSession();
 				if (names.length) {
 					Shorelines.$controlSelectSortingColumn.empty();
 					Shorelines.$controlSelectSortingColumn.append($('<option />'));
@@ -144,11 +134,11 @@ var Shorelines = {
 						Shorelines.$controlSelectSortingColumn.append(option);
 					});
 					Shorelines.bindSortingSelectionControl();
+					Shorelines.updateSortingSelectionControl(obj.name);
 					Shorelines.showSortingSelectionContainer();
-					Shorelines.updateSortingSelectionControl();
 				}
 			} else {
-				Shorelines.$containerSelectSorting.addClass('hidden');
+				Shorelines.hideSortingSelectionContainer();
 			}
 		});
 	},
@@ -162,16 +152,12 @@ var Shorelines = {
 		Shorelines.$controlSelectSortingColumn.off('change', Shorelines.sortingSelectionUpdated);
 		Shorelines.$controlSelectSortingColumn.on('change', Shorelines.sortingSelectionUpdated);
 	},
-	updateSortingSelectionControl: function () {
-		Shorelines.$controlSelectSortingColumn.val(CONFIG.tempSession.getStage(Shorelines.stage).auxCur);
+	updateSortingSelectionControl: function (name) {
+		Shorelines.$controlSelectSortingColumn.val(name);
 	},
 	sortingSelectionUpdated: function (e) {
 		var value = e.target.value,
 			deferred = $.Deferred();
-
-		CONFIG.tempSession.getStage(Shorelines.stage).auxCur = value;
-		CONFIG.tempSession.persistSession();
-
 		deferred
 			.then(function () {
 				Shorelines.updateSortingColumnOnTable();
@@ -522,7 +508,6 @@ var Shorelines = {
 			colorGroups = layer.colorGroups,
 			$switchCandidates,
 			$tbody = Shorelines.$shorelineFeatureTableContainer.find('table > tbody'),
-			auxCur = CONFIG.tempSession.getStage(Shorelines.stage).auxCur,
 			def = $.Deferred();
 
 		event.object.events.unregister('loadend', null, Shorelines.updateFeatureTable);
@@ -546,7 +531,7 @@ var Shorelines = {
 		}, this);
 
 		if (layer.prefix === CONFIG.tempSession.getCurrentSessionKey()) {
-			Shorelines.updateSessionWithAuxillaryColumns();
+			Shorelines.getAvailableAuxillaryColumns();
 			def.then(
 				function () {
 					Shorelines.updateSortingColumnOnTable();
@@ -554,12 +539,6 @@ var Shorelines = {
 				function () {
 					debugger;
 				});
-			// We may have auxillary values to sort by so try to grab them after
-			// the table is set up
-			Shorelines.updateSortingColumnOnServer({
-				name: auxCur,
-				deferred: def
-			});
 		}
 
 		$switchCandidates = $('.switch>:not(.switch-animate)').parent();
@@ -630,8 +609,6 @@ var Shorelines = {
 			+ '&workspace=' + CONFIG.tempSession.getCurrentSessionKey()
 			+ '&name=' + name;
 
-		Shorelines.$shorelineFeatureTableContainer.find('.table-features-column-aux').remove();
-
 		$.ajax(url, {
 			method: 'PUT',
 			context: def,
@@ -643,6 +620,7 @@ var Shorelines = {
 			}});
 	},
 	updateSortingColumnOnTable: function () {
+		Shorelines.$shorelineFeatureTableContainer.find('.table-features-column-aux').remove();
 		$.ajax(Shorelines.shorelinesServiceEndpoint + '?', {
 			context: this,
 			data: {
@@ -838,10 +816,19 @@ var Shorelines = {
 							bounds: boundsString
 						};
 						return $.ajax(createGetFeaturesUrl(l), {context: context}).promise();
-					});
+					}),
+					showNothingFoundAlert = function () {
+						CONFIG.ui.showAlert({
+							message: 'There is no data for the area of interest you selected<br />Try uploading data.',
+							caller: Shorelines,
+							displayTime: 3000,
+							style: {
+								classes: ['alert-warn']
+							}
+						})
+					};
 
 				if (validLayers.length) {
-					CONFIG.map.getMap().zoomToExtent(Shorelines.aoiBoundsSelected, true);
 					$.when.apply(this, ajaxCalls).done(function () {
 						var dates = [],
 							aIdx;
@@ -883,28 +870,26 @@ var Shorelines = {
 								bounds: bounds,
 								dates: dates
 							});
-						}
+						};
 
-						if (Array.isArray(this)) {
-							for (aIdx = 0; aIdx < arguments.length; aIdx++) {
-								addLayer(this[aIdx]);
+						if (dates.length) {
+							if (Array.isArray(this)) {
+								for (aIdx = 0; aIdx < arguments.length; aIdx++) {
+									addLayer(this[aIdx]);
+								}
+							} else {
+								addLayer(this);
 							}
+							CONFIG.map.getMap().zoomToExtent(Shorelines.aoiBoundsSelected, true);
 						} else {
-							addLayer(this);
+							showNothingFoundAlert();
 						}
 
 						Shorelines.setupTableSorting();
 					});
 
 				} else {
-					CONFIG.ui.showAlert({
-						message: 'There is no data for the area of interest you selected<br />Try uploading data.',
-						caller: Shorelines,
-						displayTime: 3000,
-						style: {
-							classes: ['alert-warn']
-						}
-					});
+					showNothingFoundAlert();
 				}
 
 			} else {

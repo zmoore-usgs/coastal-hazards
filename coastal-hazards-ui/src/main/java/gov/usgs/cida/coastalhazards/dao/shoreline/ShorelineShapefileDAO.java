@@ -171,7 +171,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDAO {
 						try {
 							iter.close();
 						} catch (Exception ex) {
-							LOGGER.warn("Could not close feature iterator", ex);
+							LOGGER.warn("Could not close feature iterator. This is not necessarily fatal.", ex);
 						}
 					}
 				}
