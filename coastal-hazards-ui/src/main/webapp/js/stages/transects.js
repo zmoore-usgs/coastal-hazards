@@ -833,10 +833,10 @@ var Transects = {
 		$('#transect-edit-form-toggle').attr('disabled', 'disabled');
 	},
 	enableUpdateTransectsButton: function () {
-		$('#transects-edit-save-button').removeAttr('disabled');
+		Transects.$buttonTransectsSave.removeAttr('disabled');
 	},
 	disableUpdateTransectsButton: function () {
-		$('#transects-edit-save-button').attr('disabled', 'disabled');
+		Transects.$buttonTransectsSave.attr('disabled', 'disabled');
 	},
 	enableCreateTransectsButton: function () {
 		LOG.info('Transects.js::enableCreateTransectsButton: Baseline has been added to the map. Enabling create transect button');
