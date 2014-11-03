@@ -614,7 +614,8 @@ var Shorelines = {
 								$row.append($td);
 							});
 						}
-						$("table.tablesorter").trigger('update', false);
+						
+						Shorelines.setupTableSorting();
 					}
 				}
 			});
@@ -919,6 +920,7 @@ var Shorelines = {
 	},
 	setupTableSorting: function () {
 		"use strict";
+		$("table.tablesorter").trigger('destroy');
 		$.tablesorter.addParser({
 			id: 'visibility',
 			is: function (s) {
