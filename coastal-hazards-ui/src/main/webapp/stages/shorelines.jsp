@@ -30,18 +30,18 @@
 					</button>
 				</p>
 			</div>
-				<div id="shorelines-feature-table-container" class="hidden">
-					<table class="table table-bordered table-condensed tablesorter shoreline-table">
-						<thead>
-						<th class="shoreline-table-selected-head-column" data-column="0">Visibility</th>
-						<th>Date</th>
-						<th data-sorter="false">Color</th>
-						</thead>
-						<tbody>
-							
-						</tbody>
-					</table>
-				</div>
+			<div id="shorelines-feature-table-container" class="hidden">
+				<table class="table table-bordered table-condensed tablesorter shoreline-table">
+					<thead>
+					<th class="shoreline-table-selected-head-column" data-column="0">Visibility</th>
+					<th data-column="1">Date</th>
+					<th data-sorter="false">Color</th>
+					</thead>
+					<tbody>
+
+					</tbody>
+				</table>
+			</div>
 		</div>
 		<div class="tab-pane" id="shorelines-manage-tab">
 			<div id="shorelines-uploader" class="uploader"></div>

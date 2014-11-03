@@ -69,7 +69,10 @@ public class ShorelineService extends HttpServlet {
 			String workspace = request.getParameter(WORKSPACE_PARAM_STRING);
 			if (StringUtils.isNotBlank(workspace)) {
 				try {
-					Map<String, String> mapping = new PostgresDAO().getShorelineDateToAuxValueMap(workspace);
+					PostgresDAO dao = new PostgresDAO();
+					Map<String, String> mapping = dao.getShorelineDateToAuxValueMap(workspace);
+					String auxName = dao.getCurrentShorelineAuxNameForWorkspace(workspace);
+					responseMap.put(AUX_NAME_TOKEN_STRING, auxName);
 					responseMap.put(VALUES_TOKEN_STRING, new GsonBuilder().create().toJson(mapping));
 					RequestResponse.sendSuccessResponse(response, responseMap, responseType);
 				} catch (SQLException error) {

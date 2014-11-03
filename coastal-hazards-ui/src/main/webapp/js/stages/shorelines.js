@@ -22,6 +22,7 @@ var Shorelines = {
 	$descriptionAOI: $('#description-aoi'),
 	$shorelineFeatureTableContainer: $('#shorelines-feature-table-container'),
 	aoiBoundsSelected: null,
+	shorelinesServiceEndpoint: 'service/shoreline',
 	uploadRequest: {
 		'endpoint': 'service/stage-shoreline',
 		'paramsInBody': false,
@@ -260,14 +261,15 @@ var Shorelines = {
 				groupByAttribute: 'date',
 				layerType: Shorelines.stage,
 				displayInLayerSwitcher: false
-			});
+			}),
+			loadEnd = function (e) {
+				e.object.events.unregister('loadend', null, loadEnd);
+				Shorelines.updateFeatureTable(e);
+				Shorelines.showFeatureTable();
+			};
 
 		Shorelines.getShorelineIdControl().layers.push(wmsLayer);
-		wmsLayer.events.register("loadend", wmsLayer, function (e) {
-			Shorelines.updateFeatureTable(e);
-			Shorelines.showFeatureTable();
-		});
-		wmsLayer.events.register("added", wmsLayer, Shorelines.zoomToLayer);
+		wmsLayer.events.register("loadend", wmsLayer, loadEnd);
 		CONFIG.map.getMap().addLayer(wmsLayer);
 		wmsLayer.redraw(true);
 		return wmsLayer;
@@ -555,10 +557,11 @@ var Shorelines = {
 	updateFeatureTable: function (event) {
 		var layer = event.object,
 			colorGroups = layer.colorGroups,
-			$switchCandidates = $('.switch>:not(.switch-animate)').parent(),
+			$switchCandidates,
 			$tbody = Shorelines.$shorelineFeatureTableContainer.find('table > tbody');
 
-		event.object.events.unregister('loadend', event.object, Shorelines.updateFeatureTable);
+		event.object.events.unregister('loadend', null, Shorelines.updateFeatureTable);
+
 		colorGroups.forEach(function (cg) {
 			var color = cg[0],
 				date = cg[1],
@@ -576,6 +579,48 @@ var Shorelines = {
 			if (!$existingDates.length)
 				$tbody.append($(row));
 		}, this);
+
+		if (layer.prefix === CONFIG.tempSession.getCurrentSessionKey()) {
+			// We may have auxillary values to sort by so try to grab them after
+			// the table is set up
+			$.ajax(Shorelines.shorelinesServiceEndpoint + '?', {
+				context: this,
+				data: {
+					action: 'getDateToAuxValues',
+					workspace: layer.prefix
+				},
+				success: function (e, status) {
+					if (status === 'success' && e.success === 'true') {
+						var dateToValue = JSON.parse(e.values);
+
+						if (Object.keys(dateToValue).length) {
+							var $theadRow = Shorelines.$shorelineFeatureTableContainer.find('thead > tr'),
+								$tbody = Shorelines.$shorelineFeatureTableContainer.find('tbody'),
+								$rows = $tbody.find('tr'),
+								$th = $('<th />')
+								.addClass('table-features-column-aux tablesorter-header')
+								.attr({
+									'data-column': '3'
+								}),
+								$thDiv = $('<div />').addClass('tablesorter-header-inner').html(e.name);
+
+							$th.append($thDiv);
+							$theadRow.append($th);
+							$rows.each(function (i, row) {
+								var $row = $(row),
+									year = $row.children()[1].innerHTML,
+									value = dateToValue[year],
+									$td = $('<td />').addClass('table-features-column-aux').html(value);
+								$row.append($td);
+							});
+						}
+						$("table.tablesorter").trigger('update', false);
+					}
+				}
+			});
+		}
+
+		$switchCandidates = $('.switch>:not(.switch-animate)').parent();
 
 		$switchCandidates.each(function (index, element) {
 			var switchChange = function (event, data) {
@@ -883,17 +928,28 @@ var Shorelines = {
 				var toggleButton = $(cell).find('.switch')[0];
 				return $(toggleButton).bootstrapSwitch('status') ? 1 : 0;
 			},
-			// set type, either numeric or text 
+			type: 'numeric'
+		});
+		$.tablesorter.addParser({
+			id: 'dateSorter',
+			is: function (s) {
+				return false;
+			},
+			format: function (s) {
+				return Date.create(s).getTime();
+			},
 			type: 'numeric'
 		});
 
 		Shorelines.$shorelineFeatureTableContainer.find("table").tablesorter({
 			headers: {
-				0: {
-					sorter: 'visibility'
-				}
+				0: { sorter: 'visibility' },
+				1: { sorter: 'dateSorter' },
+				3: { sorter: 'text'}
 			}
 		});
+		
+		
 	},
 	clear: function () {
 		"use strict";
@@ -1050,7 +1106,7 @@ var Shorelines = {
 		if (toggleOn === true && !isActive) {
 			Shorelines.$buttonSelectAOI.trigger('click');
 		}
-		
+
 		if (!toggleOn === false && isActive) {
 			Shorelines.$buttonSelectAOI.trigger('click');
 		}
@@ -1088,7 +1144,7 @@ var Shorelines = {
 								version: '1.1.0',
 								request: 'GetFeature',
 								srsName: 'EPSG:4326',
-								propertyName: layerPrefix,
+								propertyName: layerPrefix + ':date',
 								sortBy: layerPrefix + ':date',
 								typeName: layerPrefix + ':' + layer.name,
 								bbox: boundsString
@@ -1134,12 +1190,9 @@ var Shorelines = {
 							}
 						}
 
-						// I now have a dates array. Now I want to add layers to
-						// the map. This requires a dates array
-						for (aIdx = 0; aIdx < arguments.length; aIdx++) {
-							var dataObj = Array.isArray(this) ? this[aIdx] : this,
-								layerInfo = dataObj.layer,
-								bounds = dataObj.bounds;
+						var addLayer = function (o) {
+							var layerInfo = o.layer,
+								bounds = o.bounds;
 
 							// I also want to add the WMS layer to the map
 							var wmsLayer = Shorelines.addLayerToMap({
@@ -1149,6 +1202,14 @@ var Shorelines = {
 								bounds: bounds,
 								dates: dates
 							});
+						}
+
+						if (Array.isArray(this)) {
+							for (aIdx = 0; aIdx < arguments.length; aIdx++) {
+								addLayer(this[aIdx]);
+							}
+						} else {
+							addLayer(this);
 						}
 
 						Shorelines.setupTableSorting();
@@ -1227,9 +1288,9 @@ var Shorelines = {
 			Shorelines.$shorelineFeatureTableContainer.find('tbody').empty();
 		}
 	},
-	removeShorelineLayers : function () {
+	removeShorelineLayers: function () {
 		var layers = CONFIG.map.getMap().getLayersBy('layerType', Shorelines.stage);
-		layers.forEach(function(layer) {
+		layers.forEach(function (layer) {
 			CONFIG.map.getMap().removeLayer(layer);
 		});
 	},

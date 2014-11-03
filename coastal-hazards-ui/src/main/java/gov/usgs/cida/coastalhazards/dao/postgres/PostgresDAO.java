@@ -356,6 +356,13 @@ public class PostgresDAO {
 		}
 	}
 
+	/**
+	 * Retrieves a map of dates to auxillary values.
+	 *
+	 * @param workspaceName
+	 * @return
+	 * @throws SQLException
+	 */
 	public Map<String, String> getShorelineDateToAuxValueMap(String workspaceName) throws SQLException {
 		Map<String, String> d2a = new HashMap<>();
 		String sql = "SELECT DISTINCT s.date, a.value "
@@ -379,6 +386,32 @@ public class PostgresDAO {
 			}
 		}
 		return d2a;
+	}
+
+	/**
+	 * Retrieves the current auxillary name for a given workspace.
+	 *
+	 * @param workspaceName
+	 * @return
+	 * @throws SQLException
+	 */
+	public String getCurrentShorelineAuxNameForWorkspace(String workspaceName) throws SQLException {
+		String name = "";
+
+		String sql = "SELECT DISTINCT auxillary_name "
+				+ "FROM shorelines "
+				+ "WHERE workspace = ?";
+
+		try (Connection connection = getConnection()) {
+			try (PreparedStatement ps = connection.prepareStatement(sql)) {
+				ps.setString(1, workspaceName);
+				ResultSet rs = ps.executeQuery();
+				while (rs.next()) {
+					name = rs.getString(1);
+				}
+			}
+		}
+		return name;
 	}
 
 }
