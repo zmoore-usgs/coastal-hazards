@@ -52,7 +52,7 @@ var Shorelines = {
 		this.bindSelectAOIButton();
 		this.bindSelectAOIDoneButton();
 
-		
+
 
 		// Pre-compile the handlebars template for creating column matching windows
 		$.get('templates/column-matching-modal.mustache').done(function (data) {
@@ -85,6 +85,10 @@ var Shorelines = {
 		if (!sessionStage.datesDisabled) {
 			sessionStage.datesDisabled = [];
 		}
+		
+		if (!sessionStage.auxCols) {
+			sessionStage.auxCols = [];
+		}
 
 		// Remove individual shorelines layers from session 
 		Object.keys(sessionStage).forEach(function (k) {
@@ -97,8 +101,11 @@ var Shorelines = {
 			stage: this.stage,
 			obj: sessionStage
 		});
-		
+
 		CONFIG.tempSession.persistSession();
+
+		Shorelines.updateSessionWithAuxillaryColumns();
+
 	},
 	enterStage: function () {
 		"use strict";
@@ -115,6 +122,19 @@ var Shorelines = {
 		Shorelines.deactivateShorelineIdControl();
 		Shorelines.closeShorelineIdWindows();
 		Shorelines.toggleBindSelectAOIButton(false);
+	},
+	updateSessionWithAuxillaryColumns : function () {
+		LOG.debug('Shorelines.js::updateSessionWithAuxillaryColumns');
+		$.get(this.shorelinesServiceEndpoint + '?', {
+			'action': 'getAuxillaryNames',
+			'workspace': CONFIG.tempSession.getCurrentSessionKey()
+		}, function (obj, status) {
+			if (status === 'success' && obj.success === 'true') {
+				var names = JSON.parse(obj.names);
+				CONFIG.tempSession.getStage(Shorelines.stage).auxCols = names;
+				CONFIG.tempSession.persistSession();
+			}
+		});
 	},
 	/**
 	 * Calls DescribeFeatureType against OWS service and tries to add the layer(s) to the map 
@@ -600,7 +620,7 @@ var Shorelines = {
 						if (Object.keys(dateToValue).length) {
 							// First clear the table of any possible auxillary already showing
 							Shorelines.$shorelineFeatureTableContainer.find('.table-features-column-aux').remove();
-							
+
 							// Now add the new auxillary columns
 							var $theadRow = Shorelines.$shorelineFeatureTableContainer.find('thead > tr'),
 								$tbody = Shorelines.$shorelineFeatureTableContainer.find('tbody'),
@@ -613,7 +633,7 @@ var Shorelines = {
 								}),
 								$thDiv = $('<div />').addClass('tablesorter-header-inner').html(e.name);
 							$th.append($thDiv);
-							
+
 							// Build row by row for the table body
 							$theadRow.append($th);
 							$rows.each(function (i, row) {
@@ -624,7 +644,7 @@ var Shorelines = {
 								$row.append($td);
 							});
 						}
-						
+
 						// Sorting has to be reset
 						Shorelines.setupTableSorting();
 					}
@@ -956,13 +976,13 @@ var Shorelines = {
 
 		Shorelines.$shorelineFeatureTableContainer.find("table").tablesorter({
 			headers: {
-				0: { sorter: 'visibility' },
-				1: { sorter: 'dateSorter' },
-				3: { sorter: 'text'}
+				0: {sorter: 'visibility'},
+				1: {sorter: 'dateSorter'},
+				3: {sorter: 'text'}
 			}
 		});
-		
-		
+
+
 	},
 	clear: function () {
 		"use strict";
