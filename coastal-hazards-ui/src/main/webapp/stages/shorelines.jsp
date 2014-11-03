@@ -41,6 +41,9 @@
 
 					</tbody>
 				</table>
+				<div id="shorelines-feature-table-button-sort" class="hidden">
+					<button id="btn-shorelines-sort-select" class="btn btn-success">Select New Sort Criteria</button>
+				</div>
 			</div>
 		</div>
 		<div class="tab-pane" id="shorelines-manage-tab">

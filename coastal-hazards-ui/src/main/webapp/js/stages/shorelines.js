@@ -19,6 +19,7 @@ var Shorelines = {
 	LAYER_AOI_NAME: 'layer-aoi-box',
 	$buttonSelectAOI: $('#shorelines-aoi-select-toggle'),
 	$buttonSelectAOIDone: $('#shorelines-aoi-select-done'),
+	$buttonSelectSortingColumn: $('#btn-shorelines-sort-select'),
 	$descriptionAOI: $('#description-aoi'),
 	$shorelineFeatureTableContainer: $('#shorelines-feature-table-container'),
 	aoiBoundsSelected: null,
@@ -50,6 +51,8 @@ var Shorelines = {
 		this.initializeUploader();
 		this.bindSelectAOIButton();
 		this.bindSelectAOIDoneButton();
+
+		
 
 		// Pre-compile the handlebars template for creating column matching windows
 		$.get('templates/column-matching-modal.mustache').done(function (data) {
@@ -94,6 +97,7 @@ var Shorelines = {
 			stage: this.stage,
 			obj: sessionStage
 		});
+		
 		CONFIG.tempSession.persistSession();
 	},
 	enterStage: function () {
@@ -594,17 +598,23 @@ var Shorelines = {
 						var dateToValue = JSON.parse(e.values);
 
 						if (Object.keys(dateToValue).length) {
+							// First clear the table of any possible auxillary already showing
+							Shorelines.$shorelineFeatureTableContainer.find('.table-features-column-aux').remove();
+							
+							// Now add the new auxillary columns
 							var $theadRow = Shorelines.$shorelineFeatureTableContainer.find('thead > tr'),
 								$tbody = Shorelines.$shorelineFeatureTableContainer.find('tbody'),
 								$rows = $tbody.find('tr'),
+								// Build the header cell
 								$th = $('<th />')
 								.addClass('table-features-column-aux tablesorter-header')
 								.attr({
 									'data-column': '3'
 								}),
 								$thDiv = $('<div />').addClass('tablesorter-header-inner').html(e.name);
-
 							$th.append($thDiv);
+							
+							// Build row by row for the table body
 							$theadRow.append($th);
 							$rows.each(function (i, row) {
 								var $row = $(row),
@@ -615,6 +625,7 @@ var Shorelines = {
 							});
 						}
 						
+						// Sorting has to be reset
 						Shorelines.setupTableSorting();
 					}
 				}
