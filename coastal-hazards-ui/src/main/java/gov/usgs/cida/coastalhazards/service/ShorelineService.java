@@ -83,6 +83,9 @@ public class ShorelineService extends HttpServlet {
 			} else {
 				ServiceHelper.sendNotEnoughParametersError(response, new String[]{WORKSPACE_PARAM_STRING}, responseType);
 			}
+		} else {
+			responseMap.put("serverCode", "404");
+			RequestResponse.sendErrorResponse(response, responseMap, responseType);
 		}
 
 	}
@@ -96,12 +99,13 @@ public class ShorelineService extends HttpServlet {
 		if (action.equalsIgnoreCase(UPDATE_AUX_NAME_ACTION_STRING)) {
 			String workspace = request.getParameter(WORKSPACE_PARAM_STRING);
 			String auxName = request.getParameter(AUX_NAME_TOKEN_STRING);
-			if (StringUtils.isNotBlank(workspace) && StringUtils.isNotBlank(auxName)) {
+			if (StringUtils.isNotBlank(workspace)) {
 				boolean updated = false;
 				try {
 					updated = new PostgresDAO().updateShorelineAuxillaryName(workspace, auxName);
+					LOGGER.debug("Updated auxillary column on workspace {} to {}", workspace, auxName);
 				} catch (SQLException e) {
-					updated = false;
+					LOGGER.warn("Could not update auxillary column for workspace " + workspace + " to " + auxName, e);
 				}
 				responseMap.put(UPDATED_TOKEN_STRING, Boolean.toString(updated));
 				RequestResponse.sendSuccessResponse(response, responseMap, responseType);

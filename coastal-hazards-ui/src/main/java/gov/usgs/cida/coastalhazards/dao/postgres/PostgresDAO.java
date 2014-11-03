@@ -338,7 +338,7 @@ public class PostgresDAO {
 					+ "WHERE workspace = ?";
 
 			String[] availableAuxNames = getAvailableAuxillaryNamesFromWorkspace(workspaceName);
-			if (!Arrays.asList(availableAuxNames).contains(auxName)) {
+			if (StringUtils.isNotBlank(auxName) && !Arrays.asList(availableAuxNames).contains(auxName)) {
 				LOGGER.info("workspace {} does not contain auxillary name {}", workspaceName, auxName);
 				return false;
 			}
