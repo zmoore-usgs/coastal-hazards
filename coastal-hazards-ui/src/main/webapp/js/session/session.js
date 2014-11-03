@@ -739,7 +739,7 @@ CCH.Session = function (name, isPerm) {
 			}
 		},
 		getCurrentSession: function () {
-			return me.session.currentSession;
+			return me.session;
 		},
 		clearSessions: function (type) {
 			type = type || '';
