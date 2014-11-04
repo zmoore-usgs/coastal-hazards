@@ -12,6 +12,8 @@ var Shorelines = {
 		{attr: CONFIG.strings.columnAttrNames.biasUncertainty, defaultValue: ''}
 	],
 	groupingColumn: 'date',
+	dateFormat: '{yyyy}-{MM}-{dd}',
+	selectedFeatureClass: 'selected-feature-row',
 	columnMatchingTemplate: undefined,
 	featureTableRowTemplate: undefined,
 	CONTROL_IDENTIFY_ID: 'shoreline-identify-control',
@@ -84,12 +86,17 @@ var Shorelines = {
 			sessionStage.datesDisabled = [];
 		}
 
-		// Remove individual shorelines layers from session 
+		// Cleaning up legacy
+		// Remove individual shorelines layers from session
 		Object.keys(sessionStage).forEach(function (k) {
 			if (k.indexOf(':') !== -1) {
 				delete sessionStage[k];
 			}
 		});
+
+		if (sessionStage.dateFormat) {
+			delete sessionStage.dateFormat;
+		}
 
 		CONFIG.tempSession.setStage({
 			stage: this.stage,
@@ -99,7 +106,6 @@ var Shorelines = {
 		CONFIG.tempSession.persistSession();
 
 		Shorelines.getAvailableAuxillaryColumns();
-
 	},
 	enterStage: function () {
 		"use strict";
@@ -125,20 +131,19 @@ var Shorelines = {
 		}, function (obj, status) {
 			Shorelines.hideSortingSelectionContainer();
 			if (status === 'success' && obj.success === 'true') {
-				var names = JSON.parse(obj.names);
+				var names = JSON.parse(obj.names),
+					$option = $('<option />');
 				if (names.length) {
 					Shorelines.$controlSelectSortingColumn.empty();
-					Shorelines.$controlSelectSortingColumn.append($('<option />'));
+					Shorelines.$controlSelectSortingColumn.append($option.clone());
 					names.forEach(function (name) {
-						var option = $('<option />').attr('value', name).html(name);
+						var option = $option.clone().attr('value', name).html(name);
 						Shorelines.$controlSelectSortingColumn.append(option);
 					});
 					Shorelines.bindSortingSelectionControl();
 					Shorelines.updateSortingSelectionControl(obj.name);
 					Shorelines.showSortingSelectionContainer();
 				}
-			} else {
-				Shorelines.hideSortingSelectionContainer();
 			}
 		});
 	},
@@ -501,14 +506,14 @@ var Shorelines = {
 		}
 	},
 	emptyFeatureTable: function () {
+		Shorelines.$shorelineFeatureTableContainer.find('.table-features-column-aux').remove();
 		Shorelines.$shorelineFeatureTableContainer.find('table > tbody').empty();
 	},
 	updateFeatureTable: function (event) {
 		var layer = event.object,
 			colorGroups = layer.colorGroups,
 			$switchCandidates,
-			$tbody = Shorelines.$shorelineFeatureTableContainer.find('table > tbody'),
-			def = $.Deferred();
+			$tbody = Shorelines.$shorelineFeatureTableContainer.find('table > tbody');
 
 		event.object.events.unregister('loadend', null, Shorelines.updateFeatureTable);
 
@@ -526,19 +531,53 @@ var Shorelines = {
 				.find('table > tbody')
 				.find('td:nth-child(2):contains("' + date + '")');
 
-			if (!$existingDates.length)
+			if (!$existingDates.length) {
 				$tbody.append($(row));
+			}
 		}, this);
+
+		var rowOnClickCallback = function (e) {
+			var $clickedRow = $(e.target).parent(),
+				$table = $clickedRow.parent(),
+				$rows = $table.find('tr'),
+				shiftPressed = e.shiftKey,
+				altKeyPressed = e.altKey;
+
+			if ((!shiftPressed && !altKeyPressed) || (shiftPressed && altKeyPressed)) {
+				var wasAlreadyOn = $clickedRow.hasClass(Shorelines.selectedFeatureClass);
+				$tbody.find('tr').removeClass(Shorelines.selectedFeatureClass);
+				if (!wasAlreadyOn) {
+					$clickedRow.toggleClass(Shorelines.selectedFeatureClass);
+				}
+			} else if (altKeyPressed) {
+				$clickedRow.toggleClass(Shorelines.selectedFeatureClass);
+			} else if (shiftPressed) {
+				var firstSelectedRowIndex = $rows.index($table.find('.' + Shorelines.selectedFeatureClass)),
+					clickedRowIndex = $rows.index($clickedRow[0]);
+
+				if (firstSelectedRowIndex === clickedRowIndex) {
+					$clickedRow.toggleClass(Shorelines.selectedFeatureClass);
+				} else {
+					if (firstSelectedRowIndex > clickedRowIndex) {
+						// Flip the values of the variables
+						clickedRowIndex = [firstSelectedRowIndex, firstSelectedRowIndex = clickedRowIndex] [0];
+					}
+
+					for (var a = firstSelectedRowIndex; a < clickedRowIndex + 1; a++) {
+						$($rows[a]).addClass(Shorelines.selectedFeatureClass);
+					}
+
+				}
+			}
+
+			e.stopImmediatePropagation();
+		};
+
+		$tbody.find('tr td:nth-child(2)').off('click', rowOnClickCallback);
+		$tbody.find('tr td:nth-child(2)').on('click', rowOnClickCallback);
 
 		if (layer.prefix === CONFIG.tempSession.getCurrentSessionKey()) {
 			Shorelines.getAvailableAuxillaryColumns();
-			def.then(
-				function () {
-					Shorelines.updateSortingColumnOnTable();
-				},
-				function () {
-					debugger;
-				});
 		}
 
 		$switchCandidates = $('.switch>:not(.switch-animate)').parent();
@@ -825,7 +864,7 @@ var Shorelines = {
 							style: {
 								classes: ['alert-warn']
 							}
-						})
+						});
 					};
 
 				if (validLayers.length) {
@@ -935,6 +974,7 @@ var Shorelines = {
 		if (shorelineIdAOIControl) {
 			layer = shorelineIdAOIControl.layer;
 			CONFIG.map.removeLayer(layer, false);
+			Shorelines.hideFeatureTable(true);
 			shorelineIdAOIControl.destroy();
 		}
 	},

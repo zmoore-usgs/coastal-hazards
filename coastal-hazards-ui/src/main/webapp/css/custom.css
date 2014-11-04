@@ -80,22 +80,22 @@ select option.session-layer{
     margin-bottom: 0.3em;
 }
 #stage-select-tablist #shorelines-description {
-   background-image:url('../images/paneBackgrounds/shorelines_tutorial.png');
+	background-image:url('../images/paneBackgrounds/shorelines_tutorial.png');
 }
 #stage-select-tablist #baseline-description {
-   background-image:url('../images/paneBackgrounds/baselines_tutorial.png');
+	background-image:url('../images/paneBackgrounds/baselines_tutorial.png');
 }
 #stage-select-tablist #transects-description {
-   background-image:url('../images/paneBackgrounds/transects_tutorial.png');
+	background-image:url('../images/paneBackgrounds/transects_tutorial.png');
 }
 #stage-select-tablist #bias-description {
-   background-image:url('../images/paneBackgrounds/bias_tutorial.png');
+	background-image:url('../images/paneBackgrounds/bias_tutorial.png');
 }
 #stage-select-tablist #calculation-description {
-   background-image:url('../images/paneBackgrounds/transects_tutorial.png');
+	background-image:url('../images/paneBackgrounds/transects_tutorial.png');
 }
 #stage-select-tablist #results-description {
-   background-image:url('../images/paneBackgrounds/results_tutorial.png');
+	background-image:url('../images/paneBackgrounds/results_tutorial.png');
 }
 
 #sign-in-img {
@@ -154,6 +154,24 @@ select option.session-layer{
 
 #wildcard-select-list {
     width: 100%;
+}
+
+.selected-feature-row td:nth-child(2) {
+	background-color: #DDDDDD !important;
+}
+
+.shoreline-table ::selection {
+	background-color:Transparent;
+    color:#000;
+}
+
+.shoreline-table ::-moz-selection {
+	background-color:Transparent;
+    color:#000;
+}
+
+.selected-feature-row td:nth-child(2) :hover{
+	background-color: #DDDDDD !important;
 }
 
 /* ---------------------------------------------------------------------- Baselines */

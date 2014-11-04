@@ -432,8 +432,7 @@ var UI = function () {
 						tbodyTr.append($('<td />').append(aVal));
 					});
 
-					var config = CONFIG.tempSession.getStage(Shorelines.stage);
-					var date = Date.create(feature.attributes[groupingColumn]).format(config.dateFormat);
+					var date = Date.create(feature.attributes[groupingColumn]).format(Shorelines.dateFormat);
 					var isVisible = !CONFIG.tempSession.isDateDisabled(date);
 					var disableButton = $('<button />')
 						.addClass('btn btn-year-toggle')
