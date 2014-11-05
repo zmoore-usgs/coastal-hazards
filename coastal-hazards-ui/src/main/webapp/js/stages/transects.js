@@ -570,12 +570,18 @@ var Transects = {
 					caller: Transects
 				});
 
+				Transects.refreshFeatureList({
+					selectLayer: layer.cloneOf
+				});
+				CONFIG.map.removeLayerByName(layer.cloneOf);
 				intersectionsList.val('');
 				resultsList.val('');
-
+				Transects.$buttonToggleEdit.trigger('click');
+				Results.clear();
 			} else {
 				LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
-
+				Transects.$buttonToggleEdit.trigger('click');
+				
 				$.get('service/session', {
 					action: 'remove-layer',
 					workspace: CONFIG.tempSession.getCurrentSessionKey(),
@@ -597,6 +603,7 @@ var Transects = {
 
 									Transects.$buttonToggleEdit.trigger('click');
 
+									CONFIG.map.removeLayerByName(layer.cloneOf);
 									intersectionsList.val(intersectsLayer);
 									resultsList.val(resultsLayer);
 
