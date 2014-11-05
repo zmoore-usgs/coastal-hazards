@@ -293,6 +293,7 @@ var Shorelines = {
 			title = args.title,
 			bounds = args.bounds,
 			dates = args.dates,
+			source = args.source,
 			colorDatePairings = Util.createColorGroups(dates),
 			sldBody = Shorelines.createSLDBody({
 				colorDatePairings: colorDatePairings,
@@ -327,6 +328,7 @@ var Shorelines = {
 				singleTile: true,
 				ratio: 1,
 				groupByAttribute: 'date',
+				source : source,
 				layerType: Shorelines.stage,
 				displayInLayerSwitcher: false
 			}),
@@ -520,10 +522,12 @@ var Shorelines = {
 		colorGroups.forEach(function (cg) {
 			var color = cg[0],
 				date = cg[1],
+				source = layer.source,
 				checked = !CONFIG.tempSession.isDateDisabled(date),
 				row = Shorelines.featureTableRowTemplate({
 					color: color,
 					date: date,
+					source: source,
 					checked: checked
 				}),
 				// I only want to do this if the table doesn't already contain this date
@@ -548,6 +552,7 @@ var Shorelines = {
 		if (layer.prefix === CONFIG.tempSession.getCurrentSessionKey()) {
 			Shorelines.getAvailableAuxillaryColumns();
 		}
+		Shorelines.setupTableSorting();
 
 	},
 	featureTableRowClickCallback: function (e) {
@@ -685,7 +690,7 @@ var Shorelines = {
 							$th = $('<th />')
 							.addClass('table-features-column-aux tablesorter-header')
 							.attr({
-								'data-column': '3'
+								'data-column': '4'
 							}),
 							$thDiv = $('<div />').addClass('tablesorter-header-inner').html(e.name);
 						$th.append($thDiv);
@@ -735,8 +740,7 @@ var Shorelines = {
 		Shorelines.$shorelineFeatureTableContainer.find("table").tablesorter({
 			headers: {
 				0: {sorter: 'visibility'},
-				1: {sorter: 'dateSorter'},
-				3: {sorter: 'text'}
+				1: {sorter: 'dateSorter'}
 			}
 		});
 
@@ -845,7 +849,7 @@ var Shorelines = {
 								version: '1.1.0',
 								request: 'GetFeature',
 								srsName: 'EPSG:4326',
-								propertyName: layerPrefix + ':date',
+								propertyName: layerPrefix + ':date,' + layerPrefix + ':source', 
 								sortBy: layerPrefix + ':date',
 								typeName: layerPrefix + ':' + layer.name,
 								bbox: boundsString
@@ -873,7 +877,8 @@ var Shorelines = {
 				if (validLayers.length) {
 					$.when.apply(this, ajaxCalls).done(function () {
 						var dates = [],
-							aIdx;
+							aIdx,
+							source = '';
 
 						// I should have as many incoming arguments as there were 
 						// ajax calls going out (probably 2: published and workspace).
@@ -888,6 +893,7 @@ var Shorelines = {
 								// If the response had features come back, I want to 
 								// grab the dates in those features and create a unique 
 								// dates array
+								source = features[0].data.source;
 								dates = dates.union(features.map(function (f) {
 									var origDate = f.data.date;
 									if (origDate.indexOf('Z') !== -1) {
@@ -902,7 +908,8 @@ var Shorelines = {
 
 						var addLayer = function (o) {
 							var layerInfo = o.layer,
-								bounds = o.bounds;
+								bounds = o.bounds,
+								source = o.source;
 
 							// I also want to add the WMS layer to the map
 							var wmsLayer = Shorelines.addLayerToMap({
@@ -910,16 +917,19 @@ var Shorelines = {
 								prefix: layerInfo.prefix,
 								title: layerInfo.title,
 								bounds: bounds,
-								dates: dates
+								dates: dates,
+								source: source
 							});
 						};
 
 						if (dates.length) {
 							if (Array.isArray(this)) {
 								for (aIdx = 0; aIdx < arguments.length; aIdx++) {
+									this[aIdx].source = source;
 									addLayer(this[aIdx]);
 								}
 							} else {
+								this.source = source;
 								addLayer(this);
 							}
 							CONFIG.map.getMap().zoomToExtent(Shorelines.aoiBoundsSelected, true);

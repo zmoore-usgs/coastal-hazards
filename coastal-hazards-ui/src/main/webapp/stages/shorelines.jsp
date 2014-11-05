@@ -35,6 +35,7 @@
 					<thead>
 					<th class="shoreline-table-selected-head-column" data-column="0">Visibility</th>
 					<th data-column="1">Date</th>
+					<th data-column="2">Source</th>
 					<th data-sorter="false">Color</th>
 					</thead>
 					<tbody>
