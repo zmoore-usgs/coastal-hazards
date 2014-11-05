@@ -79,8 +79,9 @@ public class ShorelineShapefileDAO extends ShorelineFileDAO {
 		String dateFieldName = (String) bm.getKey(Constants.DB_DATE_ATTR);
 		String uncertaintyFieldName = (String) bm.getKey(Constants.UNCY_ATTR);
 		String mhwFieldName = (String) bm.getKey(Constants.MHW_ATTR);
-		String orientation = ""; // Not yet sure what to do here
+		String orientation = null; // Not yet sure what to do here
 		String baseFileName = FilenameUtils.getBaseName(shpFile.getName());
+		String name = baseFileName;
 		File parentDirectory = shpFile.getParentFile();
 		deleteExistingPointFiles(parentDirectory);
 		String[][] fieldNames = null;
@@ -123,14 +124,19 @@ public class ShorelineShapefileDAO extends ShorelineFileDAO {
 						boolean mhw = false;
 						Date date = getDateFromFC(dateFieldName, sf, dateType);
 						String source = getSourceFromFC(sf);
+						
 						if (StringUtils.isNotBlank(mhwFieldName)) {
 							mhw = getBooleanValue(mhwFieldName, sf, false);
+						}
+						
+						if (StringUtils.isBlank(source)) {
+							source = baseFileName;
 						}
 
 						xyUncies.add(getXYAndUncertaintyFromSimpleFeature(sf, uncertaintyFieldName));
 
 						if (lastRecordId != recordId) {
-							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, baseFileName, orientation, null);
+							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, name, orientation, null);
 
 							if (fieldNames != null && fieldNames.length > 0) {
 								Map<String, String> auxCols = getAuxillaryColumnsFromFC(sf, fieldNames);

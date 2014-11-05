@@ -9,7 +9,6 @@ import gov.usgs.cida.utilities.features.Constants;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;

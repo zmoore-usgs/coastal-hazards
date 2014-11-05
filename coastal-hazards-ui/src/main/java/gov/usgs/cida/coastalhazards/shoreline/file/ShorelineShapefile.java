@@ -1,11 +1,11 @@
 package gov.usgs.cida.coastalhazards.shoreline.file;
 
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
+import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineFileDAO;
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
-import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineFileDAO;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
-import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
