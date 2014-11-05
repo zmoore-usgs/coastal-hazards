@@ -570,12 +570,18 @@ var Transects = {
 					caller: Transects
 				});
 
+				Transects.refreshFeatureList({
+					selectLayer: layer.cloneOf
+				});
+				CONFIG.map.removeLayerByName(layer.cloneOf);
 				intersectionsList.val('');
 				resultsList.val('');
-
+				Transects.$buttonToggleEdit.trigger('click');
+				Results.clear();
 			} else {
 				LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
-
+				Transects.$buttonToggleEdit.trigger('click');
+				
 				$.get('service/session', {
 					action: 'remove-layer',
 					workspace: CONFIG.tempSession.getCurrentSessionKey(),
@@ -592,16 +598,10 @@ var Transects = {
 									Transects.refreshFeatureList({
 										selectLayer: layer.cloneOf
 									});
-									
+
 									CONFIG.map.removeLayerByName(layer.cloneOf);
-
-									Transects.$buttonToggleEdit.trigger('click');
-
 									intersectionsList.val(intersectsLayer);
 									resultsList.val(resultsLayer);
-									
-									LOG.debug('Transects.js::saveEditedLayer: WMS Capabilities retrieved for your session');
-									
 									Results.clear();
 								}
 							],
