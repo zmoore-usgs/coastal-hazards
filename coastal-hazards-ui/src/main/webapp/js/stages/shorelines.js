@@ -536,108 +536,111 @@ var Shorelines = {
 			}
 		}, this);
 
-		var rowOnClickCallback = function (e) {
-			var $clickedRow = $(e.target).parent(),
-				$table = $clickedRow.parent(),
-				$rows = $table.find('tr'),
-				shiftPressed = e.shiftKey,
-				altKeyPressed = e.altKey;
+		// Allows user to click on the date field in a row and select the row
+		$tbody.find('tr td:nth-child(2)').off('click', Shorelines.featureTableRowClickCallback);
+		$tbody.find('tr td:nth-child(2)').on('click', Shorelines.featureTableRowClickCallback);
 
-			if ((!shiftPressed && !altKeyPressed) || (shiftPressed && altKeyPressed)) {
-				var wasAlreadyOn = $clickedRow.hasClass(Shorelines.selectedFeatureClass);
-				$tbody.find('tr').removeClass(Shorelines.selectedFeatureClass);
-				if (!wasAlreadyOn) {
-					$clickedRow.toggleClass(Shorelines.selectedFeatureClass);
-				}
-			} else if (altKeyPressed) {
-				$clickedRow.toggleClass(Shorelines.selectedFeatureClass);
-			} else if (shiftPressed) {
-				var firstSelectedRowIndex = $rows.index($table.find('.' + Shorelines.selectedFeatureClass)),
-					clickedRowIndex = $rows.index($clickedRow[0]);
-
-				if (firstSelectedRowIndex === clickedRowIndex) {
-					$clickedRow.toggleClass(Shorelines.selectedFeatureClass);
-				} else {
-					if (firstSelectedRowIndex > clickedRowIndex) {
-						// Flip the values of the variables
-						clickedRowIndex = [firstSelectedRowIndex, firstSelectedRowIndex = clickedRowIndex] [0];
-					}
-
-					for (var a = firstSelectedRowIndex; a < clickedRowIndex + 1; a++) {
-						$($rows[a]).addClass(Shorelines.selectedFeatureClass);
-					}
-
-				}
-			}
-
-			e.stopImmediatePropagation();
-		};
-
-		$tbody.find('tr td:nth-child(2)').off('click', rowOnClickCallback);
-		$tbody.find('tr td:nth-child(2)').on('click', rowOnClickCallback);
+		$switchCandidates = $('.switch>:not(.switch-animate)').parent();
+		$switchCandidates.off('switch-change', Shorelines.featureTableSwitchChangeCallback);
+		$switchCandidates.on('switch-change', Shorelines.featureTableSwitchChangeCallback);
+		$switchCandidates.bootstrapSwitch();
 
 		if (layer.prefix === CONFIG.tempSession.getCurrentSessionKey()) {
 			Shorelines.getAvailableAuxillaryColumns();
 		}
 
-		$switchCandidates = $('.switch>:not(.switch-animate)').parent();
+	},
+	featureTableRowClickCallback: function (e) {
+		var $clickedRow = $(e.target).parent(),
+			$table = $clickedRow.parent(),
+			$tbody = Shorelines.$shorelineFeatureTableContainer.find('table > tbody'),
+			$rows = $table.find('tr'),
+			shiftPressed = e.shiftKey,
+			altKeyPressed = e.altKey;
 
-		$switchCandidates.each(function (index, element) {
-			var switchChange = function (event, data) {
-				var status = data.value,
-					$element = data.el,
-					date = $element.parent().parent().attr('data-date'),
-					datesDisabled = CONFIG.tempSession.getDisabledDates();
+		if ((!shiftPressed && !altKeyPressed) || (shiftPressed && altKeyPressed)) {
+			var wasAlreadyOn = $clickedRow.hasClass(Shorelines.selectedFeatureClass);
+			$tbody.find('tr').removeClass(Shorelines.selectedFeatureClass);
+			if (!wasAlreadyOn) {
+				$clickedRow.toggleClass(Shorelines.selectedFeatureClass);
+			}
+		} else if (altKeyPressed) {
+			$clickedRow.toggleClass(Shorelines.selectedFeatureClass);
+		} else if (shiftPressed) {
+			var firstSelectedRowIndex = $rows.index($table.find('.' + Shorelines.selectedFeatureClass)),
+				clickedRowIndex = $rows.index($clickedRow[0]);
 
-				LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for date ' + date);
-
-				var idTableButtons = $('.btn-year-toggle[date="' + date + '"]');
-				if (!status) {
-					// Date is disabled, add it to collection of disabled dates
-					if (datesDisabled.indexOf(date) === -1) {
-						datesDisabled.push(date);
-					}
-
-					idTableButtons.removeClass('btn-success');
-					idTableButtons.addClass('btn-danger');
-					idTableButtons.html('Enable');
-				} else {
-					// Date was not disabled. Remove it from the array of disabled dates
-					while (datesDisabled.indexOf(date) !== -1) {
-						datesDisabled.remove(date);
-					}
-
-					idTableButtons.removeClass('btn-danger');
-					idTableButtons.addClass('btn-success');
-					idTableButtons.html('Disable');
+			if (firstSelectedRowIndex === clickedRowIndex) {
+				$clickedRow.toggleClass(Shorelines.selectedFeatureClass);
+			} else {
+				if (firstSelectedRowIndex > clickedRowIndex) {
+					// Flip the values of the variables
+					clickedRowIndex = [firstSelectedRowIndex, firstSelectedRowIndex = clickedRowIndex] [0];
 				}
-				CONFIG.tempSession.setDisabledDates(datesDisabled);
-				CONFIG.tempSession.persistSession();
 
-				var layers = CONFIG.map.getMap().getLayersBy('layerType', Shorelines.stage);
-				layers.forEach(function (l) {
-					var sldBody = Shorelines.createSLDBody({
-						colorDatePairings: l.colorGroups,
-						groupColumn: l.groupByAttribute,
-						layerTitle: l.title,
-						layerName: l.prefix + ':' + l.name
-					});
+				for (var a = firstSelectedRowIndex; a < clickedRowIndex + 1; a++) {
+					$($rows[a]).addClass(Shorelines.selectedFeatureClass);
+				}
+			}
+		}
 
-					l.params.SLD_BODY = sldBody;
-					l.redraw(true);
-				});
+		e.stopImmediatePropagation();
+	},
+	featureTableSwitchChangeCallback: function (event, data) {
+		var status = data.value,
+			$element = data.el,
+			multiSelRows = Shorelines.$shorelineFeatureTableContainer.find('.' + Shorelines.selectedFeatureClass),
+			multiSelDates = multiSelRows
+			.find('td:nth-child(2)')
+			.map(function (c, a) {
+				return $(a).html();
+			}),
+			$switches = $('.switch'),
+			dates = [$element.parent().parent().attr('data-date')];
 
-				$("table.tablesorter").trigger('update', false);
-			};
+		if (multiSelRows.length) {
+			$switches.off('switch-change', Shorelines.featureTableSwitchChangeCallback);
+			multiSelRows.find('td:nth-child(1)>div').bootstrapSwitch('setState', status);
+			$switches.on('switch-change', Shorelines.featureTableSwitchChangeCallback);
 
-			// Re-bind the event handler for this switch
-			$(element)
-				.off('switch-change', switchChange)
-				.on('switch-change', switchChange);
+			multiSelRows.toggleClass(Shorelines.selectedFeatureClass);
+			dates = dates.concat(multiSelDates.toArray()).unique();
+		}
+
+		if (!status) {
+			// Date is disabled, add it to collection of disabled dates
+			dates.forEach(function (date) {
+				var idTableButton = $('.btn-year-toggle[date="' + date + '"]');
+				CONFIG.tempSession.addDisabledDate(date);
+				idTableButton.removeClass('btn-success');
+				idTableButton.addClass('btn-danger');
+				idTableButton.html('Enable');
+			});
+		} else {
+			dates.forEach(function (date) {
+				var idTableButton = $('.btn-year-toggle[date="' + date + '"]');
+				CONFIG.tempSession.removeDisabledDate(date);
+				idTableButton.removeClass('btn-danger');
+				idTableButton.addClass('btn-success');
+				idTableButton.html('Disable');
+			});
+		}
+		CONFIG.tempSession.persistSession();
+
+		var layers = CONFIG.map.getMap().getLayersBy('layerType', Shorelines.stage);
+		layers.forEach(function (l) {
+			var sldBody = Shorelines.createSLDBody({
+				colorDatePairings: l.colorGroups,
+				groupColumn: l.groupByAttribute,
+				layerTitle: l.title,
+				layerName: l.prefix + ':' + l.name
+			});
+
+			l.params.SLD_BODY = sldBody;
+			l.redraw(true);
 		});
 
-		$switchCandidates.bootstrapSwitch();
-
+		$("table.tablesorter").trigger('update', false);
 	},
 	updateSortingColumnOnServer: function (args) {
 		args = args || {};

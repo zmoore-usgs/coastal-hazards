@@ -396,7 +396,14 @@ CCH.Session = function (name, isPerm) {
 			}
 			return me.getDisabledDates();
 		};
-		
+		me.addDisabledDate = function (date) {
+			if (me.session.stage[Shorelines.stage].datesDisabled.indexOf(date) === -1) {
+				me.session.stage[Shorelines.stage].datesDisabled.push(date);
+			}
+		};
+		me.removeDisabledDate = function (date) {
+			me.session.stage[Shorelines.stage].datesDisabled.remove(date);
+		};
 		me.isDateDisabled = function (date) {
 			return me.session.stage[Shorelines.stage].datesDisabled.indexOf(date) !== -1;
 		};
