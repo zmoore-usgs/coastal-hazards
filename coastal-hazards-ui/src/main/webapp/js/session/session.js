@@ -10,7 +10,6 @@ CCH.Session = function (name, isPerm) {
 			layers: [],
 			viewing: [],
 			groupingColumn: 'date',
-			dateFormat: '',
 			view: Object.extended({
 				layer: Object.extended({
 					'dates-disabled': []
@@ -30,6 +29,10 @@ CCH.Session = function (name, isPerm) {
 			viewing: ''
 		}),
 		intersections: Object.extended({
+			layers: [],
+			viewing: ''
+		}),
+		calculation: Object.extended({
 			layers: [],
 			viewing: ''
 		}),
