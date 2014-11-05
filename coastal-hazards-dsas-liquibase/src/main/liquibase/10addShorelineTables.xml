@@ -75,6 +75,6 @@
 			END;
 			$BODY$ LANGUAGE plpgsql;
 		</createProcedure>
-		<rollback>DROP FUNCTION create_workspace_view(workspace VARCHAR(40), shoreline_name VARCHAR(255));</rollback>
+		<rollback>DROP FUNCTION create_workspace_view(workspace VARCHAR, shoreline_name VARCHAR);</rollback>
 	</changeSet>
 </databaseChangeLog>

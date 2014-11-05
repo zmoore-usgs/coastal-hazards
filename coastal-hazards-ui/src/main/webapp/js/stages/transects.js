@@ -570,12 +570,18 @@ var Transects = {
 					caller: Transects
 				});
 
+				Transects.refreshFeatureList({
+					selectLayer: layer.cloneOf
+				});
+				CONFIG.map.removeLayerByName(layer.cloneOf);
 				intersectionsList.val('');
 				resultsList.val('');
-
+				Transects.$buttonToggleEdit.trigger('click');
+				Results.clear();
 			} else {
 				LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
-
+				Transects.$buttonToggleEdit.trigger('click');
+				
 				$.get('service/session', {
 					action: 'remove-layer',
 					workspace: CONFIG.tempSession.getCurrentSessionKey(),
@@ -592,16 +598,10 @@ var Transects = {
 									Transects.refreshFeatureList({
 										selectLayer: layer.cloneOf
 									});
-									
+
 									CONFIG.map.removeLayerByName(layer.cloneOf);
-
-									Transects.$buttonToggleEdit.trigger('click');
-
 									intersectionsList.val(intersectsLayer);
 									resultsList.val(resultsLayer);
-									
-									LOG.debug('Transects.js::saveEditedLayer: WMS Capabilities retrieved for your session');
-									
 									Results.clear();
 								}
 							],
@@ -833,10 +833,10 @@ var Transects = {
 		$('#transect-edit-form-toggle').attr('disabled', 'disabled');
 	},
 	enableUpdateTransectsButton: function () {
-		$('#transects-edit-save-button').removeAttr('disabled');
+		Transects.$buttonTransectsSave.removeAttr('disabled');
 	},
 	disableUpdateTransectsButton: function () {
-		$('#transects-edit-save-button').attr('disabled', 'disabled');
+		Transects.$buttonTransectsSave.attr('disabled', 'disabled');
 	},
 	enableCreateTransectsButton: function () {
 		LOG.info('Transects.js::enableCreateTransectsButton: Baseline has been added to the map. Enabling create transect button');
