@@ -10,7 +10,6 @@ CCH.Session = function (name, isPerm) {
 			layers: [],
 			viewing: [],
 			groupingColumn: 'date',
-			dateFormat: '',
 			view: Object.extended({
 				layer: Object.extended({
 					'dates-disabled': []
@@ -30,6 +29,10 @@ CCH.Session = function (name, isPerm) {
 			viewing: ''
 		}),
 		intersections: Object.extended({
+			layers: [],
+			viewing: ''
+		}),
+		calculation: Object.extended({
 			layers: [],
 			viewing: ''
 		}),
@@ -110,7 +113,7 @@ CCH.Session = function (name, isPerm) {
 					return false;
 				}
 			}
-			
+
 			return true;
 		};
 		return verifySessionId(sessionsObj.id);
@@ -241,11 +244,40 @@ CCH.Session = function (name, isPerm) {
 			return me.session[stage][config.name];
 		};
 
+		me.updateSessionFromWMS = function (args) {
+			var wmsCapabilities = CONFIG.ows.wmsCapabilities,
+				currentSessionKey = CONFIG.tempSession.getCurrentSessionKey(),
+				stage = args.stage,
+				suffixes = stage.suffixes;
+
+			wmsCapabilities.keys().each(function (layerNS) {
+				var cap = wmsCapabilities[layerNS];
+				var layers = cap.capability.layers;
+
+				layers.each(function (layer) {
+					var title = layer.title;
+					if (layerNS === CONFIG.name.published || layerNS === CONFIG.name.proxydatumbias || layerNS === currentSessionKey) {
+						var type = title.substr(title.lastIndexOf('_'));
+						if (suffixes.length === 0 || suffixes.indexOf(type.toLowerCase()) !== -1) {
+							var layerFullName = layer.prefix + ':' + layer.name;
+							var sessionStage = CONFIG.tempSession.getStage(stage.stage);
+							var lIdx = sessionStage.layers.findIndex(function (l) {
+								return l === layerFullName;
+							});
+							if (lIdx === -1) {
+								sessionStage.layers.push(layerFullName);
+							}
+							CONFIG.tempSession.persistSession();
+						}
+					}
+				});
+			});
+		};
+
 		me.updateLayersFromWMS = function (args) {
-			LOG.info('Session.js::updateLayersFromWMS');
+			LOG.debug('Session.js::updateLayersFromWMS');
 
 			var wmsCapabilities = args.wmsCapabilities;
-			var data = args.data;
 			var jqXHR = args.jqXHR;
 
 			if (jqXHR.status !== 200) {
@@ -253,7 +285,7 @@ CCH.Session = function (name, isPerm) {
 			}
 
 			if (wmsCapabilities && wmsCapabilities.capability.layers.length) {
-				LOG.info('Session.js::updateLayersFromWMS: Updating session layer list from WMS Capabilities');
+				LOG.trace('Session.js::updateLayersFromWMS: Updating session layer list from WMS Capabilities');
 
 				var wmsLayers = wmsCapabilities.capability.layers;
 				var namespace = wmsLayers[0].prefix;
@@ -262,7 +294,7 @@ CCH.Session = function (name, isPerm) {
 				});
 
 				if (namespace === me.getCurrentSessionKey()) {
-					LOG.debug('Session.js::updateLayersFromWMS: Scanning session for expired/missing layers in the ' + namespace + ' prefix');
+					LOG.trace('Session.js::updateLayersFromWMS: Scanning session for expired/missing layers in the ' + namespace + ' prefix');
 					sessionLayers.each(function (sessionLayer, index) {
 						if (sessionLayer.name.indexOf(me.getCurrentSessionKey() > -1)) {
 							var foundLayer = wmsLayers.find(function (wmsLayer) {
@@ -270,7 +302,7 @@ CCH.Session = function (name, isPerm) {
 							});
 
 							if (!foundLayer) {
-								LOG.debug('Session.js::updateLayersFromWMS: Removing layer ' + sessionLayer.name + ' from session object. This layer is not found on the OWS server');
+								LOG.info('Session.js::updateLayersFromWMS: Removing layer ' + sessionLayer.name + ' from session object. This layer is not found on the OWS server');
 								me.session.layers[index] = null;
 							}
 						}
@@ -279,14 +311,14 @@ CCH.Session = function (name, isPerm) {
 					// Removes all undefined or null from the layers array
 					me.session.layers = me.session.layers.compact();
 
-					LOG.debug('Session.js::updateLayersFromWMS: Scanning layers on server for layers in this session');
+					LOG.trace('Session.js::updateLayersFromWMS: Scanning layers on server for layers in this session');
 					var ioLayers = wmsLayers.findAll(function (wmsLayer) {
 						return (wmsLayer.prefix === 'ch-input' || wmsLayer.prefix === 'ch-output') &&
 							wmsLayer.name.indexOf(me.getCurrentSessionKey() !== -1);
 					});
 
-					$(ioLayers).each(function (index, layer) {
-						LOG.debug('Session.js::updateLayersFromWMS: Remote layer found. Adding it to current session');
+					$.each(ioLayers, function (index, layer) {
+						LOG.info('Session.js::updateLayersFromWMS: Remote layer found. Adding it to current session');
 						var incomingLayer = {
 							name: layer.name,
 							title: layer.title,
@@ -299,24 +331,23 @@ CCH.Session = function (name, isPerm) {
 						});
 
 						if (foundLayerAtIndex !== -1) {
-							LOG.debug('Session.js::updateLayersFromWMS: Layer ' +
+							LOG.trace('Session.js::updateLayersFromWMS: Layer ' +
 								'provided by WMS GetCapabilities response already in session layers. ' +
 								'Updating session layers with latest info.');
 							me.session.layers[foundLayerAtIndex] = incomingLayer;
 						} else {
-							LOG.debug('Session.js::updateLayersFromWMS: Layer ' +
+							LOG.info('Session.js::updateLayersFromWMS: Layer ' +
 								'provided by WMS GetCapabilities response not in session layers. ' +
 								'Adding layer to session layers.');
 							me.addLayerToSession(incomingLayer);
 						}
 					});
-					me.persistSession();
 				}
 			} else {
-				LOG.debug('Session.js::updateLayersFromWMS: Could not find any layers for this session. Removing any existing layers in session object');
-
-				me.persistSession();
+				LOG.info('Session.js::updateLayersFromWMS: Could not find any layers for this session. Removing any existing layers in session object');
 			}
+
+			me.persistSession();
 		};
 
 		me.addLayerToSession = function (args) {
@@ -359,13 +390,25 @@ CCH.Session = function (name, isPerm) {
 			me.save();
 		};
 
-		me.getDisabledDatesForShoreline = function (shoreline) {
-			if (!me.session.stage[Shorelines.stage][shoreline]) {
-				me.session.stage[Shorelines.stage][shoreline] = Object.extended({
-					'dates-disabled': []
-				});
+		me.getDisabledDates = function () {
+			return me.session.stage[Shorelines.stage].datesDisabled;
+		};
+		me.setDisabledDates = function (dates) {
+			if (Array.isArray(dates)) {
+				me.session.stage[Shorelines.stage].datesDisabled = dates;
 			}
-			return me.session.stage[Shorelines.stage][shoreline]['dates-disabled'];
+			return me.getDisabledDates();
+		};
+		me.addDisabledDate = function (date) {
+			if (me.session.stage[Shorelines.stage].datesDisabled.indexOf(date) === -1) {
+				me.session.stage[Shorelines.stage].datesDisabled.push(date);
+			}
+		};
+		me.removeDisabledDate = function (date) {
+			me.session.stage[Shorelines.stage].datesDisabled.remove(date);
+		};
+		me.isDateDisabled = function (date) {
+			return me.session.stage[Shorelines.stage].datesDisabled.indexOf(date) !== -1;
 		};
 
 	}
@@ -706,7 +749,7 @@ CCH.Session = function (name, isPerm) {
 			}
 		},
 		getCurrentSession: function () {
-			return me.session['current-session'];
+			return me.session;
 		},
 		clearSessions: function (type) {
 			type = type || '';

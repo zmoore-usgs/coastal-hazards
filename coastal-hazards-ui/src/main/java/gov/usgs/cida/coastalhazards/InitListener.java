@@ -2,8 +2,11 @@ package gov.usgs.cida.coastalhazards;
 
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
+import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineShapefileDAO;
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -27,12 +30,12 @@ public class InitListener implements ServletContextListener {
 		String key = Property.JDBC_NAME.getKey();
 		String initParameter = sc.getInitParameter(key);
 		System.setProperty(key, initParameter);
-		
+
 		String baseDir = PropertyUtil.getProperty(Property.DIRECTORIES_BASE, FileUtils.getTempDirectoryPath() + "/coastal-hazards");
 		String workDir = PropertyUtil.getProperty(Property.DIRECTORIES_WORK, "/work");
 		String uploadDir = PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD, "/upload");
 		File baseDirFile, workDirFile, uploadDirFile;
-		
+
 		baseDirFile = new File(baseDir);
 		workDirFile = new File(baseDirFile, workDir);
 		uploadDirFile = new File(baseDirFile, uploadDir);
@@ -47,6 +50,22 @@ public class InitListener implements ServletContextListener {
 
 		if (!uploadDirFile.exists()) {
 			createDir(uploadDirFile);
+		}
+
+		try {
+			LOGGER.info("Updating published workspace in database");
+			new ShorelineShapefileDAO().createViewAgainstPublishedWorkspace();
+			
+			LOGGER.info("Updating published workspace in Geoserver");
+			String geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
+			String geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
+			String geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
+			GeoserverDAO geoserverHandler = new GeoserverDAO(geoserverEndpoint, geoserverUsername, geoserverPassword);
+			geoserverHandler.createOrUpdatePublishedWorkspaceOnGeoserver();
+		} catch (SQLException ex) {
+			LOGGER.warn("Could not access published workspace. This may affect the proper funcitoning of the application", ex);
+		} catch (IOException ex) {
+			LOGGER.warn("Could not create or update published workspace on Geoserver. This may affect the proper funcitoning of the application", ex);
 		}
 
 		// TODO- Create file cleanup service for work and upload directories

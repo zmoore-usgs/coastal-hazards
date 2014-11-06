@@ -5,8 +5,8 @@ var Map = function() {
     
     LOG.debug('Map.js::constructor:Loading Map object');
     me.map = new OpenLayers.Map('map', {
-        projection : "EPSG:900913",
-        displayProjection : new OpenLayers.Projection("EPSG:900913")
+        projection : CONFIG.strings.epsg900913,
+        displayProjection : new OpenLayers.Projection(CONFIG.strings.epsg900913)
     });
 	
     LOG.debug('Map.js::constructor:Creating base layers');
@@ -102,13 +102,6 @@ var Map = function() {
 		displayInLayerSwitcher : false
 	}));
 	
-	var boxLayer = new OpenLayers.Layer.Boxes('shoreline-box-layer', {
-		displayInLayerSwitcher : false
-	});
-	
-	me.map.addLayer(boxLayer);
-	boxLayer.setZIndex(1000);
-	
     LOG.debug('Map.js::constructor:Adding ontrols to map');
     me.map.addControl(new OpenLayers.Control.MousePosition());
     me.map.addControl(new OpenLayers.Control.ScaleLine({
@@ -132,6 +125,7 @@ var Map = function() {
 	
     LOG.debug('Map.js::constructor: Map class initialized.');
     return $.extend(me, {
+		$mapDiv : $('#map'),
         getMap : function() {
             return me.map;
         },
@@ -198,9 +192,6 @@ var Map = function() {
         },
         getGeocodingMarkerLayer: function() {
 			return me.map.getLayersByName('geocoding-marker-layer')[0];
-		},
-		getShorelineBoxLayer: function() {
-			return me.map.getLayersByName('shoreline-box-layer')[0];
 		}
     });
 };

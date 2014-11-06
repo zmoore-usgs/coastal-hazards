@@ -65,16 +65,22 @@ public class Constants {
     public static final String UNCY_ATTR = "uncy";
     public static final String BASELINE_DIST_ATTR = "base_dist";
     public static final String BASELINE_ID_ATTR = "BaselineID";
+	public static final String SURVEY_ID_ATTR = "survey_id";
+	public static final String RECORD_ID_ATTR = "recordId";
+	public static final String SOURCE_ATTR = "source";
+	public static final String SOURCE_ABBRV_ATTR = "src";
     public static final String LRR_ATTR = "LRR";
     public static final String LCI_ATTR = "LCI";
     public static final String SCE_ATTR = "SCE";
     public static final String NSD_ATTR = "NSD";
     public static final String WLR_ATTR = "WLR";
     public static final String WCI_ATTR = "WCI";
+    public static final String ECI_ATTR = "ECI";
     public static final String NSM_ATTR = "NSM";
     public static final String EPR_ATTR = "EPR";
     public static final String MHW_ATTR = "MHW";
-
+    public static final String NAME_ATTR = "name";
+    public static final String DEFAULT_D_ATTR = "defaultd";
     public static final String AVG_SLOPE_ATTR = "avg_slope";
     public static final String BIAS_ATTR = "BIAS";
     public static final String BIAS_UNCY_ATTR = "UNCYB";

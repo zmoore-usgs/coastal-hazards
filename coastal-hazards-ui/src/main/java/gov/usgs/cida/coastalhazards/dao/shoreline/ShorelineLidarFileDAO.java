@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.shoreline.dao;
+package gov.usgs.cida.coastalhazards.dao.shoreline;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
@@ -39,9 +39,9 @@ import org.opengis.referencing.operation.TransformException;
  *
  * @author isuftin
  */
-public class ShorelineLidarFileDao extends ShorelineFileDao {
+public class ShorelineLidarFileDAO extends ShorelineFileDAO {
 
-	public ShorelineLidarFileDao() {
+	public ShorelineLidarFileDAO() {
 		this.JNDI_NAME = PropertyUtil.getProperty(Property.JDBC_NAME);
 	}
 
@@ -85,7 +85,7 @@ public class ShorelineLidarFileDao extends ShorelineFileDao {
 							true, //lidar always has MHW = true 
 							shorelineFile.getName(),
 							baseFileName,
-							"",
+							null,
 							Constants.MHW_ATTR);
 					shorelineDateToIdMap.put(shorelineDate, shorelineId);
 				} else {
@@ -117,7 +117,7 @@ public class ShorelineLidarFileDao extends ShorelineFileDao {
 						reprojectedY,
 						Double.valueOf(point[3]));
 			}
-			viewName = createViewAgainstWorkspace(connection, workspace, baseFileName);
+			viewName = createViewAgainstWorkspace(connection, workspace);
 		}
 		return viewName;
 	}

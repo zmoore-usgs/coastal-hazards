@@ -1,4 +1,4 @@
-/* global CONFIG */
+/* global CONFIG, Map */
 var UI = function () {
 	"use strict";
 	LOG.info('UI.js::constructor: UI class is initializing.');
@@ -41,6 +41,12 @@ var UI = function () {
 	LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
 		appInit: function () {
+			// bias stage not shown when not admin
+			if (!CONFIG.isAdmin) {
+				me.work_stages.shift();
+				me.work_stages_objects.shift();
+			}
+
 			this.bindWindowResize();
 			this.addIntroContent();
 			$(window).resize();
@@ -67,7 +73,7 @@ var UI = function () {
 				$('#nav-list').css('min-height', contentRowHeight);
 				$('#toolbox-span').css('min-height', contentRowHeight);
 				$('#map-span').css('min-height', contentRowHeight);
-				$('#map').css('height', contentRowHeight);
+				CONFIG.map.$mapDiv.css('height', contentRowHeight);
 				CONFIG.map.getMap().updateSize();
 
 				// Move the zoom control over to the right
@@ -384,14 +390,12 @@ var UI = function () {
 			return  $('#' + stage + '-list');
 		},
 		showShorelineInfo: function (event) {
-			LOG.info('UI.js::showShorelineInfo');
 			LOG.debug('UI.js::showShorelineInfo: The map was clicked and a response from the OWS resource was received');
 
 			Shorelines.closeShorelineIdWindows();
 
 			if (event.features.length) {
 				LOG.debug('UI.js::showShorelineInfo: Features were returned from the OWS resource. Parsing and creating table to display');
-
 				LOG.debug('UI.js::showShorelineInfo: Creating table for ' + event.features.length + ' features');
 				var groupingColumn = CONFIG.tempSession.getStage(Shorelines.stage).groupingColumn;
 				var uniqueFeatures = event.features.unique(function (feature) {
@@ -412,23 +416,21 @@ var UI = function () {
 				var thead = $('<thead />');
 				var theadTr = $('<tr />');
 				var tbody = $('<tbody />');
-				thead.append($('<caption />').append($('<h3 />').append(layerTitle)));
 
-				$(Object.keys(event.features[0].attributes)).each(function (i, v) {
+				Shorelines.clickToIdColumnNames.forEach(function (v) {
 					theadTr.append($('<th />').append(v));
 				});
 				thead.append(theadTr);
 
 				uniqueFeatures.each(function (feature) {
 					var tbodyTr = $('<tr />');
-
-					$(Object.values(feature.attributes)).each(function (aInd, aVal) {
-						tbodyTr.append($('<td />').append(aVal));
+					
+					Shorelines.clickToIdColumnNames.forEach(function (v) {
+						tbodyTr.append($('<td />').append(feature.attributes[v]));
 					});
 
-					var config = CONFIG.tempSession.getStage(Shorelines.stage);
-					var date = Date.create(feature.attributes[groupingColumn]).format(config.dateFormat);
-					var isVisible = CONFIG.tempSession.getDisabledDatesForShoreline(layerName).indexOf(date) === -1;
+					var date = Date.create(feature.attributes[groupingColumn]).format(Shorelines.dateFormat);
+					var isVisible = !CONFIG.tempSession.isDateDisabled(date);
 					var disableButton = $('<button />')
 						.addClass('btn btn-year-toggle')
 						.attr({
@@ -463,22 +465,9 @@ var UI = function () {
 					));
 
 				$('.btn-year-toggle').click(function (event) {
-					var date = $(event.target).attr('date');
-					var toggle = $('#shoreline-table-tabcontent>#' + $('#shorelines-list option:selected').text() + ' .feature-toggle').filter(function () {
-						return Date.parse($(this).data('date')) === Date.parse(date);
-					});
-
-					var allButtonsOfSameYear = $('.btn-year-toggle[date="' + date + '"]');
-					if (toggle.bootstrapSwitch('status')) {
-						allButtonsOfSameYear.removeClass('btn-success');
-						allButtonsOfSameYear.addClass('btn-danger');
-						allButtonsOfSameYear.html('Enable');
-					} else {
-						allButtonsOfSameYear.removeClass('btn-danger');
-						allButtonsOfSameYear.addClass('btn-success');
-						allButtonsOfSameYear.html('Disable');
-					}
-
+					var date = $(event.target).attr('date'),
+						toggle = Shorelines.$shorelineFeatureTableContainer
+						.find('table > tbody div[data-date="' + date + '"]');
 					toggle.bootstrapSwitch('toggleState');
 				});
 
@@ -598,13 +587,13 @@ var UI = function () {
 				cancelCallback = args.cancelCallback ? args.cancelCallback : Util.noopFunction,
 				continueCallback = args.continueCallback,
 				updateCallback = args.updateCallback;
-			
+
 			var html = template({
 				stage: caller.stage,
 				defaultingColumns: caller.defaultingColumns,
 				layerName: layerName,
-				columnKeys: columns.keys(), 
-				mandatoryColumns: caller.mandatoryColumns, 
+				columnKeys: columns.keys(),
+				mandatoryColumns: caller.mandatoryColumns,
 				defaultColumns: caller.defaultingColumns
 			});
 

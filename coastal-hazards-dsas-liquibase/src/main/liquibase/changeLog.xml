@@ -5,7 +5,11 @@
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
 	<include file="10addShorelineTables.xml" relativeToChangelogFile="true"/>
 	<include file="20updateWorkspaceShorelineView.xml" relativeToChangelogFile="true"/>
+	<include file="30createWorkspaceRenamingProc.xml" relativeToChangelogFile="true"/>
+	<include file="40createGISTIndexOnPointsTable.xml" relativeToChangelogFile="true"/>
+	<include file="50createGSMetadataTable.xml" relativeToChangelogFile="true"/>
 	
 </databaseChangeLog>

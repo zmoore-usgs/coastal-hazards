@@ -3,13 +3,13 @@ package gov.usgs.cida.coastalhazards.shoreline.file;
 import gov.usgs.cida.coastalhazards.service.util.ImportUtil;
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
-import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineLidarFileDao;
-import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineShapefileDAO;
+import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineLidarFileDAO;
+import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineShapefileDAO;
 import gov.usgs.cida.coastalhazards.shoreline.exception.LidarFileFormatException;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
 import gov.usgs.cida.coastalhazards.shoreline.file.ShorelineFile.ShorelineType;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse;
-import gov.usgs.cida.utilities.communication.GeoserverHandler;
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
 import gov.usgs.cida.utilities.file.FileHelper;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -105,10 +105,10 @@ public class ShorelineFileFactory {
 		String geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
 		String geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
 		String geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
-		GeoserverHandler geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
+		GeoserverDAO geoserverHandler = new GeoserverDAO(geoserverEndpoint, geoserverUsername, geoserverPassword);
 		switch (type) {
 			case LIDAR:
-				result = new ShorelineLidarFile(geoserverHandler, new ShorelineLidarFileDao(), this.workspace);
+				result = new ShorelineLidarFile(geoserverHandler, new ShorelineLidarFileDAO(), this.workspace);
 				break;
 			case SHAPEFILE:
 				result = new ShorelineShapefile(geoserverHandler, new ShorelineShapefileDAO(), this.workspace);

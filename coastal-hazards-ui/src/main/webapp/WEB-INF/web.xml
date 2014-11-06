@@ -4,18 +4,15 @@
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
-	
 	<!-- This should match the database JNDI connection name in the container -->
-	<context-param>    
+	<context-param>
 		<param-name>jndi.jdbc.name</param-name>
 		<param-value>jdbc/dsas</param-value>
 	</context-param>
-	
 	<listener>
 		<description>ServletContextListener</description>
 		<listener-class>gov.usgs.cida.coastalhazards.InitListener</listener-class>
 	</listener>
-	
 	<!-- SERVLET -->
 	<!-- AlternateProxy -->
 	<servlet>
@@ -181,7 +178,12 @@
 			<param-value>coastal-hazards</param-value>
 		</init-param>
 	</servlet>
+	<servlet>
+		<servlet-name>ShorelineService</servlet-name>
+		<servlet-class>gov.usgs.cida.coastalhazards.service.ShorelineService</servlet-class>
+	</servlet>
 	<!-- MAPPING -->
+
 	<servlet-mapping>
 		<servlet-name>ShorelineStagingService</servlet-name>
 		<url-pattern>/service/stage-shoreline</url-pattern>
@@ -217,5 +219,9 @@
 	<servlet-mapping>
 		<servlet-name>PublishService</servlet-name>
 		<url-pattern>/service/publish</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ShorelineService</servlet-name>
+		<url-pattern>/service/shoreline</url-pattern>
 	</servlet-mapping>
 </web-app>

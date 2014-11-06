@@ -1,6 +1,6 @@
 package gov.usgs.cida.coastalhazards.service;
 
-import gov.usgs.cida.utilities.communication.GeoserverHandler;
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.file.FileHelper;
 import gov.usgs.cida.coastalhazards.metadata.MetadataValidator;
@@ -37,7 +37,7 @@ import org.w3c.dom.Node;
 public class PublishService extends HttpServlet {
 
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(PublishService.class);
-	private static GeoserverHandler geoserverHandler = null;
+	private static GeoserverDAO geoserverHandler = null;
 	private static CSWHandler cswHandler = null;
 	private static String geoserverEndpoint = null;
 	private static String geoserverUsername = null;
@@ -53,7 +53,7 @@ public class PublishService extends HttpServlet {
 		geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
 		geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
 		publishedWorkspaceName = PropertyUtil.getProperty(Property.GEOSERVER_DEFAULT_PUBLISHED_WORKSPACE, "published");
-		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
+		geoserverHandler = new GeoserverDAO(geoserverEndpoint, geoserverUsername, geoserverPassword);
 		cswEndpoint = PropertyUtil.getProperty(Property.CSW_INTERNAL_ENDPOINT, "http://127.0.0.1/pycsw-wsgi");
 		cswHandler = new CSWHandler(cswEndpoint);
 	}

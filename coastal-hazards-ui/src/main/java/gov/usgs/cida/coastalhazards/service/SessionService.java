@@ -1,9 +1,9 @@
 package gov.usgs.cida.coastalhazards.service;
 
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
+import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineShapefileDAO;
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
-import gov.usgs.cida.coastalhazards.shoreline.dao.ShorelineShapefileDAO;
-import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class SessionService extends HttpServlet {
 
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SessionService.class);
-	private static GeoserverHandler geoserverHandler = null;
+	private static GeoserverDAO geoserverHandler = null;
 	private static String geoserverEndpoint = null;
 	private static String geoserverUsername = null;
 	private static String geoserverPassword = null;
@@ -43,7 +43,7 @@ public class SessionService extends HttpServlet {
 		geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
 		geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
 		geoserverDataDir = PropertyUtil.getProperty(Property.GEOSERVER_DATA_DIRECTORY);
-		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
+		geoserverHandler = new GeoserverDAO(geoserverEndpoint, geoserverUsername, geoserverPassword);
 	}
 
 	protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -75,10 +75,12 @@ public class SessionService extends HttpServlet {
 						ShorelineShapefileDAO dao = new ShorelineShapefileDAO();
 						if (dao.removeShorelines(workspace, layer)) {
 							LOG.info("No more shorelines exist workspace {}. Will delete the view", workspace);
-							String viewName = workspace + "_" + layer + "_shorelines";
+							String viewName = workspace + "_shorelines";
 							dao.removeShorelineView(viewName);
 							LOG.info("Deleted view {}", viewName);
-							geoserverHandler.removeLayer(workspace, store, workspace + "_" + layer + "_shorelines");
+							if (dao.getShorelineCountInShorelineView(workspace) == 0) {
+								geoserverHandler.removeLayer(workspace, store, viewName);
+							}
 						}
 					} else {
 						geoserverHandler.removeLayer(workspace, store, layer);

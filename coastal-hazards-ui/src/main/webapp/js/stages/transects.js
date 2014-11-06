@@ -600,8 +600,15 @@ var Transects = {
 									});
 
 									CONFIG.map.removeLayerByName(layer.cloneOf);
+
+									Transects.$buttonToggleEdit.trigger('click');
+
+									CONFIG.map.removeLayerByName(layer.cloneOf);
 									intersectionsList.val(intersectsLayer);
 									resultsList.val(resultsLayer);
+
+									LOG.debug('Transects.js::saveEditedLayer: WMS Capabilities retrieved for your session');
+
 									Results.clear();
 								}
 							],
@@ -1120,7 +1127,7 @@ var Transects = {
 					if (excludedDates) {
 						var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + stage.groupingColumn;
 
-						filter += '<wfs:Query typeName="' + shoreline + '" srsName="EPSG:4326">' +
+						filter += '<wfs:Query typeName="' + shoreline + '" srsName="' + CONFIG.strings.epsg4326 + '">' +
 							'<ogc:Filter>' +
 							'<ogc:And>';
 
@@ -1137,7 +1144,7 @@ var Transects = {
 							'</ogc:Filter>' +
 							'</wfs:Query>';
 					} else {
-						filter += '<wfs:Query typeName="' + shoreline + '" srsName="EPSG:4326" />';
+						filter += '<wfs:Query typeName="' + shoreline + '" srsName="' + CONFIG.strings.epsg4326 + '" />';
 					}
 					return filter;
 				}({
@@ -1156,7 +1163,7 @@ var Transects = {
 				'<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' +
 				'<wps:Body>' +
 				'<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:' + biasRef.split(':')[0] + '="' + CONFIG.namespace.proxydatumbias + '">' +
-				'<wfs:Query typeName="' + biasRef + '" srsName="EPSG:4326" />' +
+				'<wfs:Query typeName="' + biasRef + '" srsName="' + CONFIG.strings.epsg4326 + '" />' +
 				'</wfs:GetFeature>' +
 				'</wps:Body>' +
 				'</wps:Reference>' +
@@ -1168,7 +1175,7 @@ var Transects = {
 			'<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' +
 			'<wps:Body>' +
 			'<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:' + baseline.split(':')[0] + '="gov.usgs.cida.ch.' + baseline.split(':')[0] + '">' +
-			'<wfs:Query typeName="' + baseline + '" srsName="EPSG:4326" />' +
+			'<wfs:Query typeName="' + baseline + '" srsName="' + CONFIG.strings.epsg4326 + '" />' +
 			'</wfs:GetFeature>' +
 			'</wps:Body>' +
 			'</wps:Reference>' +

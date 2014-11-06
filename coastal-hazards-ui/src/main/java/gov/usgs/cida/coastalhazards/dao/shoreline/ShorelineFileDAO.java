@@ -1,15 +1,15 @@
-package gov.usgs.cida.coastalhazards.shoreline.dao;
+package gov.usgs.cida.coastalhazards.dao.shoreline;
 
+import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
+import gov.usgs.cida.coastalhazards.dao.postgres.PostgresDAO;
+import gov.usgs.cida.coastalhazards.service.util.Property;
+import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
 import gov.usgs.cida.coastalhazards.shoreline.exception.ShorelineFileFormatException;
-import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
 import gov.usgs.cida.utilities.features.Constants;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
@@ -28,14 +28,21 @@ import org.slf4j.LoggerFactory;
  *
  * @author isuftin
  */
-public abstract class ShorelineFileDao {
+public abstract class ShorelineFileDAO {
 
-	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineFileDao.class);
-	protected String JNDI_NAME;
+	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineFileDAO.class);
 	public final static int DATABASE_PROJECTION = 4326;
 	public final static String[] REQUIRED_FIELD_NAMES = new String[]{Constants.DB_DATE_ATTR, Constants.UNCY_ATTR, Constants.MHW_ATTR};
-	public final static String[] PROTECTED_WORKSPACES = new String[]{JNDISingleton.getInstance().getProperty("coastal-hazards.workspace.published", "published")};
+	public final static String DB_SCHEMA_NAME = PropertyUtil.getProperty(Property.DB_SCHEMA_NAME, "public");
+	public final static String[] PROTECTED_WORKSPACES = new String[]{GeoserverDAO.PUBLISHED_WORKSPACE_NAME};
+	protected String JNDI_NAME;
+	private final PostgresDAO pgDao = new PostgresDAO();
 
+	/**
+	 * Retrieves a connection from the database
+	 *
+	 * @return
+	 */
 	protected Connection getConnection() {
 		Connection con = null;
 		try {
@@ -50,12 +57,14 @@ public abstract class ShorelineFileDao {
 	}
 
 	/**
+	 * Inserts a shoreline into the shorelines table
 	 *
 	 * @param connection
 	 * @param workspace
 	 * @param date
 	 * @param mhw
 	 * @param source
+	 * @param name
 	 * @param shorelineType
 	 * @param auxillaryName
 	 * @return
@@ -63,60 +72,35 @@ public abstract class ShorelineFileDao {
 	 * @throws SQLException
 	 */
 	protected long insertToShorelinesTable(Connection connection, String workspace, Date date, boolean mhw, String source, String name, String shorelineType, String auxillaryName) throws NamingException, SQLException {
-		String sql = "INSERT INTO shorelines "
-				+ "(date, mhw, workspace, source, shoreline_name, shoreline_type, auxillary_name) "
-				+ "VALUES (?,?,?,?,?,?,?)";
-
-		long createdId;
-
-		try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-			ps.setDate(1, new java.sql.Date(date.getTime()));
-			ps.setBoolean(2, mhw);
-			ps.setString(3, workspace);
-			ps.setString(4, source);
-			ps.setString(5, name.toLowerCase());
-			ps.setString(6, shorelineType);
-			ps.setString(7, auxillaryName);
-
-			int affectedRows = ps.executeUpdate();
-			if (affectedRows == 0) {
-				throw new SQLException("Inserting a shoreline row failed. No rows affected");
-			}
-
-			try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-				if (generatedKeys.next()) {
-					createdId = generatedKeys.getLong(1);
-				} else {
-					throw new SQLException("Inserting a shoreline row failed. No ID obtained");
-				}
-			}
-		}
-
-		return createdId;
+		return pgDao.insertToShorelinesTable(connection, workspace, new java.sql.Date(date.getTime()), mhw, source, name, shorelineType, auxillaryName);
 	}
 
 	protected boolean insertPointIntoShorelinePointsTable(Connection connection, long shorelineId, int segmentId, double x, double y, double uncertainty) throws IOException, SchemaException, TransformException, NoSuchElementException, FactoryException, SQLException {
-		return insertPointsIntoShorelinePointsTable(connection, shorelineId, segmentId,new double[][]{new double[] {x,y,uncertainty}});
+		return insertPointsIntoShorelinePointsTable(connection, shorelineId, segmentId, new double[][]{new double[]{x, y, uncertainty}});
 	}
 
+	/**
+	 * Inserts an array of points into the shoreline points table
+	 *
+	 * @param connection
+	 * @param shorelineId
+	 * @param segmentId
+	 * @param XYuncyArray two-dimensional array of doubles and uncertainty. For
+	 * the inner array, the indexes map like so:
+	 * <br />
+	 * 1: X coordinate
+	 * <br />
+	 * 2: Y coordinate
+	 * <br />
+	 * 3: Uncertainty
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
 	protected boolean insertPointsIntoShorelinePointsTable(Connection connection, long shorelineId, int segmentId, double[][] XYuncyArray) throws SQLException {
-		StringBuilder sql = new StringBuilder("INSERT INTO shoreline_points (shoreline_id, segment_id, geom, uncy) VALUES");
-		for (double[] XYUncy : XYuncyArray) {
-			sql.append("(")
-					.append(shorelineId).append(",")
-					.append(segmentId).append(",")
-					.append("ST_GeomFromText('POINT(").append(XYUncy[0]).append(" ").append(XYUncy[1]).append(")',").append(DATABASE_PROJECTION).append("),")
-					.append(XYUncy[2])
-					.append("),");
-		}
-		
-		sql.deleteCharAt(sql.length() - 1);
-		
-		try (Statement st = connection.createStatement()) {
-			return st.execute(sql.toString());
-		}
+		return pgDao.insertPointsIntoShorelinePointsTable(connection, shorelineId, segmentId, XYuncyArray);
 	}
-	
+
 	/**
 	 * Inserts an attribute into the auxillary table
 	 *
@@ -130,16 +114,7 @@ public abstract class ShorelineFileDao {
 	 * element was repeated earlier in the shoreline file
 	 */
 	protected int insertAuxillaryAttribute(Connection connection, long shorelineId, String name, String value) throws SQLException {
-		String sql = "INSERT INTO shoreline_auxillary_attrs "
-				+ "(shoreline_id, attr_name, value) "
-				+ "VALUES (?,?,?)";
-
-		try (PreparedStatement st = connection.prepareStatement(sql)) {
-			st.setLong(1, shorelineId);
-			st.setString(2, name);
-			st.setString(3, value);
-			return st.executeUpdate();
-		}
+		return pgDao.insertAuxillaryAttribute(connection, shorelineId, name, value);
 	}
 
 	/**
@@ -147,23 +122,11 @@ public abstract class ShorelineFileDao {
 	 *
 	 * @param connection
 	 * @param workspace
-	 * @param name
 	 * @return
 	 * @throws SQLException
 	 */
-	protected String createViewAgainstWorkspace(Connection connection, String workspace, String name) throws SQLException {
-		String sql = "SELECT * FROM CREATE_WORKSPACE_VIEW(?, ?)";
-
-		try (PreparedStatement ps = connection.prepareStatement(sql)) {
-			ps.setString(1, workspace);
-			ps.setString(2, name.toLowerCase());
-			try (ResultSet rs = ps.executeQuery()) {
-				if (rs.next()) {
-					return rs.getString(1);
-				}
-				return null;
-			}
-		}
+	protected String createViewAgainstWorkspace(Connection connection, String workspace) throws SQLException {
+		return pgDao.createViewAgainstWorkspace(connection, workspace);
 	}
 
 	/**
@@ -186,42 +149,32 @@ public abstract class ShorelineFileDao {
 			return false;
 		}
 
-		String sql = "DELETE FROM shorelines "
-				+ "WHERE workspace=? AND shoreline_name LIKE ?";
-
-		int deleteCt;
-
-		try (Connection connection = getConnection()) {
-			try (PreparedStatement ps = connection.prepareStatement(sql)) {
-				ps.setString(1, workspace);
-				ps.setString(2, name + "%");
-				deleteCt = ps.executeUpdate();
-			}
-		}
-
-		return deleteCt > 0;
+		return pgDao.removeShorelines(workspace, name);
 	}
 
 	public int getShorelinesByWorkspace(String workspace) throws SQLException {
-		String sql = "SELECT COUNT(*) FROM shorelines WHERE workspace=?";
-		try (Connection connection = getConnection()) {
-			try (PreparedStatement ps = connection.prepareStatement(sql)) {
-				ps.setString(1, workspace);
-				ResultSet rs = ps.executeQuery();
-				rs.next();
-				return rs.getInt(1);
-			}
-		}
+		return pgDao.getShorelinesByWorkspace(workspace);
 	}
 
+	/**
+	 * Removes a shoreline view from the database
+	 *
+	 * @param view
+	 * @throws SQLException
+	 */
 	public void removeShorelineView(String view) throws SQLException {
-		String sql = "DROP VIEW IF EXISTS \"" + view + "\";";
+		pgDao.removeShorelineView(view);
+	}
 
-		try (Connection connection = getConnection()) {
-			try (Statement statement = connection.createStatement()) {
-				statement.execute(sql);
-			}
-		}
+	/**
+	 * Returns a row count of available points in a given shoreline view
+	 *
+	 * @param workspace
+	 * @return
+	 * @throws SQLException
+	 */
+	public int getShorelineCountInShorelineView(String workspace) throws SQLException {
+		return pgDao.getShorelineCountInShorelineView(workspace);
 	}
 
 	/**
