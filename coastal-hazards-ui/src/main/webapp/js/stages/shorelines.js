@@ -19,6 +19,7 @@ var Shorelines = {
 	CONTROL_IDENTIFY_ID: 'shoreline-identify-control',
 	CONTROL_IDENTIFY_AOI_ID: 'shoreline-identify-aoi-control',
 	LAYER_AOI_NAME: 'layer-aoi-box',
+	clickToIdColumnNames: ['date', 'source', 'mhw', 'uncy'],
 	$buttonSelectAOI: $('#shorelines-aoi-select-toggle'),
 	$buttonSelectAOIDone: $('#shorelines-aoi-select-done'),
 	$controlSelectSortingColumn: $('#ctrl-shorelines-sort-select'),

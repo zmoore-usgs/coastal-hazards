@@ -46,7 +46,7 @@ var UI = function () {
 				me.work_stages.shift();
 				me.work_stages_objects.shift();
 			}
-			
+
 			this.bindWindowResize();
 			this.addIntroContent();
 			$(window).resize();
@@ -390,14 +390,12 @@ var UI = function () {
 			return  $('#' + stage + '-list');
 		},
 		showShorelineInfo: function (event) {
-			LOG.info('UI.js::showShorelineInfo');
 			LOG.debug('UI.js::showShorelineInfo: The map was clicked and a response from the OWS resource was received');
 
 			Shorelines.closeShorelineIdWindows();
 
 			if (event.features.length) {
 				LOG.debug('UI.js::showShorelineInfo: Features were returned from the OWS resource. Parsing and creating table to display');
-
 				LOG.debug('UI.js::showShorelineInfo: Creating table for ' + event.features.length + ' features');
 				var groupingColumn = CONFIG.tempSession.getStage(Shorelines.stage).groupingColumn;
 				var uniqueFeatures = event.features.unique(function (feature) {
@@ -418,18 +416,17 @@ var UI = function () {
 				var thead = $('<thead />');
 				var theadTr = $('<tr />');
 				var tbody = $('<tbody />');
-				thead.append($('<caption />').append($('<h3 />').append(layerTitle)));
 
-				$(Object.keys(event.features[0].attributes)).each(function (i, v) {
+				Shorelines.clickToIdColumnNames.forEach(function (v) {
 					theadTr.append($('<th />').append(v));
 				});
 				thead.append(theadTr);
 
 				uniqueFeatures.each(function (feature) {
 					var tbodyTr = $('<tr />');
-
-					$(Object.values(feature.attributes)).each(function (aInd, aVal) {
-						tbodyTr.append($('<td />').append(aVal));
+					
+					Shorelines.clickToIdColumnNames.forEach(function (v) {
+						tbodyTr.append($('<td />').append(feature.attributes[v]));
 					});
 
 					var date = Date.create(feature.attributes[groupingColumn]).format(Shorelines.dateFormat);
