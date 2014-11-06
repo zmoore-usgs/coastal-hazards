@@ -118,25 +118,33 @@ public class ShorelineShapefileDAO extends ShorelineFileDAO {
 					iter = rfc.features();
 					connection.setAutoCommit(false);
 					int lastRecordId = -1;
-					long shorelineId = 0;
+					long shorelineId = -1;
 					while (iter.hasNext()) {
 						SimpleFeature sf = iter.next();
 						int recordId = getIntValue(Constants.RECORD_ID_ATTR, sf);
-						boolean mhw = false;
-						Date date = getDateFromFC(dateFieldName, sf, dateType);
-						String source = getSourceFromFC(sf);
-
-						if (StringUtils.isNotBlank(mhwFieldName)) {
-							mhw = getBooleanValue(mhwFieldName, sf, false);
-						}
-
-						if (StringUtils.isBlank(source)) {
-							source = baseFileName;
-						}
-
-						xyUncies.add(getXYAndUncertaintyFromSimpleFeature(sf, uncertaintyFieldName));
 
 						if (lastRecordId != recordId) {
+							// Either I'm looping for the first time or I've got 
+							// a new shoreline that I need to insert. I should 
+							// probably insert all of the points for the previous 
+							/// shoreline
+							if (xyUncies.size() > 0 && shorelineId != -1) {
+								insertPointsIntoShorelinePointsTable(connection, shorelineId, recordId, xyUncies.toArray(new double[xyUncies.size()][]));
+								xyUncies.clear();
+							}
+
+							// Now I'm ready for the next shoreline
+							String source = getSourceFromFC(sf);
+							boolean mhw = false;
+							Date date = getDateFromFC(dateFieldName, sf, dateType);
+
+							if (StringUtils.isNotBlank(mhwFieldName)) {
+								mhw = getBooleanValue(mhwFieldName, sf, false);
+							}
+
+							if (StringUtils.isBlank(source)) {
+								source = baseFileName;
+							}
 							shorelineId = insertToShorelinesTable(connection, workspace, date, mhw, source, name, orientation, null);
 
 							if (fieldNames != null && fieldNames.length > 0) {
@@ -149,9 +157,8 @@ public class ShorelineShapefileDAO extends ShorelineFileDAO {
 							}
 
 							lastRecordId = recordId;
-							insertPointsIntoShorelinePointsTable(connection, shorelineId, recordId, xyUncies.toArray(new double[xyUncies.size()][]));
-							xyUncies.clear();
 						}
+						xyUncies.add(getXYAndUncertaintyFromSimpleFeature(sf, uncertaintyFieldName));
 
 						if (xyUncies.size() == MAX_POINTS_AT_ONCE) {
 							insertPointsIntoShorelinePointsTable(connection, shorelineId, recordId, xyUncies.toArray(new double[xyUncies.size()][]));
