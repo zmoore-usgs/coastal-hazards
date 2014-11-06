@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 public class PostgresDAO {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(PostgresDAO.class);
+	public static final String METADATA_TABLE_NAME = "gt_pk_metadata_table";
 	private final String JNDI_JDBC_NAME;
 
 	public PostgresDAO() {
@@ -69,7 +70,9 @@ public class PostgresDAO {
 	 * @throws SQLException
 	 */
 	public long insertToShorelinesTable(Connection connection, String workspace, Date date, boolean mhw, String source, String name, String shorelineType, String auxillaryName) throws NamingException, SQLException {
-		String sql = "INSERT INTO shorelines " + "(date, mhw, workspace, source, shoreline_name, shoreline_type, auxillary_name) " + "VALUES (?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO shorelines "
+				+ "(date, mhw, workspace, source, shoreline_name, shoreline_type, auxillary_name) "
+				+ "VALUES (?,?,?,?,?,?,?)";
 		long createdId;
 		try (final PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			ps.setDate(1, new Date(date.getTime()));
@@ -412,6 +415,42 @@ public class PostgresDAO {
 			}
 		}
 		return name;
+	}
+
+	/**
+	 * Inserts a view into the metadata table
+	 *
+	 * @param connection
+	 * @see
+	 * http://docs.geoserver.org/stable/en/user/data/database/primarykey.html#using-the-metadata-table-with-views
+	 * @param viewName
+	 */
+	public void addViewToMetadataTable(Connection connection, String viewName) throws SQLException {
+		String sql = "INSERT INTO gt_pk_metadata_table("
+				+ "table_schema, table_name, pk_column, pk_column_idx, pk_policy, pk_sequence) "
+				+ "VALUES ('public',?,'id',1,'assigned',null)";
+
+		if (!viewExistsInMetadataTable(viewName)) {
+			try (PreparedStatement ps = connection.prepareStatement(sql)) {
+				ps.setString(1, viewName);
+				ps.executeUpdate();
+			}
+		}
+	}
+
+	public boolean viewExistsInMetadataTable(String viewName) throws SQLException {
+		String sql = "SELECT COUNT(*) "
+				+ "FROM gt_pk_metadata_table "
+				+ "WHERE table_name = ?";
+
+		try (Connection connection = getConnection()) {
+			try (PreparedStatement ps = connection.prepareStatement(sql)) {
+				ps.setString(1, viewName);
+				ResultSet rs = ps.executeQuery();
+				rs.next();
+				return rs.getInt(1) != 0;
+			}
+		}
 	}
 
 }

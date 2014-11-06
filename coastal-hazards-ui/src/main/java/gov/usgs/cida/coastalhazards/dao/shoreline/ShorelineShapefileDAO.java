@@ -7,6 +7,7 @@ import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
 import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
+import gov.usgs.cida.coastalhazards.dao.postgres.PostgresDAO;
 import gov.usgs.cida.utilities.features.AttributeGetter;
 import gov.usgs.cida.utilities.features.Constants;
 import java.io.File;
@@ -124,11 +125,11 @@ public class ShorelineShapefileDAO extends ShorelineFileDAO {
 						boolean mhw = false;
 						Date date = getDateFromFC(dateFieldName, sf, dateType);
 						String source = getSourceFromFC(sf);
-						
+
 						if (StringUtils.isNotBlank(mhwFieldName)) {
 							mhw = getBooleanValue(mhwFieldName, sf, false);
 						}
-						
+
 						if (StringUtils.isBlank(source)) {
 							source = baseFileName;
 						}
@@ -167,6 +168,8 @@ public class ShorelineShapefileDAO extends ShorelineFileDAO {
 					if (StringUtils.isBlank(viewName)) {
 						throw new SQLException("Could not create view");
 					}
+
+					new PostgresDAO().addViewToMetadataTable(connection, viewName);
 
 					connection.commit();
 				} catch (NamingException | NoSuchElementException | ParseException | SQLException ex) {

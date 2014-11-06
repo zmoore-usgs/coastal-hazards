@@ -1,9 +1,10 @@
 package gov.usgs.cida.coastalhazards.dao.geoserver;
 
 import com.vividsolutions.jts.geom.Envelope;
+import gov.usgs.cida.coastalhazards.dao.postgres.PostgresDAO;
+import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineFileDAO;
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
-import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineFileDAO;
 import gov.usgs.cida.utilities.xml.XMLUtils;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
@@ -30,8 +31,6 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.xpath.XPathExpressionException;
@@ -731,7 +730,6 @@ public class GeoserverDAO {
 	 * @param storeName name of store to create
 	 * @param nameSpace name of the name space to create data store under
 	 * @param schemaName database schema to write to
-	 * @param jndiName JNDI name to gain connection from
 	 * @return
 	 */
 	public boolean createPGDatastoreInGeoserver(String workspace, String storeName, String nameSpace, String schemaName) {
@@ -741,10 +739,14 @@ public class GeoserverDAO {
 			if (StringUtils.isBlank(_nameSpace)) {
 				_nameSpace = "gov.usgs.cida.ch." + workspace + '.' + storeName;
 			}
+			pg.setPrimaryKeyMetadataTable(PostgresDAO.METADATA_TABLE_NAME);
+			pg.setLooseBBox(false);
+			pg.setPreparedStatements(true);
 			pg.setNamespace(_nameSpace);
-			pg.setExposePrimaryKeys(false);
+			pg.setExposePrimaryKeys(true);
 			pg.setSchema(schemaName);
 			pg.setName(storeName);
+			pg.setFetchSize(10000); //TODO- 1000 is default. Is 10k ok?
 			pg.setJndiReferenceName("java:comp/env/" + PropertyUtil.getProperty(Property.JDBC_NAME));
 			return gsrm.getStoreManager().create(workspace, pg);
 		}
