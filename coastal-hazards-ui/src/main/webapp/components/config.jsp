@@ -64,7 +64,7 @@
 		calculation: [],
 		results: []
 	};
-	// Sets the AJAX Timeout in milliseconds
+	CONFIG.colorGroups = Object.extended();
 	CONFIG.ajaxTimeout = 300000;
 	CONFIG.graph = Object.extended();
 	CONFIG.graph.enabled = CONFIG.strings.columnAttrNames.LRR;

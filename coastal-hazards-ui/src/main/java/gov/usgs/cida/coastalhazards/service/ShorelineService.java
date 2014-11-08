@@ -95,7 +95,7 @@ public class ShorelineService extends HttpServlet {
 					bbox[cornerInd] = Double.parseDouble(bboxCorners[cornerInd]);
 				}
 				
-				List<Shoreline> shorelinesFromBoundingBox = dao.getShorelinesFromBoundingBox(workspace, bbox);
+				List<Shoreline> shorelinesFromBoundingBox = dao.getShorelinesFromBoundingBox(workspace + "_" + SHORELINES_PARAM_STRING, bbox);
 				responseMap.put(SHORELINES_PARAM_STRING, new GsonBuilder().create().toJson(shorelinesFromBoundingBox));
 				RequestResponse.sendSuccessResponse(response, responseMap, responseType);
 			}catch (SQLException | IllegalArgumentException error) {

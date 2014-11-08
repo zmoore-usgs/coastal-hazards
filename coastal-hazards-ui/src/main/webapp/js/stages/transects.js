@@ -581,7 +581,7 @@ var Transects = {
 			} else {
 				LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
 				Transects.$buttonToggleEdit.trigger('click');
-				
+
 				$.get('service/session', {
 					action: 'remove-layer',
 					workspace: CONFIG.tempSession.getCurrentSessionKey(),
@@ -960,16 +960,27 @@ var Transects = {
 	},
 	createTransectSubmit: function (event) {
 		Transects.clearSubsequentStages();
-		var visibleShorelines = $('#shorelines-list :selected').map(function (i, v) {
-			return v.value;
-		});
+		var shorelines = CONFIG.tempSession.getStage(Shorelines.stage).layers,
+			selectedBounds = Shorelines.aoiBoundsSelected,
+			baseline = $('#baseline-list :selected')[0].value,
+			biasRef = ProxyDatumBias.getBiasRef(),
+			spacing = $('#create-transects-input-spacing').val() || 0,
+			layerName = $('#create-transects-input-name').val(),
+			farthest = $('#create-intersections-nearestfarthest-list').val(),
+			smoothing = parseFloat($('#create-transects-input-smoothing').val());
 
-		var baseline = $('#baseline-list :selected')[0].value;
-		var biasRef = $('#bias-list :selected')[0].value || $('#bias-list option.session-layer')[0].value; //selected or default to first one
-		var spacing = $('#create-transects-input-spacing').val() || 0;
-		var layerName = $('#create-transects-input-name').val();
-		var farthest = $('#create-intersections-nearestfarthest-list').val();
-		var smoothing = parseFloat($('#create-transects-input-smoothing').val());
+		if (!selectedBounds) {
+			CONFIG.ui.showAlert({
+				message: 'You\'ve not selected shorelines to build transects against',
+				caller: Transects,
+				displayTime: 2000,
+				style: {
+					classes: ['alert-info']
+				}
+			});
+			return;
+		}
+
 		if (isNaN(smoothing)) {
 			smoothing = 0.0;
 		} else {
@@ -977,7 +988,7 @@ var Transects = {
 		}
 
 		var request = Transects.createWPScreateTransectsAndIntersectionsRequest({
-			shorelines: visibleShorelines,
+			shorelines: shorelines,
 			biasRef: biasRef,
 			baseline: baseline,
 			spacing: spacing,

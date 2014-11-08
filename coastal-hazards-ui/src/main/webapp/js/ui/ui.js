@@ -22,6 +22,7 @@ var UI = function () {
 		'images/workflow_figures/shorelines_future.png',
 		'images/workflow_figures/shorelines_past.png'
 	];
+	me.clickIdTableTemplate = undefined;
 	$('#manage-sessions-btn').on('click', function () {
 		CONFIG.tempSession.createSessionManagementModalWindow();
 	});
@@ -397,56 +398,58 @@ var UI = function () {
 			if (event.features.length) {
 				LOG.debug('UI.js::showShorelineInfo: Features were returned from the OWS resource. Parsing and creating table to display');
 				LOG.debug('UI.js::showShorelineInfo: Creating table for ' + event.features.length + ' features');
-				var groupingColumn = CONFIG.tempSession.getStage(Shorelines.stage).groupingColumn;
-				var uniqueFeatures = event.features.unique(function (feature) {
-					return feature.data[groupingColumn];
-				}).sortBy(function (feature) {
-					return Date.parse(feature.data[groupingColumn]);
-				});
+				// The click event brings back many points of the same feature id.
+				// I only want unique feature IDs in this table
+				var features = event.features.unique(function (f) {
+					return f.data.id;
+				}),
+					layerTitle = features[0].fid.split('.')[0],
+					layerName = features[0].gml.featureNSPrefix + ':' + layerTitle,
+					shorelineIdContainer = $('<div />').attr('id', layerName + '-id-container').addClass('shoreline-id-container'),
+					shorelineIdTable = $('<table />').attr('id', layerName + '-id-table').addClass('shoreline-id-table table table-striped table-condensed'),
+					thead = $('<thead />'),
+					theadTr = $('<tr />'),
+					tbody = $('<tbody />');
 
 				LOG.trace('UI.js::showShorelineInfo: Closing any other open identify windows');
 				$('.olPopupCloseBox').each(function (i, v) {
 					v.click();
 				});
 
-				var layerTitle = event.features[0].fid.split('.')[0];
-				var layerName = event.features[0].gml.featureNSPrefix + ':' + layerTitle;
-				var shorelineIdContainer = $('<div />').attr('id', layerName + '-id-container').addClass('shoreline-id-container');
-				var shorelineIdTable = $('<table />').attr('id', layerName + '-id-table').addClass('shoreline-id-table table table-striped table-condensed');
-				var thead = $('<thead />');
-				var theadTr = $('<tr />');
-				var tbody = $('<tbody />');
-
 				Shorelines.clickToIdColumnNames.forEach(function (v) {
 					theadTr.append($('<th />').append(v));
 				});
 				thead.append(theadTr);
 
-				uniqueFeatures.each(function (feature) {
-					var tbodyTr = $('<tr />');
-					
+				features.each(function (feature) {
+					var atts = feature.attributes,
+						shorelineId = atts.id,
+						workspace = atts.workspace,
+						tbodyTr = $('<tr />').attr('data-shoreline-id', shorelineId);
+
 					Shorelines.clickToIdColumnNames.forEach(function (v) {
-						tbodyTr.append($('<td />').append(feature.attributes[v]));
+						tbodyTr.append($('<td />').append(atts[v]));
 					});
 
-					var date = Date.create(feature.attributes[groupingColumn]).format(Shorelines.dateFormat);
+					var date = Date.create(Shorelines.groupingColumn).format(Shorelines.dateFormat);
 					var isVisible = !CONFIG.tempSession.isDateDisabled(date);
-					var disableButton = $('<button />')
-						.addClass('btn btn-year-toggle')
+					var $button = $('<button />')
+						.addClass('btn btn-shoreline-id-toggle')
 						.attr({
 							type: 'button',
-							date: date,
-							layer: layerName
+							layer: layerName,
+							'data-shoreline-workspace' : workspace,
+							'data-shoreline-id': shorelineId
 						})
 						.html(isVisible ? 'Disable' : 'Enable');
 
 					if (isVisible) {
-						disableButton.addClass('btn-success');
+						$button.addClass('btn-success');
 					} else {
-						disableButton.addClass('btn-danger');
+						$button.addClass('btn-danger');
 					}
 
-					tbodyTr.append($('<td />').append(disableButton));
+					tbodyTr.append($('<td />').append($button));
 					tbody.append(tbodyTr);
 				});
 
@@ -464,10 +467,10 @@ var UI = function () {
 					true
 					));
 
-				$('.btn-year-toggle').click(function (event) {
-					var date = $(event.target).attr('date'),
+				$('.btn-shoreline-id-toggle').click(function (event) {
+					var shorelineId = $(event.target).attr('data-shoreline-id'),
 						toggle = Shorelines.$shorelineFeatureTableContainer
-						.find('table > tbody div[data-date="' + date + '"]');
+						.find('table > tbody tr[data-shoreline-id="' + shorelineId + '"]');
 					toggle.bootstrapSwitch('toggleState');
 				});
 

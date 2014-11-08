@@ -248,29 +248,36 @@ CCH.Session = function (name, isPerm) {
 			var wmsCapabilities = CONFIG.ows.wmsCapabilities,
 				currentSessionKey = CONFIG.tempSession.getCurrentSessionKey(),
 				stage = args.stage,
-				suffixes = stage.suffixes;
+				suffixes = stage.suffixes,
+				sessionStage = CONFIG.tempSession.getStage(stage.stage);
 
 			wmsCapabilities.keys().each(function (layerNS) {
 				var cap = wmsCapabilities[layerNS];
 				var layers = cap.capability.layers;
 
-				layers.each(function (layer) {
-					var title = layer.title;
-					if (layerNS === CONFIG.name.published || layerNS === CONFIG.name.proxydatumbias || layerNS === currentSessionKey) {
-						var type = title.substr(title.lastIndexOf('_'));
-						if (suffixes.length === 0 || suffixes.indexOf(type.toLowerCase()) !== -1) {
-							var layerFullName = layer.prefix + ':' + layer.name;
-							var sessionStage = CONFIG.tempSession.getStage(stage.stage);
-							var lIdx = sessionStage.layers.findIndex(function (l) {
-								return l === layerFullName;
-							});
-							if (lIdx === -1) {
-								sessionStage.layers.push(layerFullName);
+				if (layers.length) {
+					layers.each(function (layer) {
+						var title = layer.title;
+						if (layerNS === CONFIG.name.published || layerNS === CONFIG.name.proxydatumbias || layerNS === currentSessionKey) {
+							var type = title.substr(title.lastIndexOf('_'));
+							if (suffixes.length === 0 || suffixes.indexOf(type.toLowerCase()) !== -1) {
+								var layerFullName = layer.prefix + ':' + layer.name;
+								var lIdx = sessionStage.layers.findIndex(function (l) {
+									return l === layerFullName;
+								});
+								if (lIdx === -1) {
+									sessionStage.layers.push(layerFullName);
+								}
+								CONFIG.tempSession.persistSession();
 							}
-							CONFIG.tempSession.persistSession();
 						}
-					}
-				});
+					});
+				} else {
+					sessionStage.layers.remove(function (l) {
+						return l.substring(0, l.indexOf(':')) === layerNS;
+					});
+					CONFIG.tempSession.persistSession();
+				}
 			});
 		};
 
@@ -293,7 +300,7 @@ CCH.Session = function (name, isPerm) {
 					return n.prefix === namespace;
 				});
 
-				if (namespace === me.getCurrentSessionKey()) {
+				if (namespace === me.getCurrentSessionKey() || namespace === CONFIG.name.published) {
 					LOG.trace('Session.js::updateLayersFromWMS: Scanning session for expired/missing layers in the ' + namespace + ' prefix');
 					sessionLayers.each(function (sessionLayer, index) {
 						if (sessionLayer.name.indexOf(me.getCurrentSessionKey() > -1)) {
@@ -345,6 +352,16 @@ CCH.Session = function (name, isPerm) {
 				}
 			} else {
 				LOG.info('Session.js::updateLayersFromWMS: Could not find any layers for this session. Removing any existing layers in session object');
+				if (args.context && args.context.namespace) {
+					var removalCandidates = me.session.layers.filter(function (l) {
+						return l.prefix === args.context.namespace;
+					});
+					if (removalCandidates.length) {
+						removalCandidates.forEach(function (c) {
+							me.session.layers.remove(c);
+						});
+					}
+				}
 			}
 
 			me.persistSession();
@@ -389,6 +406,29 @@ CCH.Session = function (name, isPerm) {
 			}
 			me.save();
 		};
+
+		me.getDisabledShorelines = function (workspace) {
+			return me.session.stage[Shorelines.stage].slDisabled[workspace];
+		};
+		me.addDisabledShoreline = function (workspace, id) {
+			if (!me.isShorelineDisabled(workspace, id)) {
+				me.session.stage[Shorelines.stage].slDisabled[workspace].push(id);
+			}
+			return me.session.stage[Shorelines.stage].slDisabled[workspace];
+		};
+		me.addDisabledShorelines = function (workspace, ids) {
+			for (var idIdx = 0;idIdx < ids.length;idIdx++) {
+				me.addDisabledShoreline(workspace, ids[idIdx]);
+			}
+			return me.session.stage[Shorelines.stage].slDisabled[workspace];
+		};
+		me.removeDisabledShoreline = function (workspace, id) {
+			me.session.stage[Shorelines.stage].slDisabled[workspace].remove(id);
+			return me.session.stage[Shorelines.stage].slDisabled[workspace];
+		}
+		me.isShorelineDisabled = function (workspace, id) {
+			return me.session.stage[Shorelines.stage].slDisabled[workspace].indexOf(id) !== -1;
+		}
 
 		me.getDisabledDates = function () {
 			return me.session.stage[Shorelines.stage].datesDisabled;

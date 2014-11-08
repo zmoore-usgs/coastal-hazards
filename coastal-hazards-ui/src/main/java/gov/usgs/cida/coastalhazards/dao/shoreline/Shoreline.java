@@ -14,7 +14,7 @@ public class Shoreline implements Serializable {
 	private BigInteger id;
 	private double uncertainty;
 	private BigInteger segmentId;
-	private Date date;
+	private String date;
 	private boolean mhw;
 	private String workspace;
 	private String source;
@@ -25,7 +25,7 @@ public class Shoreline implements Serializable {
 		this.id = BigInteger.ZERO;
 		this.uncertainty = 0.0;
 		this.segmentId = BigInteger.ZERO;
-		this.date = new Date();
+		this.date = "";
 		this.mhw = false;
 		this.workspace = "";
 		this.source = "";
@@ -33,7 +33,7 @@ public class Shoreline implements Serializable {
 		this.auxValue = "";
 	}
 	
-	public Shoreline(BigInteger id, double uncertainty, BigInteger segmentId, Date date, boolean mhw, String workspace, String source, char type, String auxName, String auxValue) {
+	public Shoreline(BigInteger id, double uncertainty, BigInteger segmentId, String date, boolean mhw, String workspace, String source, char type, String auxName, String auxValue) {
 		this.id = id;
 		this.uncertainty = uncertainty;
 		this.segmentId = segmentId;
@@ -90,14 +90,14 @@ public class Shoreline implements Serializable {
 	/**
 	 * @return the date
 	 */
-	public Date getDate() {
+	public String getDate() {
 		return date;
 	}
 
 	/**
 	 * @param date the date to set
 	 */
-	public void setDate(Date date) {
+	public void setDate(String date) {
 		this.date = date;
 	}
 

@@ -8,6 +8,7 @@ var ProxyDatumBias = {
 	mandatoryColumns: ['the_geom', 'segment_id', 'bias', 'avg_slope', 'uncyb'],
 	columnMatchingTemplate: undefined,
 	$removeButton: $('#bias-remove-btn'),
+	$biasSelectList : $('#bias-list'),
 	description: {
 		'stage': '<p>Need description of PDB step here.',
 		'view-tab': 'Select a published collection of bias lines/points to add to the workspace.',
@@ -177,7 +178,7 @@ var ProxyDatumBias = {
 						if (CONFIG.map.getMap().getLayersByName(layer.title).length === 0) {
 							LOG.info('bias.js::addLayerToMap: Layer does not yet exist on the map. Loading layer: ' + layer.title);
 
-							var stage = CONFIG.tempSession.getStage(ProxyDatumBias.stage)
+							var stage = CONFIG.tempSession.getStage(ProxyDatumBias.stage);
 
 							var wmsLayer = new OpenLayers.Layer.WMS(
 								layer.title,
@@ -362,6 +363,19 @@ var ProxyDatumBias = {
 			'</NamedLayer>' +
 			'</StyledLayerDescriptor>';
 		return sldBody;
+	},
+	getBiasRef : function () {
+		var biasRef = '',
+			selectedBias = ProxyDatumBias.$biasSelectList.find(':selected')[0],
+			defaultBias = ProxyDatumBias.$biasSelectList.find('option.session-layer')[0];
+		
+		if (selectedBias) {
+			biasRef = selectedBias.value;
+		} else if (defaultBias) {
+			biasRef = defaultBias.value;
+		}
+		
+		return biasRef;
 	},
 	getActive: function () {
 		return $('#bias-list').children(':selected').map(function (i, v) {
