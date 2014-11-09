@@ -2,6 +2,7 @@ var Transects = {
 	stage: 'transects',
 	suffixes: ['_lt', '_st', '_transects'],
 	reservedColor: '#D95F02',
+	createTransectsAndIntersectionsWPSTemplate: undefined,
 	DEFAULT_SPACING: 500,
 	NAME_CONTROL_SNAP: 'snap-control',
 	NAME_CONTROL_EDIT: 'transects-edit-control',
@@ -33,7 +34,6 @@ var Transects = {
 		Transects.$buttonTransectsCreateInput.on('click', Transects.createTransectSubmit);
 		Transects.$buttonTransectsAddButton.on('click', Transects.addTransectButtonToggled);
 		Transects.$buttonTransectsCropButton.on('click', Transects.cropTransectsButtonToggled);
-
 		Transects.$buttonTransectsCreate.popover({
 			title: Transects.stage.capitalize() + ' Generate',
 			content: $('<div />')
@@ -46,16 +46,13 @@ var Transects = {
 				show: CONFIG.popupHoverDelay
 			}
 		});
-
 		Transects.initializeUploader();
-
 		CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
 			title: Transects.NAME_CONTROL_HIGHLIGHT,
 			autoActivate: false,
 			hover: true,
 			highlightOnly: true
 		}));
-
 		CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
 			title: Transects.NAME_CONTROL_SELECT,
 			autoActivate: false,
@@ -88,14 +85,21 @@ var Transects = {
 				var modifyControl = CONFIG.map.getMap().getControlsBy('id', Transects.NAME_CONTROL_EDIT)[0];
 				Transects.removeAngleLayer();
 				modifyControl.unselectFeature(feature);
-
 			}
 		}));
-
 		Transects.$buttonDownload.on('click', function () {
 			CONFIG.ows.downloadLayerAsShapefile(Transects.$transectListbox.val());
 		});
-
+		$.get('templates/wps-request-createtransectsandintersections.mustache').done(function (data) {
+			Transects.createTransectsAndIntersectionsWPSTemplate = Handlebars.compile(data);
+			Handlebars.registerHelper('printDefaultValue', function () {
+				if (this.defaultValue) {
+					return new Handlebars.SafeString(' Default: "' + this.defaultValue + '"');
+				} else {
+					return '';
+				}
+			});
+		});
 	},
 	enterStage: function () {
 		LOG.debug('Transects.js::enterStage');
@@ -103,7 +107,6 @@ var Transects = {
 			stage: Transects.stage,
 			tab: 'view'
 		});
-
 		if ($('#shorelines-list').val() && Baseline.getActive()) {
 			Transects.enableUploadButton();
 		} else {
@@ -124,13 +127,10 @@ var Transects = {
 	},
 	editButtonToggled: function (event) {
 		LOG.info('Transects.js::editButtonToggled');
-
 		var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
 		if (toggledOn) {
 			LOG.debug('Transects.js::editButtonToggled: Edit form was toggled on');
-
 			Transects.disableUpdateTransectsButton();
-
 			if (Transects.$buttonTransectsCreateToggle.hasClass('active')) {
 				Transects.$buttonTransectsCreateToggle.trigger('click');
 			}
@@ -138,29 +138,22 @@ var Transects = {
 			LOG.debug('Transects.js::editButtonToggled: Adding cloned layer to map');
 			var clonedLayer = Transects.cloneActiveLayer();
 			CONFIG.map.getMap().addLayer(clonedLayer);
-
 			LOG.debug('Transects.js::editButtonToggled: Create baseline snap control');
 			var baselineSnapControl = Transects.createBaselineSnapControl(clonedLayer);
 			CONFIG.map.getMap().addControl(baselineSnapControl);
-
-
 			LOG.debug('Transects.js::editButtonToggled: Adding highlight control to map');
 			var highlightControl = Transects.getHighlightControl();
 			highlightControl.setLayer([clonedLayer]);
 			highlightControl.activate();
-
 			LOG.debug('Transects.js::editButtonToggled: Adding select control to map');
 			var selectControl = Transects.getSelectControl();
 			selectControl.setLayer([clonedLayer]);
 			selectControl.activate();
-
 			LOG.debug('Transects.js::editButtonToggled: Adding modify control to map');
 			var modifyFeatureControl = Transects.createModifyFeatureControl(clonedLayer);
 			CONFIG.map.getMap().addControl(modifyFeatureControl);
 			modifyFeatureControl.activate();
 			modifyFeatureControl.handlers.keyboard.activate();
-
-
 			Transects.$containerTransectsEdit.removeClass('hidden');
 			Transects.$buttonTransectsSave.unbind('click', Transects.saveEditedLayer);
 			Transects.$buttonTransectsSave.on('click', Transects.saveEditedLayer);
@@ -217,9 +210,7 @@ var Transects = {
 					var baseLayerFeatures = baseLayer.features;
 					var vertices = feature.geometry.components[0].components;
 					var connectedToBaseline = false;
-
 					Transects.enableUpdateTransectsButton();
-
 					baseLayerFeatures.each(function (f) {
 						var g = f.geometry;
 						vertices.each(function (vertex) {
@@ -299,7 +290,6 @@ var Transects = {
 					return s.CLASS_NAME === 'OpenLayers.Strategy.Save';
 				});
 			Transects.deactivateSelectControl();
-
 			// This is a horrible hack but Geoserver currently has a bug 
 			// ( https://jira.codehaus.org/browse/GEOS-6367 ) which prevents us
 			// from updating more than one transect in one call. Because of this,
@@ -330,7 +320,6 @@ var Transects = {
 				// Call the original save function
 				this.innerSave([nextTransect]);
 			};
-
 			var cropTransectsControl = new OpenLayers.Control.Split({
 				layer: cloneLayer,
 				mutual: true,
@@ -350,13 +339,11 @@ var Transects = {
 							// it out of the array
 							baselineConnectedTransect = sortedSplitTransects.shift(),
 							tIdx, transect;
-
 						// Tag the selected transect for use in the afterSplit event
 						baselineConnectedTransect.fid = originalTransect.fid;
 						baselineConnectedTransect.style = {
 							strokeColor: '#00FF00'
 						};
-
 						// For the transect piece that will be cut off, change the 
 						// stroke color to red
 						for (tIdx = 0; tIdx < sortedSplitTransects.length; tIdx++) {
@@ -384,7 +371,6 @@ var Transects = {
 							tIdx,
 							transect,
 							croppedTransect;
-
 						// For each of the affected transects, change their state 
 						// and set the geometry to the cropped transect geometry
 						// created by the split. 
@@ -406,7 +392,6 @@ var Transects = {
 						$.each(splitTransects, function (i, t) {
 							t.state = null;
 						});
-
 						cloneLayer.redraw();
 						Transects.$buttonTransectsCropButton.click();
 						Transects.enableUpdateTransectsButton();
@@ -415,7 +400,6 @@ var Transects = {
 				}
 			});
 			cropTransectsControl.id = Transects.NAME_CONTROL_CROP;
-
 			CONFIG.map.addControl(cropTransectsControl);
 			cropTransectsControl.activate();
 		} else {
@@ -448,28 +432,23 @@ var Transects = {
 						LOG.debug('Transects.js::featureAdded: A new transect has been added');
 						var baseline = Baseline.getActiveLayer();
 						var editLayer = Transects.getEditLayer();
-
 						LOG.trace('Transects.js::featureAdded: Trying to figure out how many transects we have at this point');
 						var editFeatureCount = editLayer.features.length;
 						editLayer.highestFid = editLayer.highestFid ? editLayer.highestFid + 1 : editFeatureCount + 1;
 						LOG.trace('Transects.js::featureAdded: The transect being added is # ' + editLayer.highestFid);
-
 						LOG.trace('Transects.js::featureAdded: Trying to find the baseline segment that the new transect is touching');
 						var baselineFeature = baseline.features.find(
 							function (baselineFeature) {
 								return baselineFeature.geometry.distanceTo(addedFeature.geometry) === 0;
 							}
 						);
-
 						addedFeature.attributes.TransectID = parseInt(editLayer.highestFid);
 						if (baselineFeature) {
 							LOG.trace('Transects.js::featureAdded: It looks like the new transect added does touch a baseline section');
 							LOG.trace('Transects.js::featureAdded: Grab info from the baseline feature to add to the transect');
 							addedFeature.attributes.Orient = baselineFeature.attributes.Orient;
 							addedFeature.attributes.BaselineID = baselineFeature.fid;
-
 							Transects.enableUpdateTransectsButton();
-
 							LOG.trace('Transects.js::featureAdded: Between the two points on the transect, figure out which point touches the baseline');
 							var transectPoint0 = addedFeature.geometry.components[0].components[0];
 							var transectPoint1 = addedFeature.geometry.components[0].components[1];
@@ -479,7 +458,6 @@ var Transects = {
 								addedFeature.geometry.components[0].components.reverse();
 							}
 							var workingPoint = addedFeature.geometry.components[0].components[0];
-
 							LOG.trace('Transects.js::featureAdded: The WFS getcaps response holds the native SRS proj of the transects layer, which is needed');
 							var workspaceNS = CONFIG.ows.featureTypeDescription[baseline.name.split(':')[0]][baseline.name.split(':')[1]].targetNamespace;
 							var transectLayerInfo = CONFIG.ows.wfsCapabilities.featureTypeList.featureTypes.find(function (ft) {
@@ -487,7 +465,6 @@ var Transects = {
 							});
 							var transectSRID = transectLayerInfo.srs.from(transectLayerInfo.srs.lastIndexOf(':') + 1);
 							var baselineSRID = baseline.projection.projCode.split(':')[1];
-
 							LOG.trace('Transects.js::featureAdded: We need to move the point connected on the baseline to a baseline in the UTM projection');
 							CONFIG.ows.projectPointOnLine({
 								'workspaceNS': workspaceNS,
@@ -538,38 +515,30 @@ var Transects = {
 			.map(function (f) {
 				return f.attributes.TransectID;
 			});
-
 		// This will be a callback from WPS
 		var editCleanup = function (data) {
 			LOG.debug('Transects.js::saveEditedLayer: Receieved response from updateTransectsAndIntersections WPS');
-
 			Calculation.clear();
 			Results.clear();
-
 			$.each([Transects.$buttonTransectsAddButton, Transects.$buttonTransectsCropButton], function (i, $button) {
 				if ($button.hasClass('active')) {
 					$button.trigger('click');
 				}
 			});
-
 			var intersectionsList = CONFIG.ui.populateFeaturesList({
 				caller: Calculation,
 				stage: 'intersections'
 			});
-
 			var resultsList = CONFIG.ui.populateFeaturesList({
 				caller: Results
 			});
-
 			if ($(data).find('ows\\:ExceptionReport').length) {
 				LOG.debug('Transects.js::saveEditedLayer: UpdateTransectsAndIntersections WPS failed. Removing Intersections layer');
-
 				CONFIG.ui.showAlert({
 					message: 'Automatic intersection generation failed.',
 					displayTime: 7500,
 					caller: Transects
 				});
-
 				Transects.refreshFeatureList({
 					selectLayer: layer.cloneOf
 				});
@@ -581,7 +550,6 @@ var Transects = {
 			} else {
 				LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
 				Transects.$buttonToggleEdit.trigger('click');
-
 				$.get('service/session', {
 					action: 'remove-layer',
 					workspace: CONFIG.tempSession.getCurrentSessionKey(),
@@ -598,17 +566,12 @@ var Transects = {
 									Transects.refreshFeatureList({
 										selectLayer: layer.cloneOf
 									});
-
 									CONFIG.map.removeLayerByName(layer.cloneOf);
-
 									Transects.$buttonToggleEdit.trigger('click');
-
 									CONFIG.map.removeLayerByName(layer.cloneOf);
 									intersectionsList.val(intersectsLayer);
 									resultsList.val(resultsLayer);
-
 									LOG.debug('Transects.js::saveEditedLayer: WMS Capabilities retrieved for your session');
-
 									Results.clear();
 								}
 							],
@@ -618,19 +581,15 @@ var Transects = {
 						}
 					});
 				}, 'json');
-
-
 			}
 
 			Transects.enableUpdateTransectsButton();
 			intersectionsList.trigger('change');
 			resultsList.trigger('change');
 		};
-
 		var saveStrategy = layer.strategies.find(function (n) {
 			return n.CLASS_NAME === 'OpenLayers.Strategy.Save';
 		});
-
 		saveStrategy.events.remove('success');
 		saveStrategy.events.register('success', null, function () {
 			// If I'm coming here from a transect crop call, these flags will be
@@ -664,14 +623,12 @@ var Transects = {
 				});
 			}
 		});
-
 		saveStrategy.save();
 	},
 	refreshFeatureList: function (args) {
 		LOG.info('Transects.js::refreshFeatureList: Will cause WMS GetCapabilities call to refresh current feature list');
 		var selectLayer = args.selectLayer;
 		var namespace = selectLayer.split(':')[0];
-
 		CONFIG.ows.getWMSCapabilities({
 			namespace: namespace,
 			callbacks: {
@@ -680,7 +637,6 @@ var Transects = {
 					function (caps, context) {
 						LOG.info('Transects.js::refreshFeatureList: WMS GetCapabilities response parsed');
 						Transects.populateFeaturesList(caps);
-
 						if (selectLayer) {
 							LOG.info('Transects.js::refreshFeatureList: Auto-selecting layer ' + selectLayer);
 							Transects.$transectListbox.children().each(function (i, v) {
@@ -722,9 +678,7 @@ var Transects = {
 			type: Transects.stage,
 			displayInLayerSwitcher: false
 		});
-
 		CONFIG.map.getMap().addLayer(transects);
-
 		CONFIG.tempSession.getStage(Transects.stage).viewing = args.name;
 		CONFIG.tempSession.persistSession();
 	},
@@ -742,7 +696,6 @@ var Transects = {
 						classes: ['alert-success']
 					}
 				});
-
 				Transects.$transectListbox.val('');
 				CONFIG.ui.switchTab({
 					caller: Transects,
@@ -751,7 +704,6 @@ var Transects = {
 				Transects.refreshFeatureList();
 			}
 		];
-
 		try {
 			CONFIG.tempSession.removeResource({
 				store: store,
@@ -803,7 +755,6 @@ var Transects = {
 				});
 			}
 		});
-
 		var selectedValue = Transects.$transectListbox.find("option:selected")[0].value;
 		if (selectedValue) {
 			Transects.addTransects({
@@ -813,7 +764,6 @@ var Transects = {
 			CONFIG.tempSession.persistSession();
 			Transects.enableEditButton();
 			Transects.enableDownloadButton();
-
 			// Update the interesects listbox in calculations if available
 			var intersections = selectedValue.substring(0, selectedValue.lastIndexOf('_') + 1) + 'intersects';
 			Calculation.updateListboxWithValue(intersections);
@@ -848,7 +798,6 @@ var Transects = {
 	enableCreateTransectsButton: function () {
 		LOG.info('Transects.js::enableCreateTransectsButton: Baseline has been added to the map. Enabling create transect button');
 		$('#create-transects-toggle').removeAttr('disabled');
-
 	},
 	disableCreateTransectsButton: function () {
 		LOG.info('Transects.js::disableCreateTransectsButton: No valid baseline on the map. Disabling create transect button');
@@ -856,7 +805,6 @@ var Transects = {
 			$('#create-transects-toggle').trigger('click');
 		}
 		$('#create-transects-toggle').attr('disabled', 'disabled');
-
 	},
 	deactivateSelectControl: function () {
 		var control = CONFIG.map.getMap().getControlsBy('title', Transects.NAME_CONTROL_SELECT);
@@ -947,7 +895,6 @@ var Transects = {
 	createTransectsButtonToggled: function (event) {
 		LOG.info('Transects.js::createTransectsButtonToggled: Transect creation Button Clicked');
 		var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
-
 		if (toggledOn) {
 			if ($('#transect-edit-form-toggle').hasClass('active')) {
 				$('#transect-edit-form-toggle').trigger('click');
@@ -968,7 +915,6 @@ var Transects = {
 			layerName = $('#create-transects-input-name').val(),
 			farthest = $('#create-intersections-nearestfarthest-list').val(),
 			smoothing = parseFloat($('#create-transects-input-smoothing').val());
-
 		if (!selectedBounds) {
 			CONFIG.ui.showAlert({
 				message: 'You\'ve not selected shorelines to build transects against',
@@ -999,7 +945,6 @@ var Transects = {
 			transectLayer: layerName + '_transects',
 			intersectionLayer: layerName + '_intersects'
 		});
-
 		var wpsProc = function () {
 			CONFIG.ows.executeWPSProcess({
 				processIdentifier: 'gs:CreateTransectsAndIntersections',
@@ -1032,7 +977,6 @@ var Transects = {
 											Transects.$transectListbox.trigger('change');
 											$('#intersections-list').trigger('change');
 											$('#stage-select-tablist a[href="#calculation"]').trigger('click');
-
 											CONFIG.ui.showAlert({
 												message: 'Intersection calculation succeeded.',
 												displayTime: 7500,
@@ -1049,7 +993,6 @@ var Transects = {
 							var errorText = $(data).find('ows\\:ExceptionText').first().text();
 							var msg = 'Transect calculation failed. Check logs.';
 							LOG.error(errorText);
-
 							// This is a dopey way of doing this...
 							if (errorText.toLowerCase().has('baselines cannot intersect shorelines')) {
 								msg = 'Transect calculation failed. Baselines cannot intersect shorelines.';
@@ -1068,7 +1011,6 @@ var Transects = {
 				]
 			});
 		};
-
 		// Check if transects already exists in the select list
 		if (Transects.$transectListbox.find('option[value="' + CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_transects"]').length ||
 			$('#intersections-list option[value="' + CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_intersects"]').length) {
@@ -1111,140 +1053,42 @@ var Transects = {
 		var shorelines = args.shorelines;
 		var baseline = args.baseline;
 		var biasRef = args.biasRef;
+		var biasrefNS = biasRef ? biasRef.split(':')[0] + '="' + CONFIG.namespace.proxydatumbias + '"' : '';
+		var baselineNS = baseline.split(':')[0] + '="gov.usgs.cida.ch.' + baseline.split(':')[0] + '"';
 		var spacing = args.spacing ? args.spacing : Transects.DEFAULT_SPACING;
 		var smoothing = args.smoothing || 0.0;
-		var layer = args.layer;
 		var farthest = args.farthest;
 		var workspace = args.workspace;
 		var transectLayer = args.transectLayer;
 		var intersectionLayer = args.intersectionLayer;
 		var store = args.store;
-		var bounds = Shorelines.aoiBoundsSelected.clone();
-		var request = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' +
-			'<ows:Identifier>gs:CreateTransectsAndIntersections</ows:Identifier>' +
-			'<wps:DataInputs>';
-
-		shorelines.each(function (shoreline) {
-			var prefix = shoreline.split(':')[0];
-			var excludedShorelines = CONFIG.tempSession.getDisabledShorelines(prefix);
-			request += '<wps:Input>' +
-				'<ows:Identifier>shorelines</ows:Identifier>' +
-				'<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' +
-				'<wps:Body>' +
-				'<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2" xmlns:' + prefix + '="gov.usgs.cida.ch.' + prefix + '">' +
-				'<wfs:Query typeName="' + shoreline + '" srsName="' + CONFIG.strings.epsg4326 + '">' +
-				'<ogc:Filter>' +
-				'<ogc:And>' +
-				'<ogc:BBOX>' +
-				'<ogc:PropertyName>geom</ogc:PropertyName>' +
-				'<gml:Envelope srsName="urn:x-ogc:def:crs:' + CONFIG.strings.epsg3857 + '">' +
-				'<gml:lowerCorner>' + bounds.left + ' ' + bounds.bottom + '</gml:lowerCorner>' +
-				'<gml:upperCorner>' + bounds.right + ' ' + bounds.top + '</gml:upperCorner>' +
-				'</gml:Envelope>' +
-				'</ogc:BBOX>';
-			request += (function (args) {
-				var filter = '';
-				if (excludedShorelines.length) {
-
-
-					excludedShorelines.each(function (id) {
-						filter += '<ogc:Not>' +
-							'<ogc:PropertyIsEqualTo>' +
-							'<ogc:PropertyName>shoreline_id</ogc:PropertyName>' +
-							'<ogc:Literal>' + id + '</ogc:Literal>' +
-							'</ogc:PropertyIsEqualTo>' +
-							'</ogc:Not>';
-					});
-
-
-				}
-				return filter;
-			}({
-				shoreline: shoreline,
-				layer: layer
-			}));
-			request += '</ogc:And>' +
-				'</ogc:Filter>' +
-				'</wfs:Query>' +
-				'</wfs:GetFeature>' +
-				'</wps:Body>' +
-				'</wps:Reference>' +
-				'</wps:Input>';
+		var bounds = Shorelines.aoiBoundsSelected.clone().transform(new OpenLayers.Projection(CONFIG.strings.epsg900913), new OpenLayers.Projection(CONFIG.strings.epsg4326)).toArray(false);
+		var shorelineInfo = [];
+		shorelines.forEach(function (shoreline) {
+			var shorelineWorkspace = shoreline.split(':')[0];
+			this.push({
+				name: shoreline,
+				excludedShorelines: CONFIG.tempSession.getDisabledShorelines(shorelineWorkspace),
+				workspace: shorelineWorkspace
+			});
+		}, shorelineInfo);
+		
+		var request = Transects.createTransectsAndIntersectionsWPSTemplate({
+			bounds: bounds,
+			shorelineInfo: shorelineInfo,
+			workspace: workspace,
+			biasRef: biasRef,
+			biasrefNS: biasrefNS,
+			baseline: baseline,
+			baselineNS: baselineNS,
+			spacing: spacing,
+			smoothing: smoothing,
+			farthest: farthest,
+			store: store,
+			transectLayer: transectLayer,
+			intersectionLayer: intersectionLayer
 		});
-
-		if (biasRef) {
-			request += '<wps:Input>' +
-				'<ows:Identifier>biasRef</ows:Identifier>' +
-				'<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' +
-				'<wps:Body>' +
-				'<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:' + biasRef.split(':')[0] + '="' + CONFIG.namespace.proxydatumbias + '">' +
-				'<wfs:Query typeName="' + biasRef + '" srsName="' + CONFIG.strings.epsg4326 + '" />' +
-				'</wfs:GetFeature>' +
-				'</wps:Body>' +
-				'</wps:Reference>' +
-				'</wps:Input>';
-		}
-
-		request += '<wps:Input>' +
-			'<ows:Identifier>baseline</ows:Identifier>' +
-			'<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' +
-			'<wps:Body>' +
-			'<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:' + baseline.split(':')[0] + '="gov.usgs.cida.ch.' + baseline.split(':')[0] + '">' +
-			'<wfs:Query typeName="' + baseline + '" srsName="' + CONFIG.strings.epsg4326 + '" />' +
-			'</wfs:GetFeature>' +
-			'</wps:Body>' +
-			'</wps:Reference>' +
-			'</wps:Input>' +
-			'<wps:Input>' +
-			'<ows:Identifier>spacing</ows:Identifier>' +
-			'<wps:Data>' +
-			'<wps:LiteralData>' + spacing + '</wps:LiteralData>' +
-			'</wps:Data>' +
-			'</wps:Input>' +
-			'<wps:Input>' +
-			'<ows:Identifier>smoothing</ows:Identifier>' +
-			'<wps:Data>' +
-			'<wps:LiteralData>' + smoothing + '</wps:LiteralData>' +
-			'</wps:Data>' +
-			'</wps:Input>' +
-			'<wps:Input>' +
-			'<ows:Identifier>farthest</ows:Identifier>' +
-			'<wps:Data>' +
-			'<wps:LiteralData>' + farthest + '</wps:LiteralData>' +
-			'</wps:Data>' +
-			'</wps:Input>' +
-			'<wps:Input>' +
-			'<ows:Identifier>workspace</ows:Identifier>' +
-			'<wps:Data>' +
-			'<wps:LiteralData>' + workspace + '</wps:LiteralData>' +
-			'</wps:Data>' +
-			'</wps:Input>' +
-			'<wps:Input>' +
-			'<ows:Identifier>store</ows:Identifier>' +
-			'<wps:Data>' +
-			'<wps:LiteralData>' + store + '</wps:LiteralData>' +
-			'</wps:Data>' +
-			'</wps:Input>' +
-			'<wps:Input>' +
-			'<ows:Identifier>transectLayer</ows:Identifier>' +
-			'<wps:Data>' +
-			'<wps:LiteralData>' + transectLayer + '</wps:LiteralData>' +
-			'</wps:Data>' +
-			'</wps:Input>' +
-			'<wps:Input>' +
-			'<ows:Identifier>intersectionLayer</ows:Identifier>' +
-			'<wps:Data>' +
-			'<wps:LiteralData>' + intersectionLayer + '</wps:LiteralData>' +
-			'</wps:Data>' +
-			'</wps:Input>' +
-			'</wps:DataInputs>' +
-			'<wps:ResponseForm>' +
-			'<wps:RawDataOutput>' +
-			'<ows:Identifier>transects</ows:Identifier>' +
-			'</wps:RawDataOutput>' +
-			'</wps:ResponseForm>' +
-			'</wps:Execute>';
-
+		
 		return request;
 	},
 	enableUploadButton: function () {
