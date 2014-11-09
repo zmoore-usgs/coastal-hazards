@@ -1119,49 +1119,53 @@ var Transects = {
 		var transectLayer = args.transectLayer;
 		var intersectionLayer = args.intersectionLayer;
 		var store = args.store;
-
+		var bounds = Shorelines.aoiBoundsSelected.clone();
 		var request = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' +
 			'<ows:Identifier>gs:CreateTransectsAndIntersections</ows:Identifier>' +
 			'<wps:DataInputs>';
 
-		shorelines.each(function (i, shoreline) {
-			var stage = CONFIG.tempSession.getStage(Shorelines.stage);
-			var excludedDates = CONFIG.tempSession.getDisabledDatesForShoreline(shoreline);
+		shorelines.each(function (shoreline) {
 			var prefix = shoreline.split(':')[0];
+			var excludedShorelines = CONFIG.tempSession.getDisabledShorelines(prefix);
 			request += '<wps:Input>' +
 				'<ows:Identifier>shorelines</ows:Identifier>' +
 				'<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' +
 				'<wps:Body>' +
 				'<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2" xmlns:' + prefix + '="gov.usgs.cida.ch.' + prefix + '">' +
-				(function (args) {
-					var filter = '';
-					if (excludedDates) {
-						var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + stage.groupingColumn;
+				'<wfs:Query typeName="' + shoreline + '" srsName="' + CONFIG.strings.epsg4326 + '">' +
+				'<ogc:Filter>' +
+				'<ogc:And>' +
+				'<ogc:BBOX>' +
+				'<ogc:PropertyName>geom</ogc:PropertyName>' +
+				'<gml:Envelope srsName="urn:x-ogc:def:crs:' + CONFIG.strings.epsg3857 + '">' +
+				'<gml:lowerCorner>' + bounds.left + ' ' + bounds.bottom + '</gml:lowerCorner>' +
+				'<gml:upperCorner>' + bounds.right + ' ' + bounds.top + '</gml:upperCorner>' +
+				'</gml:Envelope>' +
+				'</ogc:BBOX>';
+			request += (function (args) {
+				var filter = '';
+				if (excludedShorelines.length) {
 
-						filter += '<wfs:Query typeName="' + shoreline + '" srsName="' + CONFIG.strings.epsg4326 + '">' +
-							'<ogc:Filter>' +
-							'<ogc:And>';
 
-						excludedDates.each(function (date) {
-							filter += '<ogc:Not>' +
-								'<ogc:PropertyIsEqualTo>' +
-								'<ogc:PropertyName>' + property + '</ogc:PropertyName>' +
-								'<ogc:Literal>' + date + '</ogc:Literal>' +
-								'</ogc:PropertyIsEqualTo>' +
-								'</ogc:Not>';
-						});
+					excludedShorelines.each(function (id) {
+						filter += '<ogc:Not>' +
+							'<ogc:PropertyIsEqualTo>' +
+							'<ogc:PropertyName>shoreline_id</ogc:PropertyName>' +
+							'<ogc:Literal>' + id + '</ogc:Literal>' +
+							'</ogc:PropertyIsEqualTo>' +
+							'</ogc:Not>';
+					});
 
-						filter += '</ogc:And>' +
-							'</ogc:Filter>' +
-							'</wfs:Query>';
-					} else {
-						filter += '<wfs:Query typeName="' + shoreline + '" srsName="' + CONFIG.strings.epsg4326 + '" />';
-					}
-					return filter;
-				}({
-					shoreline: shoreline,
-					layer: layer
-				})) +
+
+				}
+				return filter;
+			}({
+				shoreline: shoreline,
+				layer: layer
+			}));
+			request += '</ogc:And>' +
+				'</ogc:Filter>' +
+				'</wfs:Query>' +
 				'</wfs:GetFeature>' +
 				'</wps:Body>' +
 				'</wps:Reference>' +
