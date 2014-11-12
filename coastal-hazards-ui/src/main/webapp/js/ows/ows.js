@@ -9,8 +9,6 @@ var OWS = function (endpoint) {
 	me.wfsGetFeature = me.geoserverProxyEndpoint + 'ows?service=wfs&version=1.0.0&request=GetFeature';
 	me.wfsCapabilities = Object.extended();
 	me.wmsCapabilities = Object.extended();
-	me.wmsCapabilitiesXML = Object.extended();
-	me.wfsCapabilitiesXML = null;
 	me.wpsExecuteRequestPostUrl = me.geoserverProxyEndpoint + 'ows?service=wps&version=1.0.0&request=execute';
 
 	// An object to hold the return from WFS DescribeFeatureType
@@ -118,7 +116,6 @@ var OWS = function (endpoint) {
 						n.prefix = namespace;
 					});
 					me.wmsCapabilities[namespace] = getCapsResponse;
-					me.wmsCapabilitiesXML[namespace] = data;
 					getCapsResponse.capability.layers.each(function (layer) {
 						CONFIG.tempSession.addLayerToSession(layer);
 					});
@@ -132,7 +129,7 @@ var OWS = function (endpoint) {
 							jqXHR: jqXHR,
 							context: args
 						});
-					})
+					});
 				},
 				error: function (data, textStatus, jqXHR) {
 					// TODO - This really should be moved to the session object
@@ -197,7 +194,6 @@ var OWS = function (endpoint) {
 				success: function (data) {
 					var getCapsResponse = new OpenLayers.Format.WFSCapabilities.v1_1_0().read(data);
 					me.wfsCapabilities = getCapsResponse;
-					me.wfsCapabilitiesXML = data;
 					$.each(sucessCallbacks, function (index, callback) {
 						callback(getCapsResponse, this);
 					});

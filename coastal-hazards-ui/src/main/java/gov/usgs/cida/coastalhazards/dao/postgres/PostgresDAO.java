@@ -1,8 +1,10 @@
 package gov.usgs.cida.coastalhazards.dao.postgres;
 
+import gov.usgs.cida.coastalhazards.dao.shoreline.Shoreline;
 import gov.usgs.cida.coastalhazards.dao.shoreline.ShorelineFileDAO;
 import gov.usgs.cida.coastalhazards.service.util.Property;
 import gov.usgs.cida.coastalhazards.service.util.PropertyUtil;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -451,6 +453,31 @@ public class PostgresDAO {
 				return rs.getInt(1) != 0;
 			}
 		}
+	}
+
+	public List<Shoreline> getShorelinesFromBoundingBox(String workspace, double[] bbox) throws SQLException {
+		String sql = "select distinct shoreline_id, uncy, segment_id, to_char(date, 'YYYY-MM-dd') as date, mhw, workspace, source, auxillary_name, auxillary_value from " + workspace
+				+ " where geom && ST_MakeEnvelope(" + bbox[0] + "," + bbox[1] + "," + bbox[2] + "," + bbox[3] + ",4326)"
+				+ " order by date desc, shoreline_id";
+		List<Shoreline> shorelines = new ArrayList<>();
+		try (Connection connection = getConnection()) {
+				ResultSet rs = connection.createStatement().executeQuery(sql);
+				while (rs.next()) {
+					Shoreline shoreline = new Shoreline();
+					shoreline.setId(BigInteger.valueOf(rs.getLong(1)));
+					shoreline.setUncertainty(rs.getDouble(2));
+					shoreline.setSegmentId(BigInteger.valueOf(rs.getLong(3)));
+					shoreline.setDate(rs.getString(4));
+					shoreline.setMhw(rs.getBoolean(5));
+					shoreline.setWorkspace(rs.getString(6));
+					shoreline.setSource(rs.getString(7));
+					shoreline.setAuxName(rs.getString(8));
+					shoreline.setAuxValue(rs.getString(9));
+					shorelines.add(shoreline);
+				}
+		}
+		return shorelines;
+		
 	}
 
 }

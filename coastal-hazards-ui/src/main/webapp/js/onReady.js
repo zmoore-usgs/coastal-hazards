@@ -16,6 +16,14 @@ $(document).ready(function () {
 		LOG.trace('AJAX Call Finished');
 		$("#application-spinner").fadeOut();
 	});
+	$(document).ajaxError(function (event, jqXHR, ajaxSettings, thrownError) {
+		LOG.debug('AJAX Call Error: ' + thrownError);
+		CONFIG.ui.showAlert({
+			message: 'There was an error while communicating with the server. Check logs for more info. Please try again.',
+			displayTime: 0
+		});
+		$("#application-spinner").fadeOut();
+	});
 	$.ajaxSetup({
 		timeout: CONFIG.ajaxTimeout
 	});
@@ -46,17 +54,6 @@ $(document).ready(function () {
 		return;
 	}
 
-	var setupAjaxError = function () {
-		$(document).ajaxError(function (event, jqXHR, ajaxSettings, thrownError) {
-			LOG.debug('AJAX Call Error: ' + thrownError);
-			CONFIG.ui.showAlert({
-				message: 'There was an error while communicating with the server. Check logs for more info. Please try again.',
-				displayTime: 0
-			});
-			$("#application-spinner").fadeOut();
-		});
-	};
-
 	// Map interaction object. Holds the map and utilities 
 	splashUpdate("Initializing Map...");
 	CONFIG.map = new Map();
@@ -65,62 +62,50 @@ $(document).ready(function () {
 	splashUpdate("Initializing OWS services...");
 	CONFIG.ows = new OWS();
 
+	var finishLoadingApplication = function (data, textStatus, jqXHR) {
+		CONFIG.ui.work_stages_objects.each(function (stage) {
+			stage.appInit();
+
+			if (typeof stage.populateFeaturesList === 'function') {
+				stage.populateFeaturesList(data, textStatus, jqXHR);
+			}
+
+			CONFIG.tempSession.updateSessionFromWMS({
+				stage: stage
+			});
+		});
+
+		CONFIG.ui.precacheImages();
+
+		$('.qq-upload-button').addClass('btn btn-success');
+
+		$('#application-overlay').fadeOut(2000, function () {
+			$('#application-overlay').remove();
+		});
+	};
+
 	var interrogateSessionResources = function () {
-		var loadApp = function (data, textStatus, jqXHR) {
-			CONFIG.ui.work_stages_objects.each(function (stage) {
-				stage.appInit();
-				
-				if (typeof stage.populateFeaturesList === 'function') {
-					stage.populateFeaturesList(data, textStatus, jqXHR);
-				}
-				
-				CONFIG.tempSession.updateSessionFromWMS({
-					stage: stage
-				});
-			});
-
-			$('.qq-upload-button').addClass('btn btn-success');
-			$('#application-overlay').fadeOut(2000, function () {
-				$('#application-overlay').remove();
-			});
-		};
-
 		CONFIG.ows.getWMSCapabilities({
 			namespace: currentSessionKey,
 			callbacks: {
 				success: [
 					CONFIG.tempSession.updateLayersFromWMS,
-					loadApp
+					finishLoadingApplication
 				],
-				error: [loadApp]
+				error: [finishLoadingApplication]
 			}
 		});
 	};
 
-	var getPublishedLayers = function () {
+	var interrogatePublishedResources = function () {
 		CONFIG.ows.getWMSCapabilities({
 			namespace: CONFIG.name.published,
 			callbacks: {
 				success: [
-					function () {
-						LOG.trace('OnReady.js:: WMS Capabilities retrieved for ' + CONFIG.name.published + ' workspace');
-						interrogateSessionResources();
-						CONFIG.ui.precacheImages();
-						setupAjaxError();
-					}
+					interrogateSessionResources,
+					CONFIG.tempSession.updateLayersFromWMS
 				],
-				error: [
-					function () {
-						CONFIG.ui.createModalWindow({
-							headerHtml: 'Unable to interrogate OWS server',
-							bodyHtml: 'The application could not interrogate '
-								+ 'the OWS server to get published layers in the '
-								+ '"' + CONFIG.name.published + ' workspace".'
-						});
-						interrogateSessionResources();
-						CONFIG.ui.precacheImages();
-					}
-				]
+				error: [interrogateSessionResources]
 			}
 		});
 	};
@@ -131,7 +116,7 @@ $(document).ready(function () {
 				function () {
 					CONFIG.ui.appInit();
 					splashUpdate("Interrogating OWS server...");
-					getPublishedLayers();
+					interrogatePublishedResources();
 					splashUpdate("Starting Application...");
 				}
 			],
@@ -151,5 +136,4 @@ $(document).ready(function () {
 			]
 		}
 	});
-
 });

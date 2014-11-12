@@ -19,6 +19,7 @@ var Shorelines = {
 	CONTROL_IDENTIFY_ID: 'shoreline-identify-control',
 	CONTROL_IDENTIFY_AOI_ID: 'shoreline-identify-aoi-control',
 	LAYER_AOI_NAME: 'layer-aoi-box',
+	// Defines which columns from the shorelines table are shown in the click-to-id box
 	clickToIdColumnNames: ['date', 'source', 'mhw', 'uncy'],
 	$buttonSelectAOI: $('#shorelines-aoi-select-toggle'),
 	$buttonSelectAOIDone: $('#shorelines-aoi-select-done'),
@@ -27,7 +28,7 @@ var Shorelines = {
 	$descriptionAOI: $('#description-aoi'),
 	$shorelineFeatureTableContainer: $('#shorelines-feature-table-container'),
 	aoiBoundsSelected: null,
-	shorelinesServiceEndpoint: 'service/shoreline',
+	shorelinesServiceEndpoint: 'service/shoreline?',
 	uploadRequest: {
 		'endpoint': 'service/stage-shoreline',
 		'paramsInBody': false,
@@ -55,8 +56,6 @@ var Shorelines = {
 		this.initializeUploader();
 		this.bindSelectAOIButton();
 		this.bindSelectAOIDoneButton();
-
-		// Pre-compile the handlebars template for creating column matching windows
 		$.get('templates/column-matching-modal.mustache').done(function (data) {
 			Shorelines.columnMatchingTemplate = Handlebars.compile(data);
 			Handlebars.registerHelper('printDefaultValue', function () {
@@ -81,10 +80,20 @@ var Shorelines = {
 	},
 	initSession: function () {
 		var sessionStage = CONFIG.tempSession.getStage(this.stage);
-
 		// Add a disabled dates key
 		if (!sessionStage.datesDisabled) {
 			sessionStage.datesDisabled = [];
+		}
+
+		// Add a disabled shoreline id for published and this workspace;
+		var sKey = CONFIG.tempSession.getCurrentSessionKey();
+		if (!sessionStage.slDisabled) {
+			sessionStage.slDisabled = Object.extended({
+				published: []
+			});
+		}
+		if (!sessionStage.slDisabled[sKey]) {
+			sessionStage.slDisabled[sKey] = [];
 		}
 
 		// Cleaning up legacy
@@ -94,7 +103,6 @@ var Shorelines = {
 				delete sessionStage[k];
 			}
 		});
-
 		if (sessionStage.dateFormat) {
 			delete sessionStage.dateFormat;
 		}
@@ -103,9 +111,7 @@ var Shorelines = {
 			stage: this.stage,
 			obj: sessionStage
 		});
-
 		CONFIG.tempSession.persistSession();
-
 		Shorelines.getAvailableAuxillaryColumns();
 	},
 	enterStage: function () {
@@ -126,7 +132,7 @@ var Shorelines = {
 	},
 	getAvailableAuxillaryColumns: function () {
 		LOG.debug('Shorelines.js::updateSessionWithAuxillaryColumns');
-		$.get(this.shorelinesServiceEndpoint + '?', {
+		$.get(this.shorelinesServiceEndpoint, {
 			'action': 'getAuxillaryNames',
 			'workspace': CONFIG.tempSession.getCurrentSessionKey()
 		}, function (obj, status) {
@@ -175,7 +181,6 @@ var Shorelines = {
 					displayTime: 5000
 				});
 			});
-
 		Shorelines.updateSortingColumnOnServer({
 			name: value,
 			deferred: deferred
@@ -189,14 +194,12 @@ var Shorelines = {
 	addShorelines: function (layers) {
 		"use strict";
 		LOG.info('Shorelines.js::addShorelines');
-
 		LOG.debug('Shorelines.js::addShorelines: Adding ' + layers.length + ' shoreline layers to map');
 		layers.each(function (layer) {
 			var layerTitle = layer.title;
 			var layerPrefix = layer.prefix;
 			var layerName = layer.name;
-
-			var addToMap = function (data, textStatus, jqXHR) {
+			var addToMap = function () {
 				LOG.trace('Shorelines.js::addShorelines: Attempting to add shoreline layer ' + layerTitle + ' to the map.');
 				CONFIG.ows.getDescribeFeatureType({
 					layerNS: layerPrefix,
@@ -222,20 +225,17 @@ var Shorelines = {
 								caller: Shorelines,
 								attributes: attributes
 							});
-
 							var foundAll = true;
 							Shorelines.mandatoryColumns.each(function (mc) {
 								if (layerColumns.values().indexOf(mc) === -1) {
 									foundAll = false;
 								}
 							});
-
 							Shorelines.defaultingColumns.each(function (col) {
 								if (layerColumns.values().indexOf(col.attr) === -1) {
 									foundAll = false;
 								}
 							});
-
 							if (layerPrefix !== CONFIG.name.published && !foundAll) {
 								CONFIG.ui.buildColumnMatchingModalWindow({
 									layerName: layerName,
@@ -259,7 +259,6 @@ var Shorelines = {
 					]
 				});
 			};
-
 			CONFIG.ows.getUTMZoneCount({
 				layerPrefix: layer.prefix,
 				layerName: layer.name,
@@ -293,12 +292,16 @@ var Shorelines = {
 			prefix = args.prefix,
 			title = args.title,
 			bounds = args.bounds,
-			dates = args.dates,
+			cqlFilter = 'BBOX(geom, ' + bounds + ')',
 			source = args.source,
+			shorelines = args.shorelines,
+			dates = shorelines.map(function (s) {
+				return s.date;
+			}).union(),
 			colorDatePairings = Util.createColorGroups(dates),
 			sldBody = Shorelines.createSLDBody({
 				colorDatePairings: colorDatePairings,
-				groupColumn: 'date',
+				groupColumn: Shorelines.groupingColumn,
 				layer: {
 					prefix: prefix,
 					name: name
@@ -312,7 +315,8 @@ var Shorelines = {
 					transparent: true,
 					sld_body: sldBody,
 					format: "image/png",
-					bbox: bounds
+					bbox: bounds,
+					cql_filter: cqlFilter
 				},
 			{
 				prefix: prefix,
@@ -328,8 +332,8 @@ var Shorelines = {
 				title: title,
 				singleTile: true,
 				ratio: 1,
-				groupByAttribute: 'date',
-				source : source,
+				groupByAttribute: Shorelines.groupingColumn,
+				shorelines: shorelines,
 				layerType: Shorelines.stage,
 				displayInLayerSwitcher: false
 			}),
@@ -340,6 +344,10 @@ var Shorelines = {
 				Shorelines.updateSortingSelectionControl();
 			};
 
+		if (CONFIG.tempSession.getDisabledShorelines(prefix).length) {
+			wmsLayer.mergeNewParams({cql_filter: cqlFilter + " AND NOT(shoreline_id IN (" + CONFIG.tempSession.getDisabledShorelines(prefix) + "))"});
+		}
+
 		Shorelines.getShorelineIdControl().layers.push(wmsLayer);
 		wmsLayer.events.register("loadend", wmsLayer, loadEnd);
 		CONFIG.map.getMap().addLayer(wmsLayer);
@@ -348,12 +356,13 @@ var Shorelines = {
 	},
 	createSLDBody: function (args) {
 		"use strict";
-		var sldBody;
-		var colorDatePairings = args.colorDatePairings;
-		var groupColumn = args.groupColumn;
-		var layer = args.layer;
-		var layerName = args.layerName || layer.prefix + ':' + layer.name;
-		var scaleDenominatorFunction = '<ogc:Function name="min">' +
+		var sldBody,
+			colorDatePairings = args.colorDatePairings,
+			groupColumn = args.groupColumn,
+			layer = args.layer,
+			layerName = args.layerName || layer.prefix + ':' + layer.name,
+			layerPrefix = layerName.substring(0, layerName.indexOf(':')),
+			scaleDenominatorFunction = '<ogc:Function name="min">' +
 			'<ogc:Literal>6</ogc:Literal>' +
 			'<ogc:Function name="max">' +
 			'<ogc:Literal>2</ogc:Literal>' +
@@ -365,7 +374,6 @@ var Shorelines = {
 			'</ogc:Div>' +
 			'</ogc:Function>' +
 			'</ogc:Function>';
-
 		if (!isNaN(colorDatePairings[0][1])) {
 			LOG.info('Shorelines.js::?: Grouping will be done by number');
 			// Need to first find out about the featuretype
@@ -379,7 +387,6 @@ var Shorelines = {
 					fromDefinedColors: true
 				}).capitalize(true) + '</ogc:Literal>';
 			};
-
 			sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>' +
 				'<StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
 				'<NamedLayer>' +
@@ -415,18 +422,17 @@ var Shorelines = {
 				'</StyledLayerDescriptor>';
 		} else if (!isNaN(Date.parse(colorDatePairings[0][1]))) {
 			LOG.debug('Shorelines.js::?: Grouping will be done by year');
-
 			var createRuleSets;
 			LOG.debug('Shorelines.js::?: Geoserver date column is actually a string');
-			createRuleSets = function (colorLimitPairs) {
+			createRuleSets = function (colorLimitPairs, workspace) {
 				var html = '';
-
 
 				for (var lpIndex = 0; lpIndex < colorLimitPairs.length; lpIndex++) {
 					var date = colorLimitPairs[lpIndex][1];
 					var disabledDates = CONFIG.tempSession.getDisabledDates();
 					if (disabledDates.indexOf(date) === -1) {
-						html += '<Rule><ogc:Filter>';
+						html += '<Rule>';
+						html += '<ogc:Filter>';
 						html += '<ogc:PropertyIsLike escape="!" singleChar="." wildCard="*">';
 						html += '<ogc:PropertyName>';
 						html += groupColumn.trim();
@@ -437,7 +443,8 @@ var Shorelines = {
 						html += '</ogc:PropertyIsLike>';
 						html += '</ogc:Filter><PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name="fill">#FFFFFF</CssParameter></Fill><Stroke><CssParameter name="stroke">';
 						html += colorLimitPairs[lpIndex][0];
-						html += '</CssParameter></Stroke></Mark><Size>' + scaleDenominatorFunction + '</Size></Graphic></PointSymbolizer></Rule>';
+						html += '</CssParameter></Stroke></Mark><Size>' + scaleDenominatorFunction + '</Size></Graphic></PointSymbolizer>'
+						html += '</Rule>';
 					}
 				}
 
@@ -454,20 +461,17 @@ var Shorelines = {
 				html += '</Graphic>';
 				html += '</PointSymbolizer>';
 				html += '</Rule>';
-
 				return html;
 			};
-
 			sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>' +
-				'<StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
+				'<StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
 				'<NamedLayer>' +
 				'<Name>#[layer]</Name>' +
 				'<UserStyle>' +
-				'<FeatureTypeStyle> ' + createRuleSets(colorDatePairings) + '</FeatureTypeStyle>' +
+				'<FeatureTypeStyle> ' + createRuleSets(colorDatePairings, layerPrefix) + '</FeatureTypeStyle>' +
 				'</UserStyle>' +
 				'</NamedLayer>' +
 				'</StyledLayerDescriptor>';
-
 		}
 		sldBody = sldBody.replace('#[layer]', layerName);
 		return sldBody;
@@ -477,7 +481,6 @@ var Shorelines = {
 		LOG.info('loadend event triggered on layer');
 		var bounds = new OpenLayers.Bounds();
 		var layers = CONFIG.map.getMap().getLayersBy('zoomToWhenAdded', true);
-
 		$(layers).each(function (i, layer) {
 			if (layer.zoomToWhenAdded) {
 				var mapLayer = CONFIG.ows.getLayerByName({
@@ -488,12 +491,10 @@ var Shorelines = {
 					lbbox;
 				if (mapLayer) {
 					mlBbox = mapLayer.bbox[CONFIG.strings.epsg4326];
-
 					if (mlBbox) {
 						lbbox = mlBbox.bbox;
 						bounds.extend(new OpenLayers.Bounds(lbbox[1], lbbox[0], lbbox[3], lbbox[2]).
 							transform(new OpenLayers.Projection(CONFIG.strings.epsg4326), new OpenLayers.Projection(CONFIG.strings.epsg900913)));
-
 						if (layer.events.listeners.loadend.length) {
 							layer.events.unregister('added', layer, Shorelines.zoomToLayer);
 						}
@@ -503,7 +504,6 @@ var Shorelines = {
 				}
 			}
 		});
-
 		if (bounds.left && bounds.right && bounds.top && bounds.bottom) {
 			CONFIG.map.getMap().zoomToExtent(bounds, false);
 		}
@@ -514,47 +514,41 @@ var Shorelines = {
 	},
 	updateFeatureTable: function (event) {
 		var layer = event.object,
-			colorGroups = layer.colorGroups,
+			shorelines = layer.shorelines,
+			colorMap = Util.createColorMap(layer.colorGroups),
 			$switchCandidates,
 			$tbody = Shorelines.$shorelineFeatureTableContainer.find('table > tbody');
-
 		event.object.events.unregister('loadend', null, Shorelines.updateFeatureTable);
-
-		colorGroups.forEach(function (cg) {
-			var color = cg[0],
-				date = cg[1],
-				source = layer.source,
-				checked = !CONFIG.tempSession.isDateDisabled(date),
+		for (var slIdx = 0; slIdx < shorelines.length; slIdx++) {
+			var shoreline = shorelines[slIdx],
+				id = shoreline.id,
+				date = shoreline.date,
+				source = shoreline.source,
+				workspace = shoreline.workspace,
+				color = colorMap[date],
+				isEnabled = !CONFIG.tempSession.isShorelineDisabled(layer.prefix, id),
 				row = Shorelines.featureTableRowTemplate({
+					id: id,
 					color: color,
 					date: date,
 					source: source,
-					checked: checked
-				}),
-				// I only want to do this if the table doesn't already contain this date
-				$existingDates = Shorelines.$shorelineFeatureTableContainer
-				.find('table > tbody')
-				.find('td:nth-child(2):contains("' + date + '")');
-
-			if (!$existingDates.length) {
-				$tbody.append($(row));
-			}
-		}, this);
+					workspace: workspace,
+					checked: isEnabled
+				});
+			$tbody.append($(row));
+		}
 
 		// Allows user to click on the date field in a row and select the row
 		$tbody.find('tr td:nth-child(2)').off('click', Shorelines.featureTableRowClickCallback);
 		$tbody.find('tr td:nth-child(2)').on('click', Shorelines.featureTableRowClickCallback);
-
 		$switchCandidates = $('.switch>:not(.switch-animate)').parent();
 		$switchCandidates.off('switch-change', Shorelines.featureTableSwitchChangeCallback);
 		$switchCandidates.on('switch-change', Shorelines.featureTableSwitchChangeCallback);
 		$switchCandidates.bootstrapSwitch();
-
 		if (layer.prefix === CONFIG.tempSession.getCurrentSessionKey()) {
 			Shorelines.getAvailableAuxillaryColumns();
 		}
 		Shorelines.setupTableSorting();
-
 	},
 	featureTableRowClickCallback: function (e) {
 		var $clickedRow = $(e.target).parent(),
@@ -563,7 +557,6 @@ var Shorelines = {
 			$rows = $table.find('tr'),
 			shiftPressed = e.shiftKey,
 			altKeyPressed = e.altKey;
-
 		if ((!shiftPressed && !altKeyPressed) || (shiftPressed && altKeyPressed)) {
 			var wasAlreadyOn = $clickedRow.hasClass(Shorelines.selectedFeatureClass);
 			$tbody.find('tr').removeClass(Shorelines.selectedFeatureClass);
@@ -575,7 +568,6 @@ var Shorelines = {
 		} else if (shiftPressed) {
 			var firstSelectedRowIndex = $rows.index($table.find('.' + Shorelines.selectedFeatureClass)),
 				clickedRowIndex = $rows.index($clickedRow[0]);
-
 			if (firstSelectedRowIndex === clickedRowIndex) {
 				$clickedRow.toggleClass(Shorelines.selectedFeatureClass);
 			} else {
@@ -595,44 +587,39 @@ var Shorelines = {
 	featureTableSwitchChangeCallback: function (event, data) {
 		var status = data.value,
 			$element = data.el,
-			multiSelRows = Shorelines.$shorelineFeatureTableContainer.find('.' + Shorelines.selectedFeatureClass),
-			multiSelDates = multiSelRows
-			.find('td:nth-child(2)')
-			.map(function (c, a) {
-				return $(a).html();
-			}),
-			$switches = $('.switch'),
-			dates = [$element.parent().parent().attr('data-date')];
+			$multiSelRows = Shorelines.$shorelineFeatureTableContainer.find('.' + Shorelines.selectedFeatureClass),
+			id = $element.closest('tr').attr('data-shoreline-id'),
+			ids = Object.extended();
+		ids[id] = $element.closest('tr').attr('data-shoreline-workspace');
 
-		if (multiSelRows.length) {
-			$switches.off('switch-change', Shorelines.featureTableSwitchChangeCallback);
-			multiSelRows.find('td:nth-child(1)>div').bootstrapSwitch('setState', status);
-			$switches.on('switch-change', Shorelines.featureTableSwitchChangeCallback);
-
-			multiSelRows.toggleClass(Shorelines.selectedFeatureClass);
-			dates = dates.concat(multiSelDates.toArray()).unique();
-		}
-
-		if (!status) {
-			// Date is disabled, add it to collection of disabled dates
-			dates.forEach(function (date) {
-				var idTableButton = $('.btn-year-toggle[date="' + date + '"]');
-				CONFIG.tempSession.addDisabledDate(date);
-				idTableButton.removeClass('btn-success');
-				idTableButton.addClass('btn-danger');
-				idTableButton.html('Enable');
-			});
-		} else {
-			dates.forEach(function (date) {
-				var idTableButton = $('.btn-year-toggle[date="' + date + '"]');
-				CONFIG.tempSession.removeDisabledDate(date);
-				idTableButton.removeClass('btn-danger');
-				idTableButton.addClass('btn-success');
-				idTableButton.html('Disable');
+		if ($multiSelRows.length) {
+			$multiSelRows.off('switch-change', Shorelines.featureTableSwitchChangeCallback);
+			$multiSelRows.find('td:nth-child(1)>div').bootstrapSwitch('setState', status);
+			$multiSelRows.on('switch-change', Shorelines.featureTableSwitchChangeCallback);
+			$multiSelRows.toggleClass(Shorelines.selectedFeatureClass);
+			$multiSelRows.each(function (i, r) {
+				var $r = $(r);
+				ids[$r.attr('data-shoreline-id')] = $r.attr('data-shoreline-workspace');
 			});
 		}
+
+		Object.keys(ids, function (id, workspace) {
+			var $button = $('.btn-shoreline-id-toggle[data-shoreline-id="' + id + '"]'),
+				buttonClass = status ? 'btn-success' : 'btn-danger',
+				buttonHTML = status ? 'Disable' : 'Enable';
+			if ($button) {
+				$button.removeClass('btn-danger btn-success');
+				$button.addClass(buttonClass);
+				$button.html(buttonHTML);
+			}
+
+			if (status) {
+				CONFIG.tempSession.removeDisabledShoreline(workspace, id);
+			} else {
+				CONFIG.tempSession.addDisabledShoreline(workspace, id);
+			}
+		});
 		CONFIG.tempSession.persistSession();
-
 		var layers = CONFIG.map.getMap().getLayersBy('layerType', Shorelines.stage);
 		layers.forEach(function (l) {
 			var sldBody = Shorelines.createSLDBody({
@@ -640,23 +627,32 @@ var Shorelines = {
 				groupColumn: l.groupByAttribute,
 				layerTitle: l.title,
 				layerName: l.prefix + ':' + l.name
-			});
+			}),
+				selectedBounds = Shorelines.aoiBoundsSelected.clone().transform(new OpenLayers.Projection(CONFIG.strings.epsg900913), new OpenLayers.Projection(CONFIG.strings.epsg4326)).toArray(false).toString(),
+				cqlFilter = 'BBOX(geom, ' + selectedBounds + ')';
 
-			l.params.SLD_BODY = sldBody;
+
+			if (CONFIG.tempSession.getDisabledShorelines(l.prefix).length) {
+				cqlFilter += " AND NOT(shoreline_id IN (" + CONFIG.tempSession.getDisabledShorelines(l.prefix) + "))";
+			}
+
+
+			l.mergeNewParams({
+				SLD_BODY: sldBody,
+				CQL_FILTER: cqlFilter
+			});
 			l.redraw(true);
 		});
-
 		$("table.tablesorter").trigger('update', false);
 	},
 	updateSortingColumnOnServer: function (args) {
 		args = args || {};
 		var name = args.name,
 			def = args.deferred || $.Deferred(),
-			url = Shorelines.shorelinesServiceEndpoint + '?'
+			url = Shorelines.shorelinesServiceEndpoint
 			+ 'action=updateAuxillaryName'
 			+ '&workspace=' + CONFIG.tempSession.getCurrentSessionKey()
 			+ '&name=' + name;
-
 		$.ajax(url, {
 			method: 'PUT',
 			context: def,
@@ -669,7 +665,7 @@ var Shorelines = {
 	},
 	updateSortingColumnOnTable: function () {
 		Shorelines.$shorelineFeatureTableContainer.find('.table-features-column-aux').remove();
-		$.ajax(Shorelines.shorelinesServiceEndpoint + '?', {
+		$.ajax(Shorelines.shorelinesServiceEndpoint, {
 			context: this,
 			data: {
 				action: 'getDateToAuxValues',
@@ -678,7 +674,6 @@ var Shorelines = {
 			success: function (e, status) {
 				if (status === 'success' && e.success === 'true') {
 					var dateToValue = JSON.parse(e.values);
-
 					if (Object.keys(dateToValue).length) {
 						// First clear the table of any possible auxillary already showing
 
@@ -695,7 +690,6 @@ var Shorelines = {
 							}),
 							$thDiv = $('<div />').addClass('tablesorter-header-inner').html(e.name);
 						$th.append($thDiv);
-
 						// Build row by row for the table body
 						$theadRow.append($th);
 						$rows.each(function (i, row) {
@@ -737,15 +731,12 @@ var Shorelines = {
 			},
 			type: 'numeric'
 		});
-
 		Shorelines.$shorelineFeatureTableContainer.find("table").tablesorter({
 			headers: {
 				0: {sorter: 'visibility'},
 				1: {sorter: 'dateSorter'}
 			}
 		});
-
-
 	},
 	initializeUploader: function (args) {
 		"use strict";
@@ -830,29 +821,25 @@ var Shorelines = {
 			}
 
 			Shorelines.$buttonSelectAOI.trigger('click');
-
 			if (Shorelines.aoiBoundsSelected) {
 				var filterFunc = function (l) {
-					var layerBounds = OpenLayers.Bounds.fromArray(l.bbox[CONFIG.strings.epsg4326].bbox, true)
-						.transform(new OpenLayers.Projection(CONFIG.strings.epsg4326), new OpenLayers.Projection(CONFIG.strings.epsg900913));
-					return l.name.endsWith('shorelines') && Shorelines.aoiBoundsSelected.intersectsBounds(layerBounds);
+					if (l.name.endsWith(Shorelines.stage)) {
+						var layerBounds = OpenLayers.Bounds.fromArray(l.bbox[CONFIG.strings.epsg4326].bbox, true)
+							.transform(new OpenLayers.Projection(CONFIG.strings.epsg4326), new OpenLayers.Projection(CONFIG.strings.epsg900913));
+						return Shorelines.aoiBoundsSelected.intersectsBounds(layerBounds);
+					}
+					return false;
 				},
 					validPublishedLayers = CONFIG.ows.wmsCapabilities.published.capability.layers.filter(filterFunc),
 					validSessionLayers = CONFIG.ows.wmsCapabilities[CONFIG.tempSession.getCurrentSessionKey()].capability.layers.filter(filterFunc),
 					validLayers = validPublishedLayers.concat(validSessionLayers),
 					bounds = Shorelines.aoiBoundsSelected.clone(),
-					boundsString = bounds.transform(new OpenLayers.Projection(CONFIG.strings.epsg900913), new OpenLayers.Projection(CONFIG.strings.epsg4326)).toArray(true).toString(),
-					createGetFeaturesUrl = function (layer) {
-						var layerPrefix = layer.prefix,
-							url = CONFIG.ows.geoserverProxyEndpoint + layerPrefix + '/ows?',
+					boundsString = bounds.transform(new OpenLayers.Projection(CONFIG.strings.epsg900913), new OpenLayers.Projection(CONFIG.strings.epsg4326)).toArray(false).toString(),
+					getShorelinesUrl = function (layer) {
+						var url = Shorelines.shorelinesServiceEndpoint,
 							params = {
-								service: 'WFS',
-								version: '1.1.0',
-								request: 'GetFeature',
-								srsName: 'EPSG:4326',
-								propertyName: layerPrefix + ':date,' + layerPrefix + ':source', 
-								sortBy: layerPrefix + ':date',
-								typeName: layerPrefix + ':' + layer.name,
+								action: 'getShorelinesWithBbox',
+								workspace: layer.prefix,
 								bbox: boundsString
 							};
 						return url + $.param(params);
@@ -862,7 +849,7 @@ var Shorelines = {
 							layer: l,
 							bounds: boundsString
 						};
-						return $.ajax(createGetFeaturesUrl(l), {context: context}).promise();
+						return $.ajax(getShorelinesUrl(l), {context: context}).promise();
 					}),
 					showNothingFoundAlert = function () {
 						CONFIG.ui.showAlert({
@@ -874,77 +861,34 @@ var Shorelines = {
 							}
 						});
 					};
-
 				if (validLayers.length) {
 					$.when.apply(this, ajaxCalls).done(function () {
-						var dates = [],
-							aIdx,
-							source = '';
-
 						// I should have as many incoming arguments as there were 
 						// ajax calls going out (probably 2: published and workspace).
 						// I need to create a dates array here 
-						for (aIdx = 0; aIdx < arguments.length; aIdx++) {
-							var r = Array.isArray(arguments[0]) ? arguments[aIdx][0] : arguments[0];
-
+						for (var aIdx = 0; aIdx < arguments.length; aIdx++) {
+							var response = Array.isArray(arguments[0]) ? arguments[aIdx][0] : arguments[0],
+								shorelines = JSON.parse(response.shorelines),
+								layerInfo = this[aIdx].layer,
+								bounds = this[aIdx].bounds;
 							// For each argument I want to read the response into 
 							// a features array 
-							var features = new OpenLayers.Format.GML.v3().read(r);
-							if (features.length) {
-								// If the response had features come back, I want to 
-								// grab the dates in those features and create a unique 
-								// dates array
-								source = features[0].data.source;
-								dates = dates.union(features.map(function (f) {
-									var origDate = f.data.date;
-									if (origDate.indexOf('Z') !== -1) {
-										origDate = origDate.substring(0, origDate.length - 1);
-									}
-									return origDate;
-								})).sortBy(function (d) {
-									return Date.parse(d);
+							if (shorelines.length) {
+								var wmsLayer = Shorelines.addLayerToMap({
+									name: layerInfo.name,
+									prefix: layerInfo.prefix,
+									title: layerInfo.title,
+									bounds: bounds,
+									shorelines: shorelines
 								});
+								Shorelines.setupTableSorting();
 							}
 						}
-
-						var addLayer = function (o) {
-							var layerInfo = o.layer,
-								bounds = o.bounds,
-								source = o.source;
-
-							// I also want to add the WMS layer to the map
-							var wmsLayer = Shorelines.addLayerToMap({
-								name: layerInfo.name,
-								prefix: layerInfo.prefix,
-								title: layerInfo.title,
-								bounds: bounds,
-								dates: dates,
-								source: source
-							});
-						};
-
-						if (dates.length) {
-							if (Array.isArray(this)) {
-								for (aIdx = 0; aIdx < arguments.length; aIdx++) {
-									this[aIdx].source = source;
-									addLayer(this[aIdx]);
-								}
-							} else {
-								this.source = source;
-								addLayer(this);
-							}
-							CONFIG.map.getMap().zoomToExtent(Shorelines.aoiBoundsSelected, true);
-						} else {
-							showNothingFoundAlert();
-						}
-
-						Shorelines.setupTableSorting();
 					});
-
+					CONFIG.map.getMap().zoomToExtent(Shorelines.aoiBoundsSelected.clone(), true);
 				} else {
 					showNothingFoundAlert();
 				}
-
 			} else {
 				CONFIG.ui.showAlert({
 					message: 'You have not selected an area of interest',
@@ -969,7 +913,6 @@ var Shorelines = {
 						irregular: true
 					}
 				});
-
 		// I really only want one box on a layer at any given time
 		drawBoxLayer.events.register('beforefeatureadded', null, function (e) {
 			e.object.removeAllFeatures();
@@ -984,7 +927,6 @@ var Shorelines = {
 		this.$descriptionAOI.addClass('hidden');
 		var shorelineIdAOIControl = CONFIG.map.getControlBy('title', Shorelines.CONTROL_IDENTIFY_AOI_ID),
 			layer;
-
 		if (shorelineIdAOIControl) {
 			layer = shorelineIdAOIControl.layer;
 			CONFIG.map.removeLayer(layer, false);
@@ -1024,11 +966,9 @@ var Shorelines = {
 		onComplete: function (id, fileName, responseJSON) {
 			CONFIG.ui.hideSpinner();
 			$('#application-alert').alert('close');
-
 			var success = responseJSON.success;
 			if (success === 'true') {
 				var token = responseJSON.token;
-
 				Shorelines.getShorelineHeaderColumnNames({
 					token: token,
 					callbacks: {
@@ -1037,10 +977,8 @@ var Shorelines = {
 								headers = data.headers,
 								layerColumns = Object.extended(),
 								foundAllRequiredColumns = true;
-
 							if (success === 'true') {
 								headers = headers.split(',');
-
 								if (headers.length < Shorelines.mandatoryColumns.length) {
 									LOG.warn('Shorelines.js::addShorelines: There '
 										+ 'are not enough attributes in the selected '
@@ -1066,19 +1004,16 @@ var Shorelines = {
 										caller: Shorelines,
 										layerColumns: layerColumns
 									});
-
 									Shorelines.mandatoryColumns.each(function (mc) {
 										if (layerColumns.values().indexOf(mc) === -1) {
 											foundAllRequiredColumns = false;
 										}
 									});
-
 									Shorelines.defaultingColumns.each(function (col) {
 										if (layerColumns.values().indexOf(col.attr) === -1) {
 											foundAllRequiredColumns = false;
 										}
 									});
-
 									var doUpload = function () {
 										$.ajax(Shorelines.uploadRequest.endpoint, {
 											type: 'POST',
@@ -1109,7 +1044,6 @@ var Shorelines = {
 																CONFIG.ui.populateFeaturesList({
 																	caller: Shorelines
 																});
-
 																$('a[href="#shorelines-view-tab"]').tab('show');
 																$('#shorelines-list').val(workspace + ':' + layerName).trigger('change');
 															}
@@ -1130,7 +1064,6 @@ var Shorelines = {
 											}
 										});
 									};
-
 									if (!foundAllRequiredColumns) {
 										CONFIG.ui.buildColumnMatchingModalWindow({
 											layerName: token,
@@ -1195,7 +1128,6 @@ var Shorelines = {
 				error: function () {
 				}
 			};
-
 		$.ajax(Shorelines.uploadRequest.endpoint, {
 			'data': {
 				'action': 'read-dbf',

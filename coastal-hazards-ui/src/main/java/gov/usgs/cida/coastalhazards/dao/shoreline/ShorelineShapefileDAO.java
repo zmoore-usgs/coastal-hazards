@@ -129,7 +129,7 @@ public class ShorelineShapefileDAO extends ShorelineFileDAO {
 							// probably insert all of the points for the previous 
 							/// shoreline
 							if (xyUncies.size() > 0 && shorelineId != -1) {
-								insertPointsIntoShorelinePointsTable(connection, shorelineId, recordId, xyUncies.toArray(new double[xyUncies.size()][]));
+								insertPointsIntoShorelinePointsTable(connection, shorelineId, lastRecordId, xyUncies.toArray(new double[xyUncies.size()][]));
 								xyUncies.clear();
 							}
 

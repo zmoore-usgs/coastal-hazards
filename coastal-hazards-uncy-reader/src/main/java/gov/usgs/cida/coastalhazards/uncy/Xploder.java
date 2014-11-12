@@ -126,7 +126,7 @@ public class Xploder {
 		}
 	}
 
-	public int processShape(ShapeAndAttributes sap) throws IOException {
+	public int processShape(ShapeAndAttributes sap, int segmentId) throws IOException {
 
 		Double uncertainty = ((Number) sap.row.read(uncertaintyIdIdx)).doubleValue();
 
@@ -143,7 +143,7 @@ public class Xploder {
 				Point p = pIterator.next();
 
 				// write new point-thing-with-uncertainty
-				writePoint(p, sap.row, uncertainty, recordNum, segmentIndex + 1);
+				writePoint(p, sap.row, uncertainty, recordNum, segmentId);
 
 				ptCt++;
 
@@ -241,8 +241,9 @@ public class Xploder {
 			if (geomIdx != 0) {
 				throw new RuntimeException("This program only supports input that has the geometry as attribute 0");
 			}
+			
 			for (ShapeAndAttributes saa : rdr) {
-				int ptCt = processShape(saa);
+				int ptCt = processShape(saa, shpCt + 1);
 				logger.debug("Wrote {} points for shape {}", ptCt, saa.record.toString());
 				ptTotal += ptCt;
 				shpCt++;

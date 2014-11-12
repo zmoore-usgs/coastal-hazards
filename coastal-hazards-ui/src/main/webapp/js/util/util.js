@@ -155,21 +155,35 @@ var Util = {
 
 		return layerColumns;
 	},
+	createColorMap: function (colorGroups) {
+		var colorMap = {};
+		colorGroups.forEach(function (cg) {
+			this[cg[1]] = cg[0];
+		}, colorMap);
+		return colorMap;
+	},
 	createColorGroups: function (groups) {
 		"use strict";
 		LOG.info('Util.js::createColorGroups: Creating color groups');
 		var colorGroups = [];
 		$(groups).each(function (i, group) {
-			var color = Util.getRandomColor({
-				fromDefinedColors: true
-			}).capitalize(true);
-			// Make sure that we don't already have this color in the colorGroups or white or black
-			while (colorGroups.find(function (n) {
-				return n[0] === color;
-			}) || color === '#FFFFFF' || color === '#000000') {
+			var color = CONFIG.colorGroups[group];
+
+			if (!color) {
 				color = Util.getRandomColor({
 					fromDefinedColors: true
-				}).capitalize(true);
+				}).toUpperCase(true);
+				
+				// Make sure that we don't already have this color in the colorGroups or white or black
+				while (colorGroups.find(function (n) {
+					return n[0] === color;
+				}) || color === '#FFFFFF' || color === '#000000') {
+					color = Util.getRandomColor({
+						fromDefinedColors: false
+					}).toUpperCase();
+				}
+				
+				CONFIG.colorGroups[group] = color;
 			}
 			colorGroups.push([color, group]);
 		});
@@ -222,24 +236,24 @@ var Util = {
 	},
 	getRandomLorem: function () {
 		"use strict";
-		var loremArray = ["quisque","libero","ligula","consectetuer","rhoncus",
-			"nullam","velit","semper","lacinia","vitae","sodales","pellentesque",
-			"ultricies","dignissim","lacus","aliquam","rutrum","lorem","risus",
-			"morbi","metus","vivamus","euismod","lobortis","felis","ullamcorper",
-			"viverra","maecenas","iaculis","aliquet","auctor","tristique",
-			"eleifend","mauris","nulla","integer","molestie","dapibus","volutpat",
-			"ornare","egestas","feugiat","placerat","varius","porttitor","scelerisque",
-			"neque","malesuada","fringilla","turpis","proin","augue","tincidunt",
-			"justo","faucibus","lectus","sollicitudin","massa","suspendisse",
-			"vehicula","magna","phasellus","dolor","facilisis","bibendum","laoreet",
-			"vestibulum","dictum","consequat","curabitur","tempor","donec","adipiscing",
-			"luctus","tellus","interdum","purus","elementum","accumsan","convallis",
-			"fusce","tempus","ipsum","tortor","sagittis","aenean","hendrerit","mattis",
-			"ultrices","gravida","blandit","sociis","natoque","penatibus","magnis",
-			"parturient","montes","nascetur","ridiculus","etiam","vulputate","praesent",
-			"cursus","commodo","pretium","sapien","imperdiet","suscipit","venenatis",
-			"fermentum","pharetra","congue","condimentum","primis","posuere","cubilia",
-			"curaeundefined","mollis","nonummy","porta","habitant","senectus","netus","fames"];
+		var loremArray = ["quisque", "libero", "ligula", "consectetuer", "rhoncus",
+			"nullam", "velit", "semper", "lacinia", "vitae", "sodales", "pellentesque",
+			"ultricies", "dignissim", "lacus", "aliquam", "rutrum", "lorem", "risus",
+			"morbi", "metus", "vivamus", "euismod", "lobortis", "felis", "ullamcorper",
+			"viverra", "maecenas", "iaculis", "aliquet", "auctor", "tristique",
+			"eleifend", "mauris", "nulla", "integer", "molestie", "dapibus", "volutpat",
+			"ornare", "egestas", "feugiat", "placerat", "varius", "porttitor", "scelerisque",
+			"neque", "malesuada", "fringilla", "turpis", "proin", "augue", "tincidunt",
+			"justo", "faucibus", "lectus", "sollicitudin", "massa", "suspendisse",
+			"vehicula", "magna", "phasellus", "dolor", "facilisis", "bibendum", "laoreet",
+			"vestibulum", "dictum", "consequat", "curabitur", "tempor", "donec", "adipiscing",
+			"luctus", "tellus", "interdum", "purus", "elementum", "accumsan", "convallis",
+			"fusce", "tempus", "ipsum", "tortor", "sagittis", "aenean", "hendrerit", "mattis",
+			"ultrices", "gravida", "blandit", "sociis", "natoque", "penatibus", "magnis",
+			"parturient", "montes", "nascetur", "ridiculus", "etiam", "vulputate", "praesent",
+			"cursus", "commodo", "pretium", "sapien", "imperdiet", "suscipit", "venenatis",
+			"fermentum", "pharetra", "congue", "condimentum", "primis", "posuere", "cubilia",
+			"curaeundefined", "mollis", "nonummy", "porta", "habitant", "senectus", "netus", "fames"];
 		return loremArray[Math.floor(Math.random() * loremArray.length)];
 	},
 	getLayerDateFormatFromFeaturesArray: function (args) {
@@ -247,7 +261,7 @@ var Util = {
 		var featureArray = args.featureArray;
 		var groupingColumn = args.groupingColumn;
 		var dateFormat = CONFIG.dateFormat.nonPadded;
-		
+
 		// First check the months
 		featureArray.each(function (l) {
 			if (l.data[groupingColumn].substring(0, 1) === '0' || l.data[groupingColumn].split('-')[1].substring(0, 1) === '0') {
