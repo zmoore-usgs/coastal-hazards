@@ -869,8 +869,8 @@ var Shorelines = {
 						for (var aIdx = 0; aIdx < arguments.length; aIdx++) {
 							var response = Array.isArray(arguments[0]) ? arguments[aIdx][0] : arguments[0],
 								shorelines = JSON.parse(response.shorelines),
-								layerInfo = this[aIdx].layer,
-								bounds = this[aIdx].bounds;
+								layerInfo = Array.isArray(this) ? this[aIdx].layer : this.layer,
+								bounds = Array.isArray(this) ? this[aIdx].bounds : this.bounds;
 							// For each argument I want to read the response into 
 							// a features array 
 							if (shorelines.length) {
