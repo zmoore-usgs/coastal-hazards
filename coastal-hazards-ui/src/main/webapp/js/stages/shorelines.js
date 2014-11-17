@@ -79,6 +79,7 @@ var Shorelines = {
 		Shorelines.enterStage();
 	},
 	initSession: function () {
+		"use strict";
 		var sessionStage = CONFIG.tempSession.getStage(this.stage);
 		// Add a disabled dates key
 		if (!sessionStage.datesDisabled) {
@@ -131,6 +132,7 @@ var Shorelines = {
 		Shorelines.toggleBindSelectAOIButton(false);
 	},
 	getAvailableAuxillaryColumns: function () {
+		"use strict";
 		LOG.debug('Shorelines.js::updateSessionWithAuxillaryColumns');
 		$.get(this.shorelinesServiceEndpoint, {
 			'action': 'getAuxillaryNames',
@@ -155,19 +157,24 @@ var Shorelines = {
 		});
 	},
 	showSortingSelectionContainer: function () {
+		"use strict";
 		Shorelines.$containerSelectSorting.removeClass('hidden');
 	},
 	hideSortingSelectionContainer: function () {
+		"use strict";
 		Shorelines.$containerSelectSorting.addClass('hidden');
 	},
 	bindSortingSelectionControl: function () {
+		"use strict";
 		Shorelines.$controlSelectSortingColumn.off('change', Shorelines.sortingSelectionUpdated);
 		Shorelines.$controlSelectSortingColumn.on('change', Shorelines.sortingSelectionUpdated);
 	},
 	updateSortingSelectionControl: function (name) {
+		"use strict";
 		Shorelines.$controlSelectSortingColumn.val(name);
 	},
 	sortingSelectionUpdated: function (e) {
+		"use strict";
 		var value = e.target.value,
 			deferred = $.Deferred();
 		deferred
@@ -175,8 +182,8 @@ var Shorelines = {
 				Shorelines.updateSortingColumnOnTable();
 			}, function () {
 				CONFIG.ui.showAlert({
-					message: 'Could not update sorting column. '
-						+ 'If error continues to happen, contact support',
+					message: 'Could not update sorting column. ' +
+						'If error continues to happen, contact support',
 					caller: Shorelines,
 					displayTime: 5000
 				});
@@ -309,16 +316,14 @@ var Shorelines = {
 			}),
 			wmsLayer = new OpenLayers.Layer.WMS(
 				name,
-				CONFIG.ows.geoserverProxyEndpoint + prefix + '/wms',
-				{
+				CONFIG.ows.geoserverProxyEndpoint + prefix + '/wms', {
 					layers: [name],
 					transparent: true,
 					sld_body: sldBody,
 					format: "image/png",
 					bbox: bounds,
 					cql_filter: cqlFilter
-				},
-			{
+				}, {
 				prefix: prefix,
 				zoomToWhenAdded: false,
 				isBaseLayer: false,
@@ -493,8 +498,8 @@ var Shorelines = {
 					mlBbox = mapLayer.bbox[CONFIG.strings.epsg4326];
 					if (mlBbox) {
 						lbbox = mlBbox.bbox;
-						bounds.extend(new OpenLayers.Bounds(lbbox[1], lbbox[0], lbbox[3], lbbox[2]).
-							transform(new OpenLayers.Projection(CONFIG.strings.epsg4326), new OpenLayers.Projection(CONFIG.strings.epsg900913)));
+						bounds.extend(new OpenLayers.Bounds(lbbox[1], lbbox[0], lbbox[3], lbbox[2])
+							.transform(new OpenLayers.Projection(CONFIG.strings.epsg4326), new OpenLayers.Projection(CONFIG.strings.epsg900913)));
 						if (layer.events.listeners.loadend.length) {
 							layer.events.unregister('added', layer, Shorelines.zoomToLayer);
 						}
@@ -509,10 +514,12 @@ var Shorelines = {
 		}
 	},
 	emptyFeatureTable: function () {
+		"use strict";
 		Shorelines.$shorelineFeatureTableContainer.find('.table-features-column-aux').remove();
 		Shorelines.$shorelineFeatureTableContainer.find('table > tbody').empty();
 	},
 	updateFeatureTable: function (event) {
+		"use strict";
 		var layer = event.object,
 			shorelines = layer.shorelines,
 			colorMap = Util.createColorMap(layer.colorGroups),
@@ -551,6 +558,7 @@ var Shorelines = {
 		Shorelines.setupTableSorting();
 	},
 	featureTableRowClickCallback: function (e) {
+		"use strict";
 		var $clickedRow = $(e.target).parent(),
 			$table = $clickedRow.parent(),
 			$tbody = Shorelines.$shorelineFeatureTableContainer.find('table > tbody'),
@@ -585,6 +593,7 @@ var Shorelines = {
 		e.stopImmediatePropagation();
 	},
 	featureTableSwitchChangeCallback: function (event, data) {
+		"use strict";
 		var status = data.value,
 			$element = data.el,
 			$multiSelRows = Shorelines.$shorelineFeatureTableContainer.find('.' + Shorelines.selectedFeatureClass),
@@ -646,6 +655,7 @@ var Shorelines = {
 		$("table.tablesorter").trigger('update', false);
 	},
 	updateSortingColumnOnServer: function (args) {
+		"use strict";
 		args = args || {};
 		var name = args.name,
 			def = args.deferred || $.Deferred(),
@@ -664,6 +674,7 @@ var Shorelines = {
 			}});
 	},
 	updateSortingColumnOnTable: function () {
+		"use strict";
 		Shorelines.$shorelineFeatureTableContainer.find('.table-features-column-aux').remove();
 		$.ajax(Shorelines.shorelinesServiceEndpoint, {
 			context: this,
@@ -768,6 +779,7 @@ var Shorelines = {
 	activateShorelineIdControl: function () {
 		"use strict";
 		var idControl = Shorelines.getShorelineIdControl();
+		
 		if (idControl) {
 			LOG.debug('Shorelines.js::enterStage: Shoreline identify control found in the map. Activating.');
 			idControl.activate();
@@ -780,6 +792,7 @@ var Shorelines = {
 	deactivateShorelineIdControl: function () {
 		"use strict";
 		var idControl = Shorelines.getShorelineIdControl();
+		
 		if (idControl) {
 			LOG.debug('Shorelines.js::enterStage: Shoreline identify control found in the map.  Deactivating.');
 			idControl.deactivate();
@@ -790,6 +803,7 @@ var Shorelines = {
 		$('#FramedCloud_close').trigger('click');
 	},
 	bindSelectAOIButton: function () {
+		"use strict";
 		this.$buttonSelectAOI.on('click', function (e) {
 			if ($(e.target).hasClass('active')) {
 				Shorelines.deactivateSelectAOIControl();
@@ -799,6 +813,7 @@ var Shorelines = {
 		});
 	},
 	toggleBindSelectAOIButton: function (toggleOn) {
+		"use strict";
 		var isActive = Shorelines.$buttonSelectAOI.hasClass('active');
 		if (toggleOn === true && !isActive) {
 			Shorelines.$buttonSelectAOI.trigger('click');
@@ -809,9 +824,10 @@ var Shorelines = {
 		}
 	},
 	bindSelectAOIDoneButton: function () {
-		this.$buttonSelectAOIDone.on('click', function (e) {
-			var boxLayer = Shorelines.getAOISelectionLayer(),
-				boxLayer;
+		"use strict";
+		this.$buttonSelectAOIDone.on('click', function () {
+			var boxLayer = Shorelines.getAOISelectionLayer();
+			
 			if (boxLayer) {
 				if (boxLayer.features && boxLayer.features.length) {
 					Shorelines.aoiBoundsSelected = boxLayer.features[0].geometry.bounds;
@@ -879,7 +895,7 @@ var Shorelines = {
 								shorelines = JSON.parse(response.shorelines),
 								layerInfo = Array.isArray(this) ? this[aIdx].layer : this.layer,
 								bounds = Array.isArray(this) ? this[aIdx].bounds : this.bounds;
-								
+
 							// For each argument I want to read the response into a features array
 							// I check if this layer already exists in the map because 
 							// the for-loop I am in will loop here three times if 
@@ -914,28 +930,33 @@ var Shorelines = {
 		});
 	},
 	activateSelectAOIControl: function () {
+		"use strict";
 		this.$descriptionAOI.removeClass('hidden');
 		var drawBoxLayer = new OpenLayers.Layer.Vector(Shorelines.LAYER_AOI_NAME),
 			aoiIdControl = new OpenLayers.Control.DrawFeature(drawBoxLayer,
-				OpenLayers.Handler.RegularPolygon,
-				{
+				OpenLayers.Handler.RegularPolygon, {
 					title: Shorelines.CONTROL_IDENTIFY_AOI_ID,
 					handlerOptions: {
 						sides: 4,
 						irregular: true
 					}
 				});
+				
 		// I really only want one box on a layer at any given time
 		drawBoxLayer.events.register('beforefeatureadded', null, function (e) {
 			e.object.removeAllFeatures();
 		});
+		
 		Shorelines.hideFeatureTable(true);
 		Shorelines.removeShorelineLayers();
+		
 		CONFIG.map.getMap().addLayers([drawBoxLayer]);
 		CONFIG.map.getMap().addControl(aoiIdControl);
+		
 		aoiIdControl.activate();
 	},
 	deactivateSelectAOIControl: function () {
+		"use strict";
 		this.$descriptionAOI.addClass('hidden');
 		var shorelineIdAOIControl = CONFIG.map.getControlBy('title', Shorelines.CONTROL_IDENTIFY_AOI_ID),
 			layer;
@@ -947,6 +968,7 @@ var Shorelines = {
 		}
 	},
 	getAOISelectionLayer: function () {
+		"use strict";
 		var results = CONFIG.map.getMap().getLayersBy('name', Shorelines.LAYER_AOI_NAME);
 		if (results.length) {
 			return results[0];
@@ -954,15 +976,18 @@ var Shorelines = {
 		return null;
 	},
 	showFeatureTable: function () {
+		"use strict";
 		Shorelines.$shorelineFeatureTableContainer.removeClass('hidden');
 	},
 	hideFeatureTable: function (clear) {
+		"use strict";
 		Shorelines.$shorelineFeatureTableContainer.addClass('hidden');
 		if (clear) {
 			Shorelines.$shorelineFeatureTableContainer.find('tbody').empty();
 		}
 	},
 	removeShorelineLayers: function () {
+		"use strict";
 		var layers = CONFIG.map.getMap().getLayersBy('layerType', Shorelines.stage);
 		layers.forEach(function (layer) {
 			CONFIG.map.getMap().removeLayer(layer);
@@ -976,10 +1001,13 @@ var Shorelines = {
 	},
 	uploadCallbacks: {
 		onComplete: function (id, fileName, responseJSON) {
+			"use strict";
+			
 			CONFIG.ui.hideSpinner();
+			
 			$('#application-alert').alert('close');
-			var success = responseJSON.success;
-			if (success === 'true') {
+			
+			if (responseJSON.success === 'true') {
 				var token = responseJSON.token;
 				Shorelines.getShorelineHeaderColumnNames({
 					token: token,
@@ -989,16 +1017,19 @@ var Shorelines = {
 								headers = data.headers,
 								layerColumns = Object.extended(),
 								foundAllRequiredColumns = true;
+							
 							if (success === 'true') {
 								headers = headers.split(',');
 								if (headers.length < Shorelines.mandatoryColumns.length) {
-									LOG.warn('Shorelines.js::addShorelines: There '
-										+ 'are not enough attributes in the selected '
-										+ 'shapefile to constitute a valid shoreline. '
-										+ 'Will be deleted. Needed: '
-										+ Shorelines.mandatoryColumns.length
-										+ ', Found in upload: ' + headers.length);
+									LOG.warn('Shorelines.js::addShorelines: There ' + 
+										'are not enough attributes in the selected ' +
+										'shapefile to constitute a valid shoreline. ' +
+										'Will be deleted. Needed: ' +
+										Shorelines.mandatoryColumns.length +
+										', Found in upload: ' + headers.length);
+									
 									Shorelines.removeResource();
+									
 									CONFIG.ui.showAlert({
 										message: 'Not enough attributes in upload - Check Logs',
 										caller: Shorelines,
@@ -1008,24 +1039,28 @@ var Shorelines = {
 										}
 									});
 								} else {
-									// User needs to tell me which is uncy and date
+									// User needs to match columns to attributes
 									for (var hIdx = 0; hIdx < headers.length; hIdx++) {
 										layerColumns[headers[hIdx]] = '';
 									}
+									
 									layerColumns = Util.createLayerUnionAttributeMap({
 										caller: Shorelines,
 										layerColumns: layerColumns
 									});
+									
 									Shorelines.mandatoryColumns.each(function (mc) {
 										if (layerColumns.values().indexOf(mc) === -1) {
 											foundAllRequiredColumns = false;
 										}
 									});
+									
 									Shorelines.defaultingColumns.each(function (col) {
 										if (layerColumns.values().indexOf(col.attr) === -1) {
 											foundAllRequiredColumns = false;
 										}
 									});
+									
 									var doUpload = function () {
 										$.ajax(Shorelines.uploadRequest.endpoint, {
 											type: 'POST',
@@ -1076,6 +1111,7 @@ var Shorelines = {
 											}
 										});
 									};
+									
 									if (!foundAllRequiredColumns) {
 										CONFIG.ui.buildColumnMatchingModalWindow({
 											layerName: token,
@@ -1132,6 +1168,7 @@ var Shorelines = {
 		}
 	},
 	getShorelineHeaderColumnNames: function (args) {
+		"use strict";
 		args = args || {};
 		var token = args.token,
 			callbacks = args.callbacks || {
