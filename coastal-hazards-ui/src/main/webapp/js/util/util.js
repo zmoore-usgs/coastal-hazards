@@ -136,7 +136,7 @@ var Util = {
 
 		layerColumns.keys(function (columnName) {
 			var eqColName = caller.mandatoryColumns.find(function (column) {
-				return column.toLowerCase() === columnName.toLowerCase().replace(/_/g, '');
+				return column.toLowerCase() === columnName.toLowerCase();
 			});
 
 			if (!eqColName && caller.defaultingColumns) {
