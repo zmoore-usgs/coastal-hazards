@@ -867,13 +867,25 @@ var Shorelines = {
 						// ajax calls going out (probably 2: published and workspace).
 						// I need to create a dates array here 
 						for (var aIdx = 0; aIdx < arguments.length; aIdx++) {
+							// If there are no published shorelines, arguments will be 
+							// an array of a single ajax response (data, status, jqXHR).
+							// But if there are published shorelines, arguments will be 
+							// an array of ajax responses. 
+							// 
+							// TODO- Either be more clever about this or realize
+							// that not having published shorelines is an edge case
+							// in the infancy of the application and move on with life
 							var response = Array.isArray(arguments[0]) ? arguments[aIdx][0] : arguments[0],
 								shorelines = JSON.parse(response.shorelines),
 								layerInfo = Array.isArray(this) ? this[aIdx].layer : this.layer,
 								bounds = Array.isArray(this) ? this[aIdx].bounds : this.bounds;
-							// For each argument I want to read the response into 
-							// a features array 
-							if (shorelines.length) {
+								
+							// For each argument I want to read the response into a features array
+							// I check if this layer already exists in the map because 
+							// the for-loop I am in will loop here three times if 
+							// there are no published shorelines because of the 
+							// reasons mentioned in previous comment
+							if (shorelines.length > 0 && CONFIG.map.getMap().getLayersByName(layerInfo.name).length === 0) {
 								var wmsLayer = Shorelines.addLayerToMap({
 									name: layerInfo.name,
 									prefix: layerInfo.prefix,
