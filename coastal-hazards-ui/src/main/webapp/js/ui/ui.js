@@ -202,104 +202,105 @@ var UI = function () {
 						'layer': '' // Use the file name for the name
 					}
 				},
-			callbacks = $.extend({}, {
-				onSubmit: function (id, name) {
-					CONFIG.ui.showSpinner();
+			callbacks = $.extend({},
+				{
+					onSubmit: function (id, name) {
+						CONFIG.ui.showSpinner();
 
-					CONFIG.ui.showAlert({
-						close: false,
-						message: 'Upload beginning',
-						style: {
-							classes: ['alert-info']
-						}
-					});
-
-					// Test to see if the upload name ends with an 
-					// underscore and the stage name we are in. If not, add it
-					if (!name.endsWith(caller.stage + '.zip')) {
-						this._options.request.params.layer = name.substring(0, name.length - 4) + '_' + caller.stage;
-					}
-
-					// Test to see if the first character in the layer is a digit. 
-					// If so, prepend an underscore. Otherwise we get big 
-					// fails working with the layer later on
-					if (/^[0-9]/.test(this._options.request.params.layer)) {
-						this._options.request.params.layer = '_' + this._options.request.params.layer;
-					}
-				},
-				onCancel: function (id, name) {
-					CONFIG.ui.hideSpinner();
-					$('#application-alert').alert('close');
-				},
-				onError: function (id, name, errorReason, xhr) {
-					CONFIG.ui.hideSpinner();
-					$('#application-alert').alert('close');
-				},
-				onProgress: function (id, name, uploadBytes, totalBytes) {
-					$('#application-alert #message').html('Uploading <b>' + uploadBytes + '<b /> of <b>' + totalBytes + '<b /> total bytes');
-				},
-				onComplete: function (id, fileName, responseJSON) {
-					CONFIG.ui.hideSpinner();
-					$('#application-alert').alert('close');
-					var success = responseJSON.success;
-					var layerName = responseJSON.name;
-					var workspace = responseJSON.workspace;
-
-					if (success === 'true') {
-						LOG.info("UI.js::initializeUploader: Upload complete");
-						LOG.info('UI.js::initializeUploader: Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
-						CONFIG.ows.getWMSCapabilities({
-							namespace: workspace,
-							layerName: layerName,
-							callbacks: {
-								success: [
-									function (args) {
-										CONFIG.ui.showAlert({
-											message: 'Upload Successful',
-											caller: caller,
-											displayTime: 3000,
-											style: {
-												classes: ['alert-success']
-											}
-										});
-										CONFIG.tempSession.updateLayersFromWMS(args);
-										CONFIG.ui.populateFeaturesList({
-											caller: caller
-										});
-										$('a[href="#' + caller.stage + '-view-tab"]').tab('show');
-										$('#' + caller.stage + '-list')
-											.val(layerName)
-											.trigger('change');
-									}
-								],
-								error: [
-									function (args) {
-										LOG.info('UI.js::Uploader Error Callback: Import incomplete.');
-										CONFIG.ui.showAlert({
-											message: 'Import incomplete',
-											caller: caller,
-											displayTime: 3000,
-											style: {
-												classes: ['alert-error']
-											}
-										});
-									}
-								]
-							}
-						});
-					} else {
-						LOG.warn('UI.js::Uploader Error Callback: Import incomplete.');
 						CONFIG.ui.showAlert({
-							message: 'Import incomplete. ' + (responseJSON.exception ? responseJSON.exception : ''),
-							caller: caller,
-							displayTime: 3000,
+							close: false,
+							message: 'Upload beginning',
 							style: {
-								classes: ['alert-error']
+								classes: ['alert-info']
 							}
 						});
+
+						// Test to see if the upload name ends with an 
+						// underscore and the stage name we are in. If not, add it
+						if (!name.endsWith(caller.stage + '.zip')) {
+							this._options.request.params.layer = name.substring(0, name.length - 4) + '_' + caller.stage;
+						}
+
+						// Test to see if the first character in the layer is a digit. 
+						// If so, prepend an underscore. Otherwise we get big 
+						// fails working with the layer later on
+						if (/^[0-9]/.test(this._options.request.params.layer)) {
+							this._options.request.params.layer = '_' + this._options.request.params.layer;
+						}
+					},
+					onCancel: function (id, name) {
+						CONFIG.ui.hideSpinner();
+						$('#application-alert').alert('close');
+					},
+					onError: function (id, name, errorReason, xhr) {
+						CONFIG.ui.hideSpinner();
+						$('#application-alert').alert('close');
+					},
+					onProgress: function (id, name, uploadBytes, totalBytes) {
+						$('#application-alert #message').html('Uploading <b>' + uploadBytes + '<b /> of <b>' + totalBytes + '<b /> total bytes');
+					},
+					onComplete: function (id, fileName, responseJSON) {
+						CONFIG.ui.hideSpinner();
+						$('#application-alert').alert('close');
+						var success = responseJSON.success;
+						var layerName = responseJSON.name;
+						var workspace = responseJSON.workspace;
+
+						if (success === 'true') {
+							LOG.info("UI.js::initializeUploader: Upload complete");
+							LOG.info('UI.js::initializeUploader: Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
+							CONFIG.ows.getWMSCapabilities({
+								namespace: workspace,
+								layerName: layerName,
+								callbacks: {
+									success: [
+										function (args) {
+											CONFIG.ui.showAlert({
+												message: 'Upload Successful',
+												caller: caller,
+												displayTime: 3000,
+												style: {
+													classes: ['alert-success']
+												}
+											});
+											CONFIG.tempSession.updateLayersFromWMS(args);
+											CONFIG.ui.populateFeaturesList({
+												caller: caller
+											});
+											$('a[href="#' + caller.stage + '-view-tab"]').tab('show');
+											$('#' + caller.stage + '-list')
+												.val(layerName)
+												.trigger('change');
+										}
+									],
+									error: [
+										function (args) {
+											LOG.info('UI.js::Uploader Error Callback: Import incomplete.');
+											CONFIG.ui.showAlert({
+												message: 'Import incomplete',
+												caller: caller,
+												displayTime: 3000,
+												style: {
+													classes: ['alert-error']
+												}
+											});
+										}
+									]
+								}
+							});
+						} else {
+							LOG.warn('UI.js::Uploader Error Callback: Import incomplete.');
+							CONFIG.ui.showAlert({
+								message: 'Import incomplete. ' + (responseJSON.exception ? responseJSON.exception : ''),
+								caller: caller,
+								displayTime: 3000,
+								style: {
+									classes: ['alert-error']
+								}
+							});
+						}
 					}
-				}
-			}, caller.uploadCallbacks);
+				}, caller.uploadCallbacks);
 
 //			request.params.workspace = CONFIG.tempSession.getCurrentSessionKey();
 
@@ -438,7 +439,7 @@ var UI = function () {
 						.attr({
 							type: 'button',
 							layer: layerName,
-							'data-shoreline-workspace' : workspace,
+							'data-shoreline-workspace': workspace,
 							'data-shoreline-id': shorelineId
 						})
 						.html(isVisible ? 'Disable' : 'Enable');
@@ -624,6 +625,7 @@ var UI = function () {
 						$('#cancel-button').click(cancelCallback);
 
 						$('#' + layerName + '-drag-drop-row').data('mapping', columns);
+
 						$('.' + layerName + '-drag-item').draggable({
 							containment: '#' + layerName + '-drag-drop-row',
 							scroll: false,
@@ -633,6 +635,7 @@ var UI = function () {
 							revert: 'invalid',
 							stack: '.' + layerName + '-drag-item'
 						});
+
 						$('.' + layerName + '-drop-holder').droppable({
 							greedy: true,
 							activeClass: 'ui-state-highlight',
@@ -676,7 +679,7 @@ var UI = function () {
 							var dropTop = droppable.position().top;
 							var dropLeft = droppable.position().left;
 							var horizontalMove = dropLeft - dragLeft;
-							var verticalMove = dropTop < dragTop ? dropTop - dragTop + 5 : dropTop + dragTop + 5; // 5 = margin-top
+							var verticalMove = dropTop - dragTop + 5; // 5 = margin-top
 							draggable.animate({
 								left: horizontalMove
 							}, {
@@ -693,8 +696,10 @@ var UI = function () {
 								}
 							});
 						};
+
 						var showCallback = function () {
 							$("#modal-window").unbind('shown', showCallback);
+							
 							// Move stuff over if the layers are already mapped
 							columns.keys().each(function (key) {
 								if (columns[key]) {
