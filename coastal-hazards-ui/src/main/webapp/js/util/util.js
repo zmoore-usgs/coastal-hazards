@@ -136,7 +136,7 @@ var Util = {
 
 		layerColumns.keys(function (columnName) {
 			var eqColName = caller.mandatoryColumns.find(function (column) {
-				return column.toLowerCase() === columnName.toLowerCase();
+				return column.toLowerCase() === columnName.toLowerCase().replace(/_/g, '');
 			});
 
 			if (!eqColName && caller.defaultingColumns) {
@@ -173,7 +173,7 @@ var Util = {
 				color = Util.getRandomColor({
 					fromDefinedColors: true
 				}).toUpperCase(true);
-				
+
 				// Make sure that we don't already have this color in the colorGroups or white or black
 				while (colorGroups.find(function (n) {
 					return n[0] === color;
@@ -182,7 +182,7 @@ var Util = {
 						fromDefinedColors: false
 					}).toUpperCase();
 				}
-				
+
 				CONFIG.colorGroups[group] = color;
 			}
 			colorGroups.push([color, group]);
