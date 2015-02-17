@@ -68,6 +68,7 @@ CCH.Objects.Widget.Card = function (args) {
 			'eventLabel': me.id
 		});
 
+		console.log("SHOWING " + me.id);
 		var duration = args.duration !== undefined ? args.duration : 500,
 			effect = args.effect || 'slide',
 			easing = args.easing || 'swing',
@@ -97,7 +98,6 @@ CCH.Objects.Widget.Card = function (args) {
 		me.isOpen = true;
 
 		// Remove the active class on every container and add it to the currently open card (me)
-		$('.' + me.ACTIVE_CARD_CLASS).removeClass(me.ACTIVE_CARD_CLASS);
 		me.container.find('.application-card-body-container').addClass(me.ACTIVE_CARD_CLASS);
 
 		CCH.LOG.trace('CCH.Objects.Widget.Card:: Card ' + me.id + ' was shown');
@@ -132,6 +132,7 @@ CCH.Objects.Widget.Card = function (args) {
 			'eventLabel': me.id
 		});
 
+		console.log("HIDING " + me.id);
 		var duration = args.duration !== undefined ? args.duration : 500,
 			effect = args.effect || 'slide',
 			easing = args.easing || 'swing',
@@ -159,7 +160,6 @@ CCH.Objects.Widget.Card = function (args) {
 			me.parent.showLayer();
 
 			// Remove the active class on every container and add it to the currently open card (parent)
-			$('.' + me.ACTIVE_CARD_CLASS).removeClass(me.ACTIVE_CARD_CLASS);
 			me.parent.container.find('.application-card-body-container').addClass(me.ACTIVE_CARD_CLASS);
 
 		}
@@ -467,13 +467,23 @@ CCH.Objects.Widget.Card = function (args) {
 		var breadCrumbsContainer = container.find('.application-card-breadcrumbs-container');
 		
 		var breadCrumbString = "";
+		var breadCrumbs = [];
 		
 		var card = me.parent;
 		while(card) {
 			var title = card.summary.medium.title;
-			breadCrumbString = title + " / " + breadCrumbString;
+			breadCrumbs.push(title)
 			card = card.parent;
 		}
+		
+		if(breadCrumbs.length == 1) {
+			breadCrumbString = breadCrumbs[0];
+		} else if(breadCrumbs.length == 2) {
+			breadCrumbString = breadCrumbs[1] + " / " + breadCrumbs[0];
+		} else if(breadCrumbs.length > 2) {
+			breadCrumbString = breadCrumbs[breadCrumbs.length-1] + " / ... / " + breadCrumbs[0];
+		}
+		
 		breadCrumbsContainer.html(breadCrumbString);
 	};
 

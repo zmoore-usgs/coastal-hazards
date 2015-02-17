@@ -40,6 +40,10 @@
 	text-align: left;
 }
 
+.application-card-explore-row li:hover {
+	font-weight: bold;
+}
+
 .application-card-explore-row ul {
 	cursor: pointer;
 }
@@ -65,6 +69,7 @@
 
 .application-card-collapse-row-dottedline,
 .application-card-breadcrumbs-container {
+	font-size: 13px;
 	display: table-cell;
 	width: 100%;
 }
