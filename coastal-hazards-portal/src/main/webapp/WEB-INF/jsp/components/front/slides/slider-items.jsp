@@ -18,7 +18,7 @@
         <div class="application-card-collapse-row row">
             <div class="col-md-12">
                 <div class="application-card-collapse-icon-container application-card-collapse-row-open"><i class="fa fa-chevron-up" alt="upward facing arrow"></i></div>
-                <div class="application-card-collapse-row-dottedline"><hr /></div>
+                <div class="application-card-breadcrumbs-container"></div>
             </div>
         </div>
 
@@ -47,12 +47,17 @@
                     <button class="btn btn-default item-control-button hidden item-control-button-aggregation-space">
                         <img src="images/cards/item-space.svg" alt="Space Aggregation Image"/>
                     </button>
-                    <button class="btn btn-default item-control-button item-control-button-aggregation">
-                        <img src="images/cards/item-branch.svg" alt="Aggregation Image"/> Explore Contents
-                    </button>
                     <button class="btn btn-default item-control-button item-control-button-bucket">
                         <img src="images/cards/add-bucket.svg" alt="Bucket Image"/> Add To Bucket
                     </button>
+                </div>
+            </div>
+            <%-- Explore Contents Row --%>
+            <div class="application-card-explore-row row">
+                <div class="col-md-12">
+                    <div>Explore Contents</div>
+                    <ul>
+                    </ul>
                 </div>
             </div>
         </div>

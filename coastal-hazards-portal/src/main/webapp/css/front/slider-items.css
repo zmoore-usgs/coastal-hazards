@@ -36,6 +36,14 @@
 	color: #003366;
 }
 
+.application-card-explore-row {
+	text-align: left;
+}
+
+.application-card-explore-row ul {
+	cursor: pointer;
+}
+
 .application-card-title-row .application-card-title-container-medium {
 	font-size: 24px;
 }
@@ -55,10 +63,18 @@
 	text-decoration: none;
 }
 
-.application-card-collapse-row-dottedline {
+.application-card-collapse-row-dottedline,
+.application-card-breadcrumbs-container {
 	display: table-cell;
 	width: 100%;
 }
+
+.application-card-breadcrumbs-container,
+.application-card-title {
+	color: black;
+	font-weight: bold;
+}
+
 
 .application-card-collapse-row-dottedline hr {
 	border-top:1px dashed #BBBBBB; 

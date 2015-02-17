@@ -127,7 +127,6 @@ CCH.Objects.Widget.Accordion = function (args) {
 				$(evt.currentTarget).find('a').trigger('click');
 				$(evt.currentTarget).on('click', headingClickHandler);
 			};
-
 		toggleTarget.append(
 			$('<span />').addClass('accordion-toggle-title-medium').html(titleMedium)
 			).attr({
