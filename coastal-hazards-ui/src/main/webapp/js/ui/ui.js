@@ -402,7 +402,7 @@ var UI = function () {
 				// The click event brings back many points of the same feature id.
 				// I only want unique feature IDs in this table
 				var features = event.features.unique(function (f) {
-					return f.data.id;
+					return f.data.shoreline_id;
 				}),
 					layerTitle = features[0].fid.split('.')[0],
 					layerName = features[0].gml.featureNSPrefix + ':' + layerTitle,
@@ -424,7 +424,7 @@ var UI = function () {
 
 				features.each(function (feature) {
 					var atts = feature.attributes,
-						shorelineId = atts.id,
+						shorelineId = atts.shoreline_id,
 						workspace = atts.workspace,
 						tbodyTr = $('<tr />').attr('data-shoreline-id', shorelineId);
 

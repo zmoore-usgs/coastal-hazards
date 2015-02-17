@@ -31,7 +31,8 @@
 
 %>
 <% 
-	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+	String baseUrlJndiString = props.getProperty("coastal-hazards.base.url");
+	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
 	String referer = request.getHeader("referer");
 %>
 <html lang="en"> 
