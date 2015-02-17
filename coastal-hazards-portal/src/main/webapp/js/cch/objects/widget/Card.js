@@ -68,28 +68,30 @@ CCH.Objects.Widget.Card = function (args) {
 			'eventLabel': me.id
 		});
 
-		console.log("SHOWING " + me.id);
-		var duration = args.duration !== undefined ? args.duration : 500,
-			effect = args.effect || 'slide',
-			easing = args.easing || 'swing',
-			complete = args.complete || null,
-			dontShowLayer = args.dontShowLayer || false;
-
-		me.container.show({
-			effect: effect,
-			easing: easing,
-			duration: duration,
-			direction: 'up',
-			complete: complete
-		});
-
-		$(window).trigger('cch.card.display.toggle', {
-			'display': true,
-			'item': me.item,
-			'card': me
-		});
-
-		me.hideParent();
+		//only show if we have no active children
+		if(!me.child) {
+			var duration = args.duration !== undefined ? args.duration : 500,
+				effect = args.effect || 'slide',
+				easing = args.easing || 'swing',
+				complete = args.complete || null,
+				dontShowLayer = args.dontShowLayer || false;
+	
+			me.container.show({
+				effect: effect,
+				easing: easing,
+				duration: duration,
+				direction: 'up',
+				complete: complete
+			});
+	
+			$(window).trigger('cch.card.display.toggle', {
+				'display': true,
+				'item': me.item,
+				'card': me
+			});
+	
+			me.hideParent();
+		}
 
 		me.showChildren({
 			dontShowLayer: dontShowLayer
@@ -132,7 +134,6 @@ CCH.Objects.Widget.Card = function (args) {
 			'eventLabel': me.id
 		});
 
-		console.log("HIDING " + me.id);
 		var duration = args.duration !== undefined ? args.duration : 500,
 			effect = args.effect || 'slide',
 			easing = args.easing || 'swing',
