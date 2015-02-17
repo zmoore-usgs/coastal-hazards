@@ -29,7 +29,9 @@
 	String vOpenlayers = getProp("version.openlayers");
 	String vSugarJs = getProp("version.sugarjs");
 
-	String baseUrlJndiString = getProp("coastal-hazards.base.url");
+%>
+<% 
+	String baseUrlJndiString = props.getProperty("coastal-hazards.base.url");
 	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
 	String referer = request.getHeader("referer");
 %>
