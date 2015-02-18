@@ -186,32 +186,45 @@ CCH.Objects.Widget.Card = function (args) {
 		return me.item.hideLayer();
 	};
 
-	me.close = function () {
+	me.close = function (args) {
+		var complete = args ? args.complete : null;
+		
 		// I'd like to send this close command all the way down the chain to my
 		// children so they close from the bottom up
 		if (me.child) {
-			me.child.close();
+			me.child.close({
+				complete: complete
+			});
 		}
 		// If I have a parent, I am not an accordion item, so I will let my 
 		// parent close me
 		if (me.parent) {
 			// I have a parent, so I am not an accordion item. 
-			me.parent.closeChild();
+			me.parent.closeChild({
+				complete: complete
+			});
 		} else {
 			// My parent is an accordion bellow, so we just need to cllck on
 			// it to close me
 			me.container.parent().parent().parent().find('.panel-heading a').trigger('click');
+			if(complete) {
+				complete();
+			}
 		}
 	};
 
-	me.closeChild = function () {
+	me.closeChild = function (args) {
+		var complete = args ? args.complete : null;
 		if (me.child) {
-			me.child.removeSelf();
+			me.child.removeSelf({
+				complete: complete
+			});
 			delete me.child;
 		}
 	};
 
-	me.removeSelf = function () {
+	me.removeSelf = function (args) {
+		var complete = args ? args.complete : null;
 		if (me.child) {
 			me.child.removeSelf();
 		}
@@ -219,6 +232,9 @@ CCH.Objects.Widget.Card = function (args) {
 			complete: function () {
 				me.hideChildren();
 				me.container.remove();
+				if(complete) {
+					complete();
+				}
 			}
 		});
 	};
@@ -350,8 +366,11 @@ CCH.Objects.Widget.Card = function (args) {
 			var isOpen = me.container.hasClass('open');
 
 			if (isOpen) {
-				me.close();
-				me.parent.show();
+				me.close({
+					complete: function() {
+						me.parent.show();
+					}
+				});
 			} else {
 				//TODO under current UI, does this ever happen?
 				me.open();
