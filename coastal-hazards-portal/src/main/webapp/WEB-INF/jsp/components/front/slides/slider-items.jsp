@@ -46,7 +46,13 @@
                     <button class="btn btn-default item-control-button hidden item-control-button-aggregation-space">
                         <img src="images/cards/item-space.svg" alt="Space Aggregation Image"/>
                     </button>
-                    <button class="btn btn-default item-control-button item-control-button-bucket">
+                    <button class="btn btn-default item-control-button application-card-more-info-btn">
+                        <img src="images/cards/info-01.svg" alt="More Info Image"/> More Info
+                    </button>
+                    <button class="btn btn-default item-control-button application-card-zoom-to-btn">
+                        <img src="images/cards/zoom-01.svg" alt="Zoom To Image"/> Zoom To
+                    </button>
+                    <button class="btn btn-default item-control-button item-control-button-bucket application-card-add-bucket-btn">
                         <img src="images/cards/add-bucket.svg" alt="Bucket Image"/> Add To Bucket
                     </button>
                 </div>
