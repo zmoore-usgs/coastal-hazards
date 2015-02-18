@@ -68,30 +68,52 @@ CCH.Objects.Widget.Card = function (args) {
 			'eventLabel': me.id
 		});
 
-		var duration = args.duration !== undefined ? args.duration : 500,
-			effect = args.effect || 'slide',
-			easing = args.easing || 'swing',
-			complete = args.complete || null,
-			dontShowLayer = args.dontShowLayer || false;
-
-		me.container.show({
-			effect: effect,
-			easing: easing,
-			duration: duration,
-			direction: 'up',
-			complete: complete
-		});
-
-		$(window).trigger('cch.card.display.toggle', {
-			'display': true,
-			'item': me.item,
-			'card': me
-		});
-
-		if (me.parent) {
-			me.parent.hideLayer();
+		//only show if we have no active children
+		if(!me.child) {
+			var duration = args.duration !== undefined ? args.duration : 500,
+				effect = args.effect || 'slide',
+				easing = args.easing || 'swing',
+				complete = args.complete || null,
+				dontShowLayer = args.dontShowLayer || false;
+	
+			me.container.show({
+				effect: effect,
+				easing: easing,
+				duration: duration,
+				direction: 'up',
+				complete: complete
+			});
+	
+			$(window).trigger('cch.card.display.toggle', {
+				'display': true,
+				'item': me.item,
+				'card': me
+			});
+	
+			me.hideParent();
 		}
 
+		me.showChildren({
+			dontShowLayer: dontShowLayer
+		});
+
+		me.isOpen = true;
+
+		// Remove the active class on every container and add it to the currently open card (me)
+		me.container.find('.application-card-body-container').addClass(me.ACTIVE_CARD_CLASS);
+
+		CCH.LOG.trace('CCH.Objects.Widget.Card:: Card ' + me.id + ' was shown');
+	};
+	
+	me.hideParent = function(args) {
+		if (me.parent) {
+			me.parent.hideLayer();
+			me.parent.hide();
+		}
+	};
+	
+	me.showChildren = function(args) {
+		var dontShowLayer = args.dontShowLayer;
 		if (me.child) {
 			me.child.show({
 				dontShowLayer: dontShowLayer
@@ -101,15 +123,7 @@ CCH.Objects.Widget.Card = function (args) {
 				me.showLayer();
 			}
 		}
-
-		me.isOpen = true;
-
-		// Remove the active class on every container and add it to the currently open card (me)
-		$('.' + me.ACTIVE_CARD_CLASS).removeClass(me.ACTIVE_CARD_CLASS);
-		me.container.find('.application-card-body-container').addClass(me.ACTIVE_CARD_CLASS);
-
-		CCH.LOG.trace('CCH.Objects.Widget.Card:: Card ' + me.id + ' was shown');
-	};
+	}
 
 	me.hide = function (args) {
 		args = args || {};
@@ -133,10 +147,6 @@ CCH.Objects.Widget.Card = function (args) {
 			complete: complete
 		});
 
-		if (me.child) {
-			me.child.hide();
-		}
-
 		setTimeout(function () {
 			$(window).trigger('cch.card.display.toggle', {
 				'display': false,
@@ -151,12 +161,17 @@ CCH.Objects.Widget.Card = function (args) {
 			me.parent.showLayer();
 
 			// Remove the active class on every container and add it to the currently open card (parent)
-			$('.' + me.ACTIVE_CARD_CLASS).removeClass(me.ACTIVE_CARD_CLASS);
 			me.parent.container.find('.application-card-body-container').addClass(me.ACTIVE_CARD_CLASS);
 
 		}
 
 		CCH.LOG.trace('CCH.Objects.Widget.Card:: Card ' + me.id + ' was hidden');
+	};
+	
+	me.hideChildren = function(args) {
+		if (me.child) {
+			me.child.hide();
+		}
 	};
 
 	me.showLayer = function (args) {
@@ -171,38 +186,55 @@ CCH.Objects.Widget.Card = function (args) {
 		return me.item.hideLayer();
 	};
 
-	me.close = function () {
+	me.close = function (args) {
+		var complete = args ? args.complete : null;
+		
 		// I'd like to send this close command all the way down the chain to my
 		// children so they close from the bottom up
 		if (me.child) {
-			me.child.close();
+			me.child.close({
+				complete: complete
+			});
 		}
 		// If I have a parent, I am not an accordion item, so I will let my 
 		// parent close me
 		if (me.parent) {
 			// I have a parent, so I am not an accordion item. 
-			me.parent.closeChild();
+			me.parent.closeChild({
+				complete: complete
+			});
 		} else {
 			// My parent is an accordion bellow, so we just need to cllck on
 			// it to close me
 			me.container.parent().parent().parent().find('.panel-heading a').trigger('click');
+			if(complete) {
+				complete();
+			}
 		}
 	};
 
-	me.closeChild = function () {
+	me.closeChild = function (args) {
+		var complete = args ? args.complete : null;
 		if (me.child) {
-			me.child.removeSelf();
+			me.child.removeSelf({
+				complete: complete
+			});
 			delete me.child;
 		}
 	};
 
-	me.removeSelf = function () {
+	me.removeSelf = function (args) {
+		var complete = args ? args.complete : null;
 		if (me.child) {
 			me.child.removeSelf();
 		}
 		me.hide({
 			complete: function () {
+				me.hideChildren();
 				me.container.remove();
+				if(complete) {
+					complete();
+				}
 			}
 		});
 	};
@@ -225,40 +257,6 @@ CCH.Objects.Widget.Card = function (args) {
 		$button.off('click', add).on('click', add);
 	};
 
-	me.bindAggMenuToResize = function (args) {
-		$(window).on('cch.ui.resized', function () {
-			var $container = args.container,
-				$control = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:nth-child(2)'),
-				bodyWidth = $('body').outerWidth(),
-				windowHeight = $(window).height(),
-				containerHeight = $container.outerHeight(),
-				containerWidth = $container.outerWidth(),
-				controlHeight = $control.outerHeight(),
-				controlTop = $control.offset().top,
-				controlLeft = $control.offset().left,
-				top = controlHeight + controlTop,
-				left = controlLeft;
-
-			if (controlLeft + containerWidth > bodyWidth) {
-				left = bodyWidth - containerWidth;
-			}
-
-			// If the dropdown list goes past the bottom of the page, put the dropdown above the button instead
-			if (top + containerHeight > windowHeight) {
-				top = controlTop - containerHeight;
-			}
-
-			$container.offset({
-				'top': top,
-				'left': left
-			});
-
-			$container.css({
-				'max-width': bodyWidth + 'px'
-			});
-		});
-	};
-
 	me.createCard = function (id, dontShowLayer) {
 		// User selected a product. I will append that card to myself
 		var card = new CCH.Objects.Widget.Card({
@@ -275,109 +273,97 @@ CCH.Objects.Widget.Card = function (args) {
 		// Append this new card to myself
 		me.container.after(card.getContainer());
 
-		// Show this new card to the user
-		card.show({
-			dontShowLayer: dontShowLayer
-		});
-	};
-
-	me.bindPropertyAggButton = function ($control) {
-		$control.on('click', function ($evt) {
-			$evt.stopImmediatePropagation();
-
-			var containerClass = 'aggregation-selection-container',
-				$currentContainer = $('body').find('.' + containerClass),
-				$container = $('<span />').
-				addClass(containerClass),
-				item,
-				$list = $('<ul />'),
-				processOption = function (item) {
-					var name = item.summary.tiny.title || item.summary.medium.title,
-						$listItem = $('<li />');
-
-					$listItem.data('id', item.id);
-					$listItem.html(name);
-					$listItem.on('click', function (evt) {
-						var id = $(evt.target).data('id');
-
-						if (me.child) {
-							// I am going to hide my child first, then remove it
-							me.child.hide({
-								complete: function () {
-									// Remove my child after it's hidden
-									me.child.removeSelf();
-									// Now that my child is gone, I'm going to 
-									// replace it with a new card
-									me.createCard(id);
-								}
-							});
-						} else {
-							// I have no children so I am free to go ahead and 
-							// just create a new child card
-							me.createCard(id);
-						}
-
-						ga('send', 'event', {
-							'eventCategory': 'card',
-							'eventAction': 'childItemClicked',
-							'eventLabel': id
-						});
-					});
-
-					return $listItem;
-				};
-
-			if ($currentContainer.length) {
-				me.removeAggregationContainer();
-			} else {
-				$container.append($list);
-				$('body').append($container);
-				me.children.each(function (child) {
-					if (typeof child === 'string') {
-						item = CCH.items.getById({
-							id: child
-						});
-
-						if (item) {
-							// The item is already loaded in the items object
-							// so I don't have to go out and get it
-							$list.append(processOption(item));
-						} else {
-							// The item was not already loaded so I will have 
-							// to go out and grab it, processing it once I 
-							// have it.
-							item = new CCH.Objects.Item({'id': child});
-							item.load({
-								callbacks: {
-									success: [function (item) {
-											$list.append(processOption(item));
-										}],
-									error: [
-										function (jqXHR, textStatus, errorThrown) {
-											alertify.error('Could not load sub-item', 2000);
-											CCH.LOG.warn('Card:: Could not load ' +
-												'item. Status Code: ' + textStatus +
-												', Error: ' + errorThrown);
-										}
-									]
-								}
-							});
-						}
-					} else {
-						$list.append(processOption(item));
-					}
+		// Show this new card after we hide the current one
+		me.hide({complete: function() {
+				card.show({
+					dontShowLayer: dontShowLayer
 				});
-
-				me.bindAggMenuToResize({
-					container: $container
-				});
-
-				$(window).trigger('resize');
 			}
 		});
 	};
 
-	me.bindMinMaxButtons = function (control) {
+	me.renderPropertyAggMenu = function ($exploreRow) {
+		var item,
+			$list = $exploreRow.find("ul"),
+			processOption = function (item) {
+				var name = item.summary.tiny.title || item.summary.medium.title,			
+					$listItem = $('<li />'),
+					$buttonItem = $($('<button />'));
+
+				$buttonItem.data('id', item.id);
+				$buttonItem.html(name);
+				$buttonItem.addClass('btn');
+				$buttonItem.addClass('btn-default');
+				$buttonItem.addClass('item-control-button');
+				$buttonItem.on('click', function (evt) {
+					var id = $(evt.target).data('id');
+
+					if (me.child) {
+						// I am going to hide my child first, then remove it
+						me.child.hide({
+							complete: function () {
+								// Remove my child after it's hidden
+								me.child.removeSelf();
+								// Now that my child is gone, I'm going to 
+								// replace it with a new card
+								me.createCard(id);
+							}
+						});
+					} else {
+						// I have no children so I am free to go ahead and 
+						// just create a new child card
+						me.createCard(id);
+					}
+
+					ga('send', 'event', {
+						'eventCategory': 'card',
+						'eventAction': 'childItemClicked',
+						'eventLabel': id
+					});
+				});
+
+				$listItem.append($buttonItem);
+				return $listItem;
+			};
+
+		me.children.each(function (child) {
+			if (typeof child === 'string') {
+				item = CCH.items.getById({
+					id: child
+				});
+
+				if (item) {
+					// The item is already loaded in the items object
+					// so I don't have to go out and get it
+					$list.append(processOption(item));
+				} else {
+					// The item was not already loaded so I will have 
+					// to go out and grab it, processing it once I 
+					// have it.
+					item = new CCH.Objects.Item({'id': child});
+					item.load({
+						callbacks: {
+							success: [function (item) {
+									$list.append(processOption(item));
+								}],
+							error: [
+								function (jqXHR, textStatus, errorThrown) {
+									alertify.error('Could not load sub-item', 2000);
+									CCH.LOG.warn('Card:: Could not load ' +
+										'item. Status Code: ' + textStatus +
+										', Error: ' + errorThrown);
+								}
+							]
+						}
+					});
+				}
+			} else {
+				$list.append(processOption(item));
+			}
+		});
+	};
+
+	me.bindBackToParentButton = function (control) {
 		control.on('click', function () {
 			// A user has clicked on my min/max button. 
 			// FInd out which one by querying an ancestor that has the 
@@ -385,15 +371,16 @@ CCH.Objects.Widget.Card = function (args) {
 			var isOpen = me.container.hasClass('open');
 
 			if (isOpen) {
-				me.close();
+				me.close({
+					complete: function() {
+						me.parent.show();
+					}
+				});
 			} else {
+				//TODO under current UI, does this ever happen?
 				me.open();
 			}
 		});
-	};
-
-	me.removeAggregationContainer = function () {
-		$('body').find('.aggregation-selection-container').remove();
 	};
 
 	me.createContainer = function () {
@@ -408,10 +395,9 @@ CCH.Objects.Widget.Card = function (args) {
 				mediumContent = mediumSummary.text || largeContent,
 				mediumTitleContainer = container.find('.application-card-title-container-medium'),
 				mediumContentContainer = container.find('.application-card-content-container-medium'),
-				minMaxButtons = container.find('.application-card-collapse-icon-container'),
-				$buttonRow = container.find('> div:nth-child(2) > div:nth-child(2)'),
-				$propertyAggButton = $buttonRow.find('> div button:nth-child(2)'),
-				$bucketButton = $buttonRow.find('> div button:nth-child(3)'),
+				$buttonRow = container.find('.application-card-control-row'),
+				$bucketButton = $buttonRow.find('> div button:nth-child(2)'),
+				$exploreRow = container.find('.application-card-explore-row'),
 				$moreInfoLink = $('<a />').
 				addClass('card-more-info-link').
 				append(' ( ', $('<i />').addClass('fa fa-info-circle'), ' More Info )').
@@ -427,6 +413,8 @@ CCH.Objects.Widget.Card = function (args) {
 			// My container starts out open so I immediately add that class to it
 			container.addClass('open');
 
+			me.renderBreadCrumbs(container);
+			
 			// Create Title
 			mediumTitleContainer.html(mediumTitle);
 
@@ -440,18 +428,11 @@ CCH.Objects.Widget.Card = function (args) {
 			// I am not myself a child.
 			if (me.children.length) {
 				// Do bindings
-				me.bindPropertyAggButton($propertyAggButton);
+				me.renderPropertyAggMenu($exploreRow);
 			} else {
-				// This is a leaf node so switch to a disabled aggregation button
-				$propertyAggButton.
-					addClass('disabled').
-					find('img').
-					attr('src', 'images/cards/item-branch-disabled.svg');
+				// This is a leaf node, hide explore div
+				$exploreRow.hide();
 			}
-
-			$propertyAggButton.attr({
-				'title': 'Explore Contents Of This Dataset'
-			});
 
 			$bucketButton.attr({
 				'title': 'Add This Dataset To Your Bucket'
@@ -490,7 +471,6 @@ CCH.Objects.Widget.Card = function (args) {
 				button: $bucketButton,
 				nextAction: 'add'
 			});
-			me.bindMinMaxButtons(minMaxButtons);
 
 			// I start with my container hidden and an upstream process will
 			// decide when to show me
@@ -504,6 +484,43 @@ CCH.Objects.Widget.Card = function (args) {
 			container.data('card', me);
 		}
 		return me.container;
+	};
+	
+	me.renderBreadCrumbs = function(container) {
+		var breadCrumbsContainer = container.find('.application-card-breadcrumbs-container');
+		
+		var breadCrumbPrefix = $("<span/>");
+		var breadCrumbParentLink = $("<span/>");
+		breadCrumbParentLink.addClass("application-card-breadcrumb-parent-link");
+		
+		var breadCrumbs = [];
+		
+		var card = me.parent;
+		while(card) {
+			var title = card.summary.medium.title;
+			breadCrumbs.push(title)
+			card = card.parent;
+		}
+		
+		var levelUpIconHtml = ' / <i class="fa fa-level-up" alt="level up"></i>';
+		if(breadCrumbs.length == 1) {
+			breadCrumbPrefix.html(""); 
+			breadCrumbParentLink.html(levelUpIconHtml); //says go to root 
+		} else if(breadCrumbs.length == 2) {
+			breadCrumbPrefix.html(" / "); 
+			breadCrumbParentLink.html(breadCrumbs[0] + levelUpIconHtml); 
+		} else if(breadCrumbs.length == 3) {
+			breadCrumbPrefix.html(' / ' + breadCrumbs[1] + '/ '); 
+			breadCrumbParentLink.html(breadCrumbs[0] + levelUpIconHtml); 
+		} else if(breadCrumbs.length > 3) {
+			breadCrumbPrefix.html(' / ' + breadCrumbs[breadCrumbs.length-2] + ' / ... / '); 
+			breadCrumbParentLink.html(breadCrumbs[0] + levelUpIconHtml); 
+		}
+
+		me.bindBackToParentButton(breadCrumbParentLink);
+		
+		breadCrumbsContainer.append(breadCrumbPrefix);
+		breadCrumbsContainer.append(breadCrumbParentLink);
 	};
 
 	me.showPath = function (path) {
@@ -549,12 +566,6 @@ CCH.Objects.Widget.Card = function (args) {
 	};
 
 	$(window).on({
-		'click': function (evt) {
-			me.removeAggregationContainer(evt);
-		},
-		'cch.ui.redimensioned': function (evt) {
-			me.removeAggregationContainer(evt);
-		},
 		'bucket-added': function (evt, args) {
 			if (args.id === me.id) {
 				var $button = me.container.find('button.item-control-button-bucket'),
