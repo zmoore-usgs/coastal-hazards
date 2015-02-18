@@ -286,12 +286,16 @@ CCH.Objects.Widget.Card = function (args) {
 		var item,
 			$list = $exploreRow.find("ul"),
 			processOption = function (item) {
-				var name = item.summary.tiny.title || item.summary.medium.title,
-					$listItem = $('<li />');
+				var name = item.summary.tiny.title || item.summary.medium.title,			
+					$listItem = $('<li />'),
+					$buttonItem = $($('<button />'));
 
-				$listItem.data('id', item.id);
-				$listItem.html(name);
-				$listItem.on('click', function (evt) {
+				$buttonItem.data('id', item.id);
+				$buttonItem.html(name);
+				$buttonItem.addClass('btn');
+				$buttonItem.addClass('btn-default');
+				$buttonItem.addClass('item-control-button');
+				$buttonItem.on('click', function (evt) {
 					var id = $(evt.target).data('id');
 
 					if (me.child) {
@@ -318,6 +322,7 @@ CCH.Objects.Widget.Card = function (args) {
 					});
 				});
 
+				$listItem.append($buttonItem);
 				return $listItem;
 			};
 
@@ -390,7 +395,6 @@ CCH.Objects.Widget.Card = function (args) {
 				mediumContent = mediumSummary.text || largeContent,
 				mediumTitleContainer = container.find('.application-card-title-container-medium'),
 				mediumContentContainer = container.find('.application-card-content-container-medium'),
-				minMaxButtons = container.find('.application-card-collapse-icon-container'),
 				$buttonRow = container.find('.application-card-control-row'),
 				$bucketButton = $buttonRow.find('> div button:nth-child(2)'),
 				$exploreRow = container.find('.application-card-explore-row'),
@@ -467,7 +471,6 @@ CCH.Objects.Widget.Card = function (args) {
 				button: $bucketButton,
 				nextAction: 'add'
 			});
-			me.bindBackToParentButton(minMaxButtons);
 
 			// I start with my container hidden and an upstream process will
 			// decide when to show me
@@ -486,7 +489,10 @@ CCH.Objects.Widget.Card = function (args) {
 	me.renderBreadCrumbs = function(container) {
 		var breadCrumbsContainer = container.find('.application-card-breadcrumbs-container');
 		
-		var breadCrumbString = "";
+		var breadCrumbPrefix = $("<span/>");
+		var breadCrumbParentLink = $("<span/>");
+		breadCrumbParentLink.addClass("application-card-breadcrumb-parent-link");
+		
 		var breadCrumbs = [];
 		
 		var card = me.parent;
@@ -496,15 +502,25 @@ CCH.Objects.Widget.Card = function (args) {
 			card = card.parent;
 		}
 		
+		var levelUpIconHtml = ' / <i class="fa fa-level-up" alt="level up"></i>';
 		if(breadCrumbs.length == 1) {
-			breadCrumbString = breadCrumbs[0];
+			breadCrumbPrefix.html(""); 
+			breadCrumbParentLink.html(levelUpIconHtml); //says go to root 
 		} else if(breadCrumbs.length == 2) {
-			breadCrumbString = breadCrumbs[1] + " / " + breadCrumbs[0];
-		} else if(breadCrumbs.length > 2) {
-			breadCrumbString = breadCrumbs[breadCrumbs.length-1] + " / ... / " + breadCrumbs[0];
+			breadCrumbPrefix.html(" / "); 
+			breadCrumbParentLink.html(breadCrumbs[0] + levelUpIconHtml); 
+		} else if(breadCrumbs.length == 3) {
+			breadCrumbPrefix.html(' / ' + breadCrumbs[1] + '/ '); 
+			breadCrumbParentLink.html(breadCrumbs[0] + levelUpIconHtml); 
+		} else if(breadCrumbs.length > 3) {
+			breadCrumbPrefix.html(' / ' + breadCrumbs[breadCrumbs.length-2] + ' / ... / '); 
+			breadCrumbParentLink.html(breadCrumbs[0] + levelUpIconHtml); 
 		}
+
+		me.bindBackToParentButton(breadCrumbParentLink);
 		
-		breadCrumbsContainer.html(breadCrumbString);
+		breadCrumbsContainer.append(breadCrumbPrefix);
+		breadCrumbsContainer.append(breadCrumbParentLink);
 	};
 
 	me.showPath = function (path) {

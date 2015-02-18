@@ -17,7 +17,6 @@
         <%-- The job of this control is to close all child objects, then this container --%>
         <div class="application-card-collapse-row row">
             <div class="col-md-12">
-                <div class="application-card-collapse-icon-container application-card-collapse-row-open"><i class="fa fa-chevron-up" alt="upward facing arrow"></i></div>
                 <div class="application-card-breadcrumbs-container"></div>
             </div>
         </div>

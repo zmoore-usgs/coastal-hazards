@@ -29,7 +29,8 @@
 	color: #DCDCDC;
 }
 
-.application-card-control-row button {
+.application-card-control-row button,
+.application-card-explore-row button {
 	padding-right: 5px;
 	padding-left: 5px;
 	font-size: 18px;
@@ -40,12 +41,20 @@
 	text-align: left;
 }
 
-.application-card-explore-row li:hover {
-	font-weight: bold;
-}
-
 .application-card-explore-row ul {
 	cursor: pointer;
+	margin: 0px;
+	padding: 2px;
+}
+
+.application-card-explore-row ul li {
+	list-style-type: none;
+	padding: 2px;
+}
+
+.application-card-explore-row button {
+	font-size: 12px;
+	white-space: normal;
 }
 
 .application-card-title-row .application-card-title-container-medium {
@@ -76,8 +85,12 @@
 
 .application-card-breadcrumbs-container,
 .application-card-title {
-	color: black;
-	font-weight: bold;
+	color: #BBBBBB;
+}
+
+.application-card-breadcrumb-parent-link {
+	cursor: pointer;
+	color: #003366;
 }
 
 
