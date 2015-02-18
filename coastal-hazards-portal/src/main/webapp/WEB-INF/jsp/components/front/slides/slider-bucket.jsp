@@ -42,7 +42,8 @@
             </div>
         </div>
         <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
-            <i class="fa fa-times" alt="the letter x"></i>
+<!--            <i class="fa fa-times" alt="the letter x"></i>-->
+			<img src="images/bucket/trashcan.svg" />
         </button>
         <div class="application-slide-bucket-container-card-navigation-container">
             <button class="application-slide-bucket-container-card-button-up btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-up" type="button">
