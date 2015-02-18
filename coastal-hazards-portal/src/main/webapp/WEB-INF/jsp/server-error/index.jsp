@@ -23,7 +23,8 @@
 	}
 %>
 <%
-	String baseUrl = StringUtils.isNotBlank(props.getProperty("coastal-hazards.base.url")) ? props.getProperty("coastal-hazards.base.url") : request.getContextPath();
+	String baseUrl = props.getProperty("coastal-hazards.base.url");
+	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 	String vJquery = getProp("version.jquery");
 	String vBootstrap = getProp("version.bootstrap");

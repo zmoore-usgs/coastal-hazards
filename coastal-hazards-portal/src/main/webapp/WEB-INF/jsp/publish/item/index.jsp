@@ -39,7 +39,8 @@
 	String vFontAwesome = getProp("version.fontawesome");
 	String vOpenlayers = getProp("version.openlayers");
 	String vSugarJs = getProp("version.sugarjs");
-	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : getProp("coastal-hazards.base.url");
+	String baseUrl = props.getProperty("coastal-hazards.base.url");
+	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
 
 	// Figure out the path based on the ID passed in, if any
 	Map<String, String> attributeMap = (Map<String, String>) pageContext.findAttribute("it");
