@@ -14,7 +14,8 @@
 %>
 <%
     String originatingUri = StringUtils.isNotBlank(request.getParameter("originating_uri")) ? request.getParameter("originating_uri") : "";
-	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+	String baseUrl = props.getProperty("coastal-hazards.base.url");
+	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
 %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">

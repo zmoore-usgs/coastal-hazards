@@ -15,7 +15,7 @@ application services -->
 coastal-hazards.base.url: This is only necessary on public facing URLs. The 
 Jersey framework seems to clobber contextPath in the request object. 
 Therefore, a quick fix is to use this value, set on public facing servers (qa/prod) 
-in order to get the public mapping of where the application is located. -->
+in order to get the public mapping of where the application is located. CANNOT have a training slash. -->
 <Environment name="coastal-hazards.base.url" type="java.lang.String" value="/qa/coastalhazards" />
 
 <!-- 
