@@ -118,14 +118,17 @@
             }
             
         /* Close button */
+		/* Outer close button container */
         #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > button.application-slide-bucket-container-card-button-remove {
-            right: -20px;
-            top: -20px;
+            right: -10px;
+            top: -10px;
             position: relative;
             float: right;
+			padding: 0px;
         }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > button.application-slide-bucket-container-card-button-remove > i {
-                color: #003366;
+			/* Close button image ("Remove" text) */
+            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > button.application-slide-bucket-container-card-button-remove > img {
+                height: 12px;
             }
             
         /* Card Control Row Div */
