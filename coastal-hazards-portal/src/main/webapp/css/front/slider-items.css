@@ -12,6 +12,11 @@
 	margin-bottom: 10px;
 }
 
+/* eliminate space so animation appears to slide under header with no gap */
+.panel-collapse > .panel-body {
+	padding-top: 0px;
+}
+
 .application-card-collapse-icon-container {
 	display: table-cell;
 	vertical-align: middle;
@@ -96,6 +101,10 @@
 
 .application-card-collapse-row-dottedline hr {
 	border-top:1px dashed #BBBBBB; 
+}
+
+.application-card-container {
+	padding-top: 10px;
 }
 
 .application-card-container .application-card-content-row {
