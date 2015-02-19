@@ -396,18 +396,13 @@ CCH.Objects.Widget.Card = function (args) {
 				mediumTitleContainer = container.find('.application-card-title-container-medium'),
 				mediumContentContainer = container.find('.application-card-content-container-medium'),
 				$buttonRow = container.find('.application-card-control-row'),
-				$bucketButton = $buttonRow.find('> div button:nth-child(2)'),
+				$bucketButton = $buttonRow.find('.application-card-add-bucket-btn'),
 				$exploreRow = container.find('.application-card-explore-row'),
-				$moreInfoLink = $('<a />').
-				addClass('card-more-info-link').
-				append(' ( ', $('<i />').addClass('fa fa-info-circle'), ' More Info )').
-				attr({
-					'href': window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
+				$moreInfoTarget = CCH.CONFIG.contextPath + '/ui/info/item/' + me.id,
+				$moreInfoBtn = container.find('.application-card-more-info-btn').on("click", function(){
+					window.location = $moreInfoTarget;
 				}),
-				$moreInfoSpan = $('<span />').append($moreInfoLink),
-				$zoomToBadge = $('<span />').
-				addClass('badge zoom-to-badge').
-				html('Zoom To'),
+				$zoomToBtn = container.find('.application-card-zoom-to-btn'),
 				isItemInBucket = CCH.ui.bucket.getItemById(me.id) !== undefined;
 
 			// My container starts out open so I immediately add that class to it
@@ -420,9 +415,6 @@ CCH.Objects.Widget.Card = function (args) {
 
 			// Create Content
 			mediumContentContainer.html(mediumContent);
-
-			// Add badges to content
-			mediumContentContainer.append($moreInfoSpan, $zoomToBadge);
 
 			// I have either aggregations or leaf nodes as children.
 			// I am not myself a child.
@@ -445,7 +437,7 @@ CCH.Objects.Widget.Card = function (args) {
 					.find('> img').attr('src', 'images/cards/add-bucket-disabled.svg');
 			}
 
-			$zoomToBadge.on('click', function () {
+			$zoomToBtn.on('click', function () {
 				$(window).trigger('cch.card.click.zoomto');
 				CCH.map.zoomToBoundingBox({
 					bbox: me.bbox,
@@ -458,7 +450,7 @@ CCH.Objects.Widget.Card = function (args) {
 				});
 			});
 			
-			$moreInfoLink.on('click', function() {
+			$moreInfoBtn.on('click', function() {
 				ga('send', 'event', {
 					'eventCategory': 'card',
 					'eventAction': 'moreInfoClicked',
