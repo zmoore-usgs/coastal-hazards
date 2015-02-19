@@ -30,6 +30,10 @@
 	color: #BBBBBB;
 }
 
+.application-card-control-row .application-card-control-row-1 {
+	margin-bottom: 5px;
+}
+
 .application-card-control-row > div {
 	text-align: center;
 }
@@ -48,6 +52,7 @@
 
 .application-card-add-bucket-btn {
 	font-size: 18px !important;
+	width: 7.9em
 }
 
 .application-card-more-info-btn img, 
