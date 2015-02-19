@@ -16,7 +16,14 @@
             <sld:Title>Coastal Change Hazards Style</sld:Title>
             <sld:FeatureTypeStyle>
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
+                <c:forEach var="j" begin="1" end="3">
                 <sld:Rule>
+                    <c:if test="${j != 3}">
+                    <sld:MinScaleDenominator>${320000000 / j}</sld:MinScaleDenominator>
+                    </c:if>
+                    <c:if test="${j != 1}">
+                    <sld:MaxScaleDenominator>${320000000 / (j-1)}</sld:MaxScaleDenominator>
+                    </c:if>
                     <ogc:Filter>
                         <c:if test="${it.binCount-1 > i && i > 0}">
                         <ogc:And>
@@ -46,10 +53,11 @@
                                     <sld:CssParameter name="fill-opacity">${it.strokeOpacity}</sld:CssParameter>
                                 </sld:Fill>
                             </sld:Mark>
-                                <sld:Size>${it.strokeWidth}</sld:Size>
+                                <sld:Size>${it.strokeWidth * j}</sld:Size>
                         </sld:Graphic>
                     </sld:PointSymbolizer>
                 </sld:Rule>
+                </c:forEach>
                 </c:forEach>
             </sld:FeatureTypeStyle>
         </sld:UserStyle>
