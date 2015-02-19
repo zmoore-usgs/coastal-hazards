@@ -128,7 +128,7 @@
         }
 			/* Close button image ("Remove" text) */
             #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > button.application-slide-bucket-container-card-button-remove > img {
-                height: 12px;
+                height: 1.5em;
             }
             
         /* Card Control Row Div */
