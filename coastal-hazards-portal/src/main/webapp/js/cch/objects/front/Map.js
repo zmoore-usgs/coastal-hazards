@@ -165,7 +165,8 @@ CCH.Objects.Front.Map = function (args) {
 				'removelayer': me.removeLayerCallback,
 				'preaddlayer': me.preAddLayerCallback,
 				'addlayer': me.addLayerCallback,
-				'changelayer': me.changelayerCallback
+				'changelayer': me.changelayerCallback,
+				'changebaselayer' : me.changeBaseLayerCallback
 			});
 
 			CCH.LOG.debug('Map.js::init():Replacing map graphics');
@@ -383,6 +384,23 @@ CCH.Objects.Front.Map = function (args) {
 				layer: layer
 			});
 			CCH.map.removeAllPopups();
+		},
+		changeBaseLayerCallback : function (evt) {
+			// I want to make sure that if the layer chosen is not the world imagery layer,
+			// that I turn off the world labels and place names layer because all 
+			// other base layers have labels.
+			
+			// A possible future improvement is to note whether the place names 
+			// layer was on at the time of choosing another base layer and if not, 
+			// don't flip it back on when the user comes back to world imagery
+			// Value = low, complexity = medium
+			var placeNames = CCH.map.getMap().getLayersBy('name', 'Place Names')[0];
+			if (evt.layer.name === 'World Imagery') {
+				placeNames.setVisibility(true);
+			} else {
+				placeNames.setVisibility(false);
+			}
+			return placeNames.getVisibility();
 		},
 		preAddLayerCallback: function (evt) {
 			var layer = evt.layer,
