@@ -75,6 +75,15 @@
 					markerLayer: new OpenLayers.Layer.Markers('Markers', {
 						displayInLayerSwitcher: false
 					}),
+					worldBoundariesAndPlaces : new OpenLayers.Layer.XYZ("Place Names",
+							"http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/\${z}/\${y}/\${x}",
+							{
+								sphericalMercator: true,
+								isBaseLayer: false,
+								numZoomLevels: 20,
+								wrapDateLine: true
+							}
+					),
 					baselayers: [
 						new OpenLayers.Layer.XYZ("World Imagery",
 								"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/\${z}/\${y}/\${x}",

@@ -10,9 +10,10 @@ CCH.Objects.Front.Map = function (args) {
 	"use strict";
 	var me = (this === window) ? {} : this;
 
+	// Continental United States
 	me.initialExtent = [-14819398.304233, -92644.611414691, -6718296.2995848, 9632591.3700111];
 	me.mapDivId = args.mapDiv;
-	me.$MAP_DIV = $('#' + args.mapDiv);
+	me.$MAP_DIV = $('#' + me.mapDivId);
 	me.bboxFadeoutDuration = 2000;
 	me.mapProjection = "EPSG:900913";
 	me.displayProjection = new OpenLayers.Projection(me.mapProjection);
@@ -143,7 +144,8 @@ CCH.Objects.Front.Map = function (args) {
 
 			CCH.LOG.debug('Map.js::init():Adding base layers to map');
 			me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
-
+			me.map.addLayers([CCH.CONFIG.map.layers.worldBoundariesAndPlaces]);
+			
 			CCH.LOG.debug('Map.js::init():Adding controls to map');
 			me.map.addControls([
 				me.layerSwitcher,
