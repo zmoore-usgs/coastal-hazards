@@ -11,7 +11,7 @@ CCH.Objects.ClickControl = OpenLayers.Class(OpenLayers.Control, {
 	},
 	handler: null,
 	map: null,
-	iconLayer: new OpenLayers.Layer.Markers("Markers"),
+	iconLayer: CCH.CONFIG.map.layers.markerLayer,
 	/**
 	 * Handles the event of the map adding a layer
 	 * 
