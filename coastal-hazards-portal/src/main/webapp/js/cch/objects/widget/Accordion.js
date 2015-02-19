@@ -110,6 +110,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 			id = card.id,
 			cardContainer = card.getContainer(),
 			titleRow = cardContainer.find('.application-card-title-row'),
+			downFacingArrow = $('<i />').addClass('fa fa-chevron-down accordion-title-arrow'),
 			titleMedium = titleRow.find('.application-card-title-container-medium').html(),
 			group = $('<div />').addClass('panel panel-default'),
 			heading = $('<div />').addClass('panel-heading'),
@@ -128,7 +129,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 				$(evt.currentTarget).on('click', headingClickHandler);
 			};
 		toggleTarget.append(
-			$('<span />').addClass('accordion-toggle-title-medium').html(titleMedium)
+			$('<span />').addClass('accordion-toggle-title-medium').html([downFacingArrow, titleMedium])
 			).attr({
 			'data-parent': '#' + me.SCROLLABLE_BELLOW_CONTAINER_ID,
 			'href': '#' + accordionBodyId,
