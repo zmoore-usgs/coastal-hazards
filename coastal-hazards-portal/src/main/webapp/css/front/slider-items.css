@@ -162,7 +162,7 @@
 	font-size-adjust: 0.7;
 }
 #application-slide-items-content-container .panel-heading {
-	text-align: center;
+	text-align: left;
 }
 #application-slide-items-content-container .panel-heading:hover {
 	cursor: pointer;
@@ -170,6 +170,16 @@
 
 #application-slide-items-content-container .panel-title {
 	font-size: 1.9em;
+}
+
+/* Downward facing arrow on accordion */
+#application-slide-items-content-container .panel-title .accordion-title-arrow {
+	color: #DCDCDC;
+	margin-right: 1em;
+	margin-top: -5px;
+	vertical-align: middle;
+	font-size: 0.75em;
+	padding-bottom: 5px;
 }
 
 .aggregation-selection-container {
