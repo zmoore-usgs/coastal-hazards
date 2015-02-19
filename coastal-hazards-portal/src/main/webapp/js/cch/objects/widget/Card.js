@@ -382,6 +382,20 @@ CCH.Objects.Widget.Card = function (args) {
 			}
 		});
 	};
+	
+	me.flipToRootCard = function() {
+		var currentCard = me;
+		while(currentCard) {
+			var parentCard = currentCard.parent;
+			if(parentCard) {
+				currentCard.close();
+			} else {
+				currentCard.show();
+			}
+			currentCard = parentCard;
+		}
+		
+	};
 
 	me.createContainer = function () {
 		if (!me.container) {
@@ -481,6 +495,8 @@ CCH.Objects.Widget.Card = function (args) {
 	me.renderBreadCrumbs = function(container) {
 		var breadCrumbsContainer = container.find('.application-card-breadcrumbs-container');
 		
+		var breadCrumbRootNode = $("<span/>").html("root");
+		breadCrumbRootNode.addClass("application-card-breadcrumb-parent-link");
 		var breadCrumbPrefix = $("<span/>");
 		var breadCrumbParentLink = $("<span/>");
 		breadCrumbParentLink.addClass("application-card-breadcrumb-parent-link");
@@ -493,6 +509,11 @@ CCH.Objects.Widget.Card = function (args) {
 			breadCrumbs.push(title)
 			card = card.parent;
 		}
+		
+		//root link always goes to top level card
+		breadCrumbRootNode.on("click", function() {
+			me.flipToRootCard();
+		});
 		
 		var levelUpIconHtml = ' / <i class="fa fa-level-up" alt="level up"></i>';
 		if(breadCrumbs.length == 1) {
@@ -510,6 +531,9 @@ CCH.Objects.Widget.Card = function (args) {
 		}
 
 		me.bindBackToParentButton(breadCrumbParentLink);
+		if(breadCrumbs.length > 0) {
+			breadCrumbsContainer.append(breadCrumbRootNode);
+		}
 		
 		breadCrumbsContainer.append(breadCrumbPrefix);
 		breadCrumbsContainer.append(breadCrumbParentLink);
