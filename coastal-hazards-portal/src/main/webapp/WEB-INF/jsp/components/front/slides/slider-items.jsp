@@ -51,7 +51,7 @@
                     </button>
                     <button class="btn btn-default item-control-button application-card-zoom-to-btn">
                         <img src="images/cards/zoom-01.svg" alt="Zoom To Image"/> Zoom To
-                    </button>
+                    </button><br/>
                     <button class="btn btn-default item-control-button item-control-button-bucket application-card-add-bucket-btn">
                         <img src="images/cards/add-bucket.svg" alt="Bucket Image"/> Add To Bucket
                     </button>
