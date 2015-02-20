@@ -491,7 +491,7 @@ CCH.Objects.Widget.Card = function (args) {
 		var $span = $("<span/>");
 		var separator = ' / ';
 		var breadCrumbsContainer = container.find('.application-card-breadcrumbs-container');
-		var breadCrumbRootNode = $span.clone().html("root");
+		var breadCrumbRootNode = $span.clone().html("home");
 		breadCrumbRootNode.addClass("application-card-breadcrumb-parent-link");
 		var breadCrumbPrefix = $span.clone();
 		var breadCrumbParentLink = $span.clone();
