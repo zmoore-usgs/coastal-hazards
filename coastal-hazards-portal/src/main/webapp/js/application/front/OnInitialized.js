@@ -131,6 +131,13 @@ CCH.CONFIG.onAppInitialize = function () {
 									'bbox': session.bbox,
 									'fromProjection': CCH.CONFIG.map.modelProjection
 								});
+								
+								// User is coming in with a view (from a shared bucket)
+								// so open the bucket when the app is finished loading.
+								// Only do this if bucket has items in it
+								if (CCH.ui.bucket.getCount() !== 0) {
+									CCH.ui.bucketSlide.open();
+								}
 							};
 							$(window).on('cch.ui.resized', resizeHandler);
 						}
