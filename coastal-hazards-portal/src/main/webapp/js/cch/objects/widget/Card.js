@@ -123,7 +123,7 @@ CCH.Objects.Widget.Card = function (args) {
 				me.showLayer();
 			}
 		}
-	}
+	};
 
 	me.hide = function (args) {
 		args = args || {};
@@ -493,12 +493,13 @@ CCH.Objects.Widget.Card = function (args) {
 	};
 	
 	me.renderBreadCrumbs = function(container) {
+		var $span = $("<span/>");
+		var separator = ' / ';
 		var breadCrumbsContainer = container.find('.application-card-breadcrumbs-container');
-		
-		var breadCrumbRootNode = $("<span/>").html("root");
+		var breadCrumbRootNode = $span.clone().html("root");
 		breadCrumbRootNode.addClass("application-card-breadcrumb-parent-link");
-		var breadCrumbPrefix = $("<span/>");
-		var breadCrumbParentLink = $("<span/>");
+		var breadCrumbPrefix = $span.clone();
+		var breadCrumbParentLink = $span.clone();
 		breadCrumbParentLink.addClass("application-card-breadcrumb-parent-link");
 		
 		var breadCrumbs = [];
@@ -506,7 +507,7 @@ CCH.Objects.Widget.Card = function (args) {
 		var card = me.parent;
 		while(card) {
 			var title = card.summary.medium.title;
-			breadCrumbs.push(title)
+			breadCrumbs.push(title);
 			card = card.parent;
 		}
 		
@@ -515,18 +516,18 @@ CCH.Objects.Widget.Card = function (args) {
 			me.flipToRootCard();
 		});
 		
-		var levelUpIconHtml = ' / <i class="fa fa-level-up" alt="level up"></i>';
-		if(breadCrumbs.length == 1) {
-			breadCrumbPrefix.html(""); 
+		var levelUpIconHtml = separator + '<i class="fa fa-level-up" alt="level up"></i>';
+		if(breadCrumbs.length === 1) {
+			breadCrumbPrefix.html(''); 
 			breadCrumbParentLink.html(levelUpIconHtml); //says go to root 
-		} else if(breadCrumbs.length == 2) {
-			breadCrumbPrefix.html(" / "); 
+		} else if(breadCrumbs.length === 2) {
+			breadCrumbPrefix.html(separator); 
 			breadCrumbParentLink.html(breadCrumbs[0] + levelUpIconHtml); 
-		} else if(breadCrumbs.length == 3) {
-			breadCrumbPrefix.html(' / ' + breadCrumbs[1] + '/ '); 
+		} else if(breadCrumbs.length === 3) {
+			breadCrumbPrefix.html(separator + breadCrumbs[1] + '/ '); 
 			breadCrumbParentLink.html(breadCrumbs[0] + levelUpIconHtml); 
 		} else if(breadCrumbs.length > 3) {
-			breadCrumbPrefix.html(' / ' + breadCrumbs[breadCrumbs.length-2] + ' / ... / '); 
+			breadCrumbPrefix.html(separator + breadCrumbs[breadCrumbs.length-2] + separator + '...' + separator); 
 			breadCrumbParentLink.html(breadCrumbs[0] + levelUpIconHtml); 
 		}
 
@@ -629,6 +630,7 @@ CCH.Objects.Widget.Card = function (args) {
 		showLayer: me.showLayer,
 		hideLayer: me.hideLayer,
 		showPath: me.showPath,
+		flipToRootCard: me.flipToRootCard,
 		getBoundingBox: function () {
 			return me.bbox;
 		},

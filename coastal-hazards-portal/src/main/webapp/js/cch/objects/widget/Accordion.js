@@ -175,6 +175,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 				$(window).trigger('cch.accordion.shown', evt);
 			},
 			'hide.bs.collapse': function (evt) {
+				card.closeChild();
 				card.hide();
 				$(window).trigger('cch.accordion.hide', evt);
 			},
@@ -214,6 +215,19 @@ CCH.Objects.Widget.Accordion = function (args) {
 					scrollTop: $container[0].scrollHeight
 				}, 1000);
 			}
+		},
+		'cch.accordion.hidden' : function (evt, originalEvt) {
+			// An accordion bellow has been hidden. I need to reset the accordion 
+			// breadcrumbs to its initial state (root)
+//			var $targetBellow = $(originalEvt.currentTarget),
+//				breadCrumbs = $targetBellow.find('.application-card-breadcrumb-parent-link'),
+//				$rootLink;
+//		
+//			if (breadCrumbs && breadCrumbs.length > 0) {
+//				$rootLink = $(breadCrumbs[1]);
+//				$rootLink.click();
+//			}
+			
 		}
 	});
 	me.explore = function (evt, args) {
