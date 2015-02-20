@@ -19,12 +19,17 @@ CCH.CONFIG.loadUberItem = function (args) {
 		// Do I load the entire item with all its children? 
 		subtree = args.subtree || false,
 		overridePreviousBounds = args.overridePreviousBounds,
-		callbacks = args.callbacks || {
+		callbacks = {};
+		
+		$.extend(true, callbacks, args.callbacks, {
 			success: [],
 			error: []
-		};
+		});
 
-	callbacks.error.unshift(CCH.ui.errorResponseHandler);
+	if (callbacks.error) {
+		callbacks.error.unshift(CCH.ui.errorResponseHandler);
+	}
+	
 	callbacks.success.unshift(function (data) {
 		$(window).on('cch.item.loaded', function (evt, obj) {
 			var item;
