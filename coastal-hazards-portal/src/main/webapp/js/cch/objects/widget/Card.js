@@ -156,11 +156,8 @@ CCH.Objects.Widget.Card = function (args) {
 		me.hideLayer();
 
 		if (me.parent) {
-			me.parent.showLayer();
-
 			// Remove the active class on every container and add it to the currently open card (parent)
 			me.parent.container.find('.application-card-body-container').addClass(me.ACTIVE_CARD_CLASS);
-
 		}
 
 		CCH.LOG.trace('CCH.Objects.Widget.Card:: Card ' + me.id + ' was hidden');
