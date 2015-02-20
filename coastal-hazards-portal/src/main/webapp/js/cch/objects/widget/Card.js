@@ -1,7 +1,6 @@
 /*jslint browser: true*/
 /*global $*/
 /*global window*/
-/*global OpenLayers*/
 /*global CCH*/
 /*global alertify*/
 /*global ga*/
@@ -69,12 +68,11 @@ CCH.Objects.Widget.Card = function (args) {
 		});
 
 		//only show if we have no active children
-		if(!me.child) {
+		if (!me.child) {
 			var duration = args.duration !== undefined ? args.duration : 500,
 				effect = args.effect || 'slide',
 				easing = args.easing || 'swing',
-				complete = args.complete || null,
-				dontShowLayer = args.dontShowLayer || false;
+				complete = args.complete || null;
 	
 			me.container.show({
 				effect: effect,
@@ -94,7 +92,7 @@ CCH.Objects.Widget.Card = function (args) {
 		}
 
 		me.showChildren({
-			dontShowLayer: dontShowLayer
+			dontShowLayer: args.dontShowLayer || false
 		});
 
 		me.isOpen = true;
@@ -105,14 +103,14 @@ CCH.Objects.Widget.Card = function (args) {
 		CCH.LOG.trace('CCH.Objects.Widget.Card:: Card ' + me.id + ' was shown');
 	};
 	
-	me.hideParent = function(args) {
+	me.hideParent = function () {
 		if (me.parent) {
 			me.parent.hideLayer();
 			me.parent.hide();
 		}
 	};
 	
-	me.showChildren = function(args) {
+	me.showChildren = function (args) {
 		var dontShowLayer = args.dontShowLayer;
 		if (me.child) {
 			me.child.show({
@@ -123,7 +121,7 @@ CCH.Objects.Widget.Card = function (args) {
 				me.showLayer();
 			}
 		}
-	}
+	};
 
 	me.hide = function (args) {
 		args = args || {};
@@ -168,7 +166,7 @@ CCH.Objects.Widget.Card = function (args) {
 		CCH.LOG.trace('CCH.Objects.Widget.Card:: Card ' + me.id + ' was hidden');
 	};
 	
-	me.hideChildren = function(args) {
+	me.hideChildren = function () {
 		if (me.child) {
 			me.child.hide();
 		}
@@ -207,7 +205,7 @@ CCH.Objects.Widget.Card = function (args) {
 			// My parent is an accordion bellow, so we just need to cllck on
 			// it to close me
 			me.container.parent().parent().parent().find('.panel-heading a').trigger('click');
-			if(complete) {
+			if (complete) {
 				complete();
 			}
 		}
@@ -232,7 +230,7 @@ CCH.Objects.Widget.Card = function (args) {
 			complete: function () {
 				me.hideChildren();
 				me.container.remove();
-				if(complete) {
+				if (complete) {
 					complete();
 				}
 			}
@@ -274,7 +272,7 @@ CCH.Objects.Widget.Card = function (args) {
 		me.container.after(card.getContainer());
 
 		// Show this new card after we hide the current one
-		me.hide({complete: function() {
+		me.hide({complete: function () {
 				card.show({
 					dontShowLayer: dontShowLayer
 				});
@@ -372,7 +370,7 @@ CCH.Objects.Widget.Card = function (args) {
 
 			if (isOpen) {
 				me.close({
-					complete: function() {
+					complete: function () {
 						me.parent.show();
 					}
 				});
@@ -383,11 +381,11 @@ CCH.Objects.Widget.Card = function (args) {
 		});
 	};
 	
-	me.flipToRootCard = function() {
+	me.flipToRootCard = function () {
 		var currentCard = me;
-		while(currentCard) {
+		while (currentCard) {
 			var parentCard = currentCard.parent;
-			if(parentCard) {
+			if (parentCard) {
 				currentCard.close();
 			} else {
 				currentCard.show();
@@ -413,7 +411,7 @@ CCH.Objects.Widget.Card = function (args) {
 				$bucketButton = $buttonRow.find('.application-card-add-bucket-btn'),
 				$exploreRow = container.find('.application-card-explore-row'),
 				$moreInfoTarget = CCH.CONFIG.contextPath + '/ui/info/item/' + me.id,
-				$moreInfoBtn = container.find('.application-card-more-info-btn').on("click", function(){
+				$moreInfoBtn = container.find('.application-card-more-info-btn').on("click", function () {
 					window.location = $moreInfoTarget;
 				}),
 				$zoomToBtn = container.find('.application-card-zoom-to-btn'),
@@ -464,7 +462,7 @@ CCH.Objects.Widget.Card = function (args) {
 				});
 			});
 			
-			$moreInfoBtn.on('click', function() {
+			$moreInfoBtn.on('click', function () {
 				ga('send', 'event', {
 					'eventCategory': 'card',
 					'eventAction': 'moreInfoClicked',
@@ -492,46 +490,48 @@ CCH.Objects.Widget.Card = function (args) {
 		return me.container;
 	};
 	
-	me.renderBreadCrumbs = function(container) {
+	me.renderBreadCrumbs = function (container) {
+		var $span = $("<span/>");
+		var separator = ' / ';
 		var breadCrumbsContainer = container.find('.application-card-breadcrumbs-container');
-		
-		var breadCrumbRootNode = $("<span/>").html("root");
+		var breadCrumbRootNode = $span.clone().html("root");
 		breadCrumbRootNode.addClass("application-card-breadcrumb-parent-link");
-		var breadCrumbPrefix = $("<span/>");
-		var breadCrumbParentLink = $("<span/>");
+		var breadCrumbPrefix = $span.clone();
+		var breadCrumbParentLink = $span.clone();
 		breadCrumbParentLink.addClass("application-card-breadcrumb-parent-link");
 		
 		var breadCrumbs = [];
 		
 		var card = me.parent;
-		while(card) {
+		while (card) {
 			var title = card.summary.medium.title;
-			breadCrumbs.push(title)
+			breadCrumbs.push(title);
 			card = card.parent;
 		}
 		
 		//root link always goes to top level card
-		breadCrumbRootNode.on("click", function() {
+		breadCrumbRootNode.on("click", function () {
 			me.flipToRootCard();
 		});
 		
-		var levelUpIconHtml = ' / <i class="fa fa-level-up" alt="level up"></i>';
-		if(breadCrumbs.length == 1) {
-			breadCrumbPrefix.html(""); 
+		var levelUpIconHtml = separator + '<i class="fa fa-level-up" alt="level up"></i>';
+		var breadcrumbsHtml = breadCrumbs[0] + levelUpIconHtml;
+		if (breadCrumbs.length === 1) {
+			breadCrumbPrefix.html(''); 
 			breadCrumbParentLink.html(levelUpIconHtml); //says go to root 
-		} else if(breadCrumbs.length == 2) {
-			breadCrumbPrefix.html(" / "); 
-			breadCrumbParentLink.html(breadCrumbs[0] + levelUpIconHtml); 
-		} else if(breadCrumbs.length == 3) {
-			breadCrumbPrefix.html(' / ' + breadCrumbs[1] + '/ '); 
-			breadCrumbParentLink.html(breadCrumbs[0] + levelUpIconHtml); 
-		} else if(breadCrumbs.length > 3) {
-			breadCrumbPrefix.html(' / ' + breadCrumbs[breadCrumbs.length-2] + ' / ... / '); 
-			breadCrumbParentLink.html(breadCrumbs[0] + levelUpIconHtml); 
+		} else if (breadCrumbs.length === 2) {
+			breadCrumbPrefix.html(separator); 
+			breadCrumbParentLink.html(breadcrumbsHtml); 
+		} else if (breadCrumbs.length === 3) {
+			breadCrumbPrefix.html(separator + breadCrumbs[1] + separator); 
+			breadCrumbParentLink.html(breadcrumbsHtml); 
+		} else if (breadCrumbs.length > 3) {
+			breadCrumbPrefix.html(separator + breadCrumbs[breadCrumbs.length - 2] + separator + '...' + separator); 
+			breadCrumbParentLink.html(breadcrumbsHtml); 
 		}
 
 		me.bindBackToParentButton(breadCrumbParentLink);
-		if(breadCrumbs.length > 0) {
+		if (breadCrumbs.length > 0) {
 			breadCrumbsContainer.append(breadCrumbRootNode);
 		}
 		
@@ -629,6 +629,7 @@ CCH.Objects.Widget.Card = function (args) {
 		showLayer: me.showLayer,
 		hideLayer: me.hideLayer,
 		showPath: me.showPath,
+		flipToRootCard: me.flipToRootCard,
 		getBoundingBox: function () {
 			return me.bbox;
 		},
