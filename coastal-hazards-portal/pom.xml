@@ -249,7 +249,6 @@
 					<jsTestSrcDir>${project.basedir}/src/test/resources/gov/usgs/cida/coastalhazards/jasmine/tests</jsTestSrcDir>
 					<preloadSources>
 						<source>${project.basedir}/src/test/resources/gov/usgs/cida/coastalhazards/jasmine/prerequisites.js</source>
-						<!--<source>webjars/jquery/${version.jquery}/jquery.js</source>-->
 					</preloadSources>
 				</configuration>
 			</plugin>
