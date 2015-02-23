@@ -50,9 +50,14 @@
 	color: #003366;
 }
 
+.application-card-more-info-btn,
+.application-card-zoom-to-btn {
+	width: 6.5em;
+}
+
 .application-card-add-bucket-btn {
 	font-size: 18px !important;
-	width: 7.9em
+	width: 9em
 }
 
 .application-card-more-info-btn img, 
