@@ -22,7 +22,7 @@
             </div>
         </div>
         <div id="application-slide-bucket-content-container" class="application-slide-content-container">
-            <div id="application-slide-bucket-content-empty">Your Bucket Does Not Have Anything In It</div>
+            <div id="application-slide-bucket-content-empty">Your Bucket is empty</div>
         </div>
     </div>
 </div>
