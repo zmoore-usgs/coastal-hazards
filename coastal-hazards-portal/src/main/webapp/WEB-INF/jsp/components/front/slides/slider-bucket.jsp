@@ -6,7 +6,7 @@
                     <i class="fa fa-minus-square-o" alt="minus inside a square"></i>
                 </div>
                 <div class="btn-group pull-right hidden">
-                    <button id="bucket-manage-menu-drop" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Manage Contents <b class="caret"></b></button>
+                    <button id="bucket-manage-menu-drop" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Manage Bucket <b class="caret"></b></button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="bucket-manage-menu-drop">
                         <li role="presentation">
                             Clear Bucket
@@ -22,7 +22,7 @@
             </div>
         </div>
         <div id="application-slide-bucket-content-container" class="application-slide-content-container">
-            <div id="application-slide-bucket-content-empty">Your Bucket Does Not Have Anything In It</div>
+            <div id="application-slide-bucket-content-empty">Your Bucket is empty</div>
         </div>
     </div>
 </div>
