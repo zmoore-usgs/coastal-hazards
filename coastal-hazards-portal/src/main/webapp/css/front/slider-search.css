@@ -64,10 +64,14 @@
         max-height: 100px;
         display: inline-block;
     }
-        #application-slide-search-container > div > div:nth-child(2) > div:first-child > div#application-slide-search-location-results-card-container > div > div > div:nth-child(1) > img {
+        .application-slide-search-location-card-icon-compass {
             width: 100%;
             max-height: 100%;
         }
+		
+		.application-slide-search-location-card-icon-compass:hover {
+			cursor: pointer;
+		}
     
     /* Location Search Card - Right-hand Description */
     #application-slide-search-container > div > div:nth-child(2) > div:first-child > div#application-slide-search-location-results-card-container > div > div > div:nth-child(2) {
@@ -75,10 +79,15 @@
         display: inline-block;
         padding-left: 20px;
     }
-
-    #application-slide-search-container > div > div:nth-child(2) > div:first-child > div#application-slide-search-location-results-card-container > div > div > div:nth-child(2) span.badge {
+	
+	/* Zoom-To link at end of sentence */
+    .application-slide-search-location-card-link-zoomto {
         background-color: #003366;
     }
+	.application-slide-search-location-card-link-zoomto:hover {
+		cursor: pointer;
+	}
+	
     /* The control set row within the location container */
     #application-slide-search-container > div > div:nth-child(2) > div:first-child > div > div.application-slide-search-location-card-toggle {
         text-align: center;
