@@ -162,7 +162,7 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.enableNewItemForm = function () {
-		var gsBaseUrl = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources[CCH.CONFIG.strings].proxy + 'proxied/';
+		var gsBaseUrl = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources[CCH.CONFIG.strings.cidaGeoserver].proxy + 'proxied/';
 		$itemType.val('data');
 		$titleFullTextArea.removeAttr('disabled');
 		$titleMediumTextArea.removeAttr('disabled');
@@ -1017,7 +1017,7 @@ CCH.Objects.Publish.UI = function () {
 					// Fill out attribute selectbox by making a call to the WFS
 					CCH.ows.describeFeatureType({
 						layerName: services.proxy_wfs.serviceParameter,
-						sourceServer: CCH.CONFIG.strings,
+						sourceServer: CCH.CONFIG.strings.cidaGeoserver,
 						callbacks: {
 							success: [function (responseObject) {
 									me.updateSelectAttribtue(responseObject);
@@ -1399,7 +1399,7 @@ CCH.Objects.Publish.UI = function () {
 		if (service && param) {
 			CCH.ows.describeFeatureType({
 				layerName: param,
-				sourceServer: CCH.CONFIG.strings,
+				sourceServer: CCH.CONFIG.strings.cidaGeoserver,
 				callbacks: {
 					success: [
 						function (featureDescription) {
@@ -1614,7 +1614,7 @@ CCH.Objects.Publish.UI = function () {
 				successCallback = function (responseObject) {
 					var responseText = responseObject.responseText,
 							baseUrl = CCH.CONFIG.publicUrl,
-							baseService = baseUrl + CCH.CONFIG.data.sources[CCH.CONFIG.strings].proxy + 'proxied/',
+							baseService = baseUrl + CCH.CONFIG.data.sources[CCH.CONFIG.strings.cidaGeoserver].proxy + 'proxied/',
 							wfsServiceVal = baseService + 'wfs',
 							wmsServiceVal = baseService + 'wms',
 							updateAttributesCallback;
@@ -2134,7 +2134,7 @@ CCH.Objects.Publish.UI = function () {
 				$a,
 				$contentList = $('<ul />');
 		CCH.ows.getWFSCapabilities({
-			'server': CCH.CONFIG.strings,
+			'server': CCH.CONFIG.strings.cidaGeoserver,
 			'namespace': 'proxied',
 			'callbacks': {
 				success: [function (args) {
@@ -2193,11 +2193,11 @@ CCH.Objects.Publish.UI = function () {
 				$contentList = $('<ul />');
 
 		CCH.ows.getWMSCapabilities({
-			'server': CCH.CONFIG.strings,
+			'server': CCH.CONFIG.strings.cidaGeoserver,
 			'namespace': 'proxied',
 			'callbacks': {
 				success: [function () {
-						CCH.ows.servers[CCH.CONFIG.strings].data.wms.capabilities.object.capability.layers.each(function (layer) {
+						CCH.ows.servers[CCH.CONFIG.strings.cidaGeoserver].data.wms.capabilities.object.capability.layers.each(function (layer) {
 							$li = $('<li />');
 							$a = $('<a />').attr({
 								'href': '#',
