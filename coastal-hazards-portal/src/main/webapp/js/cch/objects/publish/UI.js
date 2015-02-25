@@ -12,63 +12,63 @@ CCH.Objects.Publish.UI = function () {
 	CCH.LOG.trace('UI.js::constructor: UI class is initializing.');
 
 	var me = (this === window) ? {} : this,
-			$form = $('form'),
-			$itemIdInput = $form.find('#form-publish-item-id'),
-			$titleFullTextArea = $form.find('#form-publish-item-title-full'),
-			$titleMediumTextArea = $form.find('#form-publish-item-title-medium'),
-			$descriptionFullTextArea = $form.find('#form-publish-item-description-full'),
-			$descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
-			$descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
-			$bboxNorth = $form.find('#form-publish-item-bbox-input-north'),
-			$bboxWest = $form.find('#form-publish-item-bbox-input-west'),
-			$bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
-			$bboxEast = $form.find('#form-publish-item-bbox-input-east'),
-			$typeSb = $form.find('#form-publish-item-type'),
-			$attributeSelect = $form.find('#form-publish-item-attribute'),
-			$attributeRetrieveDataButton = $form.find('#form-publish-item-attribute-button'),
-			$keywordGroup = $form.find('.form-group-keyword'),
-			$cswServiceInput = $form.find('#form-publish-item-service-csw'),
-			$srcWfsServiceInput = $form.find('#form-publish-item-service-source-wfs'),
-			$srcWfsServiceParamInput = $form.find('#form-publish-item-service-source-wfs-serviceparam'),
-			$srcWmsServiceInput = $form.find('#form-publish-item-service-source-wms'),
-			$srcWmsServiceParamInput = $form.find('#form-publish-item-service-source-wms-serviceparam'),
-			$proxyWfsServiceInput = $form.find('#form-publish-item-service-proxy-wfs'),
-			$proxyWfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wfs-serviceparam'),
-			$proxyWmsServiceInput = $form.find('#form-publish-item-service-proxy-wms'),
-			$proxyWmsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
-			$publicationsPanel = $form.find('#publications-panel'),
-			$ribbonableCb = $form.find('#form-publish-item-ribbonable'),
-			$showChildrenCb = $form.find('#form-publish-item-showchildren'),
-			$itemType = $form.find('#form-publish-info-item-itemtype'),
-			$name = $form.find('#form-publish-item-name'),
-			$wfsImportButton = $form.find('#form-publish-item-service-source-wfs-import-button'),
-			$keywordGroupClone = $keywordGroup.clone(),
-			$childrenSortableList = $form.find('#form-publish-info-item-children-sortable-ul'),
-			$alertModal = $('#alert-modal'),
-			$alertModalTitle = $alertModal.find('.modal-title'),
-			$alertModalBody = $alertModal.find('.modal-body'),
-			$alertModalFooter = $alertModal.find('.modal-footer'),
-			$metadataDropdownGroup = $('#publish-button-edit-metadata-existing-grp'),
-			$metadataDropdownList = $('#publish-list-edit-metadata-existing'),
-			$metadataSummaryField = $('#form-publish-info-item-summary-version'),
-			$uploaderDummy = $('#qq-uploader-dummy'),
-			$itemEnabledField = $('#form-publish-info-item-enabled'),
-			$itemImage = $form.find('#form-publish-info-item-image'),
-			$imageGenButton = $form.find('#form-publish-info-item-image-gen'),
-			$buttonSave = $('#publish-button-save'),
-			$buttonDelete = $('#publish-button-delete'),
-			$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
-			$wfsHelpLink = $form.find('.form-publish-item-service-source-wfs-import-button-service-help-link'),
-			$wmsHelpLink = $form.find('.form-publish-item-service-source-wms-import-button-service-help-link'),
-			$sourceWfsCheckButton = $form.find('#form-publish-item-service-source-wfs-import-button-check'),
-			$sourceWmsCheckButton = $form.find('#form-publish-item-service-source-wms-import-button-check'),
-			$wfsSourceCopyButton = $form.find('#form-publish-item-service-source-wfs-copy-button'),
-			$wmsServerHelpButton = $form.find('#form-publish-item-service-source-wms-import-button-service-select'),
-			$proxyWfsCheckButton = $form.find('#form-publish-item-service-proxy-wfs-import-button-check'),
-			$proxyWmsCheckButton = $form.find('#form-publish-item-service-proxy-wms-import-button-check'),
-			$getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button'),
-			$emphasisItemSpan = $form.find('.emphasis-item'),
-			$emphasisAggregationSpan = $form.find('.emphasis-aggregation');
+		$form = $('form'),
+		$itemIdInput = $form.find('#form-publish-item-id'),
+		$titleFullTextArea = $form.find('#form-publish-item-title-full'),
+		$titleMediumTextArea = $form.find('#form-publish-item-title-medium'),
+		$descriptionFullTextArea = $form.find('#form-publish-item-description-full'),
+		$descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
+		$descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
+		$bboxNorth = $form.find('#form-publish-item-bbox-input-north'),
+		$bboxWest = $form.find('#form-publish-item-bbox-input-west'),
+		$bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
+		$bboxEast = $form.find('#form-publish-item-bbox-input-east'),
+		$typeSb = $form.find('#form-publish-item-type'),
+		$attributeSelect = $form.find('#form-publish-item-attribute'),
+		$attributeRetrieveDataButton = $form.find('#form-publish-item-attribute-button'),
+		$keywordGroup = $form.find('.form-group-keyword'),
+		$cswServiceInput = $form.find('#form-publish-item-service-csw'),
+		$srcWfsServiceInput = $form.find('#form-publish-item-service-source-wfs'),
+		$srcWfsServiceParamInput = $form.find('#form-publish-item-service-source-wfs-serviceparam'),
+		$srcWmsServiceInput = $form.find('#form-publish-item-service-source-wms'),
+		$srcWmsServiceParamInput = $form.find('#form-publish-item-service-source-wms-serviceparam'),
+		$proxyWfsServiceInput = $form.find('#form-publish-item-service-proxy-wfs'),
+		$proxyWfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wfs-serviceparam'),
+		$proxyWmsServiceInput = $form.find('#form-publish-item-service-proxy-wms'),
+		$proxyWmsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
+		$publicationsPanel = $form.find('#publications-panel'),
+		$ribbonableCb = $form.find('#form-publish-item-ribbonable'),
+		$showChildrenCb = $form.find('#form-publish-item-showchildren'),
+		$itemType = $form.find('#form-publish-info-item-itemtype'),
+		$name = $form.find('#form-publish-item-name'),
+		$wfsImportButton = $form.find('#form-publish-item-service-source-wfs-import-button'),
+		$keywordGroupClone = $keywordGroup.clone(),
+		$childrenSortableList = $form.find('#form-publish-info-item-children-sortable-ul'),
+		$alertModal = $('#alert-modal'),
+		$alertModalTitle = $alertModal.find('.modal-title'),
+		$alertModalBody = $alertModal.find('.modal-body'),
+		$alertModalFooter = $alertModal.find('.modal-footer'),
+		$metadataDropdownGroup = $('#publish-button-edit-metadata-existing-grp'),
+		$metadataDropdownList = $('#publish-list-edit-metadata-existing'),
+		$metadataSummaryField = $('#form-publish-info-item-summary-version'),
+		$uploaderDummy = $('#qq-uploader-dummy'),
+		$itemEnabledField = $('#form-publish-info-item-enabled'),
+		$itemImage = $form.find('#form-publish-info-item-image'),
+		$imageGenButton = $form.find('#form-publish-info-item-image-gen'),
+		$buttonSave = $('#publish-button-save'),
+		$buttonDelete = $('#publish-button-delete'),
+		$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
+		$wfsHelpLink = $form.find('.form-publish-item-service-source-wfs-import-button-service-help-link'),
+		$wmsHelpLink = $form.find('.form-publish-item-service-source-wms-import-button-service-help-link'),
+		$sourceWfsCheckButton = $form.find('#form-publish-item-service-source-wfs-import-button-check'),
+		$sourceWmsCheckButton = $form.find('#form-publish-item-service-source-wms-import-button-check'),
+		$wfsSourceCopyButton = $form.find('#form-publish-item-service-source-wfs-copy-button'),
+		$wmsServerHelpButton = $form.find('#form-publish-item-service-source-wms-import-button-service-select'),
+		$proxyWfsCheckButton = $form.find('#form-publish-item-service-proxy-wfs-import-button-check'),
+		$proxyWmsCheckButton = $form.find('#form-publish-item-service-proxy-wms-import-button-check'),
+		$getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button'),
+		$emphasisItemSpan = $form.find('.emphasis-item'),
+		$emphasisAggregationSpan = $form.find('.emphasis-aggregation');
 
 	me.createHelpPopover = function ($content, $element) {
 		$element.popover('destroy');
@@ -162,7 +162,7 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.enableNewItemForm = function () {
-		var gsBaseUrl = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/';
+		var gsBaseUrl = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources[CCH.CONFIG.strings].proxy + 'proxied/';
 		$itemType.val('data');
 		$titleFullTextArea.removeAttr('disabled');
 		$titleMediumTextArea.removeAttr('disabled');
@@ -898,7 +898,7 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.addItemToForm = function (args) {
-		CCH.LOG.info('UI.js::putItemOnForm: Adding item to form.');
+		CCH.LOG.info('UI.js::addItemToForm: Adding item to form.');
 		args = args || {};
 		var item = args.data || CCH.CONFIG.item,
 				id,
@@ -914,8 +914,8 @@ CCH.Objects.Publish.UI = function () {
 				isItemEnabled = false;
 
 		if (item) {
-			item.children = item.children || [];
 			id = item.id;
+			item.children = item.children || [];
 			type = item.itemType;
 			summary = item.summary;
 			titleFull = summary.full.title;
@@ -1017,7 +1017,7 @@ CCH.Objects.Publish.UI = function () {
 					// Fill out attribute selectbox by making a call to the WFS
 					CCH.ows.describeFeatureType({
 						layerName: services.proxy_wfs.serviceParameter,
-						sourceServer: 'cida-geoserver',
+						sourceServer: CCH.CONFIG.strings,
 						callbacks: {
 							success: [function (responseObject) {
 									me.updateSelectAttribtue(responseObject);
@@ -1176,8 +1176,9 @@ CCH.Objects.Publish.UI = function () {
 			});
 
 			$itemEnabledField.val(isItemEnabled);
+			CCH.LOG.info('UI.js::addItemToForm: Item ' + item.id + ' added');
 		} else {
-			CCH.LOG.warn('UI.js::putItemOnForm: function was called with no item');
+			CCH.LOG.warn('UI.js::addItemToForm: function was called with no item');
 		}
 	};
 
@@ -1398,7 +1399,7 @@ CCH.Objects.Publish.UI = function () {
 		if (service && param) {
 			CCH.ows.describeFeatureType({
 				layerName: param,
-				sourceServer: 'cida-geoserver',
+				sourceServer: CCH.CONFIG.strings,
 				callbacks: {
 					success: [
 						function (featureDescription) {
@@ -1613,7 +1614,7 @@ CCH.Objects.Publish.UI = function () {
 				successCallback = function (responseObject) {
 					var responseText = responseObject.responseText,
 							baseUrl = CCH.CONFIG.publicUrl,
-							baseService = baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/',
+							baseService = baseUrl + CCH.CONFIG.data.sources[CCH.CONFIG.strings].proxy + 'proxied/',
 							wfsServiceVal = baseService + 'wfs',
 							wmsServiceVal = baseService + 'wms',
 							updateAttributesCallback;
@@ -2133,7 +2134,7 @@ CCH.Objects.Publish.UI = function () {
 				$a,
 				$contentList = $('<ul />');
 		CCH.ows.getWFSCapabilities({
-			'server': 'cida-geoserver',
+			'server': CCH.CONFIG.strings,
 			'namespace': 'proxied',
 			'callbacks': {
 				success: [function (args) {
@@ -2192,11 +2193,11 @@ CCH.Objects.Publish.UI = function () {
 				$contentList = $('<ul />');
 
 		CCH.ows.getWMSCapabilities({
-			'server': 'cida-geoserver',
+			'server': CCH.CONFIG.strings,
 			'namespace': 'proxied',
 			'callbacks': {
 				success: [function () {
-						CCH.ows.servers['cida-geoserver'].data.wms.capabilities.object.capability.layers.each(function (layer) {
+						CCH.ows.servers[CCH.CONFIG.strings].data.wms.capabilities.object.capability.layers.each(function (layer) {
 							$li = $('<li />');
 							$a = $('<a />').attr({
 								'href': '#',
@@ -2227,11 +2228,11 @@ CCH.Objects.Publish.UI = function () {
 			success: [
 				function (response) {
 					response.children.each(function (responseChild) {
-						if (responseChild.tag === "csw:SearchResults") {
+						if (responseChild.tag === "csw:SearchResults" && responseChild.children) {
 							var id,
-									title,
-									$li,
-									$a;
+								title,
+								$li,
+								$a;
 
 							responseChild.children.each(function (recordSummary) {
 								recordSummary.children.each(function (recordAttribute) {
@@ -2283,5 +2284,5 @@ CCH.Objects.Publish.UI = function () {
 		}
 	});
 
-	return me;
+	return $.extend(me, {});
 };

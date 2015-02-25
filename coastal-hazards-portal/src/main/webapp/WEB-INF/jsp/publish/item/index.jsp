@@ -84,38 +84,41 @@
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="<%= configration%>"></jsp:include>
-		<script type="text/javascript">
-		CCH.itemid = '<%= id%>';
-			CCH.CONFIG.limits = {
-			map : {
-				modelProjection : new OpenLayers.Projection('EPSG:4326')
-			},
-			item: {
-					name: <%= Item.NAME_MAX_LENGTH%>,
-				attribute: <%= Item.ATTR_MAX_LENGTH%>
-			},
-			service: {
-					endpoint: <%= Service.ENDPOINT_MAX_LENGTH%>,
-				parameter: <%= Service.PARAMETER_MAX_LENGTH%>
-			},
-				summary: {
-				full: {
-						title: <%= Full.TITLE_MAX_LENGTH%>,
-						text: <%= Full.TEXT_MAX_LENGTH%>
-				},
-				medium: {
-						title: <%= Medium.TITLE_MAX_LENGTH%>,
-						text: <%= Medium.TEXT_MAX_LENGTH%>
-				},
-				tiny: {
-					text: <%= Tiny.MAX_LENGTH%>
-				}
-				},
-			publication: {
-					title: <%= Publication.TITLE_MAX_LENGTH%>,
-				link: <%= Publication.LINK_MAX_LENGTH%>
+			<script type="text/javascript">
+				CCH.itemid = '<%= id%>';
+				CCH.CONFIG.limits = {
+					map: {
+						modelProjection: new OpenLayers.Projection('EPSG:4326')
+					},
+					item: {
+						name: <%= Item.NAME_MAX_LENGTH%>,
+						attribute: <%= Item.ATTR_MAX_LENGTH%>
+					},
+					service: {
+						endpoint: <%= Service.ENDPOINT_MAX_LENGTH%>,
+						parameter: <%= Service.PARAMETER_MAX_LENGTH%>
+					},
+					summary: {
+						full: {
+							title: <%= Full.TITLE_MAX_LENGTH%>,
+							text: <%= Full.TEXT_MAX_LENGTH%>
+						},
+						medium: {
+							title: <%= Medium.TITLE_MAX_LENGTH%>,
+							text: <%= Medium.TEXT_MAX_LENGTH%>
+						},
+						tiny: {
+							text: <%= Tiny.MAX_LENGTH%>
+						}
+					},
+					publication: {
+						title: <%= Publication.TITLE_MAX_LENGTH%>,
+						link: <%= Publication.LINK_MAX_LENGTH%>
+					}
+				};
+			CCH.CONFIG.strings = {
+				cidaGeoserver : 'cida-geoserver'
 			}
-		}
 		</script>
 	</head>
 	<body>
