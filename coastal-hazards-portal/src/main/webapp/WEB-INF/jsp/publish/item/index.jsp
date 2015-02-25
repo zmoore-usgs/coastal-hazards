@@ -432,7 +432,7 @@
 							</div>
 
 							<%-- Resource --%>
-							<div id="resources-panel" class="resources-panel panel panel-default">
+							<div id="resources-panel" class="resource-panel panel panel-default">
 								<div class="panel-heading">
 									<button id="form-publish-info-item-panel-resource-button-add" type="button" class="btn btn-default btn-sm pull-right" disabled="disabled">Add</button>
 									<h3 class="panel-title">Resource</h3>
