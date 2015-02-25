@@ -37,6 +37,8 @@ CCH.Objects.Publish.UI = function () {
 		$proxyWmsServiceInput = $form.find('#form-publish-item-service-proxy-wms'),
 		$proxyWmsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
 		$publicationsPanel = $form.find('#publications-panel'),
+		$dataPanel = $('#data-panel'),
+		$resourcePanel = $('#resources-panel'),
 		$ribbonableCb = $form.find('#form-publish-item-ribbonable'),
 		$showChildrenCb = $form.find('#form-publish-item-showchildren'),
 		$itemType = $form.find('#form-publish-info-item-itemtype'),
@@ -830,7 +832,8 @@ CCH.Objects.Publish.UI = function () {
 
 	me.createPublicationRow = function (link, title, type) {
 		var exists = false,
-			$panelBody = $publicationsPanel.find('>div:nth-child(2)'),
+			$panel = $('#' + type + '-panel'),
+			$panelBody = $panel.find('.panel-body'),
 			$closeButtonRow = $('<div />').addClass('pull-right'),
 			$closeButton = $('<i />').addClass('fa fa-times'),
 			$smallWell = $('<div />').addClass('well well-small'),
@@ -865,10 +868,12 @@ CCH.Objects.Publish.UI = function () {
 			$typeSelect = $('<select />')
 				.addClass('form-control')
 				.append($dataOption, $publicationOption, $resourceOption);
+	
 		$typeRow.append($typeSelect);
 		$typeSelect.val(type);
 
-		$('#publications-panel .well').each(function (i, pubPanel) {
+		// Check that this item does not yet exist in the UI
+		$('.resource-panel .well').each(function (i, pubPanel) {
 			var pTitle = $(pubPanel).find('>.row:nth-child(2) input').val() || '',
 					pLink = $(pubPanel).find('>.row:nth-child(3) input').val() || '',
 					pType = $(pubPanel).find('>.row:nth-child(4) select').val() || '';
@@ -895,6 +900,7 @@ CCH.Objects.Publish.UI = function () {
 
 			$panelBody.append($smallWell);
 		}
+		return $smallWell;
 	};
 
 	me.addItemToForm = function (args) {
