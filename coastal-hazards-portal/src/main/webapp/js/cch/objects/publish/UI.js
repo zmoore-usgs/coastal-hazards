@@ -846,7 +846,7 @@ CCH.Objects.Publish.UI = function () {
 				type: 'text',
 				maxlength: CCH.CONFIG.limits.publication.link
 			})
-			.addClass('form-control')
+			.addClass('form-control panel-item-link')
 			.val(link),
 			$titleLabel = $('<label />').html('Title'),
 			$titleInput = $('<input />')
@@ -854,7 +854,7 @@ CCH.Objects.Publish.UI = function () {
 					type: 'text',
 					maxlength: CCH.CONFIG.limits.publication.title
 				})
-				.addClass('form-control')
+				.addClass('form-control panel-item-title')
 				.val(title),
 			$dataOption = $('<option />')
 				.attr('value', 'data')
@@ -871,6 +871,15 @@ CCH.Objects.Publish.UI = function () {
 	
 		$typeRow.append($typeSelect);
 		$typeSelect.val(type);
+		$typeSelect.on('change', function (evt) {
+			var type = evt.target.value,
+				$parentContainer = $(evt.target).closest('.well'),
+				title = $parentContainer.find('.panel-item-title').val(),
+				link = $parentContainer.find('.panel-item-link').val();
+			
+			$parentContainer.remove();
+			me.createPublicationRow(link, title, type);
+		});
 
 		// Check that this item does not yet exist in the UI
 		$('.resource-panel .well').each(function (i, pubPanel) {
