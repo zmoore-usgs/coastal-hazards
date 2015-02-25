@@ -60,18 +60,18 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 
 	me.clear = function () {
 		var $locationSlide = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
-			$productSlide = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID);
+				$productSlide = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID);
 
 		[$locationSlide, $productSlide].each(function ($slide, ind) {
 			$slide.find('>div:nth-child(1)').empty();
 			$slide.find('>div:nth-child(' + (ind + 2) + ')').
-				empty().
-				append($('<img />').
-					addClass('img-responsive').
-					attr({
-						'src': 'images/spinner/spinner3.gif',
-						'alt': "Spinner Image"
-					}));
+					empty().
+					append($('<img />').
+							addClass('img-responsive').
+							attr({
+								'src': 'images/spinner/spinner3.gif',
+								'alt': "Spinner Image"
+							}));
 			$slide.find('>div:nth-child(' + (ind + 3) + ')>ul').empty();
 		});
 	};
@@ -79,9 +79,9 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 	me.open = function (args) {
 		args = args || {};
 		var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
-			isSmall = me.isSmall(),
-			animationTime = args.animationTime || me.ANIMATION_TIME,
-			openSlide;
+				isSmall = me.isSmall(),
+				animationTime = args.animationTime || me.ANIMATION_TIME,
+				openSlide;
 
 		if (me.isClosed) {
 			openSlide = function () {
@@ -130,7 +130,7 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 			$(window).trigger('cch.slide.search.closing');
 
 			var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
-				animationTime = args.animationTime || me.ANIMATION_TIME;
+					animationTime = args.animationTime || me.ANIMATION_TIME;
 			me.isClosing = true;
 			$slideContainer.animate({
 				left: $(window).width()
@@ -160,14 +160,14 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 	// objects
 	me.resize = function () {
 		var extents = me.getExtents(),
-			toExtent = me.isSmall() ? extents.small : extents.large,
-			$slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
-			$slideContent = $('#' + me.$SLIDE_CONTENT_ID),
-			$appContainer = $('#' + me.CONTENT_ROW_ID),
-			windowWidth = $('body').outerWidth(),
-			windowHeight = $('body').outerHeight(),
-			rightWindowBorderOffset = windowWidth - toExtent.left,
-			slideContentWidth = $slideContainer.outerWidth() - me.BORDER_WIDTH;
+				toExtent = me.isSmall() ? extents.small : extents.large,
+				$slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
+				$slideContent = $('#' + me.$SLIDE_CONTENT_ID),
+				$appContainer = $('#' + me.CONTENT_ROW_ID),
+				windowWidth = $('body').outerWidth(),
+				windowHeight = $('body').outerHeight(),
+				rightWindowBorderOffset = windowWidth - toExtent.left,
+				slideContentWidth = $slideContainer.outerWidth() - me.BORDER_WIDTH;
 
 		if (me.isClosed) {
 			$slideContainer.css({
@@ -213,18 +213,18 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 
 	me.getExtents = function () {
 		var $slideContainer = $('#application-slide-items-content-container'),
-			$firstAggregationBellow = $slideContainer.find('>div:nth-child(2)'),
-			$contentRow = $('#' + me.CONTENT_ROW_ID),
-			extents = {
-				large: {
-					top: $contentRow.offset().top,
-					left: $contentRow.outerWidth() / 2
-				},
-				small: {
-					top: $firstAggregationBellow.offset() ? $firstAggregationBellow.offset().top - 1 : 0,
-					left: $slideContainer.offset().left
-				}
-			};
+				$firstAggregationBellow = $slideContainer.find('>div:nth-child(2)'),
+				$contentRow = $('#' + me.CONTENT_ROW_ID),
+				extents = {
+					large: {
+						top: $contentRow.offset().top,
+						left: $contentRow.outerWidth() / 2
+					},
+					small: {
+						top: $firstAggregationBellow.offset() ? $firstAggregationBellow.offset().top - 1 : 0,
+						left: $slideContainer.offset().left
+					}
+				};
 
 		return extents;
 	};
@@ -233,26 +233,26 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 		args = args || {};
 
 		var data = args.data || {},
-			locations = data.locations || [],
-			products = data.items || [],
-			criteria = args.criteria,
-			product,
-			locationSize = locations.length || 0,
-			productsSize = products.length || 0,
-			$slideContainer,
-			$pagingContainer,
-			$locationContentContainer = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
-			$productContentContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID),
-			$contentContainer,
-			$card,
-			$showAllButton,
-			$resultsFoundsContainer,
-			slidesPerPage = args.slidesPerPage || me.PAGE_ITEM_COUNT,
-			pageCount = 0,
-			type = args.type,
-			itemsIdx,
-			cards = [],
-			locationIdx;
+				locations = data.locations || [],
+				products = data.items || [],
+				criteria = args.criteria,
+				product,
+				locationSize = locations.length || 0,
+				productsSize = products.length || 0,
+				$slideContainer,
+				$pagingContainer,
+				$locationContentContainer = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
+				$productContentContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID),
+				$contentContainer,
+				$card,
+				$showAllButton,
+				$resultsFoundsContainer,
+				slidesPerPage = args.slidesPerPage || me.PAGE_ITEM_COUNT,
+				pageCount = 0,
+				type = args.type,
+				itemsIdx,
+				cards = [],
+				locationIdx;
 
 		if (data) {
 			// The data type can either be location or item
@@ -262,22 +262,22 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 					$resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
 					$slideContainer = $contentContainer.find('> div:nth-child(2)');
 					$pagingContainer = $contentContainer.find('> div:nth-child(3)');
-					
+
 					// Hide the spinner in the product card container since we're only doing a location search
 					$productContentContainer.find('#application-slide-search-product-results-card-container img').addClass('hidden');
-					
+
 					// I want to show locations if we have locations to show
 					if (locationSize > 0) {
 						$showAllButton = $('<div />').
-							addClass('application-slide-search-location-card-toggle').
-							append($('<span />').addClass('badge').html('Show All ' + locationSize + ' Locations'));
+								addClass('application-slide-search-location-card-toggle').
+								append($('<span />').addClass('badge').html('Show All ' + locationSize + ' Locations'));
 
 						pageCount = Math.ceil(locationSize / slidesPerPage);
 
 						$contentContainer.removeClass('hidden');
 						$resultsFoundsContainer.
-							removeClass('hidden').
-							html(locationSize + ' Location' + (locationSize > 1 ? 's' : '') + ' Found');
+								removeClass('hidden').
+								html(locationSize + ' Location' + (locationSize > 1 ? 's' : '') + ' Found');
 
 						// Start with a clean slate 
 						$slideContainer.empty();
@@ -364,8 +364,8 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 					} else {
 						$slideContainer.empty();
 						$resultsFoundsContainer.
-							removeClass('hidden').
-							html('0 Locations Found');
+								removeClass('hidden').
+								html('0 Locations Found');
 					}
 					break;
 
@@ -376,8 +376,8 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 					$pagingContainer = $contentContainer.find('>div:nth-child(4)');
 
 					$resultsFoundsContainer.
-						removeClass('hidden').
-						html(productsSize + ' Product' + (productsSize !== 1 ? 's' : '') + ' Found');
+							removeClass('hidden').
+							html(productsSize + ' Product' + (productsSize !== 1 ? 's' : '') + ' Found');
 
 					if (productsSize > 0) {
 						pageCount = Math.ceil(productsSize / slidesPerPage);
@@ -400,13 +400,13 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 
 						$slideContainer.find('>div:not(.search-result-item-page-1)').addClass('hidden');
 						$slideContainer.
-							find('*[data-toggle="popover"]').
-							popover().
-							on('shown.bs.popover', function (evt) {
-								setTimeout(function () {
-									$(evt.target).popover('hide');
-								}, CCH.CONFIG.ui['tooltip-prevalence']);
-							});
+								find('*[data-toggle="popover"]').
+								popover().
+								on('shown.bs.popover', function (evt) {
+									setTimeout(function () {
+										$(evt.target).popover('hide');
+									}, CCH.CONFIG.ui['tooltip-prevalence']);
+								});
 						me.FILTER_RESULTS_BUTTON.show();
 						me.createPaging({
 							container: $pagingContainer,
@@ -435,30 +435,30 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 
 	me.createPaging = function (args) {
 		var $pagingContainer = args.container,
-			$pagingButtonGroup = $pagingContainer.find('>ul.pagination'),
-			$pageButton,
-			$li,
-			pIdx,
-			pageCount = args.pageCount;
+				$pagingButtonGroup = $pagingContainer.find('>ul.pagination'),
+				$pageButton,
+				$li,
+				pIdx,
+				pageCount = args.pageCount;
 		// Start out by removing all buttons from the paging bar
 		$pagingButtonGroup.empty();
 
 		// Add a previous page button
 		$pageButton = $('<a />').
-			attr('href', '#').
-			html('&laquo;');
+				attr('href', '#').
+				html('&laquo;');
 		// This will be the first page so I'm going to disable 
 		// the back button
 		$li = $('<li />').
-			addClass('disabled page-move').
-			append($pageButton);
+				addClass('disabled page-move').
+				append($pageButton);
 		$pagingButtonGroup.append($li);
 		for (pIdx = 0; pIdx < pageCount; pIdx++) {
 			$pageButton = $('<a />').
-				attr('href', '#').
-				html(pIdx + 1);
+					attr('href', '#').
+					html(pIdx + 1);
 			$li = $('<li />').
-				append($pageButton);
+					append($pageButton);
 
 			if (pIdx === 0) {
 				// If this is the first page, also disable the
@@ -471,17 +471,17 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 
 		// Tack on a "Next Page" button
 		$pageButton = $('<a />').
-			attr('href', '#').
-			html('&raquo;');
+				attr('href', '#').
+				html('&raquo;');
 		$li = $('<li />').
-			addClass('page-move').
-			append($pageButton);
+				addClass('page-move').
+				append($pageButton);
 		$pagingButtonGroup.append($li);
 
 		// Bind the click event for each of these buttons
 		$pagingContainer.
-			find('>ul>li').
-			on('click', me.pageButtonClickHandler);
+				find('>ul>li').
+				on('click', me.pageButtonClickHandler);
 
 		// The paging container row might be hidden, so remove
 		// the hidden class to display the container
@@ -490,10 +490,10 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 
 	me.getCurrentlyDisabledPageButton = function (type) {
 		var incomingType = type === 'location' ? me.LOCATION_SLIDE_SEARCH_PAGE_CONTAINER : me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER,
-			$pagingContainer = $('#' + incomingType),
-			$pagingButtonGroup = $pagingContainer.find('>ul.pagination'),
-			numString = $pagingButtonGroup.find('> li.disabled:not(.page-move) > a').html(),
-			num = parseInt(numString, 10);
+				$pagingContainer = $('#' + incomingType),
+				$pagingButtonGroup = $pagingContainer.find('>ul.pagination'),
+				numString = $pagingButtonGroup.find('> li.disabled:not(.page-move) > a').html(),
+				num = parseInt(numString, 10);
 
 		return num;
 	};
@@ -504,14 +504,14 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 		$evt.stopImmediatePropagation();
 
 		var $li = $($evt.target).parent(),
-			$link = $li.find('>a'),
-			linkString = $link.html(),
-			toPage = parseInt(linkString, 10),
-			isDisabled = $li.hasClass('disabled'),
-			currentPage,
-			$productContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID),
-			$locationContainer = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
-			$container;
+				$link = $li.find('>a'),
+				linkString = $link.html(),
+				toPage = parseInt(linkString, 10),
+				isDisabled = $li.hasClass('disabled'),
+				currentPage,
+				$productContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID),
+				$locationContainer = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
+				$container;
 
 		// Find out if I am a button in the product paging set or in the location
 		// paging set
@@ -552,14 +552,14 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 
 	me.displayPage = function (args) {
 		var num = args.num,
-			$productContentContainer = args.container,
-			startIndex = $productContentContainer.attr('id').indexOf('location') !== -1 ? 2 : 3,
-			$slideContainer = $productContentContainer.find('>div:nth-child(' + startIndex + ')'),
-			$pagingContainer = $productContentContainer.find('>div:nth-child(' + (startIndex + 1) + ')'),
-			$listItems = $pagingContainer.find('>ul>li'),
-			$incomingListItem = $($listItems.get(num)),
-			isProductPaging = $pagingContainer.attr('id').indexOf('product') > -1,
-			$locationContainer = $productContentContainer.parent().find('>div#application-slide-search-location-results-content-container');
+				$productContentContainer = args.container,
+				startIndex = $productContentContainer.attr('id').indexOf('location') !== -1 ? 2 : 3,
+				$slideContainer = $productContentContainer.find('>div:nth-child(' + startIndex + ')'),
+				$pagingContainer = $productContentContainer.find('>div:nth-child(' + (startIndex + 1) + ')'),
+				$listItems = $pagingContainer.find('>ul>li'),
+				$incomingListItem = $($listItems.get(num)),
+				isProductPaging = $pagingContainer.attr('id').indexOf('product') > -1,
+				$locationContainer = $productContentContainer.parent().find('>div#application-slide-search-location-results-content-container');
 
 		$listItems.removeClass('disabled');
 
@@ -591,34 +591,34 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 
 		if (args.product) {
 			var product = args.product,
-				item = CCH.items.getById({id: product.id}),
-				id = product.id,
-				bbox = product.bbox,
-				summary = product.summary.medium,
-				title = summary.title,
-				description = summary.text,
-				$newItem = $('#' + me.PRODUCT_CARD_TEMPLATE_ID).children().clone(true),
-				imageContainerClass = 'application-slide-search-product-card-image',
-				titleContainerClass = 'application-slide-search-product-card-title',
-				descriptionContainerClass = 'application-slide-search-product-card-description',
-				$imageContainer = $newItem.find('> div > div:first-child > img'),
-				$titleContainer = $newItem.find('.' + titleContainerClass),
-				$descriptionContainer = $newItem.find('.' + descriptionContainerClass),
-				$bucketButton = $newItem.find('>span.badge'),
-				$exploreControl = $('<span />').
-				addClass('badge').
-				append($('<i />').addClass('fa fa-arrow-circle-o-right'), ' Explore'),
-				bucketAdd = function () {
-					$(window).trigger('cch.slide.search.button.bucket.add', {
-						item: item
-					});
-				},
-				defaultPopoverObject = {
-					'data-toggle': 'popover',
-					'data-trigger': 'hover',
-					'data-placement': 'auto',
-					'data-delay': JSON.stringify(CCH.CONFIG.ui['tooltip-delay'])
-				};
+					item = CCH.items.getById({id: product.id}),
+					id = product.id,
+					bbox = product.bbox,
+					summary = product.summary.medium,
+					title = summary.title,
+					description = summary.text,
+					$newItem = $('#' + me.PRODUCT_CARD_TEMPLATE_ID).children().clone(true),
+					imageContainerClass = 'application-slide-search-product-card-image',
+					titleContainerClass = 'application-slide-search-product-card-title',
+					descriptionContainerClass = 'application-slide-search-product-card-description',
+					$imageContainer = $newItem.find('> div > div:first-child > img'),
+					$titleContainer = $newItem.find('.' + titleContainerClass),
+					$descriptionContainer = $newItem.find('.' + descriptionContainerClass),
+					$bucketButton = $newItem.find('>span.badge'),
+					$exploreControl = $('<span />').
+					addClass('badge').
+					append($('<i />').addClass('fa fa-arrow-circle-o-right'), ' Explore'),
+					bucketAdd = function () {
+						$(window).trigger('cch.slide.search.button.bucket.add', {
+							item: item
+						});
+					},
+					defaultPopoverObject = {
+						'data-toggle': 'popover',
+						'data-trigger': 'hover',
+						'data-placement': 'auto',
+						'data-delay': JSON.stringify(CCH.CONFIG.ui['tooltip-delay'])
+					};
 
 			$newItem.attr('id', 'application-slide-search-product-card-' + id);
 			$imageContainer.attr($.extend({}, defaultPopoverObject, {
@@ -677,27 +677,25 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 	me.buildLocationSearchResultItem = function (args) {
 		args = args || {};
 		var id = args.id || new Date().getMilliseconds(),
-			location = args.location,
-			extent = location.extent,
-			name = location.name,
-			newItem = $('#' + me.LOCATION_CARD_TEMPLATE_ID).children().clone(true),
-			titleContainerClass = 'application-slide-search-location-card-title',
-			$titleContainer = newItem.find('.' + titleContainerClass),
-			$zoomToBadge = $('<span />').
-			addClass('badge').
-			append($('<i />').addClass('fa fa-search-plus'), ' Zoom To');
+				location = args.location,
+				extent = location.extent,
+				name = location.name,
+				$newItem = $('#' + me.LOCATION_CARD_TEMPLATE_ID).children().clone(true),
+				$compassIcon = $newItem.find('.application-slide-search-location-card-icon-compass'),
+				titleContainerClass = 'application-slide-search-location-card-title',
+				$titleContainer = $newItem.find('.' + titleContainerClass),
+				$zoomToBadge = $('<span />').
+				addClass('badge application-slide-search-location-card-link-zoomto').
+				append($('<i />').addClass('fa fa-search-plus'), ' Zoom To');
 
-		newItem.attr('id', 'application-slide-search-location-card-' + id);
+		$newItem.attr('id', 'application-slide-search-location-card-' + id);
 		$titleContainer.attr('id', titleContainerClass + '-' + id);
 		$titleContainer.append(name, '&nbsp;', $zoomToBadge);
 
-		$zoomToBadge.on('click', function () {
-			CCH.map.zoomToBoundingBox({
-				bbox: [extent.xmin, extent.ymin, extent.xmax, extent.ymax]
-			});
-		});
+		$zoomToBadge.on('click', {extent: extent}, me.zoomToClickHandler);
+		$compassIcon.on('click', {extent: extent}, me.zoomToClickHandler);
 
-		return newItem;
+		return $newItem;
 	};
 
 	me.$SEARCH_TYPE_LISTITEM.on('click', function (evt) {
@@ -706,20 +704,20 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 		if (choice !== 'all') {
 			if (choice === 'location') {
 				$('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).
-					find('>div:nth-child(2)').
-					empty();
+						find('>div:nth-child(2)').
+						empty();
 			} else {
 				$('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID).
-					find('>div:nth-child(2)').
-					empty();
+						find('>div:nth-child(2)').
+						empty();
 			}
 		}
 	});
 
 	$(me.FILTER_RESULTS_BUTTON).on('click', function (evt) {
 		var active = true,
-			$button = $(evt.target),
-			$i = $button.find('i');
+				$button = $(evt.target),
+				$i = $button.find('i');
 		if ($button.hasClass('active')) {
 			// Button had the active class on when pushed. This means user is 
 			// turning it off
@@ -749,10 +747,10 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 	$('body').on('click', function (evt) {
 		if (!me.isClosed) {
 			var target = $(evt.target),
-				targetId = target.attr('id') || '',
-				parentContainer = $('#' + me.SLIDE_SEARCH_CONTAINER_PARENT_ID),
-				clickOutsideContainer = parentContainer.attr('id') !== targetId &&
-				parentContainer.find(evt.target).length === 0;
+					targetId = target.attr('id') || '',
+					parentContainer = $('#' + me.SLIDE_SEARCH_CONTAINER_PARENT_ID),
+					clickOutsideContainer = parentContainer.attr('id') !== targetId &&
+					parentContainer.find(evt.target).length === 0;
 
 			if (clickOutsideContainer) {
 				// The click came from outside the container
@@ -762,6 +760,15 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 			}
 		}
 	});
+
+	me.zoomToClickHandler = function (evt) {
+		if (evt && evt.data && evt.data.extent) {
+			var extent = evt.data.extent;
+			CCH.map.zoomToBoundingBox({
+				bbox: [extent.xmin, extent.ymin, extent.xmax, extent.ymax]
+			});
+		}
+	};
 
 	return {
 		open: me.open,
