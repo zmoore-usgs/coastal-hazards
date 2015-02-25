@@ -1,7 +1,6 @@
 /*jslint browser: true*/
 /*jslint plusplus: true */
 /*global $*/
-/*global LOG*/
 /*global CCH*/
 /*global qq*/
 window.CCH = CCH || {};
@@ -882,8 +881,8 @@ CCH.Objects.Publish.UI = function () {
 		});
 
 		if (!exists) {
-			$closeButton.
-				on('click', function () {
+			$closeButton
+				.on('click', function () {
 					$smallWell.remove();
 				});
 
@@ -982,9 +981,9 @@ CCH.Objects.Publish.UI = function () {
 				});
 
 				item.displayedChildren.each(function (child) {
-					var $button = $childrenSortableList.
-							find('li#child-item-' + child).
-							find('div > button:nth-child(2)');
+					var $button = $childrenSortableList
+						.find('li#child-item-' + child)
+						.find('div > button:nth-child(2)');
 
 					if (!$button.hasClass('active')) {
 						$button.click();
@@ -1001,7 +1000,7 @@ CCH.Objects.Publish.UI = function () {
 				// Fill out item type
 				$typeSb
 					.val(item.type)
-					.removeAttr('disabled')
+					.removeAttr('disabled');
 
 				// Show Children
 				$showChildrenCb
@@ -1053,7 +1052,7 @@ CCH.Objects.Publish.UI = function () {
 						.removeAttr('disabled');
 					$srcWfsServiceParamInput
 						.val(services.source_wfs.serviceParameter)
-						.removeAttr('disabled')
+						.removeAttr('disabled');
 					$srcWmsServiceInput
 						.val(services.source_wms.endpoint)
 						.removeAttr('disabled');
