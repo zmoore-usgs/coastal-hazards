@@ -98,6 +98,17 @@
 			<organizationUrl>http://cida.usgs.gov</organizationUrl>
 			<timezone>-6</timezone>
 		</developer>
+                <developer>
+			<id>mwernimont</id>
+			<name>Marty Wernimont</name>
+			<email>mwernimont@usgs.gov</email>
+			<roles>
+				<role>Graphic Designer</role>
+			</roles>
+			<organization>Center for Integrated Data Analytics</organization>
+			<organizationUrl>http://cida.usgs.gov</organizationUrl>
+			<timezone>-6</timezone>
+		</developer>
 	</developers>
 	
 	<properties>
