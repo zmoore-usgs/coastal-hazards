@@ -109,6 +109,25 @@
 	width: 100%
 }
 
+.resource-list-container-sortable {
+	list-style-type: none;
+    padding-left: 0px;
+}
+
+.resource-list-container-sortable li {
+	margin-bottom: 5px;
+	margin-top: 5px;
+	border: none;
+}
+
+.resource-list-container-sortable li:hover {
+	cursor: move;
+}
+
+.resource-list-container-sortable .ui-state-highlight {
+	height: 200px;
+}
+
 #form-publish-info-item-children-sortable-ul {
     list-style-type: none;
     padding-left: 0px;

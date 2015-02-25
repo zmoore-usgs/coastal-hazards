@@ -412,33 +412,39 @@
 							<%-- Data --%>
 							<div id="data-panel" class="resource-panel panel panel-default">
 								<div class="panel-heading">
-									<button id="form-publish-info-item-panel-data-button-add" type="button" class="btn btn-default btn-sm pull-right" disabled="disabled">Add</button>
+									<button id="form-publish-info-item-panel-data-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled">Add</button>
 									<h3 class="panel-title">Data</h3>
 								</div>
 								<div class="panel-body">
-									<%-- Added programatically --%>
+									<ul id="sortable-data" class="resource-list-container-sortable">
+										<%-- Added programatically --%>
+									</ul>
 								</div>
 							</div>
 							
 							<%-- Publications --%>
 							<div id="publications-panel" class="resource-panel panel panel-default">
 								<div class="panel-heading">
-									<button id="form-publish-info-item-panel-publications-button-add" type="button" class="btn btn-default btn-sm pull-right" disabled="disabled">Add</button>
+									<button id="form-publish-info-item-panel-publications-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled">Add</button>
 									<h3 class="panel-title">Publications</h3>
 								</div>
 								<div class="panel-body">
-									<%-- Added programatically --%>
+									<ul id="sortable-publications" class="resource-list-container-sortable">
+										<%-- Added programatically --%>
+									</ul>
 								</div>
 							</div>
 
 							<%-- Resource --%>
 							<div id="resources-panel" class="resource-panel panel panel-default">
 								<div class="panel-heading">
-									<button id="form-publish-info-item-panel-resource-button-add" type="button" class="btn btn-default btn-sm pull-right" disabled="disabled">Add</button>
+									<button id="form-publish-info-item-panel-resource-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled" >Add</button>
 									<h3 class="panel-title">Resource</h3>
 								</div>
 								<div class="panel-body">
-									<%-- Added programatically --%>
+									<ul id="sortable-resources" class="resource-list-container-sortable">
+										<%-- Added programatically --%>
+									</ul>
 								</div>
 							</div>
 								

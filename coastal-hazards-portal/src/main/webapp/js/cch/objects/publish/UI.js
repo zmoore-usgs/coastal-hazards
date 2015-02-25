@@ -70,7 +70,8 @@ CCH.Objects.Publish.UI = function () {
 		$proxyWmsCheckButton = $form.find('#form-publish-item-service-proxy-wms-import-button-check'),
 		$getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button'),
 		$emphasisItemSpan = $form.find('.emphasis-item'),
-		$emphasisAggregationSpan = $form.find('.emphasis-aggregation');
+		$emphasisAggregationSpan = $form.find('.emphasis-aggregation'),
+		$resourceSortableContainers = $('.resource-list-container-sortable');
 
 	me.createHelpPopover = function ($content, $element) {
 		$element.popover('destroy');
@@ -151,7 +152,7 @@ CCH.Objects.Publish.UI = function () {
 		$proxyWmsServiceInput.val('');
 		$proxyWmsServiceParamInput.val('');
 		$metadataSummaryField.val('');
-		$publicationsPanel.find('.panel-body').empty();
+		$publicationsPanel.find('.resource-list-container-sortable').empty();
 		$ribbonableCb.prop(CCH.CONFIG.strings.checked, false);
 		$showChildrenCb.prop(CCH.CONFIG.strings.checked, false);
 		$itemType.val('');
@@ -833,10 +834,11 @@ CCH.Objects.Publish.UI = function () {
 	me.createPublicationRow = function (link, title, type) {
 		var exists = false,
 			$panel = $('#' + type + '-panel'),
-			$panelBody = $panel.find('.panel-body'),
+			$panelBodyListContainer = $panel.find('.panel-body > ul'),
 			$closeButtonRow = $('<div />').addClass('pull-right'),
 			$closeButton = $('<i />').addClass('fa fa-times'),
 			$smallWell = $('<div />').addClass('well well-small'),
+			$sortableWrapper = $('<li />').addClass('ui-state-default'),
 			$linkRow = $('<div />').addClass('row'),
 			$titleRow = $('<div />').addClass('row'),
 			$typeRow = $('<div />').addClass('row'),
@@ -868,18 +870,11 @@ CCH.Objects.Publish.UI = function () {
 			$typeSelect = $('<select />')
 				.addClass('form-control')
 				.append($dataOption, $publicationOption, $resourceOption);
-	
+
+		$sortableWrapper.append($smallWell);
 		$typeRow.append($typeSelect);
 		$typeSelect.val(type);
-		$typeSelect.on('change', function (evt) {
-			var type = evt.target.value,
-				$parentContainer = $(evt.target).closest('.well'),
-				title = $parentContainer.find('.panel-item-title').val(),
-				link = $parentContainer.find('.panel-item-link').val();
-			
-			$parentContainer.remove();
-			me.createPublicationRow(link, title, type);
-		});
+		$typeSelect.on('change', me.resourceTypeChanged);
 
 		// Check that this item does not yet exist in the UI
 		$('.resource-panel .well').each(function (i, pubPanel) {
@@ -897,7 +892,7 @@ CCH.Objects.Publish.UI = function () {
 		if (!exists) {
 			$closeButton
 				.on(CCH.CONFIG.strings.click, function () {
-					$smallWell.remove();
+					$sortableWrapper.remove();
 				});
 
 			$closeButtonRow.append($closeButton);
@@ -907,9 +902,19 @@ CCH.Objects.Publish.UI = function () {
 
 			$smallWell.append($closeButtonRow, $titleRow, $linkRow, $typeRow);
 
-			$panelBody.append($smallWell);
+			$panelBodyListContainer.append($sortableWrapper);
 		}
 		return $smallWell;
+	};
+	
+	me.resourceTypeChanged = function (evt) {
+		var type = evt.target.value,
+			$parentContainer = $(evt.target).closest('li'),
+			title = $parentContainer.find('.panel-item-title').val(),
+			link = $parentContainer.find('.panel-item-link').val();
+
+		$parentContainer.remove();
+		me.createPublicationRow(link, title, type);
 	};
 
 	me.addItemToForm = function (args) {
@@ -1183,7 +1188,7 @@ CCH.Objects.Publish.UI = function () {
 				.removeAttr(CCH.CONFIG.strings.disabled);
 
 			// Publications
-			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+			$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 			Object.keys(item.summary.full.publications, function (type) {
 				item.summary.full.publications[type].each(function (publication) {
 					me.createPublicationRow(publication.link, publication.title, type);
@@ -1598,8 +1603,8 @@ CCH.Objects.Publish.UI = function () {
 
 						$descriptionTinyTextArea.val(response.tiny.text || '');
 
-						$publicationsPanel.find('>div:nth-child(2)').empty();
-						$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+						$('.resource-list-container-sortable').empty();
+						$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 						Object.keys(response.full.publications, function (type) {
 							response.full.publications[type].each(function (publication) {
 								me.createPublicationRow(publication.link, publication.title, type);
@@ -2298,6 +2303,14 @@ CCH.Objects.Publish.UI = function () {
 			]
 		}
 	});
+	
+	me.initializeResourceSorting = function () {
+		$resourceSortableContainers.sortable({
+			placeholder: 'ui-state-highlight'
+		});
+	};
+	
+	me.initializeResourceSorting();
 
 	return $.extend(me, {});
 };
