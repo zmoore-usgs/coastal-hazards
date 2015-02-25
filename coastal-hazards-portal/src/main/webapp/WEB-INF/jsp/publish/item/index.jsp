@@ -123,7 +123,7 @@
 				show : 'show',
 				hidden : 'hidden',
 				enabled : 'enabled',
-				chedked : 'checked',
+				checked : 'checked',
 				click : 'click'
 			}
 		</script>
@@ -438,7 +438,7 @@
 							<%-- Resource --%>
 							<div id="resources-panel" class="resource-panel panel panel-default">
 								<div class="panel-heading">
-									<button id="form-publish-info-item-panel-resource-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled" >Add</button>
+									<button id="form-publish-info-item-panel-resources-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled" >Add</button>
 									<h3 class="panel-title">Resource</h3>
 								</div>
 								<div class="panel-body">

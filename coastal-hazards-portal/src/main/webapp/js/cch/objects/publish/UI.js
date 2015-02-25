@@ -337,7 +337,7 @@ CCH.Objects.Publish.UI = function () {
 					errors.push('WMS Proxy parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
-				$publicationsPanel.find('> div:nth-child(2) > div.well').each(function (ind, pubPanel) {
+				$('.resource-panel .panel-body ul > li div.well').each(function (ind, pubPanel) {
 					var title = $(pubPanel).find('div:nth-child(2) > input').val() || '',
 							link = $(pubPanel).find('div:nth-child(3) > input').val() || '';
 
@@ -486,7 +486,8 @@ CCH.Objects.Publish.UI = function () {
 				resources: []
 			}
 		};
-		$publicationsPanel.find('> div:nth-child(2) > div').each(function (idx, panel) {
+		
+		$('.resource-panel .panel-body ul > li div.well').each(function (idx, panel) {
 			var $panel = $(panel),
 					title = $panel.find('>div:nth-child(2) input').val().trim(),
 					link = $panel.find('>div:nth-child(3) input').val().trim(),
@@ -907,6 +908,8 @@ CCH.Objects.Publish.UI = function () {
 		return $smallWell;
 	};
 	
+	// When a resource type changes, I want to remove it from its current bin
+	// and place a new resource item into the bin it should go into
 	me.resourceTypeChanged = function (evt) {
 		var type = evt.target.value,
 			$parentContainer = $(evt.target).closest('li'),
@@ -1764,9 +1767,12 @@ CCH.Objects.Publish.UI = function () {
 		}
 	});
 
-	$('#form-publish-info-item-panel-publications-button-add').on(CCH.CONFIG.strings.click, function () {
-		me.createPublicationRow('', '');
+	['publications', 'resources', 'data'].forEach(function(type) {
+		$('#form-publish-info-item-panel-' + type + '-button-add').on(CCH.CONFIG.strings.click, function () {
+			me.createPublicationRow('', '', type);
+		});
 	});
+	
 
 	$('#publish-button-create-aggregation-option').on(CCH.CONFIG.strings.click, function () {
 		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
