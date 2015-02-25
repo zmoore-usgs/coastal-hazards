@@ -79,9 +79,9 @@ CCH.Objects.Publish.UI = function () {
 			'title': 'Available Services',
 			'content': $content
 		});
-		$element.popover('show');
+		$element.popover(CCH.CONFIG.strings.show);
 
-		$('body').on('click', function () {
+		$('body').on(CCH.CONFIG.strings.click, function () {
 			$element.popover('destroy');
 		});
 	};
@@ -90,39 +90,39 @@ CCH.Objects.Publish.UI = function () {
 		var title = args.title,
 				body = args.body;
 
-		$alertModal.modal('hide');
+		$alertModal.modal(CCH.CONFIG.strings.hide);
 		$alertModalTitle.html(title);
 		$alertModalBody.html(body);
-		$alertModal.modal('show');
+		$alertModal.modal(CCH.CONFIG.strings.show);
 	};
 
 	me.clearForm = function () {
-		$titleFullTextArea.attr('disabled', 'disabled');
-		$titleMediumTextArea.attr('disabled', 'disabled');
-		$descriptionFullTextArea.attr('disabled', 'disabled');
-		$descriptionMediumTextArea.attr('disabled', 'disabled');
-		$descriptionTinyTextArea.attr('disabled', 'disabled');
-		$bboxNorth.attr('disabled', 'disabled');
-		$bboxWest.attr('disabled', 'disabled');
-		$bboxSouth.attr('disabled', 'disabled');
-		$bboxEast.attr('disabled', 'disabled');
-		$typeSb.attr('disabled', 'disabled');
-		$attributeSelect.attr('disabled', 'disabled');
-		$('.form-group-keyword input').attr('disabled', 'disabled');
-		$srcWfsServiceInput.attr('disabled', 'disabled');
-		$srcWfsServiceParamInput.attr('disabled', 'disabled');
-		$srcWmsServiceInput.attr('disabled', 'disabled');
-		$srcWmsServiceParamInput.attr('disabled', 'disabled');
-		$proxyWfsServiceInput.attr('disabled', 'disabled');
-		$proxyWfsServiceParamInput.attr('disabled', 'disabled');
-		$proxyWmsServiceInput.attr('disabled', 'disabled');
-		$proxyWmsServiceParamInput.attr('disabled', 'disabled');
-		$ribbonableCb.attr('disabled', 'disabled');
-		$showChildrenCb.attr('disabled', 'disabled');
-		$itemType.attr('disabled', 'disabled');
-		$name.attr('disabled', 'disabled');
-		$keywordGroup.find('input').attr('disabled', 'disabled');
-		$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').attr('disabled', 'disabled');
+		$titleFullTextArea.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$titleMediumTextArea.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$descriptionFullTextArea.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$descriptionMediumTextArea.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$descriptionTinyTextArea.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$bboxNorth.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$bboxWest.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$bboxSouth.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$bboxEast.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$typeSb.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$attributeSelect.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$('.form-group-keyword input').attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$srcWfsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$srcWfsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$srcWmsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$srcWmsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$proxyWfsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$proxyWfsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$proxyWmsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$proxyWmsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$ribbonableCb.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$showChildrenCb.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$itemType.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$name.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$keywordGroup.find('input').attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 		$itemIdInput.val('');
 		$titleFullTextArea.val('');
 		$titleMediumTextArea.val('');
@@ -137,7 +137,7 @@ CCH.Objects.Publish.UI = function () {
 		$itemEnabledField.val('');
 		$attributeSelect.val('');
 		$('.form-group-keyword').not(':first').remove();
-		$('.form-group-keyword button:nth-child(2)').addClass('hidden');
+		$('.form-group-keyword button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
 		$('.form-group-keyword input').val('');
 		$cswServiceInput.val('');
 		$srcWfsServiceInput.val('');
@@ -150,97 +150,97 @@ CCH.Objects.Publish.UI = function () {
 		$proxyWmsServiceParamInput.val('');
 		$metadataSummaryField.val('');
 		$publicationsPanel.find('.panel-body').empty();
-		$ribbonableCb.prop('checked', false);
-		$showChildrenCb.prop('checked', false);
+		$ribbonableCb.prop(CCH.CONFIG.strings.checked, false);
+		$showChildrenCb.prop(CCH.CONFIG.strings.checked, false);
 		$itemType.val('');
 		$name.val('');
 		$childrenSortableList.empty();
-		$metadataDropdownGroup.addClass('hidden');
+		$metadataDropdownGroup.addClass(CCH.CONFIG.strings.hidden);
 		$itemImage.attr('src', '');
-		$emphasisItemSpan.removeClass('enabled');
-		$emphasisAggregationSpan.removeClass('enabled');
+		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
+		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 	};
 
 	me.enableNewItemForm = function () {
 		var gsBaseUrl = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources[CCH.CONFIG.strings.cidaGeoserver].proxy + 'proxied/';
 		$itemType.val('data');
-		$titleFullTextArea.removeAttr('disabled');
-		$titleMediumTextArea.removeAttr('disabled');
-		$descriptionFullTextArea.removeAttr('disabled');
-		$descriptionMediumTextArea.removeAttr('disabled');
-		$descriptionTinyTextArea.removeAttr('disabled');
-		$bboxNorth.removeAttr('disabled');
-		$bboxWest.removeAttr('disabled');
-		$bboxSouth.removeAttr('disabled');
-		$bboxEast.removeAttr('disabled');
-		$typeSb.removeAttr('disabled');
-		$attributeSelect.removeAttr('disabled');
-		$('.form-group-keyword input').removeAttr('disabled');
-		$srcWfsServiceInput.removeAttr('disabled');
-		$srcWfsServiceParamInput.removeAttr('disabled');
-		$srcWmsServiceInput.removeAttr('disabled');
-		$srcWmsServiceParamInput.removeAttr('disabled');
+		$titleFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$titleMediumTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$descriptionFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$descriptionMediumTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$descriptionTinyTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$bboxNorth.removeAttr(CCH.CONFIG.strings.disabled);
+		$bboxWest.removeAttr(CCH.CONFIG.strings.disabled);
+		$bboxSouth.removeAttr(CCH.CONFIG.strings.disabled);
+		$bboxEast.removeAttr(CCH.CONFIG.strings.disabled);
+		$typeSb.removeAttr(CCH.CONFIG.strings.disabled);
+		$attributeSelect.removeAttr(CCH.CONFIG.strings.disabled);
+		$('.form-group-keyword input').removeAttr(CCH.CONFIG.strings.disabled);
+		$srcWfsServiceInput.removeAttr(CCH.CONFIG.strings.disabled);
+		$srcWfsServiceParamInput.removeAttr(CCH.CONFIG.strings.disabled);
+		$srcWmsServiceInput.removeAttr(CCH.CONFIG.strings.disabled);
+		$srcWmsServiceParamInput.removeAttr(CCH.CONFIG.strings.disabled);
 		$proxyWfsServiceInput
-				.removeAttr('disabled')
+				.removeAttr(CCH.CONFIG.strings.disabled)
 				.val(gsBaseUrl + 'wfs');
-		$proxyWfsServiceParamInput.removeAttr('disabled');
+		$proxyWfsServiceParamInput.removeAttr(CCH.CONFIG.strings.disabled);
 		$proxyWmsServiceInput
-				.removeAttr('disabled')
+				.removeAttr(CCH.CONFIG.strings.disabled)
 				.val(gsBaseUrl + 'wms');
-		$getWfsAttributesButton.removeAttr('disabled');
-		$proxyWmsServiceParamInput.removeAttr('disabled');
-		$ribbonableCb.removeAttr('disabled');
-		$showChildrenCb.prop('checked', false);
-		$name.removeAttr('disabled');
-		$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled');
-		$uploaderDummy.removeClass('hidden');
-		$metadataDropdownGroup.removeClass('hidden');
+		$getWfsAttributesButton.removeAttr(CCH.CONFIG.strings.disabled);
+		$proxyWmsServiceParamInput.removeAttr(CCH.CONFIG.strings.disabled);
+		$ribbonableCb.removeAttr(CCH.CONFIG.strings.disabled);
+		$showChildrenCb.prop(CCH.CONFIG.strings.checked, false);
+		$name.removeAttr(CCH.CONFIG.strings.disabled);
+		$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr(CCH.CONFIG.strings.disabled);
+		$uploaderDummy.removeClass(CCH.CONFIG.strings.hidden);
+		$metadataDropdownGroup.removeClass(CCH.CONFIG.strings.hidden);
 		$itemEnabledField.val('false');
-		$keywordGroup.find('input').removeAttr('disabled');
-		$wfsServerHelpButton.removeAttr('disabled');
-		$wfsSourceCopyButton.removeAttr('disabled');
-		$sourceWfsCheckButton.removeAttr('disabled');
-		$sourceWmsCheckButton.removeAttr('disabled');
-		$wmsServerHelpButton.removeAttr('disabled');
-		$proxyWfsCheckButton.removeAttr('disabled');
-		$proxyWmsCheckButton.removeAttr('disabled');
+		$keywordGroup.find('input').removeAttr(CCH.CONFIG.strings.disabled);
+		$wfsServerHelpButton.removeAttr(CCH.CONFIG.strings.disabled);
+		$wfsSourceCopyButton.removeAttr(CCH.CONFIG.strings.disabled);
+		$sourceWfsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
+		$sourceWmsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
+		$wmsServerHelpButton.removeAttr(CCH.CONFIG.strings.disabled);
+		$proxyWfsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
+		$proxyWmsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
 		$childrenSortableList.empty();
-		$emphasisItemSpan.addClass('enabled');
-		$emphasisAggregationSpan.removeClass('enabled');
+		$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
+		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 	};
 
 	me.enableNewAggregationForm = function () {
 		$itemType.val('aggregation');
-		$titleFullTextArea.removeAttr('disabled');
-		$titleMediumTextArea.removeAttr('disabled');
-		$descriptionFullTextArea.removeAttr('disabled');
-		$descriptionMediumTextArea.removeAttr('disabled');
-		$descriptionTinyTextArea.removeAttr('disabled');
-		$bboxNorth.removeAttr('disabled');
-		$bboxWest.removeAttr('disabled');
-		$bboxSouth.removeAttr('disabled');
-		$bboxEast.removeAttr('disabled');
-		$srcWfsServiceInput.attr('disabled', 'disabled');
-		$srcWfsServiceParamInput.attr('disabled', 'disabled');
-		$srcWmsServiceInput.attr('disabled', 'disabled');
-		$srcWmsServiceParamInput.attr('disabled', 'disabled');
-		$proxyWfsServiceInput.attr('disabled', 'disabled');
-		$proxyWfsServiceParamInput.attr('disabled', 'disabled');
-		$proxyWmsServiceInput.attr('disabled', 'disabled');
-		$proxyWmsServiceParamInput.attr('disabled', 'disabled');
-		$typeSb.removeAttr('disabled');
-		$('.form-group-keyword input').find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled');
-		$ribbonableCb.removeAttr('disabled');
-		$showChildrenCb.removeAttr('disabled');
-		$name.removeAttr('disabled');
-		$publicationsPanel.removeAttr('disabled');
-		$childrenSortableList.removeAttr('disabled');
-		$uploaderDummy.empty().addClass('hidden');
+		$titleFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$titleMediumTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$descriptionFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$descriptionMediumTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$descriptionTinyTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$bboxNorth.removeAttr(CCH.CONFIG.strings.disabled);
+		$bboxWest.removeAttr(CCH.CONFIG.strings.disabled);
+		$bboxSouth.removeAttr(CCH.CONFIG.strings.disabled);
+		$bboxEast.removeAttr(CCH.CONFIG.strings.disabled);
+		$srcWfsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$srcWfsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$srcWmsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$srcWmsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$proxyWfsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$proxyWfsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$proxyWmsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$proxyWmsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$typeSb.removeAttr(CCH.CONFIG.strings.disabled);
+		$('.form-group-keyword input').find('#form-publish-info-item-panel-publications-button-add').removeAttr(CCH.CONFIG.strings.disabled);
+		$ribbonableCb.removeAttr(CCH.CONFIG.strings.disabled);
+		$showChildrenCb.removeAttr(CCH.CONFIG.strings.disabled);
+		$name.removeAttr(CCH.CONFIG.strings.disabled);
+		$publicationsPanel.removeAttr(CCH.CONFIG.strings.disabled);
+		$childrenSortableList.removeAttr(CCH.CONFIG.strings.disabled);
+		$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
 		$itemEnabledField.val('false');
-		$keywordGroup.find('input').removeAttr('disabled');
+		$keywordGroup.find('input').removeAttr(CCH.CONFIG.strings.disabled);
 		me.createSortableChildren();
-		$emphasisItemSpan.removeClass('enabled');
-		$emphasisAggregationSpan.addClass('enabled');
+		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
+		$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
 	};
 
 	me.isBlank = function ($ele) {
@@ -438,8 +438,8 @@ CCH.Objects.Publish.UI = function () {
 			name = $name.val(),
 			type = $typeSb.val(),
 			attr = $attributeSelect.val() || '',
-			ribbonable = $ribbonableCb.prop('checked'),
-			showChildren = $showChildrenCb.prop('checked'),
+			ribbonable = $ribbonableCb.prop(CCH.CONFIG.strings.checked),
+			showChildren = $showChildrenCb.prop(CCH.CONFIG.strings.checked),
 			enabled = $itemEnabledField.val() === 'true' ? true : false,
 			services = [],
 			children = [],
@@ -608,7 +608,7 @@ CCH.Objects.Publish.UI = function () {
 
 	me.bindKeywordGroup = function ($grp) {
 		$grp.find('button')
-			.on('click', function () {
+			.on(CCH.CONFIG.strings.click, function () {
 				if ($form.find('.form-group-keyword').length > 1) {
 					// This is the last keyword group, so don't remove it
 					$grp.remove();
@@ -638,12 +638,12 @@ CCH.Objects.Publish.UI = function () {
 
 		if (!keywordExists) {
 			$keywordGroupLocal = $keywordGroupClone.clone();
-			$keywordGroupLocal.find('button:nth-child(1)').addClass('hidden');
-			$keywordGroupLocal.find('button').removeAttr('disabled');
+			$keywordGroupLocal.find('button:nth-child(1)').addClass(CCH.CONFIG.strings.hidden);
+			$keywordGroupLocal.find('button').removeAttr(CCH.CONFIG.strings.disabled);
 			$keywordGroupLocal
 					.find('input')
 					.attr('value', keyword)
-					.removeAttr('disabled')
+					.removeAttr(CCH.CONFIG.strings.disabled)
 					.val(keyword);
 			me.bindKeywordGroup($keywordGroupLocal);
 			$keywordGroup.after($keywordGroupLocal);
@@ -697,10 +697,10 @@ CCH.Objects.Publish.UI = function () {
 				success: [me.updateFormWithNewCSWInfo],
 				error: [
 					function (response) {
-						$alertModal.modal('hide');
+						$alertModal.modal(CCH.CONFIG.strings.hide);
 						$alertModalTitle.html('CSW Record Could Not Be Attained');
 						$alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
-						$alertModal.modal('show');
+						$alertModal.modal(CCH.CONFIG.strings.show);
 					}
 				]
 			}
@@ -803,8 +803,8 @@ CCH.Objects.Publish.UI = function () {
 				}
 			});
 		}
-		$attributeSelect.removeAttr('disabled');
-		$attributeRetrieveDataButton.removeAttr('disabled');
+		$attributeSelect.removeAttr(CCH.CONFIG.strings.disabled);
+		$attributeRetrieveDataButton.removeAttr(CCH.CONFIG.strings.disabled);
 	};
 
 	me.metadataPublishCallback = function (mdObject, status) {
@@ -817,10 +817,10 @@ CCH.Objects.Publish.UI = function () {
 					success: [me.updateFormWithNewCSWInfo],
 					error: [
 						function (response) {
-							$alertModal.modal('hide');
+							$alertModal.modal(CCH.CONFIG.strings.hide);
 							$alertModalTitle.html('CSW Record Could Not Be Attained');
 							$alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
-							$alertModal.modal('show');
+							$alertModal.modal(CCH.CONFIG.strings.show);
 						}
 					]
 				}
@@ -882,7 +882,7 @@ CCH.Objects.Publish.UI = function () {
 
 		if (!exists) {
 			$closeButton
-				.on('click', function () {
+				.on(CCH.CONFIG.strings.click, function () {
 					$smallWell.remove();
 				});
 
@@ -938,25 +938,25 @@ CCH.Objects.Publish.UI = function () {
 			// Item ID
 			$itemIdInput.val(id);
 
-			$imageGenButton.removeAttr('disabled');
+			$imageGenButton.removeAttr(CCH.CONFIG.strings.disabled);
 
 			if (type === 'aggregation' || type === 'uber') {
-				$emphasisAggregationSpan.addClass('enabled');
-				$emphasisItemSpan.removeClass('enabled');
+				$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
+				$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 				// Populate children
 				me.createSortableChildren();
 
 				// Fill out item type
 				$typeSb
 					.val(item.type)
-					.removeAttr('disabled')
+					.removeAttr(CCH.CONFIG.strings.disabled)
 					.on('change', me.createSortableChildren)
 					.trigger('change');
 
 				// Show Children
 				$showChildrenCb
-					.prop('checked', item.showChildren)
-					.removeAttr('disabled');
+					.prop(CCH.CONFIG.strings.checked, item.showChildren)
+					.removeAttr(CCH.CONFIG.strings.disabled);
 
 				// Select children
 				item.children.reverse().each(function (child) {
@@ -990,22 +990,22 @@ CCH.Objects.Publish.UI = function () {
 					}
 				});
 
-				$uploaderDummy.empty().addClass('hidden');
-				$metadataDropdownGroup.addClass('hidden');
+				$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
+				$metadataDropdownGroup.addClass(CCH.CONFIG.strings.hidden);
 			} else {
-				$emphasisAggregationSpan.removeClass('enabled');
-				$emphasisItemSpan.addClass('enabled');
+				$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
+				$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
 				$childrenSortableList.empty();
 
 				// Fill out item type
 				$typeSb
 					.val(item.type)
-					.removeAttr('disabled');
+					.removeAttr(CCH.CONFIG.strings.disabled);
 
 				// Show Children
 				$showChildrenCb
-					.prop('checked', false)
-					.attr('disabled', 'disabled');
+					.prop(CCH.CONFIG.strings.checked, false)
+					.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 
 				// Fill out services array
 				item.services.each(function (service) {
@@ -1023,7 +1023,7 @@ CCH.Objects.Publish.UI = function () {
 									me.updateSelectAttribtue(responseObject);
 									$attributeSelect
 										.val(item.attr)
-										.removeAttr('disabled');
+										.removeAttr(CCH.CONFIG.strings.disabled);
 								}],
 							error: [
 								function (data) {
@@ -1036,7 +1036,7 @@ CCH.Objects.Publish.UI = function () {
 										$alertModalTitle.html('Proxy Layer Could Not Be Found');
 										$alertModalBody.html('The proxy layer could not be found on our server.' +
 												' You may want to try re-importing it');
-										$alertModal.modal('show');
+										$alertModal.modal(CCH.CONFIG.strings.show);
 									}
 								}
 							]
@@ -1046,44 +1046,44 @@ CCH.Objects.Publish.UI = function () {
 					// Fill out services panel
 					$cswServiceInput
 						.val(services.csw.endpoint)
-						.removeAttr('disabled');
+						.removeAttr(CCH.CONFIG.strings.disabled);
 					$srcWfsServiceInput
 						.val(services.source_wfs.endpoint)
-						.removeAttr('disabled');
+						.removeAttr(CCH.CONFIG.strings.disabled);
 					$srcWfsServiceParamInput
 						.val(services.source_wfs.serviceParameter)
-						.removeAttr('disabled');
+						.removeAttr(CCH.CONFIG.strings.disabled);
 					$srcWmsServiceInput
 						.val(services.source_wms.endpoint)
-						.removeAttr('disabled');
+						.removeAttr(CCH.CONFIG.strings.disabled);
 					$srcWmsServiceParamInput
 						.val(services.source_wms.serviceParameter)
-						.removeAttr('disabled');
+						.removeAttr(CCH.CONFIG.strings.disabled);
 					$proxyWfsServiceInput
 						.val(services.proxy_wfs.endpoint)
-						.removeAttr('disabled');
+						.removeAttr(CCH.CONFIG.strings.disabled);
 					$proxyWfsServiceParamInput
 						.val(services.proxy_wfs.serviceParameter)
-						.removeAttr('disabled');
-					$getWfsAttributesButton.removeAttr('disabled');
+						.removeAttr(CCH.CONFIG.strings.disabled);
+					$getWfsAttributesButton.removeAttr(CCH.CONFIG.strings.disabled);
 					$proxyWmsServiceInput
 						.val(services.proxy_wms.endpoint)
-						.removeAttr('disabled');
+						.removeAttr(CCH.CONFIG.strings.disabled);
 					$proxyWmsServiceParamInput
 						.val(services.proxy_wms.serviceParameter)
-						.removeAttr('disabled');
+						.removeAttr(CCH.CONFIG.strings.disabled);
 				}
 
-				$wfsServerHelpButton.removeAttr('disabled');
-				$sourceWfsCheckButton.removeAttr('disabled');
-				$wfsSourceCopyButton.removeAttr('disabled');
-				$wmsServerHelpButton.removeAttr('disabled');
-				$sourceWmsCheckButton.removeAttr('disabled');
-				$proxyWfsCheckButton.removeAttr('disabled');
-				$proxyWmsCheckButton.removeAttr('disabled');
+				$wfsServerHelpButton.removeAttr(CCH.CONFIG.strings.disabled);
+				$sourceWfsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
+				$wfsSourceCopyButton.removeAttr(CCH.CONFIG.strings.disabled);
+				$wmsServerHelpButton.removeAttr(CCH.CONFIG.strings.disabled);
+				$sourceWmsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
+				$proxyWfsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
+				$proxyWmsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
 
-				$metadataDropdownGroup.removeClass('hidden');
-				$uploaderDummy.empty().removeClass('hidden');
+				$metadataDropdownGroup.removeClass(CCH.CONFIG.strings.hidden);
+				$uploaderDummy.empty().removeClass(CCH.CONFIG.strings.hidden);
 				me.createUploader({
 					callbacks: {
 						success: [
@@ -1095,10 +1095,10 @@ CCH.Objects.Publish.UI = function () {
 											success: [me.metadataPublishCallback],
 											error: [
 												function () {
-													$alertModal.modal('hide');
+													$alertModal.modal(CCH.CONFIG.strings.hide);
 													$alertModalTitle.html('Metadata Could Not Be Saved');
 													$alertModalBody.html('Unfortunately your metadata could not be saved.');
-													$alertModal.modal('show');
+													$alertModal.modal(CCH.CONFIG.strings.show);
 												}
 											]
 										}
@@ -1108,10 +1108,10 @@ CCH.Objects.Publish.UI = function () {
 						],
 						error: [
 							function () {
-								$alertModal.modal('hide');
+								$alertModal.modal(CCH.CONFIG.strings.hide);
 								$alertModalTitle.html('Unable to initialize uploading functionality');
 								$alertModalBody.html('Unfortunately you may not be able to upload metadata.');
-								$alertModal.modal('show');
+								$alertModal.modal(CCH.CONFIG.strings.show);
 							}
 						]
 					}
@@ -1119,56 +1119,56 @@ CCH.Objects.Publish.UI = function () {
 			}
 
 			// Item Name
-			$name.val(item.name).removeAttr('disabled');
+			$name.val(item.name).removeAttr(CCH.CONFIG.strings.disabled);
 
 			$metadataSummaryField.val(summary.version || 'unknown');
 
 			// Add Item Text
 			$titleFullTextArea
 				.val(titleFull)
-				.removeAttr('disabled');
+				.removeAttr(CCH.CONFIG.strings.disabled);
 			$titleMediumTextArea
 				.val(titleMedium)
-				.removeAttr('disabled');
+				.removeAttr(CCH.CONFIG.strings.disabled);
 
 			// Add Description Text
 			$descriptionFullTextArea
 				.val(descriptionFull)
-				.removeAttr('disabled');
+				.removeAttr(CCH.CONFIG.strings.disabled);
 			$descriptionMediumTextArea
 				.val(descriptionMedium)
-				.removeAttr('disabled');
+				.removeAttr(CCH.CONFIG.strings.disabled);
 			$descriptionTinyTextArea
 				.val(descriptionTiny)
-				.removeAttr('disabled');
+				.removeAttr(CCH.CONFIG.strings.disabled);
 
 			// Add keywords
 			keywords.each(function (keyword) {
 				me.addKeywordGroup(keyword);
 			});
-			$keywordGroup.find('input').removeAttr('disabled');
-			$keywordGroup.find('button:nth-child(2)').addClass('hidden');
-			$keywordGroup.find('button').removeAttr('disabled');
-			$keywordGroup.find('button').on('click', function () {
+			$keywordGroup.find('input').removeAttr(CCH.CONFIG.strings.disabled);
+			$keywordGroup.find('button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
+			$keywordGroup.find('button').removeAttr(CCH.CONFIG.strings.disabled);
+			$keywordGroup.find('button').on(CCH.CONFIG.strings.click, function () {
 				if ($keywordGroup.find('input').val() !== '') {
 					me.addKeywordGroup($keywordGroup.find('input').val());
 				}
 			});
 
 			// Fill out bbox
-			$bboxWest.val(item.bbox[0]).removeAttr('disabled');
-			$bboxSouth.val(item.bbox[1]).removeAttr('disabled');
-			$bboxEast.val(item.bbox[2]).removeAttr('disabled');
-			$bboxNorth.val(item.bbox[3]).removeAttr('disabled');
+			$bboxWest.val(item.bbox[0]).removeAttr(CCH.CONFIG.strings.disabled);
+			$bboxSouth.val(item.bbox[1]).removeAttr(CCH.CONFIG.strings.disabled);
+			$bboxEast.val(item.bbox[2]).removeAttr(CCH.CONFIG.strings.disabled);
+			$bboxNorth.val(item.bbox[3]).removeAttr(CCH.CONFIG.strings.disabled);
 
 
 			// Ribbonable
 			$ribbonableCb
-				.prop('checked', item.ribbonable)
-				.removeAttr('disabled');
+				.prop(CCH.CONFIG.strings.checked, item.ribbonable)
+				.removeAttr(CCH.CONFIG.strings.disabled);
 
 			// Publications
-			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled', 'disabled');
+			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 			Object.keys(item.summary.full.publications, function (type) {
 				item.summary.full.publications[type].each(function (publication) {
 					me.createPublicationRow(publication.link, publication.title, type);
@@ -1231,7 +1231,7 @@ CCH.Objects.Publish.UI = function () {
 				$li.append($span);
 
 				$childrenSortableList.append($li);
-				$activeButton.on('click', function (evt) {
+				$activeButton.on(CCH.CONFIG.strings.click, function (evt) {
 					var currentAggregationId = $itemIdInput.val() || '',
 							$button = evt.target.tagName === 'I' ? $(evt.target).parent() : $(evt.target),
 							$container = $button.parent().parent().parent(),
@@ -1251,11 +1251,11 @@ CCH.Objects.Publish.UI = function () {
 							success: function (response) {
 								if (response.cycle === true) {
 									$button.removeClass('active');
-									$overrideButton.on('click', function () {
+									$overrideButton.on(CCH.CONFIG.strings.click, function () {
 										$button.addClass('active');
 										processChildren();
 									}),
-									$alertModal.modal('hide');
+									$alertModal.modal(CCH.CONFIG.strings.hide);
 									$alertModalTitle.html('Cyclic Relationship Found');
 									$alertModalBody.html('There was a cyclic relationship found ' +
 											'between parent ' + currentAggregationId +
@@ -1263,7 +1263,7 @@ CCH.Objects.Publish.UI = function () {
 											'this warning and add this child to the ' +
 											'aggregation but you should only do so if you ' +
 											'really know what you are doing.');
-									$alertModal.modal('show');
+									$alertModal.modal(CCH.CONFIG.strings.show);
 								} else {
 									processChildren();
 								}
@@ -1484,7 +1484,7 @@ CCH.Objects.Publish.UI = function () {
 			})
 			.addClass('btn btn-danger')
 			.html('Delete')
-			.on('click', function () {
+			.on(CCH.CONFIG.strings.click, function () {
 				$.ajax({
 					url: CCH.CONFIG.contextPath + '/data/item/' + id,
 					method: 'DELETE',
@@ -1493,28 +1493,28 @@ CCH.Objects.Publish.UI = function () {
 					},
 					error: function (jqXHR, err, errTxt) {
 						if (errTxt.indexOf('Unauthorized') !== -1) {
-							$alertModal.modal('hide');
+							$alertModal.modal(CCH.CONFIG.strings.hide);
 							$alertModalTitle.html('Item Could Not Be Deleted');
 							$alertModalBody.html('It looks like your session has expired.' +
 									'You should try reloading the page to continue.');
-							$alertModal.modal('show');
+							$alertModal.modal(CCH.CONFIG.strings.show);
 						} else {
-							$alertModal.modal('hide');
+							$alertModal.modal(CCH.CONFIG.strings.hide);
 							$alertModalTitle.html('Item Could Not Be Deleted');
 							$alertModalBody.html('Unfortunately the item you\'re ' +
 									'trying to delete couldn\'t be deleted. ' +
 									'You may need to contact the system administrator ' +
 									'to manually remove it in order to continue');
-							$alertModal.modal('show');
+							$alertModal.modal(CCH.CONFIG.strings.show);
 						}
 					}
 				});
 			});
-		$alertModal.modal('hide');
+		$alertModal.modal(CCH.CONFIG.strings.hide);
 		$alertModalTitle.html('Delete Item?');
 		$alertModalBody.html('<h2>WARNING: This action cannot be undone</h2>');
 		$alertModalFooter.append($deleteButton);
-		$alertModal.modal('show');
+		$alertModal.modal(CCH.CONFIG.strings.show);
 	};
 
 	me.generateImage = function (id) {
@@ -1584,7 +1584,7 @@ CCH.Objects.Publish.UI = function () {
 						$descriptionTinyTextArea.val(response.tiny.text || '');
 
 						$publicationsPanel.find('>div:nth-child(2)').empty();
-						$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled', 'disabled');
+						$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 						Object.keys(response.full.publications, function (type) {
 							response.full.publications[type].each(function (publication) {
 								me.createPublicationRow(publication.link, publication.title, type);
@@ -1598,17 +1598,17 @@ CCH.Objects.Publish.UI = function () {
 				],
 				error: [
 					function (err) {
-						$alertModal.modal('hide');
+						$alertModal.modal(CCH.CONFIG.strings.hide);
 						$alertModalTitle.html('Unable To Load Attribute Information');
 						$alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
-						$alertModal.modal('show');
+						$alertModal.modal(CCH.CONFIG.strings.show);
 					}
 				]
 			}
 		});
 	};
 
-	$wfsImportButton.on('click', function () {
+	$wfsImportButton.on(CCH.CONFIG.strings.click, function () {
 		var importCall,
 				sourceWfs = $srcWfsServiceInput.val(),
 				successCallback = function (responseObject) {
@@ -1662,7 +1662,7 @@ CCH.Objects.Publish.UI = function () {
 									could not be normalized. This may not be a problem unless the \
 									layer you\'re trying to import requires normalized attributes \
 									(for example, CVI layer)');
-									$alertModal.modal('show');
+									$alertModal.modal(CCH.CONFIG.strings.show);
 								}
 							]
 						}
@@ -1677,8 +1677,8 @@ CCH.Objects.Publish.UI = function () {
 							})
 							.addClass('btn btn-primary')
 							.html('Overwrite')
-							.on('click', function () {
-								$alertModal.modal('hide');
+							.on(CCH.CONFIG.strings.click, function () {
+								$alertModal.modal(CCH.CONFIG.strings.hide);
 
 								var deleteCall = function () {
 									$alertModal.off('hidden.bs.modal', deleteCall);
@@ -1695,14 +1695,14 @@ CCH.Objects.Publish.UI = function () {
 												$alertModalTitle.html('Layer Could Not Be Removed');
 												$alertModalBody.html('It looks like your session has expired.' +
 														'You should try reloading the page to continue.');
-												$alertModal.modal('show');
+												$alertModal.modal(CCH.CONFIG.strings.show);
 											}
 											$alertModalTitle.html('Layer Could Not Be Removed');
 											$alertModalBody.html('Unfortunately the layer you\'re ' +
 													'trying to import could not be overwritten. ' +
 													'You may need to contact the system administrator ' +
 													'to manually remove it in order to continue');
-											$alertModal.modal('show');
+											$alertModal.modal(CCH.CONFIG.strings.show);
 										}
 									});
 								};
@@ -1712,12 +1712,12 @@ CCH.Objects.Publish.UI = function () {
 						$alertModalTitle.html('Layer Could Not Be Imported');
 						$alertModalBody.html('Layer Already Exists On Server. Overwrite?');
 						$alertModalFooter.append($overwriteButton);
-						$alertModal.modal('show');
+						$alertModal.modal(CCH.CONFIG.strings.show);
 					} else {
-						$alertModal.modal('hide');
+						$alertModal.modal(CCH.CONFIG.strings.hide);
 						$alertModalTitle.html('Layer Could Not Be Imported');
 						$alertModalBody.html('Layer could not be created. Error: ' + errorText);
-						$alertModal.modal('show');
+						$alertModal.modal(CCH.CONFIG.strings.show);
 					}
 				};
 
@@ -1735,37 +1735,37 @@ CCH.Objects.Publish.UI = function () {
 		importCall();
 	});
 
-	$keywordGroup.find('input').removeAttr('disabled');
-	$keywordGroup.find('button:nth-child(2)').addClass('hidden');
-	$keywordGroup.find('button').removeAttr('disabled');
-	$keywordGroup.find('button').on('click', function () {
+	$keywordGroup.find('input').removeAttr(CCH.CONFIG.strings.disabled);
+	$keywordGroup.find('button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
+	$keywordGroup.find('button').removeAttr(CCH.CONFIG.strings.disabled);
+	$keywordGroup.find('button').on(CCH.CONFIG.strings.click, function () {
 		if ($keywordGroup.find('input').val() !== '') {
 			me.addKeywordGroup($keywordGroup.find('input').val());
 		}
 	});
 
-	$('#form-publish-info-item-panel-publications-button-add').on('click', function () {
+	$('#form-publish-info-item-panel-publications-button-add').on(CCH.CONFIG.strings.click, function () {
 		me.createPublicationRow('', '');
 	});
 
-	$('#publish-button-create-aggregation-option').on('click', function () {
+	$('#publish-button-create-aggregation-option').on(CCH.CONFIG.strings.click, function () {
 		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
 		me.clearForm();
 		me.enableNewAggregationForm();
 	});
 
-	$('#publish-button-create-item-option').on('click', function () {
+	$('#publish-button-create-item-option').on(CCH.CONFIG.strings.click, function () {
 		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
 		me.clearForm();
-		$uploaderDummy.removeClass('hidden');
-		$metadataDropdownGroup.removeClass('hidden');
+		$uploaderDummy.removeClass(CCH.CONFIG.strings.hidden);
+		$metadataDropdownGroup.removeClass(CCH.CONFIG.strings.hidden);
 
 		var mdgClickHandler = function (evt) {
-			$(evt.target).off('click', mdgClickHandler);
+			$(evt.target).off(CCH.CONFIG.strings.click, mdgClickHandler);
 			me.initNewItemForm();
 		};
 
-		$metadataDropdownGroup.find('a').on('click', mdgClickHandler);
+		$metadataDropdownGroup.find('a').on(CCH.CONFIG.strings.click, mdgClickHandler);
 
 		me.createUploader({
 			callbacks: {
@@ -1786,10 +1786,10 @@ CCH.Objects.Publish.UI = function () {
 									],
 									error: [
 										function () {
-											$alertModal.modal('hide');
+											$alertModal.modal(CCH.CONFIG.strings.hide);
 											$alertModalTitle.html('Metadata Could Not Be Uploaded');
 											$alertModalBody.html('Please try again or contact a system administrator');
-											$alertModal.modal('show');
+											$alertModal.modal(CCH.CONFIG.strings.show);
 										}
 									]
 								}
@@ -1799,10 +1799,10 @@ CCH.Objects.Publish.UI = function () {
 				],
 				error: [
 					function () {
-						$alertModal.modal('hide');
+						$alertModal.modal(CCH.CONFIG.strings.hide);
 						$alertModalTitle.html('Uploader Not Created');
 						$alertModalBody.html('There was a problem creating the uploader. Metadata Uploads may not be possible.');
-						$alertModal.modal('show');
+						$alertModal.modal(CCH.CONFIG.strings.show);
 					}
 				]
 			}
@@ -1818,7 +1818,7 @@ CCH.Objects.Publish.UI = function () {
 		$alertModalFooter.find('button').not('#alert-modal-close-button').remove();
 	});
 
-	$buttonSave.on('click', function () {
+	$buttonSave.on(CCH.CONFIG.strings.click, function () {
 		var errors = me.validateForm.call(this),
 				$ul = $('<ul />'),
 				$li,
@@ -1839,10 +1839,10 @@ CCH.Objects.Publish.UI = function () {
 					],
 					error: [
 						function (err) {
-							$alertModal.modal('hide');
+							$alertModal.modal(CCH.CONFIG.strings.hide);
 							$alertModalTitle.html('Unable To Save Item');
 							$alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
-							$alertModal.modal('show');
+							$alertModal.modal(CCH.CONFIG.strings.show);
 						}
 					]
 				}
@@ -1852,35 +1852,35 @@ CCH.Objects.Publish.UI = function () {
 				$li = $('<li />').html(error);
 				$ul.append($li);
 			});
-			$alertModal.modal('hide');
+			$alertModal.modal(CCH.CONFIG.strings.hide);
 			$alertModalTitle.html('Errors Found In Publish Form');
 			$alertModalBody.html($ul);
-			$alertModal.modal('show');
+			$alertModal.modal(CCH.CONFIG.strings.show);
 		}
 	});
 
-	$buttonDelete.on('click', function () {
+	$buttonDelete.on(CCH.CONFIG.strings.click, function () {
 		var id = $itemIdInput.val();
 		if (id !== '') {
 			me.deleteItem(id);
 		}
 	});
 
-	$wfsHelpLink.on('click', function (evt) {
+	$wfsHelpLink.on(CCH.CONFIG.strings.click, function (evt) {
 		$srcWfsServiceInput.val(CCH.CONFIG.data.sources[$(evt.target).attr('data-attr')].endpoint);
 	});
-	$wmsHelpLink.on('click', function (evt) {
+	$wmsHelpLink.on(CCH.CONFIG.strings.click, function (evt) {
 		$srcWmsServiceInput.val(CCH.CONFIG.data.sources[$(evt.target).attr('data-attr')].endpoint);
 	});
-	$wfsSourceCopyButton.on('click', function () {
+	$wfsSourceCopyButton.on(CCH.CONFIG.strings.click, function () {
 		$srcWmsServiceInput.val($srcWfsServiceInput.val().replace('WFSServer', 'WMSServer'));
 	});
 
-	$attributeRetrieveDataButton.on('click', function () {
+	$attributeRetrieveDataButton.on(CCH.CONFIG.strings.click, function () {
 		me.getDataForAttribute();
 	});
 
-	$sourceWfsCheckButton.on('click', function () {
+	$sourceWfsCheckButton.on(CCH.CONFIG.strings.click, function () {
 		var srcWfsVal = $srcWfsServiceInput.val(),
 				$contentList = $('<ul />'),
 				$li,
@@ -1899,7 +1899,7 @@ CCH.Objects.Publish.UI = function () {
 										'data-attr': layer.prefix + ':' + layer.title,
 										'href': '#',
 										'onclick': 'return false;'
-									}).on('click', function (evt) {
+									}).on(CCH.CONFIG.strings.click, function (evt) {
 										$srcWfsServiceInput.val(CCH.CONFIG.data.sources['dsas-geoserver'].endpoint + '/ows');
 										$srcWfsServiceParamInput.val($(evt.target).attr('data-attr'));
 									}).html(layer.prefix + ':' + layer.title);
@@ -1965,7 +1965,7 @@ CCH.Objects.Publish.UI = function () {
 											'data-attr': svcName,
 											'href': '#',
 											'onclick': 'return false;'
-										}).on('click', function (evt) {
+										}).on(CCH.CONFIG.strings.click, function (evt) {
 											var serviceName = $(evt.target).attr('data-attr');
 											$srcWfsServiceInput.val(server.endpoint + '/services/' + namespace + '/' + serviceName + '/MapServer/WFSServer');
 											getWFSCaps(namespace, serviceName);
@@ -2021,7 +2021,7 @@ CCH.Objects.Publish.UI = function () {
 		}
 	});
 
-	$sourceWmsCheckButton.on('click', function () {
+	$sourceWmsCheckButton.on(CCH.CONFIG.strings.click, function () {
 		var srcWmsVal = $srcWmsServiceInput.val(),
 				$contentList = $('<ul />'),
 				$li,
@@ -2039,7 +2039,7 @@ CCH.Objects.Publish.UI = function () {
 									$a = $('<a />').attr({
 										'href': '#',
 										'onclick': 'return false;'
-									}).on('click', function () {
+									}).on(CCH.CONFIG.strings.click, function () {
 										$srcWmsServiceParamInput.val(layer.prefix + ':' + layer.title);
 									}).html(layer.prefix + ':' + layer.title);
 									$li.append($a);
@@ -2074,7 +2074,7 @@ CCH.Objects.Publish.UI = function () {
 									$a = $('<a />').attr({
 										'href': '#',
 										'onclick': 'return false;'
-									}).on('click', function () {
+									}).on(CCH.CONFIG.strings.click, function () {
 										$srcWmsServiceParamInput.val(layer.name);
 									}).html(layer.name);
 									$li.append($a);
@@ -2109,7 +2109,7 @@ CCH.Objects.Publish.UI = function () {
 									$a = $('<a />').attr({
 										'href': '#',
 										'onclick': 'return false;'
-									}).on('click', function () {
+									}).on(CCH.CONFIG.strings.click, function () {
 										$srcWmsServiceParamInput.val(layer.name);
 									}).html(layer.name);
 									$li.append($a);
@@ -2129,7 +2129,7 @@ CCH.Objects.Publish.UI = function () {
 		}
 	});
 
-	$proxyWfsCheckButton.on('click', function () {
+	$proxyWfsCheckButton.on(CCH.CONFIG.strings.click, function () {
 		var $li,
 				$a,
 				$contentList = $('<ul />');
@@ -2143,7 +2143,7 @@ CCH.Objects.Publish.UI = function () {
 							$a = $('<a />').attr({
 								'href': '#',
 								'onclick': 'return false;'
-							}).on('click', function () {
+							}).on(CCH.CONFIG.strings.click, function () {
 								$proxyWfsServiceParamInput.val(layer.prefix + ':' + layer.title);
 							}).html(layer.prefix + ':' + layer.title);
 							$li.append($a);
@@ -2161,12 +2161,12 @@ CCH.Objects.Publish.UI = function () {
 		});
 	});
 
-	$imageGenButton.on('click', function () {
+	$imageGenButton.on(CCH.CONFIG.strings.click, function () {
 		$itemImage.attr('src', '');
 		me.generateImage($itemIdInput.val());
 	});
 
-	$getWfsAttributesButton.on('click', function () {
+	$getWfsAttributesButton.on(CCH.CONFIG.strings.click, function () {
 		if ($proxyWfsServiceParamInput.val() !== '') {
 			me.updateAttributesUsingDescribeFeaturetype({
 				service: $proxyWfsServiceInput,
@@ -2187,7 +2187,7 @@ CCH.Objects.Publish.UI = function () {
 		}
 	});
 
-	$proxyWmsCheckButton.on('click', function () {
+	$proxyWmsCheckButton.on(CCH.CONFIG.strings.click, function () {
 		var $li,
 				$a,
 				$contentList = $('<ul />');
@@ -2202,7 +2202,7 @@ CCH.Objects.Publish.UI = function () {
 							$a = $('<a />').attr({
 								'href': '#',
 								'onclick': 'return false;'
-							}).on('click', function () {
+							}).on(CCH.CONFIG.strings.click, function () {
 								$proxyWmsServiceParamInput.val('proxied:' + layer.name);
 							}).html('proxied:' + layer.name);
 							$li.append($a);
@@ -2254,7 +2254,7 @@ CCH.Objects.Publish.UI = function () {
 									$li.append($a);
 									$metadataDropdownList.append($li);
 
-									$a.on('click', function (evt) {
+									$a.on(CCH.CONFIG.strings.click, function (evt) {
 										var endpoint = CCH.CONFIG.publicUrl;
 										endpoint += '/csw/?';
 										endpoint += 'service=CSW';
@@ -2275,10 +2275,10 @@ CCH.Objects.Publish.UI = function () {
 			],
 			error: [
 				function (response) {
-					$alertModal.modal('hide');
+					$alertModal.modal(CCH.CONFIG.strings.hide);
 					$alertModalTitle.html('CSW Record Could Not Be Attained');
 					$alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
-					$alertModal.modal('show');
+					$alertModal.modal(CCH.CONFIG.strings.show);
 				}
 			]
 		}

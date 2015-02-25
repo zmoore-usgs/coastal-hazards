@@ -117,7 +117,14 @@
 					}
 				};
 			CCH.CONFIG.strings = {
-				cidaGeoserver : 'cida-geoserver'
+				cidaGeoserver : 'cida-geoserver',
+				disabled : 'disabled',
+				hide : 'hide',
+				show : 'show',
+				hidden : 'hidden',
+				enabled : 'enabled',
+				chedked : 'checked',
+				click : 'click'
 			}
 		</script>
 	</head>
