@@ -38,6 +38,26 @@ public class PublishResource {
         cswExternalEndpoint = props.getProperty("coastal-hazards.csw.endpoint");
     }
 
+	@GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/tree/")
+    public Response manageTreeAtHead(@Context HttpServletRequest req) throws URISyntaxException {
+       return manageTree(req, "");
+    }
+	
+	@GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/tree/{token}")
+    public Response manageTree(@Context HttpServletRequest req, @PathParam("token") String token) throws URISyntaxException {
+        String intent = "/publish/tree/";
+        Map<String, String> map = new HashMap<>(1);
+        map.put("id", token);
+        if (!OpenIDConsumerService.verifyOIDSession(req)) {
+            return Response.temporaryRedirect(new URI(OpenIDConsumerService.VERIFICATION_URL  + intent + token)).build();
+        }
+        return Response.ok(new Viewable("/WEB-INF/jsp/publish/tree/index.jsp", map)).build();
+    }
+	
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/item/")
@@ -50,7 +70,7 @@ public class PublishResource {
     @Path("/item/{token}")
     public Response viewItemById(@Context HttpServletRequest req, @PathParam("token") String token) throws URISyntaxException {
         String intent = "/publish/item/";
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>(1);
         map.put("id", token);
         if (!OpenIDConsumerService.verifyOIDSession(req)) {
             return Response.temporaryRedirect(new URI(OpenIDConsumerService.VERIFICATION_URL  + intent + token)).build();
