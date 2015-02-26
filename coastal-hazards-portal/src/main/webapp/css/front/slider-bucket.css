@@ -40,8 +40,9 @@
             }
             #hide-your-bucket{
                 width:200px;
-                font-size:.9em;
+                font-size:1em;
                 font-style:normal;
+                margin:2px 0 0 5px;
             }
             /* Combined Bucket Control Dropdown Menu */
             #application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div:nth-child(2) > button {
