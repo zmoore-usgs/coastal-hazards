@@ -28,6 +28,7 @@
 	String vFontAwesome = getProp("version.fontawesome");
 	String vOpenlayers = getProp("version.openlayers");
 	String vSugarJs = getProp("version.sugarjs");
+	String vHandlebars = getProp("version.handlebars");
 
 %>
 <% 
@@ -98,6 +99,7 @@
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/<%=vJqueryUI%>/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/<%=vOpenlayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/handlebars/<%=vHandlebars%>/handlebars<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
 		<jsp:include page="WEB-INF/jsp/components/common/config.jsp">
 			<jsp:param name="id" value="${it.id}" /> 

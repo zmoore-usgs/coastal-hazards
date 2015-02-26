@@ -46,7 +46,7 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 	me.FILTER_RESULTS_BUTTON = $('#application-slide-search-product-results-spatial-filter-check-container > button');
 	me.$SEARCH_TYPE_LISTITEM = $('.app-navbar-search-dropdown-item');
 	me.bucket = args.bucket;
-
+	
 	me.SMALL_OFFSET = 10;
 	me.PAGE_ITEM_COUNT = 5;
 	me.BORDER_WIDTH = 2;
@@ -57,6 +57,9 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 	me.isInitialized = false;
 	me.isClosed = me.START_CLOSED;
 	me.isClosing = false;
+	
+	// Handlebars templates
+	me.locationResultTemplate;
 
 	me.clear = function () {
 		var $locationSlide = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
@@ -677,25 +680,22 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 	me.buildLocationSearchResultItem = function (args) {
 		args = args || {};
 		var id = args.id || new Date().getMilliseconds(),
-				location = args.location,
-				extent = location.extent,
-				name = location.name,
-				$newItem = $('#' + me.LOCATION_CARD_TEMPLATE_ID).children().clone(true),
-				$compassIcon = $newItem.find('.application-slide-search-location-card-icon-compass'),
-				titleContainerClass = 'application-slide-search-location-card-title',
-				$titleContainer = $newItem.find('.' + titleContainerClass),
-				$zoomToBadge = $('<span />').
-				addClass('badge application-slide-search-location-card-link-zoomto').
-				append($('<i />').addClass('fa fa-search-plus'), ' Zoom To');
-
-		$newItem.attr('id', 'application-slide-search-location-card-' + id);
-		$titleContainer.attr('id', titleContainerClass + '-' + id);
-		$titleContainer.append(name, '&nbsp;', $zoomToBadge);
-
+			location = args.location,
+			extent = location.extent,
+			name = location.name,
+			address = location.feature.attributes.Place_addr,
+			$content = $(me.locationResultTemplate({
+				title : name,
+				id: id,
+				address : address
+			})),
+			$zoomToBadge = $content.find('.application-slide-search-location-card-link-zoomto'),
+			$compassIcon = $content.find('.application-slide-search-location-card-icon-compass');
+	
 		$zoomToBadge.on('click', {extent: extent}, me.zoomToClickHandler);
 		$compassIcon.on('click', {extent: extent}, me.zoomToClickHandler);
 
-		return $newItem;
+		return $content;
 	};
 
 	me.$SEARCH_TYPE_LISTITEM.on('click', function (evt) {
@@ -759,6 +759,11 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 				});
 			}
 		}
+	});
+	
+	// Load Handlebars templates
+	$.get('resource/template/handlebars/search/location_card.mustache', function (content) {
+		me.locationResultTemplate = Handlebars.compile(content);
 	});
 
 	me.zoomToClickHandler = function (evt) {

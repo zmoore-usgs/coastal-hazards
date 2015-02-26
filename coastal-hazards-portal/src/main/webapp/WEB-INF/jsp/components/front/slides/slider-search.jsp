@@ -33,19 +33,6 @@
 </div>
 
 <%-- This element is used as a template for creating new search cards --%>
-<%-- Location --%>
-<div id="application-slide-search-location-card-template" class="hidden">
-    <div class="application-slide-search-location-card well well-small">
-        <div>
-            <div><img src="images/search/compass.svg" alt="Compass Search Icon" class="application-slide-search-location-card-icon-compass"/></div>
-            <div class="application-slide-search-location-card-title-description-container">
-                <div>
-                    <div class="application-slide-search-location-card-title"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <%-- Product --%>
 <div id="application-slide-search-product-card-template" class="hidden">
     <div class="application-slide-search-product-card well well-small">
