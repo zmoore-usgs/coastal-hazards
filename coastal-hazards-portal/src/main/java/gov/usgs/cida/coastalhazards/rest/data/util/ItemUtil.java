@@ -77,8 +77,4 @@ public class ItemUtil {
 		return newest;
 	}
 
-	private static void getherNewest(Item item) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
 }
