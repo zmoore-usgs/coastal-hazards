@@ -5,6 +5,11 @@ import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.jpa.JPAHelper;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.config.DynamicReadOnlyProperties;
+import gov.usgs.cida.utilities.properties.JNDISingleton;
+import it.geosolutions.geoserver.rest.GeoServerRESTReader;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.persistence.EntityManagerFactory;
@@ -20,6 +25,18 @@ import javax.ws.rs.core.Response;
  */
 @Path("health")
 public class HealthResource {
+	
+	private static final String geoserverEndpoint;
+	private static final String geoserverUser;
+	private static final String geoserverPass;
+	private static final DynamicReadOnlyProperties props;
+	
+	static {
+		props = JNDISingleton.getInstance();
+		geoserverEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
+		geoserverUser = props.getProperty("coastal-hazards.geoserver.username");
+		geoserverPass = props.getProperty("coastal-hazards.geoserver.password");
+	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -27,7 +44,7 @@ public class HealthResource {
 		Response response;
 
 		boolean overallHealth = true;
-		Map<String, Boolean> componentCheckMap = new TreeMap<>();
+		Map<String, Object> componentCheckMap = new TreeMap<>();
 
 		try {
 			EntityManagerFactory emf = JPAHelper.getEntityManagerFactory();
@@ -81,6 +98,23 @@ public class HealthResource {
 		}
 		catch (Exception e) {
 			componentCheckMap.put("ItemManager", false);
+			overallHealth = false;
+		}
+		
+		try {
+			Map<String, Boolean> geoserverStatus = new HashMap<>();
+			GeoServerRESTReader rest = new GeoServerRESTReader(geoserverEndpoint, geoserverUser, geoserverPass);
+			boolean existGeoserver = rest.existGeoserver();
+			boolean workspacesConfigured = rest.getWorkspaceNames().contains("proxied");
+			// TODO may want to add some more checks
+			
+			geoserverStatus.put("up", existGeoserver);
+			geoserverStatus.put("configured", workspacesConfigured);
+			
+			componentCheckMap.put("Geoserver", geoserverStatus);
+			overallHealth = overallHealth && existGeoserver && workspacesConfigured;
+		} catch (Exception e) {
+			componentCheckMap.put("Geoserver", false);
 			overallHealth = false;
 		}
 
