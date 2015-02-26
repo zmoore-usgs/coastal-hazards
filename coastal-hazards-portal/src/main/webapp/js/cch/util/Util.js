@@ -1,3 +1,5 @@
+/*jslint browser: true*/
+/*global CCH*/
 window.CCH = CCH || {};
 CCH.Util = CCH.Util || {};
 CCH.Util.Util = {
@@ -5,6 +7,7 @@ CCH.Util.Util = {
 	 * Creates a legend for display on back of card
 	 */
 	getSLD: function (args) {
+		"use strict";
 		args = args || {};
 		args.callbacks = args.callbacks || {};
 		args.callbacks.success = args.callbacks.success || [];
@@ -30,6 +33,7 @@ CCH.Util.Util = {
 		});
 	},
 	getMinifiedEndpoint: function (args) {
+		"use strict";
 		var location = args.location || window.location.href;
 		var callbacks = args.callbacks || {
 			success: [],
@@ -56,6 +60,7 @@ CCH.Util.Util = {
 		});
 	},
 	getGeolocation: function (args) {
+		"use strict";
 		args = args || {};
 		var callbacks = args.callbacks || {
 			success: function (pos) {
@@ -63,18 +68,18 @@ CCH.Util.Util = {
 			},
 			error: function (err) {
 				switch (err.code) {
-					case err.PERMISSION_DENIED:
-						CCH.LOG.warn("User denied the request for Geolocation.");
-						break;
-					case err.POSITION_UNAVAILABLE:
-						CCH.LOG.warn("Location information is unavailable.");
-						break;
-					case err.TIMEOUT:
-						CCH.LOG.warn("The request to get user location timed out.");
-						break;
-					case err.UNKNOWN_ERROR:
-						CCH.LOG.warn("An unknown error occurred.");
-						break;
+				case err.PERMISSION_DENIED:
+					CCH.LOG.warn("User denied the request for Geolocation.");
+					break;
+				case err.POSITION_UNAVAILABLE:
+					CCH.LOG.warn("Location information is unavailable.");
+					break;
+				case err.TIMEOUT:
+					CCH.LOG.warn("The request to get user location timed out.");
+					break;
+				case err.UNKNOWN_ERROR:
+					CCH.LOG.warn("An unknown error occurred.");
+					break;
 				}
 			}
 		};
@@ -87,9 +92,11 @@ CCH.Util.Util = {
 
 // http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
 String.prototype.hashCode = function () {
+	"use strict";
 	var hash = 0, i, chr, len;
-	if (this.length === 0)
+	if (this.length === 0) {
 		return hash;
+	}
 	for (i = 0, len = this.length; i < len; i++) {
 		chr = this.charCodeAt(i);
 		hash = ((hash << 5) - hash) + chr;

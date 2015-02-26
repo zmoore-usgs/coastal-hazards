@@ -19,12 +19,17 @@ CCH.CONFIG.loadUberItem = function (args) {
 		// Do I load the entire item with all its children? 
 		subtree = args.subtree || false,
 		overridePreviousBounds = args.overridePreviousBounds,
-		callbacks = args.callbacks || {
+		callbacks = {};
+		
+		$.extend(true, callbacks, args.callbacks, {
 			success: [],
 			error: []
-		};
+		});
 
-	callbacks.error.unshift(CCH.ui.errorResponseHandler);
+	if (callbacks.error) {
+		callbacks.error.unshift(CCH.ui.errorResponseHandler);
+	}
+	
 	callbacks.success.unshift(function (data) {
 		$(window).on('cch.item.loaded', function (evt, obj) {
 			var item;
@@ -128,6 +133,14 @@ CCH.CONFIG.onAppInitialize = function () {
 								});
 							};
 							$(window).on('cch.ui.resized', resizeHandler);
+							$(window).on('cch.ui.overlay.removed', function () {
+								// User is coming in with a view (from a shared bucket)
+								// so open the bucket when the app is finished loading.
+								// Only do this if bucket has items in it
+								if (CCH.ui.bucket.getCount() !== 0) {
+									CCH.ui.bucketSlide.open();
+								}
+							});
 						}
 					],
 					error: [

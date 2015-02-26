@@ -84,38 +84,48 @@
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="<%= configration%>"></jsp:include>
-		<script type="text/javascript">
-		CCH.itemid = '<%= id%>';
-			CCH.CONFIG.limits = {
-			map : {
-				modelProjection : new OpenLayers.Projection('EPSG:4326')
-			},
-			item: {
-					name: <%= Item.NAME_MAX_LENGTH%>,
-				attribute: <%= Item.ATTR_MAX_LENGTH%>
-			},
-			service: {
-					endpoint: <%= Service.ENDPOINT_MAX_LENGTH%>,
-				parameter: <%= Service.PARAMETER_MAX_LENGTH%>
-			},
-				summary: {
-				full: {
-						title: <%= Full.TITLE_MAX_LENGTH%>,
-						text: <%= Full.TEXT_MAX_LENGTH%>
-				},
-				medium: {
-						title: <%= Medium.TITLE_MAX_LENGTH%>,
-						text: <%= Medium.TEXT_MAX_LENGTH%>
-				},
-				tiny: {
-					text: <%= Tiny.MAX_LENGTH%>
-				}
-				},
-			publication: {
-					title: <%= Publication.TITLE_MAX_LENGTH%>,
-				link: <%= Publication.LINK_MAX_LENGTH%>
+			<script type="text/javascript">
+				CCH.itemid = '<%= id%>';
+				CCH.CONFIG.limits = {
+					map: {
+						modelProjection: new OpenLayers.Projection('EPSG:4326')
+					},
+					item: {
+						name: <%= Item.NAME_MAX_LENGTH%>,
+						attribute: <%= Item.ATTR_MAX_LENGTH%>
+					},
+					service: {
+						endpoint: <%= Service.ENDPOINT_MAX_LENGTH%>,
+						parameter: <%= Service.PARAMETER_MAX_LENGTH%>
+					},
+					summary: {
+						full: {
+							title: <%= Full.TITLE_MAX_LENGTH%>,
+							text: <%= Full.TEXT_MAX_LENGTH%>
+						},
+						medium: {
+							title: <%= Medium.TITLE_MAX_LENGTH%>,
+							text: <%= Medium.TEXT_MAX_LENGTH%>
+						},
+						tiny: {
+							text: <%= Tiny.MAX_LENGTH%>
+						}
+					},
+					publication: {
+						title: <%= Publication.TITLE_MAX_LENGTH%>,
+						link: <%= Publication.LINK_MAX_LENGTH%>
+					}
+				};
+			CCH.CONFIG.strings = {
+				cidaGeoserver : 'cida-geoserver',
+				disabled : 'disabled',
+				hide : 'hide',
+				show : 'show',
+				hidden : 'hidden',
+				enabled : 'enabled',
+				checked : 'checked',
+				click : 'click'
 			}
-		}
 		</script>
 	</head>
 	<body>
@@ -399,18 +409,45 @@
 								</table>
 							</div>
 
-							<%-- Publications --%>
-							<div id="publications-panel" class="panel panel-default">
+							<%-- Data --%>
+							<div id="data-panel" class="resource-panel panel panel-default">
 								<div class="panel-heading">
-									<button id="form-publish-info-item-panel-publications-button-add" type="button" class="btn btn-default btn-sm pull-right" disabled="disabled">Add</button>
+									<button id="form-publish-info-item-panel-data-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled">Add</button>
+									<h3 class="panel-title">Data</h3>
+								</div>
+								<div class="panel-body">
+									<ul id="sortable-data" class="resource-list-container-sortable">
+										<%-- Added programatically --%>
+									</ul>
+								</div>
+							</div>
+							
+							<%-- Publications --%>
+							<div id="publications-panel" class="resource-panel panel panel-default">
+								<div class="panel-heading">
+									<button id="form-publish-info-item-panel-publications-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled">Add</button>
 									<h3 class="panel-title">Publications</h3>
 								</div>
 								<div class="panel-body">
-									<%-- Added programatically --%>
+									<ul id="sortable-publications" class="resource-list-container-sortable">
+										<%-- Added programatically --%>
+									</ul>
 								</div>
 							</div>
 
-
+							<%-- Resource --%>
+							<div id="resources-panel" class="resource-panel panel panel-default">
+								<div class="panel-heading">
+									<button id="form-publish-info-item-panel-resources-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled" >Add</button>
+									<h3 class="panel-title">Resource</h3>
+								</div>
+								<div class="panel-body">
+									<ul id="sortable-resources" class="resource-list-container-sortable">
+										<%-- Added programatically --%>
+									</ul>
+								</div>
+							</div>
+								
 							<%-- Children --%>
 							<div id="form-publish-info-item-panel-children" class="panel panel-default">
 								<div class="panel-heading">

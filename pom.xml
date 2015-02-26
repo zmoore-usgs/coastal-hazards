@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.usgs.cida.coastalhazards</groupId>
 	<artifactId>coastal-hazards</artifactId>
-	<version>1.1.17-SNAPSHOT</version>
+	<version>1.1.18-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Coastal Hazards</name>
   
@@ -93,6 +93,17 @@
 			<email>tkunicki@usgs.gov</email>
 			<roles>
 				<role>Software Developer</role>
+			</roles>
+			<organization>Center for Integrated Data Analytics</organization>
+			<organizationUrl>http://cida.usgs.gov</organizationUrl>
+			<timezone>-6</timezone>
+		</developer>
+                <developer>
+			<id>mwernimont</id>
+			<name>Marty Wernimont</name>
+			<email>mwernimont@usgs.gov</email>
+			<roles>
+				<role>Graphic Designer</role>
 			</roles>
 			<organization>Center for Integrated Data Analytics</organization>
 			<organizationUrl>http://cida.usgs.gov</organizationUrl>
@@ -322,7 +333,7 @@
 			<dependency>
 				<groupId>gov.usgs.cida.owsutils</groupId>
 				<artifactId>cida-owsutils-commons</artifactId>
-				<version>1.0.7-SNAPSHOT</version>
+				<version>1.0.7</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openid4java</groupId>
@@ -400,7 +411,7 @@
 			<dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>font-awesome</artifactId>
-				<version>${version.fontawesome}</version>
+				<version>${version.fontawesome}-1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.code.gson</groupId>

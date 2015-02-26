@@ -175,6 +175,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 				$(window).trigger('cch.accordion.shown', evt);
 			},
 			'hide.bs.collapse': function (evt) {
+				card.closeChild();
 				card.hide();
 				$(window).trigger('cch.accordion.hide', evt);
 			},
