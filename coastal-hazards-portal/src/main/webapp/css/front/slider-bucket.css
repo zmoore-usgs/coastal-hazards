@@ -98,7 +98,7 @@
             width: 10%;
             vertical-align: top;
             text-align: center;
-            float:right;
+            margin-left:8px;
             min-height: 90px;
         }
             #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well >div.application-slide-bucket-container-card-navigation-container > div {
@@ -193,6 +193,12 @@ No tab shown on large display. Toggled via button in bar
         border-bottom-left-radius: 10px 10px;
         -webkit-border-bottom-left-radius: 10px 10px;
     }
+    
+ /* Card Navigation Column Div better placement on larger screens*/
+    #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container {
+            margin-left:15px;
+           
+     }
 }
 
 @media (max-width: 991px) {
