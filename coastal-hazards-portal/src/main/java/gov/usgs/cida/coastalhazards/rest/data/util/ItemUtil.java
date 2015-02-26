@@ -46,6 +46,17 @@ public class ItemUtil {
     public static Item gatherNewest(Item item) {
         return gatherNewest(item, 0);
     }
+
+    public static Item gatherNewest(List<Item> items) {
+        Item newest = null;
+        for (Item item : items) {
+            Item localNewest = gatherNewest(item);
+            if (newest == null || updateComparator.compare(localNewest, newest) > 0) {
+                newest = localNewest;
+            }
+        }
+        return newest;
+    }
     
     private static Item gatherNewest(Item item, int depth) {
         Item newest = item;
@@ -63,5 +74,9 @@ public class ItemUtil {
         }
         return newest;
     }
+
+	private static void getherNewest(Item item) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
     
 }

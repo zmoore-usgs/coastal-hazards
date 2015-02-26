@@ -43,6 +43,22 @@ public class ItemManager implements AutoCloseable {
 		}
 		return item;
 	}
+	
+	public List<Item> loadRootItems() {
+		List<Item> items = new ArrayList<>();
+		Query query = em.createNativeQuery("SELECT id FROM item WHERE item.id NOT IN(SELECT DISTINCT agg.item_id FROM aggregation_children as agg)");
+		List resultList = query.getResultList();
+		for (Object row : resultList) {
+			if (row instanceof String) {
+				String id = (String)row;
+				Item loaded = load(id);
+				items.add(loaded);
+			} else {
+				throw new IllegalStateException("Row not a String");
+			}
+		}
+		return items;
+	}
 
 	public synchronized String persist(Item item) throws CycleIntroductionException {
 		String id = null;
