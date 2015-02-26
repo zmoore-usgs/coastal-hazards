@@ -93,15 +93,39 @@
     width: 150px;
 }
 
-#publications-panel .panel-heading button {
+.resource-panel .panel-heading button {
 	margin-top: -5px;
 }
 
-#publications-panel .panel-body >div.well >div:nth-child(1) {
+.resource-panel .panel-body >div.well >div:nth-child(1) {
 	margin-top: -10px;
 }
-#publications-panel .panel-body >div.well >div:nth-child(1):hover {
+.resource-panel .panel-body >div.well >div:nth-child(1):hover {
 	cursor: pointer;
+}
+
+.resource-panel .panel-body input,
+.resource-panel .panel-body select {
+	width: 100%
+}
+
+.resource-list-container-sortable {
+	list-style-type: none;
+    padding-left: 0px;
+}
+
+.resource-list-container-sortable li {
+	margin-bottom: 5px;
+	margin-top: 5px;
+	border: none;
+}
+
+.resource-list-container-sortable li:hover {
+	cursor: move;
+}
+
+.resource-list-container-sortable .ui-state-highlight {
+	height: 200px;
 }
 
 #form-publish-info-item-children-sortable-ul {
