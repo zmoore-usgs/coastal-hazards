@@ -30,15 +30,18 @@
         }
             /* Minimize Button */
             #application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div#application-slide-bucket-controlset-control-close {
-                width: 10%;
                 margin-left: -10px;
             }
             #application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div#application-slide-bucket-controlset-control-close:hover {
                 cursor: pointer;
             }
             #application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div#application-slide-bucket-controlset-control-close > i {
-                font-weight: bold;
                 color: #003366;
+            }
+            #hideYourBucket{
+                width:200px;
+                font-size:.9em;
+                font-style:normal;
             }
             /* Combined Bucket Control Dropdown Menu */
             #application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div:nth-child(2) > button {
