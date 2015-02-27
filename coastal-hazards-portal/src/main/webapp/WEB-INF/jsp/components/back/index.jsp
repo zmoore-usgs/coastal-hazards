@@ -52,7 +52,7 @@
 		<link type="text/css" rel="stylesheet" media="all" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/<%=vOpenlayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
-		<script type="text/javascript" src="webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
 		<script type="text/javascript">
 			var CCH = {
 				Objects: {},
@@ -110,7 +110,7 @@
 			}
 		</script>
 		<jsp:include page="<%= log4js%>">
-			<jsp:param name="relPath" value="../../" />
+			<jsp:param name="relPath" value="../../../" />
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
@@ -132,7 +132,7 @@
 		</script>
 	</head>
 	<body>
-		<jsp:include page="<%= overlay%>">
+		<jsp:include page="<%=overlay%>">
 			<jsp:param name="application-overlay-description" value="USGS coastal change hazards research produces data, 
 					   knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
 					   here. They can be used to increase awareness and provide a basis for decision making." />
@@ -147,7 +147,7 @@
 			<div id="header-row" class="row">
 				<%-- Logo --%>
 				<a href="<%=baseUrl%>/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
-					<img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.svg" />
+					<img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="<%=baseUrl%>/images/banner/cida-cmgp.svg" />
 				</a>
 				<%-- Application Title --%>
 				<div id="app-navbar-site-title-container" class="app-navbar-item-container">

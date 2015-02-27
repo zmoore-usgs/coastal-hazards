@@ -1,17 +1,15 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import com.google.gson.Gson;
-import com.sun.jersey.api.NotFoundException;
 import gov.usgs.cida.coastalhazards.download.DownloadUtility;
 import gov.usgs.cida.coastalhazards.exception.DownloadStagingUnsuccessfulException;
-import gov.usgs.cida.coastalhazards.exception.UnauthorizedException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.DownloadManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
-import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.jpa.SessionManager;
+import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.coastalhazards.model.util.Download;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,16 +18,21 @@ import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.apache.commons.io.FileUtils;
+
+import com.google.gson.Gson;
 
 /**
  *

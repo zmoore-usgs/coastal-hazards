@@ -1,22 +1,25 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import com.sun.jersey.api.NotFoundException;
-import com.sun.jersey.api.ParamException;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.utilities.QRCodeGenerator;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.server.ParamException;
 
 /**
  * Provides a web service that allows generation of a QR code based on a

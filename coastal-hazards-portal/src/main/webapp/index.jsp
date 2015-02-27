@@ -76,14 +76,14 @@
 		<div id="application-container" class="container">
 			<div id="header-row" class="row">
 				<jsp:include page="WEB-INF/jsp/components/front/navigation-bar.jsp">
-					<jsp:param name="base-url" value="<%=baseUrl%>" />
+					<jsp:param name="baseUrl" value="<%=baseUrl%>" />
 				</jsp:include>
 			</div>
 			<div id="content-row" class="row">
 				<div id="content-column" class="col-md-12">
 					<div id="map" class="col-md-7 col-lg-8"></div>
 					<jsp:include page="WEB-INF/jsp/components/front/slides/slider-items.jsp">
-						<jsp:param name="base-url" value="<%=baseUrl%>" />
+						<jsp:param name="baseUrl" value="<%=baseUrl%>" />
 					</jsp:include>
 				</div>
 			</div>	
@@ -94,8 +94,12 @@
 			</div>
 		</div>
 
-		<jsp:include page="WEB-INF/jsp/components/front/slides/slider-bucket.jsp"></jsp:include>
-		<jsp:include page="WEB-INF/jsp/components/front/slides/slider-search.jsp"></jsp:include>
+		<jsp:include page="WEB-INF/jsp/components/front/slides/slider-bucket.jsp">
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
+		</jsp:include>
+		<jsp:include page="WEB-INF/jsp/components/front/slides/slider-search.jsp">
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
+		</jsp:include>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/<%=vJqueryUI%>/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/<%=vOpenlayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
@@ -108,39 +112,39 @@
 		</jsp:include>
 		<%-- TODO: Refactor log4javascript to take the log4js script from webjars --%>
 		<jsp:include page="js/log4javascript/log4javascript.jsp">
-			<jsp:param name="relPath" value="" />
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
+			<jsp:param name="relPath" value="../../" />
 		</jsp:include>
 		<jsp:include page="js/third-party/alertify/alertify.jsp">
-			<jsp:param name="relPath" value="<%=baseUrl%>" />
+			<jsp:param name="relPath" value="../../" />
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
-		<script type="text/javascript" src="js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/widget/ItemsSlide<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/widget/OLLegend<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/widget/BucketSlide<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/widget/SearchSlide<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/widget/Accordion<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/Session<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/ClickControl<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/LayerIdentifyControl<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/front/Map<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/widget/Card<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/Items<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/util/OWS<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/Bucket<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/widget/CombinedSearchbar<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/front/UI<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/cch/objects/widget/Legend<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/application/front/OnInitialized<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="js/application/front/OnReady<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/ItemsSlide<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/OLLegend<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/BucketSlide<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/SearchSlide<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Accordion<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Session<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/ClickControl<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/LayerIdentifyControl<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/front/Map<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Card<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Bucket<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/CombinedSearchbar<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/front/UI<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Legend<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/application/front/OnInitialized<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/application/front/OnReady<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
 		<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 		<jsp:include page="WEB-INF/jsp/components/front/image-preload.jsp">
-			<jsp:param name="relPath" value="<%=baseUrl%>" />
+			<jsp:param name="relPath" value="../../" />
 		</jsp:include>
 	</body>
 </html>

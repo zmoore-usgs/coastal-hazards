@@ -112,10 +112,6 @@
             <param-value>300000</param-value>
         </init-param>
     </servlet>
-    <servlet>
-        <servlet-name>OpenIDConsumerService</servlet-name>
-        <servlet-class>gov.usgs.cida.coastalhazards.oid.OpenIDConsumerService</servlet-class>
-    </servlet>
     <!-- MAPPING -->
     <servlet-mapping>
         <servlet-name>PyCSWServlet</servlet-name>
@@ -139,9 +135,5 @@
     <servlet-mapping>
         <servlet-name>ExternalGeoServerServlet</servlet-name>
         <url-pattern>/cidags/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>OpenIDConsumerService</servlet-name>
-        <url-pattern>/login/*</url-pattern>
     </servlet-mapping>
 </web-app>

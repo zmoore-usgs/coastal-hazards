@@ -1,14 +1,15 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import com.sun.jersey.api.NotFoundException;
-import gov.usgs.cida.coastalhazards.exception.UnauthorizedException;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Thumbnail;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
+
 import java.io.InputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;

@@ -34,7 +34,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 	me.DD_TOGGLE_MENU_ITEMS_CHOICE_ALL_ID = 'app-navbar-search-dropdown-toggle-choice-item-all';
 	me.INPUTBOX_SELECTOR = '#' + me.CONTAINER_ID + ' div > input';
 	me.SUBMIT_BUTTON_ID = args.submitButtonId || 'app-navbar-search-submit-button';
-	me.DD_TOGGLE_SPINNER_IMG_LOCATION = 'images/spinner/ajax-loader.gif';
+	me.DD_TOGGLE_SPINNER_IMG_LOCATION = CCH.CONFIG.contextPath + '/images/spinner/ajax-loader.gif';
 	me.selectedOption = 'all';
 	me.isSmall;
 	me.includeBboxInSearch = false;

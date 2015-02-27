@@ -1,11 +1,13 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
-import com.sun.jersey.api.NotFoundException;
 import gov.usgs.cida.coastalhazards.model.Thumbnail;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+
 import org.apache.commons.codec.binary.Base64;
 
 /**
