@@ -12,7 +12,6 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.jpa.SessionManager;
 import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.coastalhazards.model.util.Download;
-import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -165,26 +164,23 @@ public class DownloadResource {
     @DELETE
     @Produces("application/json")
     @Path("item/{itemId}")
+    //TODO SECURE ME
     public Response deleteStagedItem(@PathParam("itemId") String itemId, @Context HttpServletRequest request) {
         Response response = null;
-        if (SessionResource.isValidSession(request)) {
-            try (DownloadManager downloadManager = new DownloadManager()) {
-                Download download = downloadManager.load(itemId);
-                boolean deleted = false;
-                try {
-                    if (download == null) {
-                        throw new NotFoundException();
-                    }
-                    File stagingFolder = download.fetchZipFile().getParentFile();
-                    deleted = FileUtils.deleteQuietly(stagingFolder);
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException(e);
+        try (DownloadManager downloadManager = new DownloadManager()) {
+            Download download = downloadManager.load(itemId);
+            boolean deleted = false;
+            try {
+                if (download == null) {
+                    throw new NotFoundException();
                 }
-                downloadManager.delete(download);
-                response = Response.ok("{\"deleted\":\"" + deleted + "\"}", MediaType.APPLICATION_JSON_TYPE).build();
+                File stagingFolder = download.fetchZipFile().getParentFile();
+                deleted = FileUtils.deleteQuietly(stagingFolder);
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
             }
-        } else {
-            throw new UnauthorizedException();
+            downloadManager.delete(download);
+            response = Response.ok("{\"deleted\":\"" + deleted + "\"}", MediaType.APPLICATION_JSON_TYPE).build();
         }
         return response;
     }

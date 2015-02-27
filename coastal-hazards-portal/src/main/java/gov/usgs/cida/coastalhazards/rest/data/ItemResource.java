@@ -2,11 +2,9 @@ package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.sun.jersey.api.NotFoundException;
 import gov.usgs.cida.coastalhazards.exception.BadRequestException;
-import gov.usgs.cida.coastalhazards.exception.UnauthorizedException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
-import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
 import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.util.HashMap;
@@ -105,29 +103,25 @@ public class ItemResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	//TODO SECURE ME
 	public Response postItem(String content, @Context HttpServletRequest request) {
 		Response response;
-		if (SessionResource.isValidSession(request)) {
-			try (ItemManager itemManager = new ItemManager()) {
-				Item item = Item.fromJSON(content);
-				final String id = itemManager.persist(item);
-				if (null == id) {
-					throw new BadRequestException();
-				}
-				else {
-					Map<String, Object> ok = new HashMap<String, Object>() {
-						private static final long serialVersionUID = 2398472L;
-
-						{
-							put("id", id);
-						}
-					};
-					response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
-				}
+		try (ItemManager itemManager = new ItemManager()) {
+			Item item = Item.fromJSON(content);
+			final String id = itemManager.persist(item);
+			if (null == id) {
+				throw new BadRequestException();
 			}
-		}
-		else {
-			throw new UnauthorizedException();
+			else {
+				Map<String, Object> ok = new HashMap<String, Object>() {
+					private static final long serialVersionUID = 2398472L;
+
+					{
+						put("id", id);
+					}
+				};
+				response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+			}
 		}
 		return response;
 	}
@@ -141,44 +135,36 @@ public class ItemResource {
 	@PUT
 	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
+	//TODO SECURE ME
 	public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response = null;
-		if (SessionResource.isValidSession(request)) {
-			try (ItemManager itemManager = new ItemManager()) {
-				Item dbItem = itemManager.load(id);
-				Item updatedItem = Item.fromJSON(content);
-				Item mergedItem = Item.copyValues(updatedItem, dbItem);
-				final String mergedId = itemManager.merge(mergedItem);
-				if (null != mergedId) {
-					response = Response.ok().build();
-				}
-				else {
-					throw new BadRequestException();
-				}
+		try (ItemManager itemManager = new ItemManager()) {
+			Item dbItem = itemManager.load(id);
+			Item updatedItem = Item.fromJSON(content);
+			Item mergedItem = Item.copyValues(updatedItem, dbItem);
+			final String mergedId = itemManager.merge(mergedItem);
+			if (null != mergedId) {
+				response = Response.ok().build();
 			}
-		}
-		else {
-			throw new UnauthorizedException();
+			else {
+				throw new BadRequestException();
+			}
 		}
 		return response;
 	}
 
 	@DELETE
 	@Path("{id}")
+	//TODO SECURE ME
 	public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id) {
 		Response response = null;
-		if (SessionResource.isValidSession(request)) {
-			try (ItemManager itemManager = new ItemManager()) {
-				if (itemManager.delete(id)) {
-					response = Response.ok().build();
-				}
-				else {
-					throw new Error();
-				}
+		try (ItemManager itemManager = new ItemManager()) {
+			if (itemManager.delete(id)) {
+				response = Response.ok().build();
 			}
-		}
-		else {
-			throw new UnauthorizedException();
+			else {
+				throw new Error();
+			}
 		}
 		return response;
 	}
