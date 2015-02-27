@@ -18,6 +18,9 @@ import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -134,7 +137,35 @@ public class TreeResource {
 	@POST
 	@Path("/item")
 	public Response updateChildrenBulk(@Context HttpServletRequest request, String content) {
-		throw new UnsupportedOperationException();
+		Response response = null;
+		if (SessionResource.isValidSession(request) || true /* temporary*/) {
+			JsonParser parser = new JsonParser();
+			JsonElement parsed = parser.parse(content);
+			if (parsed instanceof JsonObject) {
+				JsonObject jsonObj = (JsonObject)parsed;
+				
+				try (ItemManager manager = new ItemManager()) {
+					List<Item> itemList = new LinkedList<>();
+					for (Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+						Item parentItem = manager.load(entry.getKey());
+						List<Item> children = new LinkedList<>();
+						Iterator<JsonElement> iterator = ((JsonArray)entry.getValue()).iterator();
+						while (iterator.hasNext()) {
+							String childId = iterator.next().getAsString();
+							Item child = manager.load(childId);
+							children.add(child);
+						}
+						parentItem.setChildren(children);
+						itemList.add(parentItem);
+					}
+					manager.persistAll(itemList);
+				}
+				response = Response.ok().build();
+			}
+		} else {
+			throw new UnauthorizedException();
+		}
+		return response;
 	}
 
 }
