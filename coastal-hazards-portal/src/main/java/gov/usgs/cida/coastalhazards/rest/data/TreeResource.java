@@ -138,7 +138,7 @@ public class TreeResource {
 	@Path("/item")
 	public Response updateChildrenBulk(@Context HttpServletRequest request, String content) {
 		Response response = null;
-		if (SessionResource.isValidSession(request) || true /* temporary*/) {
+		if (SessionResource.isValidSession(request)) {
 			JsonParser parser = new JsonParser();
 			JsonElement parsed = parser.parse(content);
 			if (parsed instanceof JsonObject) {
