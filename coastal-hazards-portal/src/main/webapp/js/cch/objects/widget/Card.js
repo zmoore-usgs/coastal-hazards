@@ -443,7 +443,7 @@ CCH.Objects.Widget.Card = function (args) {
 			if (isItemInBucket) {
 				$bucketButton
 					.addClass('disabled')
-					.find('> img').attr('src', 'images/cards/add-bucket-disabled.svg');
+					.find('> img').attr('src', CCH.CONFIG.contextPath + '/images/cards/add-bucket-disabled.svg');
 			}
 
 			$zoomToBtn.on('click', function () {
@@ -584,7 +584,7 @@ CCH.Objects.Widget.Card = function (args) {
 				var $button = me.container.find('button.item-control-button-bucket'),
 					$img = $button.find('> img');
 
-				$img.attr('src', 'images/cards/add-bucket-disabled.svg');
+				$img.attr('src', CCH.CONFIG.contextPath + '/images/cards/add-bucket-disabled.svg');
 
 				$button.addClass('disabled');
 

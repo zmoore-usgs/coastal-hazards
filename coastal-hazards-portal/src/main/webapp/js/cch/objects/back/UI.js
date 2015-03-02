@@ -33,7 +33,7 @@ CCH.Objects.Back.UI = function (args) {
 
 		// Link the "Download Full" button
 		$downloadFullLink.find('a').attr({
-			'href': window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + CCH.CONFIG.itemId
+			'href': CCH.CONFIG.contextPath + '/data/download/item/' + CCH.CONFIG.itemId
 		});
 
 
