@@ -2,10 +2,13 @@ package gov.usgs.cida.coastalhazards.rest.data;
 
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Thumbnail;
+import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 
 import java.io.InputStream;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -24,6 +27,7 @@ import javax.ws.rs.core.Response;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path("thumbnail/item")
+@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ThumbnailResource {
 
     @GET
@@ -51,12 +55,12 @@ public class ThumbnailResource {
         }
         return response;
     }
-    
+
+    @RolesAllowed(CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE)
     @PUT
     @Path("{id}")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    //TODO SECURE ME, session has to be both valid and authorized
     public Response putImage(@PathParam("id") String id, String content, @Context HttpServletRequest request) {
         Response response = null;
         Thumbnail thumb = new Thumbnail();

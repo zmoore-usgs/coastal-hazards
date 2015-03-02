@@ -43,19 +43,18 @@ public class PublishResource {
         cswExternalEndpoint = props.getProperty("coastal-hazards.csw.endpoint");
     }
 
-    @RolesAllowed(CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE)
+    //This service remains open and will serve as the landing page
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/item/")
     public Response viewBlankItem(@Context HttpServletRequest req) throws URISyntaxException {
-       return viewItemById(req, "");
+       return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", new HashMap<>())).build();
     }
 
     @RolesAllowed(CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE)
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/item/{token}")
-    //TODO SECURE ME
     public Response viewItemById(@Context HttpServletRequest req, @PathParam("token") String token) throws URISyntaxException {
         Map<String, String> map = new HashMap<>();
         map.put("id", token);
@@ -66,7 +65,6 @@ public class PublishResource {
     @POST
     @Path("metadata/{token}")
     @Produces(MediaType.APPLICATION_JSON)
-    //TODO SECURE ME
     public Response publishItems(@Context HttpServletRequest req, @PathParam("token") String metaToken) throws URISyntaxException {
         Response response = null;
         Map<String, String> responseContent = new HashMap<>();

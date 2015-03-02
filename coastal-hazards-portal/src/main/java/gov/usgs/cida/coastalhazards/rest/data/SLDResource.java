@@ -3,6 +3,8 @@ package gov.usgs.cida.coastalhazards.rest.data;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.sld.SLDGenerator;
+
+import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -16,6 +18,7 @@ import javax.ws.rs.core.Response;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path("sld")
+@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class SLDResource {
 
     /**
