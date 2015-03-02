@@ -166,7 +166,6 @@ CCH.Objects.Publish.UI = function () {
 
 	me.enableNewItemForm = function () {
 		var gsBaseUrl = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources[CCH.CONFIG.strings.cidaGeoserver].proxy + 'proxied/';
-		debugger
 		$itemType.val('data');
 		$titleFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
 		$titleMediumTextArea.removeAttr(CCH.CONFIG.strings.disabled);
@@ -1642,7 +1641,6 @@ CCH.Objects.Publish.UI = function () {
 							wfsServiceVal = baseService + 'wfs',
 							wmsServiceVal = baseService + 'wms',
 							updateAttributesCallback;
-					debugger
 
 					if (baseUrl.lastIndexOf('/') !== baseUrl.length - 1) {
 						baseUrl += '/';
