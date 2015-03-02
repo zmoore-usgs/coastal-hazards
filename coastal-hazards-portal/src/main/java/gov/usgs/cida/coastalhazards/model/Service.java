@@ -16,76 +16,77 @@ import javax.persistence.Table;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Entity
-@Table(name="service")
+@Table(name = "service")
 public class Service implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    
-    public static final int ENDPOINT_MAX_LENGTH = 255;
-    public static final int PARAMETER_MAX_LENGTH = 255;
-    
-    private transient int id;
-    private ServiceType type;
-    private transient String itemId;
-    private String endpoint;
-    private String serviceParameter;
-    
-    public enum ServiceType {
-        source_wfs,
-        source_wms,
-        esri_rest,
-        proxy_wfs,
-        proxy_wms,
-        csw;
-    }
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public int getId() {
-        return id;
-    }
-    
-    public void setId(int id) {
-        this.id = id;
-    }
-    
-    @Column(name="service_endpoint", length = ENDPOINT_MAX_LENGTH)
-    public String getEndpoint() {
-        return endpoint;
-    }
+	private static final long serialVersionUID = 1L;
 
-    public void setEndpoint(String endpoint) {
-        StringPrecondition.checkStringArgument(endpoint, ENDPOINT_MAX_LENGTH);
-        this.endpoint = endpoint;
-    }
+	public static final int ENDPOINT_MAX_LENGTH = 255;
+	public static final int PARAMETER_MAX_LENGTH = 255;
 
-    @Column(name="service_type")
-    @Enumerated(EnumType.STRING)
-    public ServiceType getType() {
-        return type;
-    }
+	private transient int id;
+	private ServiceType type;
+	private transient String itemId;
+	private String endpoint;
+	private String serviceParameter;
 
-    public void setType(ServiceType type) {
-        this.type = type;
-    }
+	public enum ServiceType {
 
-    @Column(name="item_id")
-    public String getItemId() {
-        return itemId;
-    }
+		source_wfs,
+		source_wms,
+		esri_rest,
+		proxy_wfs,
+		proxy_wms,
+		csw;
+	}
 
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	public int getId() {
+		return id;
+	}
 
-    @Column(name="service_parameter", length = PARAMETER_MAX_LENGTH)
-    public String getServiceParameter() {
-        return serviceParameter;
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    public void setServiceParameter(String serviceParameter) {
-        StringPrecondition.checkStringArgument(serviceParameter, PARAMETER_MAX_LENGTH);
-        this.serviceParameter = serviceParameter;
-    }
+	@Column(name = "service_endpoint", length = ENDPOINT_MAX_LENGTH)
+	public String getEndpoint() {
+		return endpoint;
+	}
+
+	public void setEndpoint(String endpoint) {
+		StringPrecondition.checkStringArgument(endpoint, ENDPOINT_MAX_LENGTH);
+		this.endpoint = endpoint;
+	}
+
+	@Column(name = "service_type")
+	@Enumerated(EnumType.STRING)
+	public ServiceType getType() {
+		return type;
+	}
+
+	public void setType(ServiceType type) {
+		this.type = type;
+	}
+
+	@Column(name = "item_id")
+	public String getItemId() {
+		return itemId;
+	}
+
+	public void setItemId(String itemId) {
+		this.itemId = itemId;
+	}
+
+	@Column(name = "service_parameter", length = PARAMETER_MAX_LENGTH)
+	public String getServiceParameter() {
+		return serviceParameter;
+	}
+
+	public void setServiceParameter(String serviceParameter) {
+		StringPrecondition.checkStringArgument(serviceParameter, PARAMETER_MAX_LENGTH);
+		this.serviceParameter = serviceParameter;
+	}
 
 }
