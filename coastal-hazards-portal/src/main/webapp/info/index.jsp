@@ -29,7 +29,7 @@
 <html>
 	<head>
 		<jsp:include page="<%=metaTags%>">
-			<jsp:param name="relPath" value="../" />
+			<jsp:param name="base-url" value="<%=baseUrl%>" />
 		</jsp:include>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
 		<title>Coastal Change Hazards Information</title>

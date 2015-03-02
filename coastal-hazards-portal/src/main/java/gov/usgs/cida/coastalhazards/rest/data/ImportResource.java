@@ -1,8 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import gov.usgs.cida.coastalhazards.exception.PreconditionFailedException;
-import gov.usgs.cida.coastalhazards.exception.UnauthorizedException;
-import gov.usgs.cida.coastalhazards.oid.OpenIDConsumerService;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
@@ -37,10 +35,9 @@ public class ImportResource {
 	
 	@DELETE
 	@Path("/{layer}")
+	//TODO SECURE ME
 	public Response deleteLaterFromGeoserver(@Context HttpServletRequest req, @PathParam("layer") String layer) throws URISyntaxException {
-		if (!OpenIDConsumerService.verifyOIDSession(req)) {
-			throw new UnauthorizedException();
-        } else if (StringUtils.isBlank(layer)) {
+		if (StringUtils.isBlank(layer)) {
 			throw new PreconditionFailedException();
 		}
 		

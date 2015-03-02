@@ -41,6 +41,7 @@
 	String vSugarJs = getProp("version.sugarjs");
 	String baseUrl = props.getProperty("coastal-hazards.base.url");
 	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
+	String relPath = baseUrl + "/";
 
 	// Figure out the path based on the ID passed in, if any
 	Map<String, String> attributeMap = (Map<String, String>) pageContext.findAttribute("it");
@@ -73,14 +74,14 @@
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
 
 		<jsp:include page="<%= jsURI%>">
-			<jsp:param name="relPath" value="../../" />
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
 		</jsp:include>
 		<jsp:include page="<%= log4js%>">
-			<jsp:param name="relPath" value="../../" />
+			<jsp:param name="relPath" value="<%=relPath%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="<%= fineUploader%>">
-			<jsp:param name="relPath" value="../../" />
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="<%= configration%>"></jsp:include>

@@ -43,7 +43,7 @@
         </div>
         <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
 <!--            <i class="fa fa-times" alt="the letter x"></i>-->
-			<img src="images/bucket/trashcan.svg" />
+			<img src="${param['baseUrl']}/images/bucket/trashcan.svg" />
         </button>
         <div class="application-slide-bucket-container-card-navigation-container">
             <button class="application-slide-bucket-container-card-button-up btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-up" type="button">
@@ -65,7 +65,7 @@
                 <i class="fa fa-info" alt="the letter i"></i>
             </button>
             <button class="application-slide-bucket-container-card-button-shareapplication-slide-bucket-container-card-template-button btn btn-link " type="button">
-                <img alt="Share Icon" src="images/bucket/share.svg"/>
+                <img alt="Share Icon" src="${param['baseUrl']}/images/bucket/share.svg"/>
             </button>
         </div>
     </div>

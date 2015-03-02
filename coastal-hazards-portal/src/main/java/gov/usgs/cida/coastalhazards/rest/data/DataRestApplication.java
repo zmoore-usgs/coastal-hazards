@@ -1,24 +1,21 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
-import java.util.HashMap;
 import javax.ws.rs.ApplicationPath;
+
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
+import org.glassfish.jersey.servlet.ServletProperties;
 
 /**
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @ApplicationPath("/data")
-public class DataRestApplication extends PackagesResourceConfig {
+public class DataRestApplication extends ResourceConfig {
 
 	public DataRestApplication() {
-		super(new HashMap<String, Object>() {
-			private static final long serialVersionUID = 763254L;
-			{
-				put(PackagesResourceConfig.PROPERTY_PACKAGES, this.getClass().getPackage().getName());
-                put(ServletContainer.JSP_TEMPLATES_BASE_PATH, "/WEB-INF/jsp");
-                put(ServletContainer.PROPERTY_WEB_PAGE_CONTENT_REGEX, "(/WEB-INF/jsp/*)");
-			}
-		});
+		packages(this.getClass().getPackage().getName());
+		property(JspMvcFeature.TEMPLATES_BASE_PATH, "/WEB-INF/jsp");
+		property(ServletProperties.FILTER_STATIC_CONTENT_REGEX, "(/WEB-INF/jsp/*)");
+		register(JspMvcFeature.class);	
 	}
 }

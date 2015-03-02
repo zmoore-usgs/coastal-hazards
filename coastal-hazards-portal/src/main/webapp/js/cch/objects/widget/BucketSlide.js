@@ -502,7 +502,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 						var sessionId = result.sid;
 
 						if (sessionId) {
-							window.open(window.location.origin + CCH.CONFIG.contextPath + '/data/download/view/' + sessionId);
+							window.open(CCH.CONFIG.contextPath + '/data/download/view/' + sessionId);
 						}
 					}
 				],
@@ -596,7 +596,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				'title': 'Download'
 			}).
 			on('click', function () {
-				window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + id;
+				window.location = CCH.CONFIG.contextPath + '/data/download/item/' + id;
 			});
 
 		$viewButton.
@@ -710,10 +710,10 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				$(window).trigger('slide.bucket.button.click.info', {
 					'id': id
 				});
-				window.open(window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_self');
+				window.open(CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_self');
 			}).
 			attr({
-				'href': window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id,
+				'href': CCH.CONFIG.contextPath + '/ui/info/item/' + id,
 				'title': 'More Info'
 			});
 

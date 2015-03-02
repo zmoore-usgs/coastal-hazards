@@ -1,26 +1,19 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sun.jersey.api.NotFoundException;
 import gov.usgs.cida.coastalhazards.exception.BadRequestException;
-import gov.usgs.cida.coastalhazards.exception.UnauthorizedException;
 import gov.usgs.cida.coastalhazards.gson.adapter.ItemTreeAdapter;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
-import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
 import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
+
+import javax.ws.rs.NotFoundException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -33,6 +26,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -48,7 +45,7 @@ public class TreeResource {
 		Response response = null;
 		try (ItemManager itemManager = new ItemManager()) {
 			List<Item> items = itemManager.loadRootItems();
-			
+
 			Item newestItem = ItemUtil.gatherNewest(items);
 			Response unmodified = HTTPCachingUtil.checkModified(request, newestItem);
 			if (unmodified != null) {
@@ -69,7 +66,7 @@ public class TreeResource {
 		}
 		return response;
 	}
-	
+
 	@GET
 	@Path("/item/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -96,74 +93,70 @@ public class TreeResource {
 		}
 		return response;
 	}
-	
+
 	@PUT
 	@Path("/item/{id}")
+	// TODO SECURE ME
 	public Response updateChildren(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response = null;
-		if (SessionResource.isValidSession(request)) {
-			JsonParser parser = new JsonParser();
-			JsonElement parsed = parser.parse(content);
-			if (parsed instanceof JsonObject) {
-				JsonObject jsonObj = (JsonObject)parsed;
-				if (jsonObj.has("children")) {
-					JsonArray childrenArray = (JsonArray)jsonObj.get("children");
-					
-					try (ItemManager manager = new ItemManager()) {
-						Item item = manager.load(id);
-						List<Item> children = new LinkedList<>();
-						Iterator<JsonElement> iterator = childrenArray.iterator();
-						while (iterator.hasNext()) {
-							String childId = iterator.next().getAsString();
-							Item child = manager.load(childId);
-							children.add(child);
-						}
-						item.setChildren(children);
-						manager.merge(item);
-					}
-					response = Response.ok().build();
-				} else {
-					throw new BadRequestException();
-				}
-			} else {
-				throw new BadRequestException();
-			}
-		} else {
-			throw new UnauthorizedException();
-		}
-		return response;
-	}
-	
-	@POST
-	@Path("/item")
-	public Response updateChildrenBulk(@Context HttpServletRequest request, String content) {
-		Response response = null;
-		if (SessionResource.isValidSession(request)) {
-			JsonParser parser = new JsonParser();
-			JsonElement parsed = parser.parse(content);
-			if (parsed instanceof JsonObject) {
-				JsonObject jsonObj = (JsonObject)parsed;
-				
+		JsonParser parser = new JsonParser();
+		JsonElement parsed = parser.parse(content);
+		if (parsed instanceof JsonObject) {
+			JsonObject jsonObj = (JsonObject) parsed;
+			if (jsonObj.has("children")) {
+				JsonArray childrenArray = (JsonArray) jsonObj.get("children");
+
 				try (ItemManager manager = new ItemManager()) {
-					List<Item> itemList = new LinkedList<>();
-					for (Entry<String, JsonElement> entry : jsonObj.entrySet()) {
-						Item parentItem = manager.load(entry.getKey());
-						List<Item> children = new LinkedList<>();
-						Iterator<JsonElement> iterator = ((JsonArray)entry.getValue()).iterator();
-						while (iterator.hasNext()) {
-							String childId = iterator.next().getAsString();
-							Item child = manager.load(childId);
-							children.add(child);
-						}
-						parentItem.setChildren(children);
-						itemList.add(parentItem);
+					Item item = manager.load(id);
+					List<Item> children = new LinkedList<>();
+					Iterator<JsonElement> iterator = childrenArray.iterator();
+					while (iterator.hasNext()) {
+						String childId = iterator.next().getAsString();
+						Item child = manager.load(childId);
+						children.add(child);
 					}
-					manager.persistAll(itemList);
+					item.setChildren(children);
+					manager.merge(item);
 				}
 				response = Response.ok().build();
 			}
-		} else {
-			throw new UnauthorizedException();
+			else {
+				throw new BadRequestException();
+			}
+		}
+		else {
+			throw new BadRequestException();
+		}
+		return response;
+	}
+
+	@POST
+	@Path("/item")
+	// TODO SECURE ME
+	public Response updateChildrenBulk(@Context HttpServletRequest request, String content) {
+		Response response = null;
+		JsonParser parser = new JsonParser();
+		JsonElement parsed = parser.parse(content);
+		if (parsed instanceof JsonObject) {
+			JsonObject jsonObj = (JsonObject) parsed;
+
+			try (ItemManager manager = new ItemManager()) {
+				List<Item> itemList = new LinkedList<>();
+				for (Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+					Item parentItem = manager.load(entry.getKey());
+					List<Item> children = new LinkedList<>();
+					Iterator<JsonElement> iterator = ((JsonArray) entry.getValue()).iterator();
+					while (iterator.hasNext()) {
+						String childId = iterator.next().getAsString();
+						Item child = manager.load(childId);
+						children.add(child);
+					}
+					parentItem.setChildren(children);
+					itemList.add(parentItem);
+				}
+				manager.persistAll(itemList);
+			}
+			response = Response.ok().build();
 		}
 		return response;
 	}

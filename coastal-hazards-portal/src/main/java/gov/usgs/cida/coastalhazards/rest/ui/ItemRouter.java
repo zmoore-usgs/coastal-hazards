@@ -1,14 +1,16 @@
 package gov.usgs.cida.coastalhazards.rest.ui;
 
-import com.sun.jersey.api.NotFoundException;
-import com.sun.jersey.api.view.Viewable;
 import gov.usgs.cida.coastalhazards.model.Item;
+
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.server.mvc.Viewable;
 
 /**
  *
