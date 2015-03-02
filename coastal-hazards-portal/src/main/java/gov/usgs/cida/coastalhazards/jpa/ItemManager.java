@@ -60,36 +60,67 @@ public class ItemManager implements AutoCloseable {
 		return items;
 	}
 
-	public synchronized String persist(Item item) throws CycleIntroductionException {
+	private synchronized String persistItem(Item item) {
 		String id = null;
 		if (anyCycles(item)) {
 			throw new CycleIntroductionException();
 		}
+		List<Item> children = item.getChildren();
+		List<Item> replaceList = new LinkedList<>();
+		if (children != null) {
+			for (Item child : children) {
+				replaceList.add(load(child.getId()));
+			}
+			item.setChildren(replaceList);
+		}
+		em.persist(item);
+		id = item.getId();
+		return id;
+	}
+	
+	public synchronized String persist(Item item) throws CycleIntroductionException {
+		String id = null;
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			transaction.begin();
-			List<Item> children = item.getChildren();
-			List<Item> replaceList = new LinkedList<>();
-			if (children != null) {
-				for (Item child : children) {
-					replaceList.add(load(child.getId()));
-				}
-				item.setChildren(replaceList);
-			}
-			em.persist(item);
-			id = item.getId();
+			id = persistItem(item);
 			transaction.commit();
-			fixEnabledStatus();
-
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			log.debug("Exception during save", ex);
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
 			id = null;
+			if (ex instanceof CycleIntroductionException) {
+				throw ex;
+			}
 		}
+		
+		fixEnabledStatus();
 		return id;
+	}
+	
+	public synchronized boolean persistAll(List<Item> items) throws CycleIntroductionException {
+		boolean worked = false;
+		EntityTransaction transaction = em.getTransaction();
+		try {
+			transaction.begin();
+			for (Item item : items) {
+				persistItem(item);
+			}
+			transaction.commit();
+			worked = true;
+		} catch (Exception ex) {
+			log.debug("Exception during save", ex);
+			if (transaction.isActive()) {
+				transaction.rollback();
+			}
+			if (ex instanceof CycleIntroductionException) {
+				throw ex;
+			}
+		}
+		fixEnabledStatus();
+		return worked;
 	}
 
 	public synchronized String merge(Item item) throws CycleIntroductionException {
