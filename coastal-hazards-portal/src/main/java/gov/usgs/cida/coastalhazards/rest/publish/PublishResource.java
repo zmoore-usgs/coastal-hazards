@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.rest.publish;
 
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
+import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 
@@ -10,6 +11,8 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -29,6 +32,7 @@ import org.xml.sax.SAXException;
  * @author isuftin
  */
 @Path("/")
+@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class PublishResource {
     
     private static final String cswExternalEndpoint;
@@ -39,13 +43,15 @@ public class PublishResource {
         cswExternalEndpoint = props.getProperty("coastal-hazards.csw.endpoint");
     }
 
+    @RolesAllowed(CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE)
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/item/")
     public Response viewBlankItem(@Context HttpServletRequest req) throws URISyntaxException {
        return viewItemById(req, "");
     }
-    
+
+    @RolesAllowed(CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE)
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/item/{token}")
@@ -55,7 +61,8 @@ public class PublishResource {
         map.put("id", token);
         return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", map)).build();
     }
-    
+
+    @RolesAllowed(CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE)
     @POST
     @Path("metadata/{token}")
     @Produces(MediaType.APPLICATION_JSON)

@@ -20,6 +20,17 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>gov.usgs.cida.auth</groupId>
+			<artifactId>auth-web-utils</artifactId>
+			<version>1.0.3-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>gov.usgs.cida.coastalhazards</groupId>
 			<artifactId>coastal-hazards-commons</artifactId>
 			<version>${project.version}</version>
