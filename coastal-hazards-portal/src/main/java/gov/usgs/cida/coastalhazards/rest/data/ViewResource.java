@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path("view")
-public class SessionResource {
+public class ViewResource {
 
 	private static SessionIO sessionIo = new SessionManager();
 
