@@ -599,7 +599,7 @@ CCH.Objects.Widget.Card = function (args) {
 				var $button = me.container.find('button.item-control-button-bucket'),
 					$img = $button.find('> img');
 
-				$img.attr('src', 'images/cards/add-bucket.svg');
+				$img.attr('src', CCH.CONFIG.contextPath + 'images/cards/add-bucket.svg');
 
 				$button.removeClass('disabled');
 
@@ -612,7 +612,6 @@ CCH.Objects.Widget.Card = function (args) {
 	});
 
 	CCH.LOG.trace('Card.js::constructor:Card class is initialized.');
-
 	return {
 		id: me.id,
 		item: me.item,

@@ -34,6 +34,7 @@
 <% 
 	String baseUrlJndiString = props.getProperty("coastal-hazards.base.url");
 	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
+	String relPath = baseUrl+"/";
 	String referer = request.getHeader("referer");
 %>
 <html lang="en"> 
@@ -112,11 +113,11 @@
 		</jsp:include>
 		<%-- TODO: Refactor log4javascript to take the log4js script from webjars --%>
 		<jsp:include page="js/log4javascript/log4javascript.jsp">
+			<jsp:param name="relPath" value="<%=relPath%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
-			<jsp:param name="relPath" value="../../" />
 		</jsp:include>
 		<jsp:include page="js/third-party/alertify/alertify.jsp">
-			<jsp:param name="relPath" value="../../" />
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
@@ -144,7 +145,7 @@
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
 		<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 		<jsp:include page="WEB-INF/jsp/components/front/image-preload.jsp">
-			<jsp:param name="relPath" value="../../" />
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
 		</jsp:include>
 	</body>
 </html>
