@@ -56,7 +56,7 @@ public class ThumbnailResource {
         return response;
     }
 
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @PUT
     @Path("{id}")
     @Consumes(MediaType.TEXT_PLAIN)

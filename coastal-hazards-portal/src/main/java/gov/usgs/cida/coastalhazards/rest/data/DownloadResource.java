@@ -168,7 +168,7 @@ public class DownloadResource {
         return Response.ok(downloadJson, MediaType.APPLICATION_JSON_TYPE).build();
     }
 
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @DELETE
     @Produces("application/json")
     @Path("item/{itemId}")
