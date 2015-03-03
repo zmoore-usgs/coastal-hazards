@@ -15,6 +15,7 @@ import gov.usgs.cida.auth.ws.rs.filter.AbstractTokenBasedSecurityContextFilter;
 @Priority(Priorities.AUTHENTICATION)
 public class CoastalHazardsTokenBasedSecurityFilter extends AbstractTokenBasedSecurityContextFilter {
 	public static final String CIDA_AUTHORIZED_ROLE = "CIDA_AUTHORIZED";
+	public static final String CCH_ADMIN_ROLE = "CCH_ADMIN";
 
 	public static final List<String> ACCEPTED_ROLES = Arrays.asList(new String[] { CIDA_AUTHORIZED_ROLE });
 	

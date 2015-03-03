@@ -40,7 +40,7 @@ public class ImportResource {
 		geoserverPass = props.getProperty("coastal-hazards.geoserver.password");
 	}
 
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@DELETE
 	@Path("/{layer}")
 	public Response deleteLaterFromGeoserver(@Context HttpServletRequest req, @PathParam("layer") String layer) throws URISyntaxException {
