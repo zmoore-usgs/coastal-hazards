@@ -32,6 +32,7 @@
 <%
 	String baseUrlJndiString = props.getProperty("coastal-hazards.base.url");
 	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
+	String relPath = baseUrl+"/";
 %>
 <html lang="en">
     <head>
@@ -95,7 +96,8 @@
 			window.CCH = Object.extended();
 			CCH.config = {
 				'id': '${it.id}' || 'uber',
-				'baseUrl': '<%=baseUrl%>'
+				'baseUrl': '<%=baseUrl%>',
+				'relPath' : '<%=relPath%>'
 			};
 		</script>
 
