@@ -72,7 +72,7 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 					append($('<img />').
 							addClass('img-responsive').
 							attr({
-								'src': 'images/spinner/spinner3.gif',
+								'src': CCH.CONFIG.contextPath + '/images/spinner/spinner3.gif',
 								'alt': "Spinner Image"
 							}));
 			$slide.find('>div:nth-child(' + (ind + 3) + ')>ul').empty();
@@ -762,7 +762,7 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 	});
 	
 	// Load Handlebars templates
-	$.get('resource/template/handlebars/search/location_card.mustache', function (content) {
+	$.get(CCH.CONFIG.contextPath + '/resource/template/handlebars/search/location_card.mustache', function (content) {
 		me.locationResultTemplate = Handlebars.compile(content);
 	});
 

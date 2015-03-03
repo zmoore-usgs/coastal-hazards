@@ -1512,7 +1512,7 @@ CCH.Objects.Publish.UI = function () {
 					url: CCH.CONFIG.contextPath + '/data/item/' + id,
 					method: 'DELETE',
 					success: function () {
-						window.location = window.location.origin + CCH.CONFIG.contextPath + '/publish/item/';
+						CCH.CONFIG.contextPath + '/publish/item/';
 					},
 					error: function (jqXHR, err, errTxt) {
 						if (errTxt.indexOf('Unauthorized') !== -1) {
@@ -1860,7 +1860,7 @@ CCH.Objects.Publish.UI = function () {
 							if (!id) {
 								id = $itemIdInput.val();
 							}
-							window.location = window.location.origin + CCH.CONFIG.contextPath + '/publish/item/' + id;
+							window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
 						}
 					],
 					error: [

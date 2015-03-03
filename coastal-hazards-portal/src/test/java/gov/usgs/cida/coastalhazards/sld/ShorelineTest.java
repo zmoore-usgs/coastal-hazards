@@ -1,21 +1,24 @@
 package gov.usgs.cida.coastalhazards.sld;
 
-import com.google.gson.Gson;
-import com.sun.jersey.api.view.Viewable;
+import static org.junit.Assert.assertEquals;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.model.summary.Tiny;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.server.mvc.Viewable;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import com.google.gson.Gson;
 
 /**
  *

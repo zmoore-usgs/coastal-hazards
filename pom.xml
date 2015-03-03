@@ -420,20 +420,30 @@
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
-				<groupId>com.sun.jersey</groupId>
-				<artifactId>jersey-server</artifactId>
-				<version>1.17.1</version>
+				<groupId>org.glassfish.jersey.containers</groupId>
+				<artifactId>jersey-container-servlet</artifactId>
+				<version>2.16</version>
 			</dependency>
 			<dependency>
-				<groupId>com.sun.jersey</groupId>
-				<artifactId>jersey-servlet</artifactId>
-				<version>1.17.1</version>
+			    <groupId>org.glassfish.jersey.ext</groupId>
+			    <artifactId>jersey-mvc-bean-validation</artifactId>
+			    <version>2.16</version>
+			</dependency>
+			<dependency>
+			    <groupId>org.glassfish.jersey.ext</groupId>
+			    <artifactId>jersey-mvc-jsp</artifactId>
+			    <version>2.16</version>
 			</dependency>
 			<dependency>
 				<groupId>com.vividsolutions</groupId>
 				<artifactId>jts</artifactId>
 				<version>1.13</version>
 			</dependency>
+	        <dependency>
+	            <groupId>net.sf.ehcache</groupId>
+	            <artifactId>ehcache</artifactId>
+	            <version>2.8.1</version>
+	        </dependency>
 		</dependencies>
 	</dependencyManagement>
 	

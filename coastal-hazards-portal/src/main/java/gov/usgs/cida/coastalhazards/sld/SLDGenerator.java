@@ -1,19 +1,22 @@
 package gov.usgs.cida.coastalhazards.sld;
 
-import com.sun.jersey.api.view.Viewable;
 import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
 import gov.usgs.cida.coastalhazards.sld.Shorelines.ShorelineConfig;
+
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedSet;
+
 import javax.ws.rs.core.Response;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.glassfish.jersey.server.mvc.Viewable;
 
 /**
  *

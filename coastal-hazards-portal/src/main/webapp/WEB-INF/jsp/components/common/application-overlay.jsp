@@ -16,7 +16,7 @@
 				<div id="application-overlay-description-container-title">Coastal Change Hazards Portal</div>
 				<div id="application-overlay-description-container-version">Version <%=request.getParameter("version")%></div>
 				<div class="application-overlay-description-container-spinner-container">
-					<img class="splash-spinner" src="images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/><span class="splash-status-update"></span>
+					<img class="splash-spinner" src="<%=baseUrl%>/images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/><span class="splash-status-update"></span>
 				</div>
 			</div>
 		</div>
@@ -25,7 +25,7 @@
 		<div class="application-overlay-content-wrap">
 			<h2>Retrieving Data...</h2>
 			<div class="application-overlay-description-container-spinner-container">
-				<img class="splash-spinner" src="images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
+				<img class="splash-spinner" src="<%=baseUrl%>/images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
 				<span class="splash-status-update"></span>
 			</div>
 		</div>

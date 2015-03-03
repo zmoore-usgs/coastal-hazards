@@ -1,22 +1,18 @@
 package gov.usgs.cida.coastalhazards.rest.publish;
 
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import java.util.HashMap;
 import javax.ws.rs.ApplicationPath;
+
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @ApplicationPath("/publish")
-public class PublishRestApplication extends PackagesResourceConfig {
-
+public class PublishRestApplication extends ResourceConfig {
 	public PublishRestApplication() {
-		super(new HashMap<String, Object>() {
-			private static final long serialVersionUID = 76876L;
-			{
-				put(PackagesResourceConfig.PROPERTY_PACKAGES, this.getClass().getPackage().getName());
-			}
-		});
+		packages(this.getClass().getPackage().getName());
+		register(JspMvcFeature.class);
 	}
 }

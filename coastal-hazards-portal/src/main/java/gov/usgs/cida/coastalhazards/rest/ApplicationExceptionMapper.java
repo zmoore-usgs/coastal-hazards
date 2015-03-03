@@ -1,11 +1,12 @@
 package gov.usgs.cida.coastalhazards.rest;
 
-import com.sun.jersey.api.NotFoundException;
 import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.exception.CycleIntroductionException;
 import gov.usgs.cida.coastalhazards.exception.DownloadStagingUnsuccessfulException;
 import gov.usgs.cida.coastalhazards.exception.PreconditionFailedException;
 import gov.usgs.cida.coastalhazards.exception.UnauthorizedException;
+
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
