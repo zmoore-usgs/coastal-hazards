@@ -5,12 +5,15 @@ import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
+import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -34,6 +37,7 @@ import javax.ws.rs.core.Response;
  * @author jordan
  */
 @Path("item")
+@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ItemResource {
 
 	/**
@@ -102,10 +106,10 @@ public class ItemResource {
 	 * @param request passed through context of request
 	 * @return
 	 */
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	//TODO SECURE ME
 	public Response postItem(String content, @Context HttpServletRequest request) {
 		Response response;
 		try (ItemManager itemManager = new ItemManager()) {
@@ -134,10 +138,10 @@ public class ItemResource {
 	 * @param content
 	 * @return
 	 */
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
 	@PUT
 	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	//TODO SECURE ME
 	public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response = null;
 		try (ItemManager itemManager = new ItemManager()) {
@@ -155,9 +159,9 @@ public class ItemResource {
 		return response;
 	}
 
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
 	@DELETE
 	@Path("{id}")
-	//TODO SECURE ME
 	public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id) {
 		Response response = null;
 		try (ItemManager itemManager = new ItemManager()) {

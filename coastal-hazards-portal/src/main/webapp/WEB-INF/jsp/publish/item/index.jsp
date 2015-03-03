@@ -81,7 +81,7 @@
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="<%= fineUploader%>">
-			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
+			<jsp:param name="relPath" value="<%=relPath%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="<%= configration%>"></jsp:include>
@@ -501,6 +501,8 @@
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/publish/UI.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Auth.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/application/publish/OnReady.js"></script>

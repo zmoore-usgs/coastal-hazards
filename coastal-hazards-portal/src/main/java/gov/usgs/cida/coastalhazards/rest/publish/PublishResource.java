@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.rest.publish;
 
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
+import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 
@@ -10,6 +11,8 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -29,6 +32,7 @@ import org.xml.sax.SAXException;
  * @author isuftin
  */
 @Path("/")
+@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class PublishResource {
     
     private static final String cswExternalEndpoint;
@@ -55,27 +59,42 @@ public class PublishResource {
         return Response.ok(new Viewable("/WEB-INF/jsp/publish/tree/index.jsp", map)).build();
     }
 
+    //This service remains open and will serve as the landing page
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/item/")
     public Response viewBlankItem(@Context HttpServletRequest req) throws URISyntaxException {
-       return viewItemById(req, "");
+       return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", new HashMap<>())).build();
     }
     
+    /**
+     * This is a dummy endpoint used to check the authorization status user
+     * @param req
+     * @return
+     * @throws URISyntaxException
+     */
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/item/authcheck")
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
+    public Response checkLogin(@Context HttpServletRequest req) throws URISyntaxException {
+       return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", new HashMap<>())).build();
+    }
+
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/item/{token}")
-    //TODO SECURE ME
     public Response viewItemById(@Context HttpServletRequest req, @PathParam("token") String token) throws URISyntaxException {
         Map<String, String> map = new HashMap<>();
         map.put("id", token);
         return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", map)).build();
     }
-    
+
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
     @POST
     @Path("metadata/{token}")
     @Produces(MediaType.APPLICATION_JSON)
-    //TODO SECURE ME
     public Response publishItems(@Context HttpServletRequest req, @PathParam("token") String metaToken) throws URISyntaxException {
         Response response = null;
         Map<String, String> responseContent = new HashMap<>();

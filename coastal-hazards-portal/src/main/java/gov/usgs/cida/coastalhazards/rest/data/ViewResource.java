@@ -6,9 +6,12 @@ import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
 import gov.usgs.cida.coastalhazards.jpa.SessionManager;
 import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
+
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -25,6 +28,7 @@ import javax.ws.rs.core.Response;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path("view")
+@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ViewResource {
 
 	private static SessionIO sessionIo = new SessionManager();
