@@ -52,11 +52,9 @@
 						</button>
 						<button class="btn btn-default item-control-button application-card-zoom-to-btn">
 							<img src="${param['baseUrl']}/images/cards/zoom-01.svg" alt="Zoom To Image"/> Zoom To
-						</button><br/>
-					</div>
-					<div class="application-card-control-row-2">
-						<button class="btn btn-default item-control-button item-control-button-bucket application-card-add-bucket-btn">
-							<img src="${param['baseUrl']}/images/cards/add-bucket.svg" alt="Bucket Image"/> Add To Bucket
+						</button>
+						<button class="btn btn-primary item-control-button item-control-button-bucket application-card-add-bucket-btn">
+							<img src="${param['baseUrl']}/images/banner/bucket/bucket.svg" alt="Bucket Image"/> Add To Bucket
 						</button>
 					</div>
                 </div>

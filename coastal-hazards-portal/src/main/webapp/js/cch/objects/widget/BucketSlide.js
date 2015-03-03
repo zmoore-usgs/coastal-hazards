@@ -409,7 +409,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 					id: $card.data('id')
 				});
 			});
-			CCH.session.getSesstion().items = [];
+			CCH.session.getSession().items = [];
 			CCH.session.update();
 		}
 
