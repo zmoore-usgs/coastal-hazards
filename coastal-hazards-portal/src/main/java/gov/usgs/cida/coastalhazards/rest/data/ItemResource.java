@@ -6,11 +6,13 @@ import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
-
+import gov.usgs.cida.utilities.IdGenerator;
+import gov.usgs.cida.utilities.properties.JNDISingleton;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -27,6 +29,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 /**
  *
@@ -35,6 +38,9 @@ import javax.ws.rs.core.Response;
  */
 @Path("item")
 public class ItemResource {
+	
+	public static final String PUBLIC_URL = JNDISingleton.getInstance()
+			.getProperty("coastal-hazards.public.url", "http://localhost:8080/coastal-hazards-portal");
 
 	/**
 	 * Retrieves representation of an instance of
@@ -170,6 +176,28 @@ public class ItemResource {
 		}
 		return response;
 	}
+	
+	@POST
+	@Path("/{id}/template")
+	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
+	//TODO SECURE ME
+	public Response instantiateTemplate(@Context HttpServletRequest request, @PathParam("id") String id, InputStream postBody) {
+		Response response = null;
+		try (ItemManager manager = new ItemManager()) {
+			Item template = manager.load(id);
+			if (template.getItemType() != Item.ItemType.template) {
+				throw new UnsupportedOperationException("Only template items may be instantiated");
+			}
+			String newId = IdGenerator.generate();
+			// try to funnel post body to geoserver
+			Item newItem = new Item();
+			newItem.setId(newId);
+			newItem = Item.copyValues(template, newItem);
+			// add layer to item
+			response = Response.created(itemURI(newItem)).build();
+		}
+		return response;
+	}
 
 	/**
 	 * Run the cycle check before attempting POST or PUT to verify item would
@@ -188,5 +216,17 @@ public class ItemResource {
 			response = Response.ok("{\"cycle\": " + cycle + "}", MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;
+	}
+	
+	public static URI itemURI(Item item) {
+		UriBuilder fromUri = UriBuilder.fromUri(PUBLIC_URL);
+		URI uri = null;
+		try {
+			uri = fromUri.path(Item.class.getMethod("getItem", String.class, Boolean.class, Request.class))
+				.build(item.getId());
+		} catch (NoSuchMethodException ex) {
+			// do something
+		}
+		return uri;
 	}
 }

@@ -3,11 +3,11 @@ package gov.usgs.cida.coastalhazards.model;
 import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
-import gov.usgs.cida.coastalhazards.util.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.util.ogc.CSWService;
 import gov.usgs.cida.coastalhazards.util.ogc.OGCService;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
+import gov.usgs.cida.coastalhazards.util.ogc.WMSService;
 import gov.usgs.cida.utilities.Cacheable;
 import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.StringPrecondition;
@@ -58,6 +58,7 @@ public class Item implements Serializable, Cacheable {
 	public enum ItemType {
 
 		aggregation,
+		template,
 		data,
 		uber;
 	}
@@ -301,7 +302,7 @@ public class Item implements Serializable, Cacheable {
 	public static Item copyValues(final Item from, final Item to) {
 		Item item = new Item();
 
-		if (to.getItemType() != from.getItemType()) {
+		if (to.getItemType() != from.getItemType() && from.getItemType() != ItemType.template) {
 			throw new UnsupportedOperationException("Cannot change item type");
 		}
 		item.setId(to.getId());
