@@ -49,12 +49,35 @@ public class TreeResource {
 				rootItems.add(treeGson.toJsonTree(item));
 			}
 
-			root.add("rootItems", rootItems);
+			root.add("items", rootItems);
 			response = Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;
 	}
+	
+	@GET
+	@Path("/item/orphans")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getOrphans(@Context Request request) {
+		Response response = null;
+		try (ItemManager itemManager = new ItemManager()) {
+			List<Item> items = itemManager.loadRootItems();
+			Gson treeGson = new GsonBuilder().registerTypeAdapter(Item.class, new ItemTreeAdapter()).create();
+			JsonObject root = new JsonObject();
+			JsonArray orphans = new JsonArray();
 
+			for (Item item : items) {
+				if (!item.getId().equals(Item.UBER_ID)) {
+					orphans.add(treeGson.toJsonTree(item));
+				}
+			}
+
+			root.add("items", orphans);
+			response = Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
+		}
+		return response;
+	}
+	
 	@GET
 	@Path("/item/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
