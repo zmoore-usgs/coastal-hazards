@@ -1,15 +1,17 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.adapter.ItemTreeAdapter;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
-import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
-import gov.usgs.cida.utilities.HTTPCachingUtil;
 
 import javax.ws.rs.NotFoundException;
 
@@ -32,11 +34,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
@@ -52,24 +49,16 @@ public class TreeResource {
 		Response response = null;
 		try (ItemManager itemManager = new ItemManager()) {
 			List<Item> items = itemManager.loadRootItems();
+			Gson treeGson = new GsonBuilder().registerTypeAdapter(Item.class, new ItemTreeAdapter()).create();
+			JsonObject root = new JsonObject();
+			JsonArray rootItems = new JsonArray();
 
-			Item newestItem = ItemUtil.gatherNewest(items);
-			Response unmodified = HTTPCachingUtil.checkModified(request, newestItem);
-			if (unmodified != null) {
-				response = unmodified;
+			for (Item item : items) {
+				rootItems.add(treeGson.toJsonTree(item));
 			}
-			else {
-				Gson treeGson = new GsonBuilder().registerTypeAdapter(Item.class, new ItemTreeAdapter()).create();
-				JsonObject root = new JsonObject();
-				JsonArray rootItems = new JsonArray();
 
-				for (Item item : items) {
-					rootItems.add(treeGson.toJsonTree(item));
-				}
-
-				root.add("rootItems", rootItems);
-				response = Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).lastModified(newestItem.getLastModified()).build();
-			}
+			root.add("rootItems", rootItems);
+			response = Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;
 	}
@@ -85,17 +74,9 @@ public class TreeResource {
 				throw new NotFoundException();
 			}
 			else {
-				Item newestItem = ItemUtil.gatherNewest(item);
-
-				Response unmodified = HTTPCachingUtil.checkModified(request, newestItem);
-				if (unmodified != null) {
-					response = unmodified;
-				}
-				else {
-					Gson treeGson = new GsonBuilder().registerTypeAdapter(Item.class, new ItemTreeAdapter()).create();
-					String jsonResult = treeGson.toJson(item);
-					response = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).lastModified(newestItem.getLastModified()).build();
-				}
+				Gson treeGson = new GsonBuilder().registerTypeAdapter(Item.class, new ItemTreeAdapter()).create();
+				String jsonResult = treeGson.toJson(item);
+				response = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).build();
 			}
 		}
 		return response;

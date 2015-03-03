@@ -42,6 +42,22 @@ public class PublishResource {
         props = JNDISingleton.getInstance();
         cswExternalEndpoint = props.getProperty("coastal-hazards.csw.endpoint");
     }
+	
+	@GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/tree/")
+    public Response manageTreeAtHead(@Context HttpServletRequest req) throws URISyntaxException {
+       return manageTree(req, "");
+    }
+
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/tree/{token}")
+    public Response manageTree(@Context HttpServletRequest req, @PathParam("token") String token) throws URISyntaxException {
+        Map<String, String> map = new HashMap<>(1);
+        map.put("id", token);
+        return Response.ok(new Viewable("/WEB-INF/jsp/publish/tree/index.jsp", map)).build();
+    }
 
     //This service remains open and will serve as the landing page
     @GET
