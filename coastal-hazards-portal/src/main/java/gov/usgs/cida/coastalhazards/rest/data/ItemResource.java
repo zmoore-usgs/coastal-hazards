@@ -231,7 +231,7 @@ public class ItemResource {
 		UriBuilder fromUri = UriBuilder.fromUri(PUBLIC_URL);
 		URI uri = null;
 		try {
-			uri = fromUri.path(Item.class.getMethod("getItem", String.class, Boolean.class, Request.class))
+			uri = fromUri.path(ItemResource.class.getMethod("getItem", String.class, Boolean.class, Request.class))
 				.build(item.getId());
 		} catch (NoSuchMethodException ex) {
 			// do something
