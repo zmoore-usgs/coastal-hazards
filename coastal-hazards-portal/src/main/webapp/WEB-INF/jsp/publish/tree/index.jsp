@@ -95,7 +95,7 @@
 		<script type="text/javascript">
 			window.CCH = Object.extended();
 			CCH.config = {
-				'id': '${it.id}' || 'uber',
+				'id': '${it.id}',
 				'baseUrl': '<%=baseUrl%>',
 				'relPath' : '<%=relPath%>'
 			};
