@@ -55,7 +55,7 @@
         <div class="container-fluid">
 			<div class="page-header">
 				<div class="row" id="row-title">
-					<h3 class="col-md-12">Tree Manipulation Service</h3>
+					<h3 class="col-md-12">Coastal Hazards Portal Tree Manipulation Service</h3>
 				</div>
 			</div>
 			<div class="row" id="row-instructions">
