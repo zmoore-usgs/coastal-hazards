@@ -34,10 +34,6 @@
 	margin-bottom: 5px;
 }
 
-.application-card-control-row > div {
-	text-align: center;
-}
-
 .application-card-control-row > div button.disabled{
 	color: #DCDCDC;
 }
@@ -146,8 +142,8 @@
 }
 
 .application-card-container .item-control-button img {
-	height: 25px;
-	width: 25px;
+	height: 20px;
+	width: 20px;
 }
 
 .application-card-container .zoom-to-badge {
