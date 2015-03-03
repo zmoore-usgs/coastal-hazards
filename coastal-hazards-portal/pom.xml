@@ -15,6 +15,7 @@
 	<properties>
 		<version.jqueryui>1.10.4</version.jqueryui>
 		<version.handlebars>3.0.0-1</version.handlebars>
+		<version.jstree>3.0.9</version.jstree>
 		<gt.version>10.1</gt.version>
 	</properties>
 
@@ -196,6 +197,11 @@
 			<groupId>org.webjars</groupId>
 			<artifactId>handlebars</artifactId>
 			<version>${version.handlebars}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jstree</artifactId>
+			<version>${version.jstree}</version>
 		</dependency>
 
 		<!-- QR Generation --> 

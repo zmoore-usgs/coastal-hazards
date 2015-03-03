@@ -34,10 +34,6 @@
 	margin-bottom: 5px;
 }
 
-.application-card-control-row > div {
-	text-align: center;
-}
-
 .application-card-control-row > div button.disabled{
 	color: #DCDCDC;
 }
@@ -56,8 +52,9 @@
 }
 
 .application-card-add-bucket-btn {
-	font-size: 18px !important;
-	width: 9em
+	color: #FFFFFF !important;
+	background-color: #003366;
+	width: 9em;
 }
 
 .application-card-more-info-btn img, 
@@ -67,7 +64,8 @@
 }
 
 .application-card-more-info-btn, 
-.application-card-zoom-to-btn
+.application-card-zoom-to-btn,
+.application-card-add-bucket-btn
 {
 	padding: 2px;
 }
@@ -90,6 +88,8 @@
 .application-card-explore-row button {
 	font-size: 12px;
 	white-space: normal;
+	width: 100%;
+	text-align: left;
 }
 
 .application-card-title-row .application-card-title-container-medium {
@@ -142,8 +142,8 @@
 }
 
 .application-card-container .item-control-button img {
-	height: 25px;
-	width: 25px;
+	height: 20px;
+	width: 20px;
 }
 
 .application-card-container .zoom-to-badge {
@@ -231,6 +231,7 @@
 	border-radius: 4px;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
+	padding: 5px;
 }
 .active-item-card-body span > a {
 	color: #333 !important;
