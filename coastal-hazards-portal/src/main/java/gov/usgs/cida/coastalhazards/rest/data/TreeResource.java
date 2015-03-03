@@ -101,7 +101,7 @@ public class TreeResource {
 		return response;
 	}
 
-    @RolesAllowed(CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE)
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
 	@PUT
 	@Path("/item/{id}")
 	public Response updateChildren(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
@@ -137,7 +137,7 @@ public class TreeResource {
 		return response;
 	}
 
-    @RolesAllowed(CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE)
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
 	@POST
 	@Path("/item")
 	public Response updateChildrenBulk(@Context HttpServletRequest request, String content) {

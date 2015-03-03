@@ -11,6 +11,8 @@ $(document).ready(function () {
 		LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
 	});
 	CCH.LOG = LOG;
+	
+	CCH.Auth.checkAuthStatus();
 
 	$(document).ajaxStart(function () {
 		$('body').css('cursor', 'wait');

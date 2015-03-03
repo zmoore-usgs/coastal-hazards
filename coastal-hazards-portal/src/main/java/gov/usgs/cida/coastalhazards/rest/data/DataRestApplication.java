@@ -25,7 +25,9 @@ public class DataRestApplication extends ResourceConfig {
 		
 		//security
         register(RolesAllowedDynamicFeature.class);
-		AuthClientSingleton.initAuthClient(CachingAuthClient.class);
+        if ( !AuthClientSingleton.isInitialized() ) {
+        	AuthClientSingleton.initAuthClient(CachingAuthClient.class);
+        }
 		register(CoastalHazardsTokenBasedSecurityFilter.class);
 	}
 }

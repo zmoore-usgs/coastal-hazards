@@ -50,8 +50,22 @@ public class PublishResource {
     public Response viewBlankItem(@Context HttpServletRequest req) throws URISyntaxException {
        return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", new HashMap<>())).build();
     }
+    
+    /**
+     * This is a dummy endpoint used to check the authorization status user
+     * @param req
+     * @return
+     * @throws URISyntaxException
+     */
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/item/authcheck")
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
+    public Response checkLogin(@Context HttpServletRequest req) throws URISyntaxException {
+       return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", new HashMap<>())).build();
+    }
 
-    @RolesAllowed(CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE)
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/item/{token}")
@@ -61,7 +75,7 @@ public class PublishResource {
         return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", map)).build();
     }
 
-    @RolesAllowed(CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE)
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
     @POST
     @Path("metadata/{token}")
     @Produces(MediaType.APPLICATION_JSON)

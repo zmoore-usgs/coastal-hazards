@@ -106,7 +106,7 @@ public class ItemResource {
 	 * @param request passed through context of request
 	 * @return
 	 */
-    @RolesAllowed(CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE)
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -138,7 +138,7 @@ public class ItemResource {
 	 * @param content
 	 * @return
 	 */
-    @RolesAllowed(CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE)
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
 	@PUT
 	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -159,7 +159,7 @@ public class ItemResource {
 		return response;
 	}
 
-    @RolesAllowed(CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE)
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CIDA_AUTHORIZED_ROLE})
 	@DELETE
 	@Path("{id}")
 	public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id) {
