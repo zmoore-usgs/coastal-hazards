@@ -154,7 +154,7 @@ public class TreeResource {
 					parentItem.setChildren(children);
 					itemList.add(parentItem);
 				}
-				manager.persistAll(itemList);
+				manager.mergeAll(itemList);
 			}
 			response = Response.ok().build();
 		}

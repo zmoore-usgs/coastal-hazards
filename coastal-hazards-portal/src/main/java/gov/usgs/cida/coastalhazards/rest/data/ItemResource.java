@@ -4,6 +4,8 @@ import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.Service;
+import gov.usgs.cida.coastalhazards.rest.data.util.GeoserverUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import gov.usgs.cida.utilities.IdGenerator;
@@ -189,12 +191,19 @@ public class ItemResource {
 				throw new UnsupportedOperationException("Only template items may be instantiated");
 			}
 			String newId = IdGenerator.generate();
-			// try to funnel post body to geoserver
-			Item newItem = new Item();
-			newItem.setId(newId);
-			newItem = Item.copyValues(template, newItem);
-			// add layer to item
-			response = Response.created(itemURI(newItem)).build();
+			List<Service> added = GeoserverUtil.addLayer(postBody, newId);
+			if (added.size() > 0) {
+				Item newItem = new Item();
+				newItem.setId(newId);
+				newItem = Item.copyValues(template, newItem);
+				
+				List<Service> services = newItem.getServices();
+				services.addAll(added);
+				services = Item.fillInServices(services, newId);
+				newItem.setServices(services);
+				manager.merge(newItem);
+				response = Response.created(itemURI(newItem)).build();
+			}
 		}
 		return response;
 	}

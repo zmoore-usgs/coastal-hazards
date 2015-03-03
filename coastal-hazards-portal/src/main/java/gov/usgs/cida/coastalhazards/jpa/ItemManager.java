@@ -59,31 +59,14 @@ public class ItemManager implements AutoCloseable {
 		}
 		return items;
 	}
-
-	private synchronized String persistItem(Item item) {
-		String id = null;
-		if (anyCycles(item)) {
-			throw new CycleIntroductionException();
-		}
-		List<Item> children = item.getChildren();
-		List<Item> replaceList = new LinkedList<>();
-		if (children != null) {
-			for (Item child : children) {
-				replaceList.add(load(child.getId()));
-			}
-			item.setChildren(replaceList);
-		}
-		em.persist(item);
-		id = item.getId();
-		return id;
-	}
 	
 	public synchronized String persist(Item item) throws CycleIntroductionException {
 		String id = null;
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			transaction.begin();
-			id = persistItem(item);
+			em.persist(item);
+			id = item.getId();
 			transaction.commit();
 		} catch (Exception ex) {
 			log.debug("Exception during save", ex);
@@ -100,13 +83,13 @@ public class ItemManager implements AutoCloseable {
 		return id;
 	}
 	
-	public synchronized boolean persistAll(List<Item> items) throws CycleIntroductionException {
+	public synchronized boolean mergeAll(List<Item> items) throws CycleIntroductionException {
 		boolean worked = false;
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			transaction.begin();
 			for (Item item : items) {
-				persistItem(item);
+				mergeItem(item);
 			}
 			transaction.commit();
 			worked = true;
@@ -122,17 +105,31 @@ public class ItemManager implements AutoCloseable {
 		fixEnabledStatus();
 		return worked;
 	}
-
-	public synchronized String merge(Item item) throws CycleIntroductionException {
+	
+	private synchronized String mergeItem(Item item) {
 		String id = null;
 		if (anyCycles(item)) {
 			throw new CycleIntroductionException();
 		}
+		List<Item> children = item.getChildren();
+		List<Item> replaceList = new LinkedList<>();
+		if (children != null) {
+			for (Item child : children) {
+				replaceList.add(load(child.getId()));
+			}
+			item.setChildren(replaceList);
+		}
+		em.merge(item);
+		id = item.getId();
+		return id;
+	}
+
+	public synchronized String merge(Item item) throws CycleIntroductionException {
+		String id = null;
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			transaction.begin();
-			em.merge(item);
-			id = item.getId();
+			id = mergeItem(item);
 			transaction.commit();
 			fixEnabledStatus();
 		}
