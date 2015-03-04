@@ -67,7 +67,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			'contextmenu': {
 				'items': {
 					'delete': {
-						'label': 'Delete',
+						'label': 'Orphan',
 						'icon': 'fa fa-eraser',
 						'action': function () {
 							var tree = CCH.ui.getTree(),
@@ -101,7 +101,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					return true;
 				}
 			},
-			'plugins': ['contextmenu', 'dnd', 'sort', 'types', 'state', 'search']
+			'plugins': ['contextmenu', 'dnd',  'types', 'state', 'search']
 		});
 
 		me.$treeContainer.bind('move_node.jstree', function (evt, moveEvt) {
