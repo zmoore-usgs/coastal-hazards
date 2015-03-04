@@ -82,6 +82,13 @@
                         String forward = request.getParameter("forward");
                     %>
 
+					<%
+                        String timedOut = request.getParameter("cause");
+                        if (timedOut != null && timedOut.equals("forbidden")) {
+                    %>
+                    <p style="color: red;">* You are not authorized to access the page. Verify your user credentials or contact an administrator. *</p>
+                    <%}%>
+                    
                     <form id="loginForm" name="f">
                         <div class="loginFields">
                             <div style="float: right; vertical-align: middle; width: 85%;">

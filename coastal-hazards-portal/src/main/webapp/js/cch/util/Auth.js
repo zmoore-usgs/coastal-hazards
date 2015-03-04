@@ -52,7 +52,7 @@ $( document ).ajaxError(function(event, jqxhr, settings, thrownError){
 	if(thrownError == "Forbidden") {
 		var currentLocation = window.location;
 		//reroute to login page
-		window.location = CCH.CONFIG.contextPath + "/login.jsp?forward=" + encodeURI(currentLocation); 
+		window.location = CCH.CONFIG.contextPath + "/login.jsp?forward=" + encodeURI(currentLocation) + "&cause=forbidden"; 
 	}
 });
 
