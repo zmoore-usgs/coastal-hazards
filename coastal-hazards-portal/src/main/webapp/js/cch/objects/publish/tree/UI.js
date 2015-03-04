@@ -75,7 +75,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 									parentId = tree.get_parent(selectedId);
 
 							if (selectedId.toLowerCase() !== 'uber') {
-								tree.delete_node(selectedId);
+								tree.move_node(selectedId, 'orphans');
 								me.itemUpdated(parentId);
 							}
 						}
