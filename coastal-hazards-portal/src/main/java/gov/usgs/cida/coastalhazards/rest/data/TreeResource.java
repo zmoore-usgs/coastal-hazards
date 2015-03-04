@@ -6,17 +6,24 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.adapter.ItemTreeAdapter;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
+
+import javax.ws.rs.NotFoundException;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -32,6 +39,7 @@ import javax.ws.rs.core.Response;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path("/tree")
+@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class TreeResource {
 
 	@GET
@@ -49,12 +57,35 @@ public class TreeResource {
 				rootItems.add(treeGson.toJsonTree(item));
 			}
 
-			root.add("rootItems", rootItems);
+			root.add("items", rootItems);
 			response = Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;
 	}
+	
+	@GET
+	@Path("/item/orphans")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getOrphans(@Context Request request) {
+		Response response = null;
+		try (ItemManager itemManager = new ItemManager()) {
+			List<Item> items = itemManager.loadRootItems();
+			Gson treeGson = new GsonBuilder().registerTypeAdapter(Item.class, new ItemTreeAdapter()).create();
+			JsonObject root = new JsonObject();
+			JsonArray orphans = new JsonArray();
 
+			for (Item item : items) {
+				if (!item.getId().equals(Item.UBER_ID)) {
+					orphans.add(treeGson.toJsonTree(item));
+				}
+			}
+
+			root.add("items", orphans);
+			response = Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
+		}
+		return response;
+	}
+	
 	@GET
 	@Path("/item/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -74,9 +105,9 @@ public class TreeResource {
 		return response;
 	}
 
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@PUT
 	@Path("/item/{id}")
-	// TODO SECURE ME
 	public Response updateChildren(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response = null;
 		JsonParser parser = new JsonParser();
@@ -110,9 +141,9 @@ public class TreeResource {
 		return response;
 	}
 
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@POST
 	@Path("/item")
-	// TODO SECURE ME
 	public Response updateChildrenBulk(@Context HttpServletRequest request, String content) {
 		Response response = null;
 		JsonParser parser = new JsonParser();
