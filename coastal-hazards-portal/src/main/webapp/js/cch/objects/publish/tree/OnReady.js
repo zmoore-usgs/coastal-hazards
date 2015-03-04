@@ -14,7 +14,7 @@ $(document).ready(function () {
 		$('body').css('cursor', 'default');
 	});
 	
-	var id = CCH.config.id ? CCH.config.id : "uber";
+	var id = CCH.config.id;
 	
 	CCH.ui = CCH.Objects.Publish.Tree.UI({
 		'id' : id,
