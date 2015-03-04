@@ -94,6 +94,12 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				}
 			},
 			'dnd': {
+				'is_draggable' : function (evt) {
+					if (evt[0].parents.length < 3) {
+						return false;
+					}
+					return true;
+				}
 			},
 			'plugins': ['contextmenu', 'dnd', 'sort', 'types', 'state', 'search']
 		});
@@ -104,7 +110,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 			[oldParent, newParent].each(function (itemId) {
 				me.itemUpdated(itemId);
-			})
+			});
 		});
 	};
 
@@ -168,7 +174,8 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					'itemType': 'root',
 					'text': 'Items',
 					'children': []
-				}
+				};
+				
 				// First create a data node for the top level item with all children
 				parentItem.children.push(this.buildAdjacencyListFromData(item));
 				// Use that date to create the tree
