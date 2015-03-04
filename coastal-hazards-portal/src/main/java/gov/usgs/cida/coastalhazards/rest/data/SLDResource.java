@@ -23,14 +23,14 @@ public class SLDResource {
 
     /**
      * XML representation of the SLD document related to a specific item
-     * ;qs=2 is required to make this the default response when no accepts header is given
+     * ;qs=1 is required to make this the default response when no accepts header is given
      * @param id item ID
      * @param ribbon which ribbon to represent (not required)
      * @return response with SLD XML representation
      */
 	@GET
 	@Path("{id}")
-	@Produces(MediaType.APPLICATION_XML + ";qs=2")
+	@Produces(MediaType.APPLICATION_XML + ";qs=1")
 	public Response getSLD(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon) {
 		Response response = null;
 
@@ -51,7 +51,7 @@ public class SLDResource {
 
     /**
      * JSON representation of the contents of the SLD, this is primarily for building a UI legend
-     * ;qs=1 is to make this a lower priority than the xml document, must say accepts=application/json 
+     * ;qs=0 is to make this a lower priority than the xml document, must say accepts=application/json 
      * to get this document
      * @param id item ID
      * @param ribbon Not used currently, but represents which ribbon to represent
@@ -59,7 +59,7 @@ public class SLDResource {
      */
 	@GET
 	@Path("{id}")
-	@Produces(MediaType.APPLICATION_JSON + ";qs=1")
+	@Produces(MediaType.APPLICATION_JSON + ";qs=0")
 	public Response getSLDInfo(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon) {
 		Response response;
 
