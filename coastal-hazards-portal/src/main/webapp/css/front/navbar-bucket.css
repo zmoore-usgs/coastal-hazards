@@ -20,7 +20,7 @@
 }
 
 #app-navbar-bucket-control-container > *:nth-child(1) > span.app-navbar-bucket-button-container-unpopulated {
-    background-image: url("../../images/banner/bucket/bucket-no-sand.svg");
+    background-image: url("../../images/banner/bucket/bucket_animation_crop.svg");
 }
 
 #app-navbar-bucket-control-container > *:nth-child(1) > span.app-navbar-bucket-button-container-populated {
@@ -28,15 +28,7 @@
 }
 /******************************************************************************/
 
-/* Text node ******************************************************************/
-#app-navbar-bucket-control-container > *:nth-child(1) > span > span {
-    color: #003366;
-    font-weight: bold;
-    top: 23px;
-    margin-left: 17px;
-    position: relative;
-}
-/******************************************************************************/
+
 
 /* Triangle *******************************************************************/
 #app-navbar-bucket-control-container > *:nth-child(2) > span {
