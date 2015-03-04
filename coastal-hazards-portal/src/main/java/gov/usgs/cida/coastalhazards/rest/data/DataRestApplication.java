@@ -10,12 +10,15 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 import org.glassfish.jersey.servlet.ServletProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @ApplicationPath("/data")
 public class DataRestApplication extends ResourceConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(DataRestApplication.class);
 
 	public DataRestApplication() {
 		packages(this.getClass().getPackage().getName());
@@ -26,7 +29,11 @@ public class DataRestApplication extends ResourceConfig {
 		//security
         register(RolesAllowedDynamicFeature.class);
         if ( !AuthClientSingleton.isInitialized() ) {
-        	AuthClientSingleton.initAuthClient(CachingAuthClient.class);
+        	try {
+        		AuthClientSingleton.initAuthClient(CachingAuthClient.class);
+        	} catch (IllegalArgumentException e) {
+        		LOG.warn("JNDI properties for CIDA Auth Webservice not set. Any secured endpoints will be restricted", e);
+        	}
         }
 		register(CoastalHazardsTokenBasedSecurityFilter.class);
 	}

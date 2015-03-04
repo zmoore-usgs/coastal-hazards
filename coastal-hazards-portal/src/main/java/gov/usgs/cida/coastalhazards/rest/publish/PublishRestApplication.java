@@ -9,6 +9,8 @@ import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -16,6 +18,8 @@ import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
  */
 @ApplicationPath("/publish")
 public class PublishRestApplication extends ResourceConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(PublishRestApplication.class);
+    
 	public PublishRestApplication() {
 		packages(this.getClass().getPackage().getName());
 		register(JspMvcFeature.class);
@@ -23,7 +27,11 @@ public class PublishRestApplication extends ResourceConfig {
 		//security
         register(RolesAllowedDynamicFeature.class);
         if ( !AuthClientSingleton.isInitialized() ) {
-        	AuthClientSingleton.initAuthClient(CachingAuthClient.class);
+        	try {
+        		AuthClientSingleton.initAuthClient(CachingAuthClient.class);
+        	} catch (IllegalArgumentException e) {
+        		LOG.warn("JNDI properties for CIDA Auth Webservice not set. Any secured endpoints will be restricted");
+        	}
         }
 		register(CoastalHazardsTokenBasedSecurityFilter.class);
 	}
