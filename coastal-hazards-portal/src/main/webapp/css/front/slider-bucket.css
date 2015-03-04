@@ -105,7 +105,7 @@
                 color: #003366;
                 font-weight: bold;
                 font-size: 12px;
-                margin:12px 0 -5px -6px;
+                margin:0px 0 2px -2px;
             }
             #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container button {
                 width: 100%;
@@ -221,11 +221,23 @@ No tab shown on large display. Toggled via button in bar
     }
     
     #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container {
-            float:right;
+        float:right;
            
      }
     
+    
+}
+
+@media (min-width: 686px){
+    
     #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well >div.application-slide-bucket-container-card-navigation-container > div {
          margin:0 0 5px 0;
+    }
+}
+
+
+@media (max-width: 330px) {
+    #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well >div.application-slide-bucket-container-card-navigation-container > div {
+         margin:12px 0 -5px -6px;
     }
 }
