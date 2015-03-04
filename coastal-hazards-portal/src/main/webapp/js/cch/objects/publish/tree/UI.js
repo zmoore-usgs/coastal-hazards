@@ -94,7 +94,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				}
 			},
 			'dnd': {
-				'is_draggable' : function (evt) {
+				'is_draggable': function (evt) {
 					if (evt[0].parents.length < 3) {
 						return false;
 					}
@@ -108,10 +108,17 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			var oldParent = moveEvt.old_parent,
 					newParent = moveEvt.parent;
 
-			[oldParent, newParent].each(function (itemId) {
-				me.itemUpdated(itemId);
-			});
+			// I don't want to allow users to move nodes to the root node. If they 
+			// try to, move back to the old node
+			if (newParent === 'root') {
+				CCH.ui.getTree().move_node(moveEvt.node, oldParent);
+			} else {
+				[oldParent, newParent].each(function (itemId) {
+					me.itemUpdated(itemId);
+				});
+			}
 		});
+
 	};
 
 	// When a user hits save, I need to reconstruct the data into the same format
@@ -143,11 +150,11 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	// User has hit the save button. Reconstruct the data and persist it to the server
 	me.saveItems = function () {
 		var data = me.updatedItems;
-		
+
 		// Delete the orphans node in the data object if it exists. This is an 
 		// artifact of how I build this data. 
 		delete data.orphans;
-		
+
 		$.ajax(CCH.config.relPath + 'data/tree/item', {
 			data: JSON.stringify(data),
 			method: 'POST',
@@ -175,7 +182,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					'text': 'Items',
 					'children': []
 				};
-				
+
 				// First create a data node for the top level item with all children
 				parentItem.children.push(this.buildAdjacencyListFromData(item));
 				// Use that date to create the tree
