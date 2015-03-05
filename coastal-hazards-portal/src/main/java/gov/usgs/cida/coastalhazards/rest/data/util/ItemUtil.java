@@ -35,7 +35,8 @@ public class ItemUtil {
 			if (type == Item.ItemType.data) {
 				attrs.add(item.getAttr());
 			}
-			else if (type == Item.ItemType.aggregation || type == Item.ItemType.uber) {
+			else if (type == Item.ItemType.aggregation || type == Item.ItemType.uber
+					|| type == Item.ItemType.template) {
 				List<Item> children = item.getChildren();
 				for (Item child : children) {
 					attrs.addAll(gatherAttributes(child, depth + 1));
@@ -64,7 +65,8 @@ public class ItemUtil {
 		Item newest = item;
 		if (item != null && depth < MAX_DEPTH) {
 			Item.ItemType type = item.getItemType();
-			if (type == Item.ItemType.aggregation || type == Item.ItemType.uber) {
+			if (type == Item.ItemType.aggregation || type == Item.ItemType.uber
+					|| type == Item.ItemType.template) {
 				List<Item> children = item.getChildren();
 				for (Item child : children) {
 					Item newestChild = gatherNewest(child, depth + 1);

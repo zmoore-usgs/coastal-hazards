@@ -3,11 +3,11 @@ package gov.usgs.cida.coastalhazards.model;
 import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
-import gov.usgs.cida.coastalhazards.util.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.util.ogc.CSWService;
 import gov.usgs.cida.coastalhazards.util.ogc.OGCService;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
+import gov.usgs.cida.coastalhazards.util.ogc.WMSService;
 import gov.usgs.cida.utilities.Cacheable;
 import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.StringPrecondition;
@@ -58,6 +58,7 @@ public class Item implements Serializable, Cacheable {
 	public enum ItemType {
 
 		aggregation,
+		template,
 		data,
 		uber;
 	}
@@ -318,6 +319,31 @@ public class Item implements Serializable, Cacheable {
 		item.setChildren(from.getChildren());
 		item.setDisplayedChildren(from.getDisplayedChildren());
 
+		return item;
+	}
+	
+	public Item instantiateTemplate(List<Service> withServices) {
+		Item item = new Item();
+		
+		if (this.getItemType() != ItemType.template) {
+			throw new UnsupportedOperationException("Only templates may be instantiated");
+		}
+		
+		item.setId(IdGenerator.generate());
+		item.setItemType(Item.ItemType.data);
+		
+		item.setType(getType());
+		item.setName(getName());
+		item.setAttr(getAttr());
+		item.setBbox(Bbox.copyValues(getBbox(), null));
+		item.setSummary(Summary.copyValues(getSummary(), null));
+		item.setRibbonable(isRibbonable());
+		item.setEnabled(isEnabled());
+		
+		List<Service> tmpServices = getServices();
+		tmpServices.addAll(withServices);
+		item.setServices(fillInServices(tmpServices, item.getId()));
+		
 		return item;
 	}
 

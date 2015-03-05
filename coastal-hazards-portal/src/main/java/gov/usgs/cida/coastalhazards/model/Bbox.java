@@ -60,7 +60,9 @@ public class Bbox implements Serializable {
 
     public static Bbox copyValues(Bbox from, Bbox to) {
         Bbox bbox = new Bbox();
-        bbox.setId(to.getId());
+        if (to != null) {
+            bbox.setId(to.getId());
+        }
         bbox.setBbox(from.getBbox());
         return bbox;
     }
