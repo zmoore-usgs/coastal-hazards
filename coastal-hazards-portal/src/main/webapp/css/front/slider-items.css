@@ -54,7 +54,7 @@
 .application-card-add-bucket-btn {
 	color: #FFFFFF !important;
 	background-color: #003366;
-	width: 9em;
+	width: 10em;
 }
 
 .application-card-more-info-btn img, 
@@ -179,7 +179,7 @@
 }
 
 #application-slide-items-content-container .panel-title {
-	font-size: 1.9em;
+	font-size: 1.5em;
 }
 
 /* Downward facing arrow on accordion */
@@ -281,6 +281,10 @@
 		overflow-y: auto;
 		height: 100%;
 	}
+        /*Larger font for Desktops */
+        #application-slide-items-content-container .panel-title {
+	font-size: 1.9em;
+}
 }
 
 @media (max-width: 991px) {
