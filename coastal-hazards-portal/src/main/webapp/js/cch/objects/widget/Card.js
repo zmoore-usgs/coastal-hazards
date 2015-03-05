@@ -599,7 +599,7 @@ CCH.Objects.Widget.Card = function (args) {
 				var $button = me.container.find('button.item-control-button-bucket'),
 					$img = $button.find('> img');
 
-				$img.attr('src', CCH.CONFIG.contextPath + '/images/banner/bucket/bucket.svg');
+				$img.attr('src', CCH.CONFIG.contextPath + '/images/banner/bucket/bucket-no-sand.svg');
 
 				$button.removeClass('disabled');
 
