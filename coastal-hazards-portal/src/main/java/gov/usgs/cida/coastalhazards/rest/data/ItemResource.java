@@ -7,6 +7,7 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.util.GeoserverUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
+import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
@@ -16,6 +17,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -40,8 +43,9 @@ import javax.ws.rs.core.UriBuilder;
  * @author jordan
  */
 @Path("item")
+@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ItemResource {
-	
+
 	public static final String PUBLIC_URL = JNDISingleton.getInstance()
 			.getProperty("coastal-hazards.public.url", "http://localhost:8080/coastal-hazards-portal");
 
@@ -111,10 +115,10 @@ public class ItemResource {
 	 * @param request passed through context of request
 	 * @return
 	 */
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	//TODO SECURE ME
 	public Response postItem(String content, @Context HttpServletRequest request) {
 		Response response;
 		try (ItemManager itemManager = new ItemManager()) {
@@ -143,10 +147,10 @@ public class ItemResource {
 	 * @param content
 	 * @return
 	 */
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@PUT
 	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	//TODO SECURE ME
 	public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response = null;
 		try (ItemManager itemManager = new ItemManager()) {
@@ -164,9 +168,9 @@ public class ItemResource {
 		return response;
 	}
 
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@DELETE
 	@Path("{id}")
-	//TODO SECURE ME
 	public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id) {
 		Response response = null;
 		try (ItemManager itemManager = new ItemManager()) {
@@ -179,11 +183,11 @@ public class ItemResource {
 		}
 		return response;
 	}
-	
+
 	@POST
 	@Path("/{id}/template")
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
-	//TODO SECURE ME
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response instantiateTemplate(@Context HttpServletRequest request, @PathParam("id") String id, InputStream postBody) {
 		Response response = null;
 		try (ItemManager manager = new ItemManager()) {
@@ -196,7 +200,7 @@ public class ItemResource {
 			if (added.size() > 0) {
 				Item newItem = template.instantiateTemplate(added);
 				manager.persist(newItem);
-				
+
 				List<Item> instances = template.getChildren();
 				if (instances == null) {
 					instances = new LinkedList<>();
@@ -204,7 +208,7 @@ public class ItemResource {
 				instances.add(newItem);
 				template.setChildren(instances);
 				manager.merge(template);
-				
+
 				response = Response.created(itemURI(newItem)).build();
 			}
 		}
@@ -229,7 +233,7 @@ public class ItemResource {
 		}
 		return response;
 	}
-	
+
 	public static URI itemURI(Item item) {
 		UriBuilder fromUri = UriBuilder.fromUri(PUBLIC_URL);
 		URI uri = fromUri.path("/data/item/").path(item.getId()).build();

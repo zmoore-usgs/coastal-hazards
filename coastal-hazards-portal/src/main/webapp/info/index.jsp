@@ -271,7 +271,6 @@
 						'eventAction': label
 					});
 					console.info(label);
-					debugger;
 				},
 				linkbackClassEventLabels = {
 					'cch-portal-link-storms': 'extremeStormsLinkClicked',

@@ -31,7 +31,10 @@
 	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
 %>
 <script type="text/javascript">
-	OpenLayers.ProxyHost = 'geoserver/';
+	if ( OpenLayers ) {
+		OpenLayers.ProxyHost = 'geoserver/';
+	};
+	
 	var CCH = {
 		Objects : {
 			Front : {}
@@ -45,9 +48,7 @@
 			emailLink: 'CCH_Help@usgs.gov',
 			publicUrl: '<%=publicUrl%>',
 			user : {
-				firstName : '${pageContext.session.getAttribute("oid-info").get("oid-firstname")}',
-				lastName : '${pageContext.session.getAttribute("oid-info").get("oid-lastname")}',
-				email : '${pageContext.session.getAttribute("oid-info").get("oid-email")}'
+				username : '${pageContext.session.getAttribute("AuthorizedUser")}' //this is set by CIDA Auth Webutils
 			},
 			params: {
 				id: '${param.id}',

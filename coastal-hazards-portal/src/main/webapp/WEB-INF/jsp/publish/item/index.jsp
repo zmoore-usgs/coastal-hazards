@@ -45,7 +45,7 @@
 
 	// Figure out the path based on the ID passed in, if any
 	Map<String, String> attributeMap = (Map<String, String>) pageContext.findAttribute("it");
-	String id = attributeMap.get("id");
+	String id = attributeMap.get("id") == null ? "" : attributeMap.get("id");
 	String path = "../../../../";
 	String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
 	String jsURI = path + "js/third-party/jsuri/jsuri.jsp";
@@ -81,7 +81,7 @@
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="<%= fineUploader%>">
-			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
+			<jsp:param name="relPath" value="<%=relPath%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="<%= configration%>"></jsp:include>
@@ -501,6 +501,8 @@
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/publish/UI.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Auth.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/application/publish/OnReady.js"></script>

@@ -7,6 +7,7 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 
+import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
@@ -26,6 +27,7 @@ import com.google.gson.Gson;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path("domain")
+@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class DataDomainResource {
     
     @GET

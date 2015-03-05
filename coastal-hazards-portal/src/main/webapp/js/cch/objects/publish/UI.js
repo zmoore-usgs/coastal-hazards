@@ -772,13 +772,11 @@ CCH.Objects.Publish.UI = function () {
 	me.addUserInformationToForm = function (args) {
 		args = args || {};
 		var user = args.data || CCH.CONFIG.user,
-				firstName = user.firstName + ' ',
-				lastName = user.lastName + ' ',
-				email = '(' + user.email + ')',
+				username = user.username,
 				$container = $('.container'),
 				$panetTitle = $container.find('> div > div > h3');
 
-		$panetTitle.append('Welcome, ', firstName, lastName, email, '.');
+		$panetTitle.append('Welcome, ', username, '.');
 	};
 
 	me.updateSelectAttribtue = function (responseObject) {

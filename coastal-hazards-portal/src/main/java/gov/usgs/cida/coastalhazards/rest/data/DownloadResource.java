@@ -9,6 +9,7 @@ import gov.usgs.cida.coastalhazards.jpa.SessionManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.coastalhazards.model.util.Download;
+import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,6 +20,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -39,6 +42,7 @@ import com.google.gson.Gson;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path("download")
+@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class DownloadResource {
 
     private static final SessionManager sessionManager = new SessionManager();
@@ -163,11 +167,11 @@ public class DownloadResource {
         }
         return Response.ok(downloadJson, MediaType.APPLICATION_JSON_TYPE).build();
     }
-    
+
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @DELETE
     @Produces("application/json")
     @Path("item/{itemId}")
-    //TODO SECURE ME
     public Response deleteStagedItem(@PathParam("itemId") String itemId, @Context HttpServletRequest request) {
         Response response = null;
         try (DownloadManager downloadManager = new DownloadManager()) {
