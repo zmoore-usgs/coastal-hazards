@@ -45,7 +45,7 @@
 
 	// Figure out the path based on the ID passed in, if any
 	Map<String, String> attributeMap = (Map<String, String>) pageContext.findAttribute("it");
-	String id = attributeMap.get("id");
+	String id = attributeMap.get("id") == null ? "" : attributeMap.get("id");
 	String path = "../../../../";
 	String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
 	String jsURI = path + "js/third-party/jsuri/jsuri.jsp";
