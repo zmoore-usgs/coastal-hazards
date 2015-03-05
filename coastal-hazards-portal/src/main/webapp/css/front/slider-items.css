@@ -151,6 +151,14 @@
 	width: 15px;
 }
 
+.item-control-button{
+    font-size:11px !important;
+}
+
+.explore-contents-arrow{
+    margin-right:5px;
+}
+
 .application-card-container .zoom-to-badge {
 	background-color: #003366;
 	margin-left: 5px;
