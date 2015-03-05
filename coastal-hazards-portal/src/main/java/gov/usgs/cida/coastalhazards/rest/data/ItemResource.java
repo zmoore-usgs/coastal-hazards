@@ -4,14 +4,19 @@ import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.Service;
+import gov.usgs.cida.coastalhazards.rest.data.util.GeoserverUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
-
+import gov.usgs.cida.utilities.IdGenerator;
+import gov.usgs.cida.utilities.properties.JNDISingleton;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +35,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 /**
  *
@@ -39,6 +45,9 @@ import javax.ws.rs.core.Response;
 @Path("item")
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ItemResource {
+
+	public static final String PUBLIC_URL = JNDISingleton.getInstance()
+			.getProperty("coastal-hazards.public.url", "http://localhost:8080/coastal-hazards-portal");
 
 	/**
 	 * Retrieves representation of an instance of
@@ -106,7 +115,7 @@ public class ItemResource {
 	 * @param request passed through context of request
 	 * @return
 	 */
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -138,7 +147,7 @@ public class ItemResource {
 	 * @param content
 	 * @return
 	 */
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@PUT
 	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -159,7 +168,7 @@ public class ItemResource {
 		return response;
 	}
 
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@DELETE
 	@Path("{id}")
 	public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id) {
@@ -170,6 +179,37 @@ public class ItemResource {
 			}
 			else {
 				throw new Error();
+			}
+		}
+		return response;
+	}
+
+	@POST
+	@Path("/{id}/template")
+	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	public Response instantiateTemplate(@Context HttpServletRequest request, @PathParam("id") String id, InputStream postBody) {
+		Response response = null;
+		try (ItemManager manager = new ItemManager()) {
+			Item template = manager.load(id);
+			if (template.getItemType() != Item.ItemType.template) {
+				throw new UnsupportedOperationException("Only template items may be instantiated");
+			}
+			String newId = IdGenerator.generate();
+			List<Service> added = GeoserverUtil.addLayer(postBody, newId);
+			if (added.size() > 0) {
+				Item newItem = template.instantiateTemplate(added);
+				manager.persist(newItem);
+
+				List<Item> instances = template.getChildren();
+				if (instances == null) {
+					instances = new LinkedList<>();
+				}
+				instances.add(newItem);
+				template.setChildren(instances);
+				manager.merge(template);
+
+				response = Response.created(itemURI(newItem)).build();
 			}
 		}
 		return response;
@@ -192,5 +232,11 @@ public class ItemResource {
 			response = Response.ok("{\"cycle\": " + cycle + "}", MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;
+	}
+
+	public static URI itemURI(Item item) {
+		UriBuilder fromUri = UriBuilder.fromUri(PUBLIC_URL);
+		URI uri = fromUri.path("/data/item/").path(item.getId()).build();
+		return uri;
 	}
 }
