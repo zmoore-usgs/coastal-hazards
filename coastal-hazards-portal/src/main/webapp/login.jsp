@@ -80,13 +80,16 @@
 				<div class="col-sm-8 col-lg-8 login-section">
                     <%
                         String forward = request.getParameter("forward");
+                    	if(forward == null) {
+                    		forward = "";
+                    	}
                     %>
 
 					<%
                         String timedOut = request.getParameter("cause");
                         if (timedOut != null && timedOut.equals("forbidden")) {
                     %>
-                    <p style="color: red;">* You are not authorized to access the page. Verify your user credentials or contact an administrator. *</p>
+                    <p style="color: red;">* You are not authorized to access the page. Your session may have expired or you are not authorized to view the page. Verify your user credentials and try again or contact an administrator for further assistance. *</p>
                     <%}%>
                     
                     <form id="loginForm" name="f">
