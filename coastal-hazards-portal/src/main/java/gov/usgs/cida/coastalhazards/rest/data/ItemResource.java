@@ -42,7 +42,7 @@ import javax.ws.rs.core.UriBuilder;
  *
  * @author jordan
  */
-@Path("item")
+@Path("/item")
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ItemResource {
 
@@ -59,7 +59,7 @@ public class ItemResource {
 	 * @return JSON representation of the item(s)
 	 */
 	@GET
-	@Path("{id}")
+	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getItem(@PathParam("id") String id,
 			@DefaultValue("false") @QueryParam("subtree") boolean subtree,
@@ -149,7 +149,7 @@ public class ItemResource {
 	 */
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@PUT
-	@Path("{id}")
+	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response = null;
@@ -170,7 +170,7 @@ public class ItemResource {
 
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@DELETE
-	@Path("{id}")
+	@Path("/{id}")
 	public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id) {
 		Response response = null;
 		try (ItemManager itemManager = new ItemManager()) {
@@ -224,7 +224,7 @@ public class ItemResource {
 	 * @return JSON response with true or false
 	 */
 	@GET
-	@Path("cycle/{parentId}/{childId}")
+	@Path("/cycle/{parentId}/{childId}")
 	public Response checkForCycle(@PathParam("parentId") String parentId, @PathParam("childId") String childId) {
 		Response response = null;
 		try (ItemManager itemManager = new ItemManager()) {

@@ -1,12 +1,12 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
+import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.DataDomainManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
-
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -17,8 +17,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
-import com.google.gson.Gson;
-
 /**
  * This is tied closely to the ItemResource, it should be wiped when an item is updated.
  * Locking is handled by the DataDomainManager so that requests for the same item
@@ -26,12 +24,12 @@ import com.google.gson.Gson;
  * 
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Path("domain")
+@Path("/domain")
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class DataDomainResource {
     
     @GET
-    @Path("item/{id}")
+    @Path("/item/{id}")
     public Response getDataDomain(@PathParam("id") String id, @Context Request request) {
         Response response = null;
         try (ItemManager itemManager = new ItemManager(); DataDomainManager domainManager = new DataDomainManager()) {

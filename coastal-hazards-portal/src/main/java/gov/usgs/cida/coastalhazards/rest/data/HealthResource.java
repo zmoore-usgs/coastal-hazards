@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
-
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.jpa.JPAHelper;
@@ -9,11 +8,9 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-
 import javax.annotation.security.PermitAll;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.GET;
@@ -26,7 +23,7 @@ import javax.ws.rs.core.Response;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Path("health")
+@Path("/health")
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class HealthResource {
 	
