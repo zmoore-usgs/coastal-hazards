@@ -13,6 +13,7 @@ import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -193,15 +194,17 @@ public class ItemResource {
 			String newId = IdGenerator.generate();
 			List<Service> added = GeoserverUtil.addLayer(postBody, newId);
 			if (added.size() > 0) {
-				Item newItem = new Item();
-				newItem.setId(newId);
-				newItem = Item.copyValues(template, newItem);
+				Item newItem = template.instantiateTemplate(added);
+				manager.persist(newItem);
 				
-				List<Service> services = newItem.getServices();
-				services.addAll(added);
-				services = Item.fillInServices(services, newId);
-				newItem.setServices(services);
-				manager.merge(newItem);
+				List<Item> instances = template.getChildren();
+				if (instances == null) {
+					instances = new LinkedList<>();
+				}
+				instances.add(newItem);
+				template.setChildren(instances);
+				manager.merge(template);
+				
 				response = Response.created(itemURI(newItem)).build();
 			}
 		}
@@ -229,13 +232,7 @@ public class ItemResource {
 	
 	public static URI itemURI(Item item) {
 		UriBuilder fromUri = UriBuilder.fromUri(PUBLIC_URL);
-		URI uri = null;
-		try {
-			uri = fromUri.path(ItemResource.class.getMethod("getItem", String.class, Boolean.class, Request.class))
-				.build(item.getId());
-		} catch (NoSuchMethodException ex) {
-			// do something
-		}
+		URI uri = fromUri.path("/data/item/").path(item.getId()).build();
 		return uri;
 	}
 }

@@ -302,7 +302,7 @@ public class Item implements Serializable, Cacheable {
 	public static Item copyValues(final Item from, final Item to) {
 		Item item = new Item();
 
-		if (to.getItemType() != from.getItemType() && from.getItemType() != ItemType.template) {
+		if (to.getItemType() != from.getItemType()) {
 			throw new UnsupportedOperationException("Cannot change item type");
 		}
 		item.setId(to.getId());
@@ -319,6 +319,31 @@ public class Item implements Serializable, Cacheable {
 		item.setChildren(from.getChildren());
 		item.setDisplayedChildren(from.getDisplayedChildren());
 
+		return item;
+	}
+	
+	public Item instantiateTemplate(List<Service> withServices) {
+		Item item = new Item();
+		
+		if (this.getItemType() != ItemType.template) {
+			throw new UnsupportedOperationException("Only templates may be instantiated");
+		}
+		
+		item.setId(IdGenerator.generate());
+		item.setItemType(Item.ItemType.data);
+		
+		item.setType(getType());
+		item.setName(getName());
+		item.setAttr(getAttr());
+		item.setBbox(Bbox.copyValues(getBbox(), null));
+		item.setSummary(Summary.copyValues(getSummary(), null));
+		item.setRibbonable(isRibbonable());
+		item.setEnabled(isEnabled());
+		
+		List<Service> tmpServices = getServices();
+		tmpServices.addAll(withServices);
+		item.setServices(fillInServices(tmpServices, item.getId()));
+		
 		return item;
 	}
 
