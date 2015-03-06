@@ -18,7 +18,10 @@ CCH.Objects.Bucket = function (args) {
 	me.INITIAL_BUCKET_COUNT_MARGIN_LEFT = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left');
 	me.MARGIN_WIDTH = 0;
 	me.bucket = [];
-	me.bucketElement = document.getElementById('app-navbar-bucket');
+	me.bucketElement = document.getElementById('app-navbar-bucket').getSVGDocument();
+        document.getElementById('app-navbar-bucket').onload = function(){
+            me.bucketElement = this.getSVGDocument();
+        }
 
 	me.bucketAddClickHandler = function (evt, args) {
 		args = args || {};
@@ -184,14 +187,12 @@ CCH.Objects.Bucket = function (args) {
 			}
 		},
 		removeAll: function () {
-			var svgElement = me.getInteractiveBucketAsSVGDocument();
-			
 			me.bucket.each(function (item) {
 				me.remove({
 					item: item
 				});
 			});
-			svgElement.getElementById('dumpBucketTrg').beginElement();
+			me.bucketElement.getElementById('dumpBucketTrg').beginElement();
 		},
 		bucket: me.bucket,
 		getItems: function () {
@@ -207,7 +208,7 @@ CCH.Objects.Bucket = function (args) {
 			return item;
 		},
 		getCount: function () {
-			var countString = me.getInteractiveBucketAsSVGDocument().getElementById('count').textContent,
+			var countString = me.bucketElement.getElementById('count').textContent,
 				count = parseInt(countString, 10);
 
 			if (isNaN(count)) {
@@ -218,18 +219,17 @@ CCH.Objects.Bucket = function (args) {
 		},
 		setCount: function (args) {
 			args = args || {};
-			var count = parseInt(args.count, 10), 
-				svgElement = me.getInteractiveBucketAsSVGDocument();
+			var count = parseInt(args.count, 10);
 			
 			if (!isNaN(count) && count % 1 === 0) {
 				if (count !== undefined && !isNaN(count)) {
-					svgElement.getElementById('count').textContent = count;
+					me.bucketElement.getElementById('count').textContent = count;
 					if (count === 1) {
-						svgElement.getElementById('addFirstTrg').beginElement();
+						me.bucketElement.getElementById('addFirstTrg').beginElement();
+                                                
 					} else {
-						svgElement.getElementById('addMoreTrg').beginElement();
-					}
-					svgElement.documentElement.setCurrentTime(0);
+						me.bucketElement.getElementById('addMoreTrg').beginElement();
+                                        }
 				}
 			} else {
 				throw 'setCount called with a double. Only integers allowed';

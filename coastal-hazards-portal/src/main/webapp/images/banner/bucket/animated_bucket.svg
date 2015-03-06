@@ -102,9 +102,9 @@
 		<set attributeName="cy" begin = "addMoreTrg.begin;grow2.end" to="18.5"/>
     </circle>
 </g>
-<animate id="dumpBucketTrg" class="animateFunction" begin="indefinite;dumpBucket.click"/>
-<animate id="openBucketTrg" class="animateFunction" begin="indefinite;openBucket.click"/>
-<animate id="addMoreTrg" class="animateFunction" begin="indefinite;addMore.click"/>
-<animate id="addFirstTrg" class="animateFunction" begin="indefinite;addFirst.click"/>
-<animate id="closeBucketTrg" class="animateFunction" begin="indefinite;closeBucket.click"/>
+<animate id="dumpBucketTrg" class="animateFunction" begin="indefinite"/>
+<animate id="openBucketTrg" class="animateFunction" begin="indefinite"/>
+<animate id="addMoreTrg" class="animateFunction" begin="indefinite"/>
+<animate id="addFirstTrg" class="animateFunction" begin="indefinite"/>
+<animate id="closeBucketTrg" class="animateFunction" begin="indefinite"/>
 </svg>
