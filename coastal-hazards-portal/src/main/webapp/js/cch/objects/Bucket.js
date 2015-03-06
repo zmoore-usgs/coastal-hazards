@@ -18,6 +18,7 @@ CCH.Objects.Bucket = function (args) {
 	me.INITIAL_BUCKET_COUNT_MARGIN_LEFT = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left');
 	me.MARGIN_WIDTH = 0;
 	me.bucket = [];
+	me.bucketElement = document.getElementById('app-navbar-bucket');
 
 	me.bucketAddClickHandler = function (evt, args) {
 		args = args || {};
@@ -76,8 +77,6 @@ CCH.Objects.Bucket = function (args) {
 			});
 		}
 		CCH.LOG.debug('CCH.Objects.Bucket::countChanged: Bucket count changed. Current count: ' + count);
-		// TODO: Not sure what we're doing after 999
-		// TODO: Make 0-99 text larger
 		return count;
 	};
 
@@ -105,6 +104,9 @@ CCH.Objects.Bucket = function (args) {
 	CCH.LOG.trace('CCH.Objects.Bucket::constructor: Bucket class initialized.');
 
 	return $.extend(me, {
+		getInteractiveBucketAsSVGDocument: function () {
+			return me.bucketElement.getSVGDocument();
+		},
 		add: function (args) {
 			args = args || {};
 
@@ -182,11 +184,14 @@ CCH.Objects.Bucket = function (args) {
 			}
 		},
 		removeAll: function () {
+			var svgElement = me.getInteractiveBucketAsSVGDocument();
+			
 			me.bucket.each(function (item) {
 				me.remove({
 					item: item
 				});
 			});
+			svgElement.getElementById('dumpBucketTrg').beginElement();
 		},
 		bucket: me.bucket,
 		getItems: function () {
@@ -202,8 +207,7 @@ CCH.Objects.Bucket = function (args) {
 			return item;
 		},
 		getCount: function () {
-			var bucketContainer = $('#' + me.BUCKET_COUNT_CONTAINER_ID),
-				countString = bucketContainer.html(),
+			var countString = me.getInteractiveBucketAsSVGDocument().getElementById('count').textContent,
 				count = parseInt(countString, 10);
 
 			if (isNaN(count)) {
@@ -214,12 +218,18 @@ CCH.Objects.Bucket = function (args) {
 		},
 		setCount: function (args) {
 			args = args || {};
-			var count = parseInt(args.count, 10),
-				$countContainer = $('#' + me.BUCKET_COUNT_CONTAINER_ID);
+			var count = parseInt(args.count, 10), 
+				svgElement = me.getInteractiveBucketAsSVGDocument();
 			
 			if (!isNaN(count) && count % 1 === 0) {
 				if (count !== undefined && !isNaN(count)) {
-					$countContainer.html(count);
+					svgElement.getElementById('count').textContent = count;
+					if (count === 1) {
+						svgElement.getElementById('addFirstTrg').beginElement();
+					} else {
+						svgElement.getElementById('addMoreTrg').beginElement();
+					}
+					svgElement.documentElement.setCurrentTime(0);
 				}
 			} else {
 				throw 'setCount called with a double. Only integers allowed';
