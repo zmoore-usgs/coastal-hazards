@@ -283,14 +283,10 @@ CCH.Objects.Widget.Card = function (args) {
 			processOption = function (item) {
 				var name = item.summary.tiny.title || item.summary.medium.title,			
 					$listItem = $('<li />'),
-					$buttonItem = $($('<button />'));
-
-				$buttonItem.data('id', item.id);
-				$buttonItem.html(name);
-				$buttonItem.addClass('btn');
-				$buttonItem.addClass('btn-default');
-				$buttonItem.addClass('item-control-button');
-				$buttonItem.on('click', function (evt) {
+					$buttonItem = $('<button />'),
+                                        downFacingArrow = $('<i />').addClass('fa fa-chevron-down accordion-title-arrow explore-contents-arrow');
+                                
+                                var clickHandler = function (evt) {
 					var id = $(evt.target).data('id');
 
 					if (me.child) {
@@ -315,7 +311,16 @@ CCH.Objects.Widget.Card = function (args) {
 						'eventAction': 'childItemClicked',
 						'eventLabel': id
 					});
-				});
+				}
+                                
+				$buttonItem.data('id', item.id);
+				
+				$buttonItem.addClass('btn');
+				$buttonItem.addClass('btn-default');
+				$buttonItem.addClass('item-control-button');
+				$buttonItem.on('click', clickHandler);
+                                downFacingArrow.on('click', clickHandler);
+                                $buttonItem.append(downFacingArrow,name );
 
 				$listItem.append($buttonItem);
 				return $listItem;
