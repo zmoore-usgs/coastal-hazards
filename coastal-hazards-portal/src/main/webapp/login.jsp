@@ -87,9 +87,14 @@
 
 					<%
                         String timedOut = request.getParameter("cause");
-                        if (timedOut != null && timedOut.equals("forbidden")) {
+                        if (timedOut != null && timedOut.equals("Forbidden")) {
                     %>
-                    <p style="color: red;">* You are not authorized to access the page. Your session may have expired or you are not authorized to view the page. Verify your user credentials and try again or contact an administrator for further assistance. *</p>
+                    <p style="color: red;">* You are not authorized to access the page. Contact an administrator for further assistance. *</p>
+                    <%}
+                        
+                        if (timedOut != null && timedOut.equals("Unauthorized")) {
+                    %>
+                    <p style="color: red;">* Your session may have expired, please login to continue. *</p>
                     <%}%>
                     
                     <form id="loginForm" name="f">
