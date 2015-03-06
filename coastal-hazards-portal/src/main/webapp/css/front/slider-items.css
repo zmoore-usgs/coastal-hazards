@@ -1,3 +1,4 @@
+
 /* Slide item container */
 #content-column > div.application-slide-container > div.application-slide-content > div > div.panel-default:hover {
 	cursor: pointer;
@@ -16,9 +17,10 @@
 	padding: 2px;
 }
 
+
 /* eliminate space so animation appears to slide under header with no gap */
 .panel-collapse > .panel-body {
-	padding-top: 0px;
+        padding:0px 5px 5px 5px
 }
 
 .application-card-collapse-icon-container {
@@ -38,29 +40,33 @@
 	color: #DCDCDC;
 }
 
+.disabled img{
+    margin-top:-1px !important;
+    height:13px !important;
+    width:13px !important;
+}
+
 .application-card-control-row button,
 .application-card-explore-row button {
 	padding-right: 5px;
-	padding-left: 5px;
-	font-size: 12px;
+        padding-left: 5px;
+	font-size: 10px;
 	color: #003366;
-}
-
-.application-card-more-info-btn,
-.application-card-zoom-to-btn {
-	width: 6.5em;
 }
 
 .application-card-add-bucket-btn {
 	color: #FFFFFF !important;
 	background-color: #003366;
-	width: 10em;
+}
+
+.application-card-add-bucket-btn img{
+    margin-top:-6px;
 }
 
 .application-card-more-info-btn img, 
 .application-card-zoom-to-btn img
 {
-	width: 15px !important;
+	width: 12px !important;
 }
 
 .application-card-more-info-btn, 
@@ -69,7 +75,6 @@
 {
 	padding: 2px;
 }
-
 .application-card-explore-row {
 	text-align: left;
 }
@@ -142,8 +147,16 @@
 }
 
 .application-card-container .item-control-button img {
-	height: 20px;
-	width: 20px;
+	height: 15px;
+	width: 15px;
+}
+
+.item-control-button{
+    font-size:11px !important;
+}
+
+.explore-contents-arrow{
+    margin-right:5px;
 }
 
 .application-card-container .zoom-to-badge {
@@ -283,8 +296,29 @@
 	}
         /*Larger font for Desktops */
         #application-slide-items-content-container .panel-title {
-	font-size: 1.9em;
-}
+            font-size: 1.9em;
+        }
+        .application-card-control-row button,
+        .application-card-explore-row button {
+            font-size: 12px;
+        }
+        /*more padding on desktop*/
+        .panel-collapse > .panel-body {
+            padding:0px 8px 8px 8px
+        }
+        /*larger icon for desktop*/
+        .application-card-container .item-control-button img {
+            height: 20px;
+            width: 20px;
+        }
+        .disabled img{
+            height:18px !important;
+            width:18px !important;
+        }
+        .application-card-add-bucket-btn {
+            height:26px
+        }
+        
 }
 
 @media (max-width: 991px) {

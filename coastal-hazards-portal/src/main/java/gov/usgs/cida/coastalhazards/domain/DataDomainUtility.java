@@ -26,7 +26,7 @@ public class DataDomainUtility {
         WFSGetDomain client = new WFSGetDomain();
         if (item == null) {
             throw new IllegalArgumentException("Item must be valid data item");
-        } else if (item.getItemType() == Item.ItemType.aggregation) {
+        } else if (item.getItemType() == Item.ItemType.aggregation || item.getItemType() == Item.ItemType.template) {
             for (Item child : item.getChildren()) {
                 Set<String> childDomain = retrieveDomainFromWFS(child); // recurse (again, avoiding cycles is important)
                 domain.addAll(childDomain);

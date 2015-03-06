@@ -24,7 +24,7 @@ CCH.Auth = {
 				CCH.Auth.setAuthToken(data.tokenId);
 				
 				//forward
-				window.location = forward || CCH.CONFIG.contextPath + '/index.jsp';
+				window.location = forward || CCH.CONFIG.contextPath + '/publish/item';
 			}, 
 			error: function(xhr, status, error) {
 				if(error == "Unauthorized") {
@@ -49,10 +49,11 @@ CCH.Auth = {
 
 //set global JQuery handler to always intercept 401/403s
 $( document ).ajaxError(function(event, jqxhr, settings, thrownError){
-	if(thrownError == "Forbidden") {
+	if(thrownError == "Forbidden" || thrownError == "Unauthorized") {
+		CCH.Auth.setAuthToken(""); //clear token
 		var currentLocation = window.location;
 		//reroute to login page
-		window.location = CCH.CONFIG.contextPath + "/login.jsp?forward=" + encodeURI(currentLocation) + "&cause=forbidden"; 
+		window.location = CCH.CONFIG.contextPath + "/login.jsp?forward=" + encodeURI(currentLocation) + "&cause=" + thrownError; 
 	}
 });
 
