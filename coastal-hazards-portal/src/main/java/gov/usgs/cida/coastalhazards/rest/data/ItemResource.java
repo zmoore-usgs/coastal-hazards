@@ -4,17 +4,12 @@ import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
-import gov.usgs.cida.coastalhazards.model.Service;
-import gov.usgs.cida.coastalhazards.rest.data.util.GeoserverUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
-import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.security.PermitAll;
@@ -42,7 +37,7 @@ import javax.ws.rs.core.UriBuilder;
  *
  * @author jordan
  */
-@Path("/item")
+@Path(DataURI.ITEM_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ItemResource {
 
@@ -184,37 +179,6 @@ public class ItemResource {
 		return response;
 	}
 
-	@POST
-	@Path("/{id}/template")
-	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-	public Response instantiateTemplate(@Context HttpServletRequest request, @PathParam("id") String id, InputStream postBody) {
-		Response response = null;
-		try (ItemManager manager = new ItemManager()) {
-			Item template = manager.load(id);
-			if (template.getItemType() != Item.ItemType.template) {
-				throw new UnsupportedOperationException("Only template items may be instantiated");
-			}
-			String newId = IdGenerator.generate();
-			List<Service> added = GeoserverUtil.addLayer(postBody, newId);
-			if (added.size() > 0) {
-				Item newItem = template.instantiateTemplate(added);
-				manager.persist(newItem);
-
-				List<Item> instances = template.getChildren();
-				if (instances == null) {
-					instances = new LinkedList<>();
-				}
-				instances.add(newItem);
-				template.setChildren(instances);
-				manager.merge(template);
-
-				response = Response.created(itemURI(newItem)).build();
-			}
-		}
-		return response;
-	}
-
 	/**
 	 * Run the cycle check before attempting POST or PUT to verify item would
 	 * not introduce cycle
@@ -236,7 +200,8 @@ public class ItemResource {
 
 	public static URI itemURI(Item item) {
 		UriBuilder fromUri = UriBuilder.fromUri(PUBLIC_URL);
-		URI uri = fromUri.path("/data/item/").path(item.getId()).build();
+		URI uri = fromUri.path(DataURI.DATA_SERVICE_ENDPOINT + DataURI.ITEM_PATH)
+				.path(item.getId()).build();
 		return uri;
 	}
 }

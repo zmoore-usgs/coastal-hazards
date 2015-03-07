@@ -38,7 +38,7 @@ import org.xml.sax.SAXException;
  *
  * @author isuftin
  */
-@Path("/metadata")
+@Path(DataURI.METADATA_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class MetadataResource {
     

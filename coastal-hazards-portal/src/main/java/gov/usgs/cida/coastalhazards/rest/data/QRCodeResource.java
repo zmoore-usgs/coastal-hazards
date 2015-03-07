@@ -26,7 +26,7 @@ import org.glassfish.jersey.server.ParamException;
  *
  * @author isuftin
  */
-@Path("/qr")
+@Path(DataURI.QR_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class QRCodeResource {
 

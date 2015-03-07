@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Path("/health")
+@Path(DataURI.HEALTH_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class HealthResource {
 	

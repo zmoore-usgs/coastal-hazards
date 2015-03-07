@@ -1,15 +1,21 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import gov.usgs.cida.coastalhazards.exception.PreconditionFailedException;
+import gov.usgs.cida.coastalhazards.model.Service;
+import gov.usgs.cida.coastalhazards.rest.data.util.GeoserverUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
+import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
+import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.util.List;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
@@ -21,9 +27,9 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author isuftin
  */
-@Path("/layer")
+@Path(DataURI.LAYER_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
-public class ImportResource {
+public class LayerResource {
 
 	private static final String geoserverEndpoint;
 	private static final String geoserverUser;
@@ -37,6 +43,16 @@ public class ImportResource {
 		geoserverPass = props.getProperty("coastal-hazards.geoserver.password");
 	}
 
+	@POST
+	@Path("/")
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	public Response createLayer(@Context HttpServletRequest req, InputStream postBody) {
+		String newId = IdGenerator.generate();
+		List<Service> added = GeoserverUtil.addLayer(postBody, newId);
+		
+		return null;
+	}
+	
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@DELETE
 	@Path("/{layer}")

@@ -6,24 +6,20 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.adapter.ItemTreeAdapter;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
-
-import javax.ws.rs.NotFoundException;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -38,7 +34,7 @@ import javax.ws.rs.core.Response;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Path("/tree")
+@Path(DataURI.TREE_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class TreeResource {
 

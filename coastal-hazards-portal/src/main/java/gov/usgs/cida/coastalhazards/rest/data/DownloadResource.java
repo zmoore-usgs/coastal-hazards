@@ -37,7 +37,7 @@ import org.apache.commons.io.FileUtils;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Path("/download")
+@Path(DataURI.DOWNLOAD_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class DownloadResource {
 

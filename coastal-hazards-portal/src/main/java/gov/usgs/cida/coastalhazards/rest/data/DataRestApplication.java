@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@ApplicationPath("/data")
+@ApplicationPath(DataURI.DATA_SERVICE_ENDPOINT)
 public class DataRestApplication extends ResourceConfig {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DataRestApplication.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DataRestApplication.class);	
 
 	public DataRestApplication() {
 		packages(this.getClass().getPackage().getName());

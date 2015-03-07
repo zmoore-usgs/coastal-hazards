@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Path("/view")
+@Path(DataURI.VIEW_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ViewResource {
 
