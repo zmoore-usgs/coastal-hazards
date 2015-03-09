@@ -59,6 +59,7 @@ CCH.Objects.Publish.UI = function () {
 		$imageGenButton = $form.find('#form-publish-info-item-image-gen'),
 		$buttonSave = $('#publish-button-save'),
 		$buttonDelete = $('#publish-button-delete'),
+		$buttonLogout = $('#publish-button-logout'),
 		$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
 		$wfsHelpLink = $form.find('.form-publish-item-service-source-wfs-import-button-service-help-link'),
 		$wmsHelpLink = $form.find('.form-publish-item-service-source-wms-import-button-service-help-link'),
@@ -1840,6 +1841,10 @@ CCH.Objects.Publish.UI = function () {
 		$alertModalTitle.empty();
 		$alertModalBody.empty();
 		$alertModalFooter.find('button').not('#alert-modal-close-button').remove();
+	});
+	
+	$buttonLogout.on(CCH.CONFIG.strings.click, function () {
+		CCH.Auth.logout();
 	});
 
 	$buttonSave.on(CCH.CONFIG.strings.click, function () {
