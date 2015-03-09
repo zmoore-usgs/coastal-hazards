@@ -18,10 +18,6 @@ CCH.Objects.Bucket = function (args) {
 	me.INITIAL_BUCKET_COUNT_MARGIN_LEFT = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left');
 	me.MARGIN_WIDTH = 0;
 	me.bucket = [];
-	me.bucketElement = document.getElementById('app-navbar-bucket').getSVGDocument();
-        document.getElementById('app-navbar-bucket').onload = function(){
-            me.bucketElement = this.getSVGDocument();
-        }
 
 	me.bucketAddClickHandler = function (evt, args) {
 		args = args || {};
@@ -80,6 +76,8 @@ CCH.Objects.Bucket = function (args) {
 			});
 		}
 		CCH.LOG.debug('CCH.Objects.Bucket::countChanged: Bucket count changed. Current count: ' + count);
+		// TODO: Not sure what we're doing after 999
+		// TODO: Make 0-99 text larger
 		return count;
 	};
 
@@ -107,9 +105,6 @@ CCH.Objects.Bucket = function (args) {
 	CCH.LOG.trace('CCH.Objects.Bucket::constructor: Bucket class initialized.');
 
 	return $.extend(me, {
-		getInteractiveBucketAsSVGDocument: function () {
-			return me.bucketElement.getSVGDocument();
-		},
 		add: function (args) {
 			args = args || {};
 
@@ -192,7 +187,6 @@ CCH.Objects.Bucket = function (args) {
 					item: item
 				});
 			});
-			me.bucketElement.getElementById('dumpBucketTrg').beginElement();
 		},
 		bucket: me.bucket,
 		getItems: function () {
@@ -208,7 +202,8 @@ CCH.Objects.Bucket = function (args) {
 			return item;
 		},
 		getCount: function () {
-			var countString = me.bucketElement.getElementById('count').textContent,
+			var bucketContainer = $('#' + me.BUCKET_COUNT_CONTAINER_ID),
+				countString = bucketContainer.html(),
 				count = parseInt(countString, 10);
 
 			if (isNaN(count)) {
@@ -219,17 +214,12 @@ CCH.Objects.Bucket = function (args) {
 		},
 		setCount: function (args) {
 			args = args || {};
-			var count = parseInt(args.count, 10);
+			var count = parseInt(args.count, 10),
+				$countContainer = $('#' + me.BUCKET_COUNT_CONTAINER_ID);
 			
 			if (!isNaN(count) && count % 1 === 0) {
 				if (count !== undefined && !isNaN(count)) {
-					me.bucketElement.getElementById('count').textContent = count;
-					if (count === 1) {
-						me.bucketElement.getElementById('addFirstTrg').beginElement();
-                                                
-					} else {
-						me.bucketElement.getElementById('addMoreTrg').beginElement();
-                                        }
+					$countContainer.html(count);
 				}
 			} else {
 				throw 'setCount called with a double. Only integers allowed';
