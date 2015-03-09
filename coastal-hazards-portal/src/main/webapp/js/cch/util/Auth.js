@@ -36,9 +36,9 @@ CCH.Auth = {
 	
 	setAuthToken : function (tokenId) {
 		if(!tokenId) {
-			tokenId = "";
+			$.removeCookie('CoastalHazardsAuthCookie', { path: '/' });
 		}
-		$.cookie("CoastalHazardsAuthCookie", tokenId);
+		$.cookie("CoastalHazardsAuthCookie", tokenId, { path: '/' });
 	},
 	
 	getAuthToken : function () {

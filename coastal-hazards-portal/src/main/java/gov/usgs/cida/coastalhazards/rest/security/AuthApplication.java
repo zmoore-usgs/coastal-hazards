@@ -27,6 +27,7 @@ public class AuthApplication extends ResourceConfig {
         		LOG.warn("JNDI properties for CIDA Auth Webservice not set. Any secured endpoints will be restricted", e);
         	}
         }
+		register(CoastalHazardsTokenBasedSecurityFilter.class);
 		register(CoastalHazardsAuthTokenService.class);
 		register(SecurityResources.class);
 	}
