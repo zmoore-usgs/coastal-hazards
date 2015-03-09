@@ -43,6 +43,7 @@ public class PublishResource {
         cswExternalEndpoint = props.getProperty("coastal-hazards.csw.endpoint");
     }
 	
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/tree/")
@@ -50,6 +51,7 @@ public class PublishResource {
        return manageTree(req, "");
     }
 
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/tree/{token}")
@@ -59,7 +61,7 @@ public class PublishResource {
         return Response.ok(new Viewable("/WEB-INF/jsp/publish/tree/index.jsp", map)).build();
     }
 
-    //This service remains open and will serve as the landing page
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/item/")
@@ -67,20 +69,6 @@ public class PublishResource {
        return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", new HashMap<>())).build();
     }
     
-    /**
-     * This is a dummy endpoint used to check the authorization status user
-     * @param req
-     * @return
-     * @throws URISyntaxException
-     */
-    @GET
-    @Produces(MediaType.TEXT_HTML)
-    @Path("/item/authcheck")
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-    public Response checkLogin(@Context HttpServletRequest req) throws URISyntaxException {
-       return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", new HashMap<>())).build();
-    }
-
     @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @GET
     @Produces(MediaType.TEXT_HTML)

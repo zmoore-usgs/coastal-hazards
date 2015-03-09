@@ -6,6 +6,8 @@ import gov.usgs.cida.auth.client.CachingAuthClient;
 import javax.ws.rs.ApplicationPath;
 
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +16,10 @@ public class AuthApplication extends ResourceConfig {
     private static final Logger LOG = LoggerFactory.getLogger(AuthApplication.class);
 	
 	public AuthApplication() {
+		register(JspMvcFeature.class);
+		
 		//security
+        register(RolesAllowedDynamicFeature.class);
         if ( !AuthClientSingleton.isInitialized() ) {
         	try {
         		AuthClientSingleton.initAuthClient(CachingAuthClient.class);
@@ -23,5 +28,6 @@ public class AuthApplication extends ResourceConfig {
         	}
         }
 		register(CoastalHazardsAuthTokenService.class);
+		register(SecurityResources.class);
 	}
 }

@@ -4,7 +4,7 @@ window.CCH = CCH || {};
 CCH.Auth = {
 	checkAuthStatus : function() {
 		$.ajax({
-			url: CCH.CONFIG.contextPath + '/publish/item/authcheck/',
+			url: CCH.CONFIG.contextPath + '/security/auth/check/',
 			type: 'GET',
 			dataType: 'json'
 		});
@@ -53,7 +53,7 @@ $( document ).ajaxError(function(event, jqxhr, settings, thrownError){
 		CCH.Auth.setAuthToken(""); //clear token
 		var currentLocation = window.location;
 		//reroute to login page
-		window.location = CCH.CONFIG.contextPath + "/login.jsp?forward=" + encodeURI(currentLocation) + "&cause=" + thrownError; 
+		window.location = CCH.CONFIG.contextPath + "/security/auth/login/?forward=" + encodeURI(currentLocation) + "&cause=" + thrownError; 
 	}
 });
 

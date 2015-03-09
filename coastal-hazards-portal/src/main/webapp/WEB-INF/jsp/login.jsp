@@ -136,11 +136,11 @@
 		</script>
 		
 		<%-- TODO: Refactor log4javascript to take the log4js script from webjars --%>
-		<jsp:include page="js/log4javascript/log4javascript.jsp">
+		<jsp:include page="../../js/log4javascript/log4javascript.jsp">
 			<jsp:param name="relPath" value="<%=relPath%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
-		<jsp:include page="js/third-party/alertify/alertify.jsp">
+		<jsp:include page="../../js/third-party/alertify/alertify.jsp">
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
