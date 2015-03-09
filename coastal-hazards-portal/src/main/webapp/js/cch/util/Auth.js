@@ -12,7 +12,7 @@ CCH.Auth = {
 
 	submitLogin : function(forward) {
 		$.ajax({
-			url: CCH.CONFIG.contextPath + '/security/auth/authenticate',
+			url: CCH.CONFIG.contextPath + '/authentication/auth/authenticate',
 			type: 'POST',
 			dataType: 'json',
 			data: {
@@ -34,11 +34,30 @@ CCH.Auth = {
 		});
 	},
 	
+	logout : function() {
+		$.ajax({
+			url: CCH.CONFIG.contextPath + '/authentication/auth/logout',
+			type: 'POST',
+			dataType: 'json',
+			success: function(data) {
+				//set authtoken
+				CCH.Auth.setAuthToken("");
+				
+				//forward
+				window.location = CCH.CONFIG.contextPath + '/security/auth/login';
+			}, 
+			error: function(xhr, status, error) {
+				//forward
+				window.location = CCH.CONFIG.contextPath + '/security/auth/login';
+			}
+		});
+	},
+	
 	setAuthToken : function (tokenId) {
 		if(!tokenId) {
-			$.removeCookie('CoastalHazardsAuthCookie', { path: '/' });
+			$.removeCookie('CoastalHazardsAuthCookie');
 		}
-		$.cookie("CoastalHazardsAuthCookie", tokenId, { path: '/' });
+		$.cookie("CoastalHazardsAuthCookie", tokenId);
 	},
 	
 	getAuthToken : function () {

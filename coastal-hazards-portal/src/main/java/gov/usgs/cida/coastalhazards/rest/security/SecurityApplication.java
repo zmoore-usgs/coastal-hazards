@@ -12,10 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationPath("/security")
-public class AuthApplication extends ResourceConfig {
-    private static final Logger LOG = LoggerFactory.getLogger(AuthApplication.class);
+public class SecurityApplication extends ResourceConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(SecurityApplication.class);
 	
-	public AuthApplication() {
+	public SecurityApplication() {
 		register(JspMvcFeature.class);
 		
 		//security
@@ -28,7 +28,6 @@ public class AuthApplication extends ResourceConfig {
         	}
         }
 		register(CoastalHazardsTokenBasedSecurityFilter.class);
-		register(CoastalHazardsAuthTokenService.class);
 		register(SecurityResources.class);
 	}
 }
