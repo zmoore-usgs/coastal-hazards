@@ -153,6 +153,11 @@
 								<li><a id="publish-button-create-aggregation-option" href="#">Aggregation</a></li>
 							</ul>
 						</div>
+						<div class="btn-group">
+							<button id="publish-button-logout" type="button" class="btn btn-success btn-lg logout-button" data-toggle="dropdown">
+								Logout 
+							</button>
+						</div>
 						<div id="publish-button-edit-metadata-existing-grp" class="btn-group hidden">
 							<button type="button" id="publish-button-edit-metadata-existing" class="btn btn-lg btn-success dropdown-toggle" data-toggle="dropdown">
 								Select Metadata <span class="caret"></span>

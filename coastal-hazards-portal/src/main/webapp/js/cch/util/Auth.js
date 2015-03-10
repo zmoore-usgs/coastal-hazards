@@ -4,7 +4,7 @@ window.CCH = CCH || {};
 CCH.Auth = {
 	checkAuthStatus : function() {
 		$.ajax({
-			url: CCH.CONFIG.contextPath + '/publish/item/authcheck/',
+			url: CCH.CONFIG.contextPath + '/security/auth/check/',
 			type: 'GET',
 			dataType: 'json'
 		});
@@ -12,7 +12,7 @@ CCH.Auth = {
 
 	submitLogin : function(forward) {
 		$.ajax({
-			url: CCH.CONFIG.contextPath + '/security/auth/authenticate',
+			url: CCH.CONFIG.contextPath + '/authentication/auth/authenticate',
 			type: 'POST',
 			dataType: 'json',
 			data: {
@@ -34,9 +34,28 @@ CCH.Auth = {
 		});
 	},
 	
+	logout : function() {
+		$.ajax({
+			url: CCH.CONFIG.contextPath + '/authentication/auth/logout',
+			type: 'POST',
+			dataType: 'json',
+			success: function(data) {
+				//set authtoken
+				CCH.Auth.setAuthToken("");
+				
+				//forward
+				window.location = CCH.CONFIG.contextPath + '/security/auth/login';
+			}, 
+			error: function(xhr, status, error) {
+				//forward
+				window.location = CCH.CONFIG.contextPath + '/security/auth/login';
+			}
+		});
+	},
+	
 	setAuthToken : function (tokenId) {
 		if(!tokenId) {
-			tokenId = "";
+			$.removeCookie('CoastalHazardsAuthCookie');
 		}
 		$.cookie("CoastalHazardsAuthCookie", tokenId);
 	},
@@ -53,7 +72,7 @@ $( document ).ajaxError(function(event, jqxhr, settings, thrownError){
 		CCH.Auth.setAuthToken(""); //clear token
 		var currentLocation = window.location;
 		//reroute to login page
-		window.location = CCH.CONFIG.contextPath + "/login.jsp?forward=" + encodeURI(currentLocation) + "&cause=" + thrownError; 
+		window.location = CCH.CONFIG.contextPath + "/security/auth/login/?forward=" + encodeURI(currentLocation) + "&cause=" + thrownError; 
 	}
 });
 
