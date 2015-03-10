@@ -77,7 +77,7 @@
 						displayInLayerSwitcher: false
 					}),
 					worldBoundariesAndPlaces : new OpenLayers.Layer.XYZ("Place Names",
-							"http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/\${z}/\${y}/\${x}",
+							"//services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/\${z}/\${y}/\${x}",
 							{
 								sphericalMercator: true,
 								isBaseLayer: false,
@@ -87,7 +87,7 @@
 					),
 					baselayers: [
 						new OpenLayers.Layer.XYZ("World Imagery",
-								"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/\${z}/\${y}/\${x}",
+								"//services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/\${z}/\${y}/\${x}",
 								{
 									sphericalMercator: true,
 									isBaseLayer: true,
@@ -96,7 +96,7 @@
 								}
 						),
 						new OpenLayers.Layer.XYZ("Street",
-								"http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/\${z}/\${y}/\${x}",
+								"//services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/\${z}/\${y}/\${x}",
 								{
 									sphericalMercator: true,
 									isBaseLayer: true,
@@ -105,7 +105,7 @@
 								}
 						),
 						new OpenLayers.Layer.XYZ("Topo",
-								"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/\${z}/\${y}/\${x}",
+								"//services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/\${z}/\${y}/\${x}",
 								{
 									sphericalMercator: true,
 									isBaseLayer: true,
@@ -114,7 +114,7 @@
 								}
 						),
 						new OpenLayers.Layer.XYZ("Ocean",
-								"http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/\${z}/\${y}/\${x}",
+								"//services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/\${z}/\${y}/\${x}",
 								{
 									sphericalMercator: true,
 									isBaseLayer: true,
