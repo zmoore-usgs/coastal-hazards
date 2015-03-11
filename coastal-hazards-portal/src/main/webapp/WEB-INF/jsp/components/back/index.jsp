@@ -42,6 +42,7 @@
 	String vOpenlayers = getProp("version.openlayers");
 	String vSugarJs = getProp("version.sugarjs");
 	String referer = request.getHeader("referer");
+        String vFontAwesome = getProp("version.fontawesome");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -122,6 +123,8 @@
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/legend<%= development ? "" : "-min"%>.css" />
 		<link type="text/css" rel="stylesheet" media="print" href="<%=baseUrl%>/css/back/print<%= development ? "" : "-min"%>.css" />
+                <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
+
 		<script type="text/javascript">
 			<jsp:include page="<%=ga%>" />
 		</script>
@@ -157,7 +160,7 @@
 				<%-- Help Button --%>
 				<div class='app-navbar-item-container'>
 					<span id='app-navbar-help-container'>
-						<a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="fa fa-info-circle" alt="letter i inside a circle"></i></a>
+						<a tabindex='-1' data-toggle='modal' href='#helpModal'></a>
 					</span>
 				</div>
 			</div>
@@ -171,19 +174,19 @@
 				<div id="info-row-control"  class="col-md-2">
 					<div class="row">
 						<div class='well well'>
-							<div id="label-action-center" class="hidden-md hidden-lg">^ Action Center</div>
+							<div id="label-action-center" class="hidden-md hidden-lg"><i class="fa fa-caret-down action-arrow" alt="downward facing arrow"></i> Action Center</div>
+                                                        
 							<%-- Application Links --%>
 							<div id="container-control-button">
+                                                                <button type="button" class="btn btn-default help-button" id="application-link-button"><i class="fa fa-question-circle action-question"></i></button>
 								<button type="button" class="btn btn-default control-button" id="application-link-button">Return To Map</button>
-								<button type="button" class="btn btn-default control-button" data-toggle="modal" data-target="#modal-services-view">Web Services</button>
-								<button type="button" class="btn btn-default control-button" id="glossary-link-button">Glossary</button>
 								<button type="button" class="btn btn-default control-button" id="add-bucket-link-button">Add to My Bucket</button>
 								<button type="button" class="btn btn-default control-button" id="print-snapshot-button">Print Snapshot</button>
 								<button type="button" class="btn btn-default control-button" id="map-services-link-button">Map Services</button>
 								<button type="button" class="btn btn-default control-button" id="metadata-link-button">Metadata</button>
 								<button type="button" class="btn btn-default control-button" id="download-link-button">Download Dataset</button>
-								<button type="button" class="btn btn-default control-button" id="analysis-link-button">Hazard Analysis</button>
-								<button type="button" class="btn btn-default control-button" data-toggle="modal" data-target="#modal-sharing-view">Sharing</button>
+								<button type="button" class="btn btn-default control-button" id="analysis-link-button">Computing Hazard Analysis</button>
+								<button type="button" class="btn btn-default control-button" data-toggle="modal" data-target="#modal-sharing-view">Share This Info</button>
 							</div>
 						</div>
 					</div>
