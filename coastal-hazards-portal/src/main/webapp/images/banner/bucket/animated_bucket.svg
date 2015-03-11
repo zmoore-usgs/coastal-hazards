@@ -149,9 +149,4 @@
 		<set attributeName="cy" begin = "grow1.end;grow2.end" to="18.5"/>
     </circle>
 </g>
-<animate id="dumpBucketTrg" begin="indefinite"/>
-<animate id="openBucketTrg" begin="indefinite;openBucket.click"/>
-<animate id="addMoreTrg" begin="indefinite;addMore.click"/>
-<animate id="addFirstTrg" begin="indefinite;addFirst.click"/>
-<animate id="closeBucketTrg" begin="indefinite;closeBucket.click"/>
 </svg>
