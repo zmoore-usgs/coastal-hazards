@@ -145,12 +145,12 @@
 					<img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="<%=baseUrl%>/images/banner/cida-cmgp.svg" />
 				</a>
 				<%-- Application Title --%>
-                                <div id="app-navbar-site-title-container" class="app-navbar-item-container">
-                                <a href="<%=baseUrl%>/" id="titleAnchor">
-                                    <div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">
-                                        USGS Coastal Change Hazards Portal
-                                    </div>
-                                </a>  
+				<div id="app-navbar-site-title-container" class="app-navbar-item-container">
+					<a href="<%=baseUrl%>/" id="titleAnchor">
+						<div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">
+							USGS Coastal Change Hazards Portal
+						</div>
+					</a>  
 					<div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">Coastal Change Hazards Portal</div>
 					<div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">&nbsp;</div>
 				</div>
@@ -169,20 +169,22 @@
 			<div class="row">
 				<%-- Left side --%>
 				<div id="info-row-control"  class="col-md-2">
-					<div class='well well-md'>
-						<div id="label-action-center" class="hidden-md hidden-lg">^ Action Center</div>
-						<%-- Application Links --%>
-						<div id="container-control-button">
-							<button type="button" class="btn btn-default control-button" id="application-link-button">Return To Map</button>
-							<button type="button" class="btn btn-default control-button" data-toggle="modal" data-target="#modal-services-view">Web Services</button>
-							<button type="button" class="btn btn-default control-button" id="glossary-link-button">Glossary</button>
-							<button type="button" class="btn btn-default control-button" id="add-bucket-link-button">Add to My Bucket</button>
-							<button type="button" class="btn btn-default control-button" id="print-snapshot-button">Print Snapshot</button>
-							<button type="button" class="btn btn-default control-button" id="map-services-link-button">Map Services</button>
-							<button type="button" class="btn btn-default control-button" id="metadata-link-button">Metadata</button>
-							<button type="button" class="btn btn-default control-button" id="download-link-button">Download Dataset</button>
-							<button type="button" class="btn btn-default control-button" id="analysis-link-button">Hazard Analysis</button>
-							<button type="button" class="btn btn-default control-button" data-toggle="modal" data-target="#modal-sharing-view">Sharing</button>
+					<div class="row">
+						<div class='well well'>
+							<div id="label-action-center" class="hidden-md hidden-lg">^ Action Center</div>
+							<%-- Application Links --%>
+							<div id="container-control-button">
+								<button type="button" class="btn btn-default control-button" id="application-link-button">Return To Map</button>
+								<button type="button" class="btn btn-default control-button" data-toggle="modal" data-target="#modal-services-view">Web Services</button>
+								<button type="button" class="btn btn-default control-button" id="glossary-link-button">Glossary</button>
+								<button type="button" class="btn btn-default control-button" id="add-bucket-link-button">Add to My Bucket</button>
+								<button type="button" class="btn btn-default control-button" id="print-snapshot-button">Print Snapshot</button>
+								<button type="button" class="btn btn-default control-button" id="map-services-link-button">Map Services</button>
+								<button type="button" class="btn btn-default control-button" id="metadata-link-button">Metadata</button>
+								<button type="button" class="btn btn-default control-button" id="download-link-button">Download Dataset</button>
+								<button type="button" class="btn btn-default control-button" id="analysis-link-button">Hazard Analysis</button>
+								<button type="button" class="btn btn-default control-button" data-toggle="modal" data-target="#modal-sharing-view">Sharing</button>
+							</div>
 						</div>
 					</div>
 				</div>
