@@ -23,7 +23,6 @@
 	</div>
 	<div id="application-subsequent-load-splash" class="<%= isOnSiteRequest ? "" : "hidden"%>">
 		<div class="application-overlay-content-wrap">
-			<h2>Retrieving Data...</h2>
 			<div class="application-overlay-description-container-spinner-container">
 				<img class="splash-spinner" src="<%=baseUrl%>/images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
 				<span class="splash-status-update"></span>
