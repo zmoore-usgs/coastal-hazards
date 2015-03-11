@@ -87,12 +87,6 @@
 								'endpoint': '<%=marineArcServerEndpoint%>',
 								'proxy': '/marine/'
 							},
-							'item': {
-								'endpoint': '/data/item'
-							},
-							'geocoding': {
-								'endpoint': '<%=geocodeEndpoint%>'
-							},
 							'session': {
 								'endpoint': '/data/view/'
 							},
@@ -151,12 +145,12 @@
 					<img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="<%=baseUrl%>/images/banner/cida-cmgp.svg" />
 				</a>
 				<%-- Application Title --%>
-                                <div id="app-navbar-site-title-container" class="app-navbar-item-container">
-                                <a href="<%=baseUrl%>/" id="titleAnchor">
-                                    <div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">
-                                        USGS Coastal Change Hazards Portal
-                                    </div>
-                                </a>  
+				<div id="app-navbar-site-title-container" class="app-navbar-item-container">
+					<a href="<%=baseUrl%>/" id="titleAnchor">
+						<div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">
+							USGS Coastal Change Hazards Portal
+						</div>
+					</a>  
 					<div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">Coastal Change Hazards Portal</div>
 					<div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">&nbsp;</div>
 				</div>
@@ -174,40 +168,40 @@
 			</div> 
 			<div class="row">
 				<%-- Left side --%>
-				<div id="map-and-legend-row" class="col-md-6">
-
-					<div id="map-row" class="row">
-						<%-- Map --%>
-						<div id="map"></div>
-						<div id="info-row-control">
-							<div class='well well-sm'>
-								<%-- Application Links --%>
-								<span id="application-link-container"><a class="btn btn-default btn-sm" role="button">Back To Portal</a></span>
-								<span id="download-full-link-container"><a class="btn btn-default btn-sm" role="button">Download These Data</a></span>
-								<span id="metadata-link-container"><a class="btn btn-default btn-sm" role="button" target="portal_metadata_window">Metadata</a></span>
-								<span id="view-services-container"><button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal-services-view">Map Services</button></span>
-								<span id="view-sharing-container"><button type="button" class="btn btn-default btn-sm disabled" data-toggle="modal" data-target="#modal-sharing-view">Sharing</button></span>
+				<div id="info-row-control"  class="col-md-2">
+					<div class="row">
+						<div class='well well'>
+							<div id="label-action-center" class="hidden-md hidden-lg">^ Action Center</div>
+							<%-- Application Links --%>
+							<div id="container-control-button">
+								<button type="button" class="btn btn-default control-button" id="application-link-button">Return To Map</button>
+								<button type="button" class="btn btn-default control-button" data-toggle="modal" data-target="#modal-services-view">Web Services</button>
+								<button type="button" class="btn btn-default control-button" id="glossary-link-button">Glossary</button>
+								<button type="button" class="btn btn-default control-button" id="add-bucket-link-button">Add to My Bucket</button>
+								<button type="button" class="btn btn-default control-button" id="print-snapshot-button">Print Snapshot</button>
+								<button type="button" class="btn btn-default control-button" id="map-services-link-button">Map Services</button>
+								<button type="button" class="btn btn-default control-button" id="metadata-link-button">Metadata</button>
+								<button type="button" class="btn btn-default control-button" id="download-link-button">Download Dataset</button>
+								<button type="button" class="btn btn-default control-button" id="analysis-link-button">Hazard Analysis</button>
+								<button type="button" class="btn btn-default control-button" data-toggle="modal" data-target="#modal-sharing-view">Sharing</button>
 							</div>
 						</div>
 					</div>
-
-					<div id="info-legend-row" class="row">
-						<div class="section-header">Explanation</div>
-						<div id="info-legend" class="well-sm well col-md-6"></div>
-					</div>
-
 				</div>
 
 				<%-- Right Side --%>
 				<div id="summary-and-publications-row" class="col-md-6">
 					<div id="summary-row" class="row">
-						<div class="section-header">Summary</div>
-						<%-- Summary Information --%>
-						<div id="info-summary"  class="well"></div>
+						<div  class="well">
+							<div class="section-header">Summary</div>
+							<%-- Summary Information --%>
+							<div id="info-summary"></div>
+						</div>
+
 					</div>
 					<div class="row" id='publications-row'>
-						<div class="section-header">Additional Information</div>
 						<div class="well">
+							<div class="section-header">Additional Information</div>
 							<span id='info-container-publications-list-span'></span>
 						</div>
 					</div>

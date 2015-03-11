@@ -19,11 +19,6 @@ html, body {
 	color: #777;
 }
 
-/* Fixes pink tile issue in OpenLayers map */
-.olImageLoadError {
-	display : none !important;
-}
-
 /* Container holding the main view */
 .container {
 	width: 100%;
@@ -79,9 +74,8 @@ html, body {
 	display: none !important;
 }
 
-/* Map */
-#map {
-	height: 400px;
+.control-button {
+	width: 100%;
 }
 
 /* Summary container */
