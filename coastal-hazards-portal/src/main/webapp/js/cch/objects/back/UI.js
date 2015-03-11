@@ -13,29 +13,31 @@ CCH.Objects.Back.UI = function (args) {
 
 	var me = (this === window) ? {} : this;
 
+	me.magicResizeNumber = 992;
+	me.isSmall = function () {
+		return $(window).outerWidth() < me.magicResizeNumber;
+	};
 
 	me.init = function (args) {
-		var $metadataLinkButton = $('#metadata-link-container'),
-			$downloadFullLink = $('#download-full-link-container'),
-			$applicationLink = $('#application-link-container'),
+		var $metadataButton = $('#metadata-link-button'),
+			$downloadDataButton = $('#download-link-button'),
+			$applicationButton = $('#application-link-button'),
 			$qrImage = $('#qr-code-img'),
 			$infoTitle = $('#info-title'),
 			$infoSummary = $('#info-summary'),
 			$infoPubListSpan = $('#info-container-publications-list-span'),
+			$labelActionCenter = $('#label-action-center'),
 			cswService,
 			$publist,
 			item = args.item;
 
-		// Create a "Back To Portal" link to let the user view this in the portal
-		$applicationLink.find('a').attr({
-			'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId
+		$applicationButton.on('click', function () {
+			window.location.href = CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId;
 		});
 
-		// Link the "Download Full" button
-		$downloadFullLink.find('a').attr({
-			'href': CCH.CONFIG.contextPath + '/data/download/item/' + CCH.CONFIG.itemId
+		$downloadDataButton.on('click', function () {
+			window.location.href = CCH.CONFIG.contextPath + '/data/download/item/' + CCH.CONFIG.itemId;
 		});
-
 
 		me.createModalServicesTab({
 			item: item
@@ -48,11 +50,11 @@ CCH.Objects.Back.UI = function (args) {
 
 		// If item has a metadata service behind it, wire up the button. Otherwise, remove it.
 		if (cswService && cswService.endpoint) {
-			$metadataLinkButton.find('a').attr({
-				'href': cswService.endpoint + '&outputSchema=http://www.opengis.net/cat/csw/csdgm'
+			$metadataButton.on('click', function () {
+				window.location.href = cswService.endpoint + '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
 			});
 		} else {
-			$metadataLinkButton.remove();
+			$metadataButton.remove();
 		}
 
 		// Build the publications list for the item
@@ -78,7 +80,7 @@ CCH.Objects.Back.UI = function (args) {
 				}
 			});
 		} else {
-			$('#info-container-publications-list-span').remove();
+			$infoPubListSpan.remove();
 		}
 
 		$infoTitle.html(item.summary.full.title);
@@ -88,76 +90,7 @@ CCH.Objects.Back.UI = function (args) {
 		$infoSummary.html(item.summary.full.text);
 		$infoPubListSpan.append($publist);
 
-		CCH.map.buildMap();
-
-		if (item.getLayerList().layers.length) {
-			new CCH.Objects.Widget.Legend({
-				containerId: 'info-legend',
-				item: item,
-				onComplete: function () {
-					var $container = this.$container,
-						$legendDiv = this.$legendDiv,
-						$firstTable = $('#info-legend > div > table:first-child'),
-						$captions = $legendDiv.find('table > thead > caption'),
-						mapHeight = $('#map').height(),
-						tableHeight,
-						tableWidth = $firstTable.width();
-
-					// For one reason or another, the caption in the table doesn't seem to dynamically resize
-					$captions.width(tableWidth);
-
-					// I don't want my legend div to be taller than the map
-					tableHeight = $firstTable.height() - parseInt($container.css('paddingTop'));
-
-					if (tableHeight > mapHeight) {
-						tableHeight = mapHeight;
-					}
-
-					// Set the height of the container to the height of the first table (All tables should be about
-					// the same size)
-					$container.height(tableHeight);
-					
-					$(' .ribboned-legend-caption').each(function (ind, captionSpan) {
-							var $cSpan = $(captionSpan);
-							$cSpan.on({
-								'mouseover': function (evt) {
-									var $span = $(this),
-										lIdx = 0,
-										layer,
-										mouseOverLayerId = $span.attr('ribbon-layer-id');
-									
-									$span.css('font-weight', 700);
-									// Get a list of visible CCH map layers at the time of mouse over
-									CCH.CONFIG.map.visibleLayers = CCH.CONFIG.map.getLayersBy('type', 'cch').filter(function (l) {
-										return l.visibility;
-									});
-									
-									for (lIdx;lIdx < CCH.CONFIG.map.visibleLayers.length;lIdx++) {
-										layer = CCH.CONFIG.map.visibleLayers[lIdx];
-										if (layer.itemid !== mouseOverLayerId) {
-											layer.setVisibility(false);
-										}
-									}
-								},
-								'mouseout': function (evt) {
-									var lIdx = 0;
-									$(this).css('font-weight', '');
-									for (lIdx;lIdx < CCH.CONFIG.map.visibleLayers.length;lIdx++) {
-										CCH.CONFIG.map.visibleLayers[lIdx].setVisibility(true);
-									}
-									delete CCH.CONFIG.map.visibleLayers;
-								}
-							});
-						});
-				}
-			}).init();
-		} else {
-			me.removeLegendContainer();
-			me.removeMapContainer();
-			$('#map-row').append($('#summary-and-publications-row'));
-			$('#map-and-legend-row').removeClass('col-md-6').addClass('col-md-12');
-			$('#summary-and-publications-row').removeClass('col-md-6').addClass('col-md-12');
-		}
+		$labelActionCenter.on('click', me.toggleControlCenterVisibility);
 
 		var minificationCallback = function (data) {
 			var url = data.tinyUrl || data.responseJSON.full_url,
@@ -201,7 +134,33 @@ CCH.Objects.Back.UI = function (args) {
 
 		return me;
 	};
+	
+	me.windowResizeHandler = function () {
+		if (!me.isSmall()) {
+			me.toggleControlCenterVisibility(true);
+		}
+	};
 
+	me.toggleControlCenterVisibility = function (open) {
+		var $actionCenterButtonContainer = $('#container-control-button'),
+			hidden = 'hidden';
+		
+		// if incoming param was not passed, just toggle from current state
+		// otherwise use incoming param to direct whether to open or close
+		if (typeof open === "boolean") {
+			if (open) {
+				$actionCenterButtonContainer.removeClass(hidden);
+			} else {
+				$actionCenterButtonContainer.addClass(hidden);
+			}
+		} else {
+			if ($actionCenterButtonContainer.hasClass(hidden)) {
+				$actionCenterButtonContainer.removeClass(hidden);
+			} else {
+				$actionCenterButtonContainer.addClass(hidden);
+			}
+		}
+	};
 
 	me.removeLegendContainer = function () {
 		$('#info-legend-row').remove();
@@ -312,7 +271,13 @@ CCH.Objects.Back.UI = function (args) {
 		}
 	};
 
-
+	$(window).on({
+		'resize': function () {
+			setTimeout(function () {
+				me.windowResizeHandler();
+			}, 1);
+		}
+	});
 
 	return me.init(args);
 };
