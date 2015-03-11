@@ -151,9 +151,12 @@
 					<img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="<%=baseUrl%>/images/banner/cida-cmgp.svg" />
 				</a>
 				<%-- Application Title --%>
-				<div id="app-navbar-site-title-container" class="app-navbar-item-container">
-					<div id="app-navbar-title-print">USGS Coastal Change Hazards Portal</div>
-					<div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">USGS Coastal Change Hazards Portal</div>
+                                <div id="app-navbar-site-title-container" class="app-navbar-item-container">
+                                <a href="<%=baseUrl%>/" id="titleAnchor">
+                                    <div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">
+                                        USGS Coastal Change Hazards Portal
+                                    </div>
+                                </a>  
 					<div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">Coastal Change Hazards Portal</div>
 					<div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">&nbsp;</div>
 				</div>
