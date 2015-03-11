@@ -87,12 +87,6 @@
 								'endpoint': '<%=marineArcServerEndpoint%>',
 								'proxy': '/marine/'
 							},
-							'item': {
-								'endpoint': '/data/item'
-							},
-							'geocoding': {
-								'endpoint': '<%=geocodeEndpoint%>'
-							},
 							'session': {
 								'endpoint': '/data/view/'
 							},
