@@ -15,9 +15,14 @@ CCH.Objects.Bucket = function (args) {
 	me.IMAGE_LOCATION_BUCKET_WITHOUT_SAND = CCH.CONFIG.contextPath + '/images/banner/bucket/bucket-no-sand.svg';
 	me.BUCKET_POPULATED_CLASS = 'app-navbar-bucket-button-container-populated';
 	me.BUCKET_UNPOPULATED_CLASS = 'app-navbar-bucket-button-container-unpopulated';
-	me.INITIAL_BUCKET_COUNT_MARGIN_LEFT = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left');
 	me.MARGIN_WIDTH = 0;
 	me.bucket = [];
+	me.bucketContainer = document.getElementById('animated-bucket-object');
+	me.bucketSVG = me.bucketContainer.getSVGDocument();
+	
+	me.bucketContainer.onload = function () {
+		me.bucketSVG = this.getSVGDocument();
+	};
 
 	me.bucketAddClickHandler = function (evt, args) {
 		args = args || {};
@@ -57,24 +62,7 @@ CCH.Objects.Bucket = function (args) {
 			bucketContainer.removeClass(me.BUCKET_POPULATED_CLASS);
 			bucketContainer.addClass(me.BUCKET_UNPOPULATED_CLASS);
 		}
-
-		if (count >= 0 && count < 10) {
-			$('#' + me.BUCKET_COUNT_CONTAINER_ID).css({
-				'marginLeft': '17px'
-			});
-		}
-
-		if (count >= 10 && count < 100) {
-			$('#' + me.BUCKET_COUNT_CONTAINER_ID).css({
-				'marginLeft': '12px'
-			});
-		}
-
-		if (count >= 100) {
-			$('#' + me.BUCKET_COUNT_CONTAINER_ID).css({
-				'marginLeft': '7px'
-			});
-		}
+		
 		CCH.LOG.debug('CCH.Objects.Bucket::countChanged: Bucket count changed. Current count: ' + count);
 		// TODO: Not sure what we're doing after 999
 		// TODO: Make 0-99 text larger
@@ -94,7 +82,9 @@ CCH.Objects.Bucket = function (args) {
 		'cch.slide.search.button.bucket.add': me.bucketAddClickHandler,
 		'cch.card.bucket.remove': me.bucketRemoveClickHandler,
 		'cch.slide.bucket.remove': me.bucketRemoveClickHandler,
-		'bucket-remove': me.bucketRemoveClickHandler
+		'bucket-remove': me.bucketRemoveClickHandler,
+		'cch.slide.bucket.opening' : function ()  { me.bucketSVG.bucketOpen(); },
+		'cch.slide.bucket.closing' : function ()  { me.bucketSVG.bucketClose(); }
 	});
 
 	// Preload required images
@@ -202,28 +192,11 @@ CCH.Objects.Bucket = function (args) {
 			return item;
 		},
 		getCount: function () {
-			var bucketContainer = $('#' + me.BUCKET_COUNT_CONTAINER_ID),
-				countString = bucketContainer.html(),
-				count = parseInt(countString, 10);
-
-			if (isNaN(count)) {
-				count = 0;
-			}
-
-			return count;
+			return parseInt(me.bucketSVG.getCount(), 10);
 		},
 		setCount: function (args) {
 			args = args || {};
-			var count = parseInt(args.count, 10),
-				$countContainer = $('#' + me.BUCKET_COUNT_CONTAINER_ID);
-			
-			if (!isNaN(count) && count % 1 === 0) {
-				if (count !== undefined && !isNaN(count)) {
-					$countContainer.html(count);
-				}
-			} else {
-				throw 'setCount called with a double. Only integers allowed';
-			}
+			var count = parseInt(args.count, 10);
 
 			me.countChanged();
 
@@ -236,6 +209,9 @@ CCH.Objects.Bucket = function (args) {
 			me.setCount({
 				count: count
 			});
+			
+			me.bucketSVG.bucketAdd();
+			
 		},
 		decreaseCount: function () {
 			var count = me.getCount();
@@ -247,6 +223,8 @@ CCH.Objects.Bucket = function (args) {
 			me.setCount({
 				count: count
 			});
+			
+			me.bucketSVG.bucketSubtract();
 		},
 		CLASS_NAME: 'CCH.Objects.Bucket'
 	});
