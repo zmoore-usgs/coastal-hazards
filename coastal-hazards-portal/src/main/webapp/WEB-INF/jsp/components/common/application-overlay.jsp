@@ -42,5 +42,5 @@
 	var splashAppend = function(elements) {
 		$('.splash-status-update').append(elements);
 	};
-    splashUpdate("Loading Application...");
+    splashUpdate("Refreshing View...");
 </script>
