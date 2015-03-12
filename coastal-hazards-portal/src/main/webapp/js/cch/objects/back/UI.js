@@ -166,7 +166,12 @@ CCH.Objects.Back.UI = function (args) {
         me.toggleArrowRotation = function(){
            var $actionArrow = $('.action-arrow');
            
-           $actionArrow.toggleClass('action-arrow-right', 'action-arrow');
+           if(!$('#container-control-button').hasClass('hidden')){
+               $actionArrow.removeClass('action-arrow-right').addClass('action-arrow');
+           }else{
+               $actionArrow.addClass('action-arrow-right');
+           }
+           
             
         };
 
