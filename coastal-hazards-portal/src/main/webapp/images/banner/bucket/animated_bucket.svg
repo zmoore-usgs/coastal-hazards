@@ -13,7 +13,7 @@
                             font-size: 14px;
                             }
 		 
-							/* TODO: Replace these hovers with a hover over a transparent all-encompassing rectangle */
+							/* TODO: Replace these hovers with a hover over a transparent all-encompassing rectangle that does not yet exist */
 							#bckgrd:hover {
 								cursor: pointer;
 							}
@@ -79,7 +79,6 @@
 							
 							function bucketSubtract(){
 								document.getElementById('bucket-counter').textContent--;
-								jiggle();
 							}
 								
 							function getCount() {
