@@ -19,11 +19,6 @@ html, body {
 	color: #777;
 }
 
-/* Fixes pink tile issue in OpenLayers map */
-.olImageLoadError {
-	display : none !important;
-}
-
 /* Container holding the main view */
 .container {
 	width: 100%;
@@ -79,10 +74,55 @@ html, body {
 	display: none !important;
 }
 
-/* Map */
-#map {
-	height: 400px;
+.control-button {
+	width: 100%;
+        margin-bottom:15px;
+        color:#003366;
+        font-size:.9em;
 }
+        
+#info-container-publications-list{
+        list-style:none;    
+        }
+#info-container-publications-list li ul{
+        list-style:circle;    
+        }
+        
+#label-action-center{
+        margin-bottom:8px;
+        font-size:1.3em;
+        }
+        
+.action-arrow{
+        -ms-transform: rotate(0); /* IE 9 */
+        -webkit-transform: rotate(0); /* Chrome, Safari, Opera */
+        transform: rotate(0) !important;  
+        }
+        
+.action-arrow-right{
+        -ms-transform: rotate(-90deg); /* IE 9 */
+        -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
+        transform: rotate(-90deg) !important;
+        }
+        
+.well{padding:19px 19px 10px 19px;}
+        
+.help-button{
+        float:right;
+        height:30px;
+        width:30px;
+        margin-bottom:10px;
+        text-align:center;
+        padding:0;
+        }
+
+.action-question{
+        font-size:1.5em !important;
+        color:#003366;
+        }
+#info-summary{
+            padding-bottom:5px;
+        }
 
 /* Summary container */
 .container > div.row:nth-child(3) > div:nth-child(2) > div > div {
@@ -130,6 +170,7 @@ html, body {
 .section-header {
 	font-weight: 600;
 	font-size: 1.3em !important;
+        margin-bottom:8px;
 }
 
 @media (max-width: 440px) {
@@ -151,6 +192,20 @@ html, body {
 	.container > div.row:nth-child(3) > div:nth-child(2) div.row {
 		margin-left: 15px;
 	}
+        
+        #info-row-control{
+                width:25%;
+        }
+        
+        #summary-and-publications-row{
+                width:75%;
+                padding-left:0;
+        }
+
+        .well{
+                padding:10px 10px 0 10px;
+                margin-bottom:15px;
+        }
 }
 
 @media (max-width: 991px) {
@@ -164,5 +219,22 @@ html, body {
 	.container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
 		height: 100px;
 	}
+        
+        
 
+}
+
+
+@media (min-width:1300px){
+    .control-button{
+        font-size:1em;
+    }
+    #info-row-control{
+                width:20%;
+        }
+        
+        #summary-and-publications-row{
+                width:80%;
+        }
+    
 }

@@ -15,8 +15,6 @@ $(document).ready(function () {
 
 	CCH.items = new CCH.Objects.Items();
 
-	CCH.map = new CCH.Objects.Back.Map();
-
 	CCH.ows = new CCH.Util.OWS();
 
 	// I am loading an item with the full subtree so once that item is loaded, start loading the rest of the application
@@ -29,11 +27,6 @@ $(document).ready(function () {
 			CCH.CONFIG.item = CCH.items.getById({id : id});
 			item = CCH.CONFIG.item;
 			CCH.ui = new CCH.Objects.Back.UI({item: item});
-			layers = item.showLayer().layers;
-			
-			if (layers) {
-				CCH.map.addLayers(layers);
-			}
 			
 			// Clear the overlay
 			$('#application-overlay').fadeOut(2000, function () {
