@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" onload="init(evt)" 
-	 viewBox="0 0 48 50" enable-background="new 0 0 48 50" xml:space="preserve">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" onload="init(evt)"
+	 onclick="triggerBucketOnClick()" viewBox="0 0 48 50" enable-background="new 0 0 48 50" xml:space="preserve">
      <style>
                             text{
                             font-size: 3px;
                             cursor: default;
                             font-family: Tahoma, Geneva, sans-serif;
                             }
+		 
                             .lab{
                             font-size: 14px;
                             }
+		 
+							/* TODO: Replace these hovers with a hover over a transparent all-encompassing rectangle */
+							#bckgrd:hover {
+								cursor: pointer;
+							}
+							#bucket:hover {
+								cursor: pointer;
+							}
+							#open_sand:hover {
+								cursor: pointer;
+							}
+							#falling_sand:hover {
+								cursor: pointer;
+							}
                             </style>
 							<script type="text/ecmascript"><![CDATA[
 							function init(evt)
@@ -27,6 +42,11 @@
 								svgDocument.setCount = this.setCount;
 							}
 							}
+								
+							function triggerBucketOnClick() {
+								window.parent.dispatchEvent(new Event('app-navbar-button-clicked'));
+							}	
+							
 							function bucketDump(){
 							    var ele = document.getElementById('empty1');
 							    ele.beginElement();
