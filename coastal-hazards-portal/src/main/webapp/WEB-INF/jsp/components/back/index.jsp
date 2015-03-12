@@ -153,8 +153,12 @@
 						<div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">
 							USGS Coastal Change Hazards Portal
 						</div>
-					</a>  
-					<div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">Coastal Change Hazards Portal</div>
+					</a> 
+                                        <a href="<%=baseUrl%>/" id="titleAnchor">        
+                                            <div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">
+                                                Coastal Change Hazards Portal
+                                            </div>
+                                        </a>
 					<div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">&nbsp;</div>
 				</div>
 				<%-- Help Button --%>
