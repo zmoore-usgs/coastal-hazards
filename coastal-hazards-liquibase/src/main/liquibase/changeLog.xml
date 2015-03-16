@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-    <include file="change1.xml" relativeToChangelogFile="true"/>
-    <include file="change2.xml" relativeToChangelogFile="true"/>
-    <include file="change3.xml" relativeToChangelogFile="true"/>
-    <include file="change4.xml" relativeToChangelogFile="true"/>
-    <include file="change5.xml" relativeToChangelogFile="true"/>
-    <include file="change6.xml" relativeToChangelogFile="true"/>
-    <include file="change7.xml" relativeToChangelogFile="true"/>
-    <include file="aggregationModifications.xml" relativeToChangelogFile="true" />
-    <include file="persistDownloads.xml" relativeToChangelogFile="true" />
-    <include file="updateServiceModel.xml" relativeToChangelogFile="true" />
-    <include file="addItemFlags.xml" relativeToChangelogFile="true" />
-    <include file="addThumbnails.xml" relativeToChangelogFile="true" />
-    <include file="addPublicationType.xml" relativeToChangelogFile="true" />
-    <include file="sessionItemAttributes.xml" relativeToChangelogFile="true" />
-    <include file="fixConstraints.xml" relativeToChangelogFile="true" />
-    <include file="subtreeFunction.xml" relativeToChangelogFile="true" />
-    <include file="itemUpdates.xml" relativeToChangelogFile="true" />
-    <include file="bbox.xml" relativeToChangelogFile="true" />
-    <include file="keywordToText.xml" relativeToChangelogFile="true" />
-    <include file="domains.xml" relativeToChangelogFile="true" />
+	<include file="change1.xml" relativeToChangelogFile="true"/>
+	<include file="change2.xml" relativeToChangelogFile="true"/>
+	<include file="change3.xml" relativeToChangelogFile="true"/>
+	<include file="change4.xml" relativeToChangelogFile="true"/>
+	<include file="change5.xml" relativeToChangelogFile="true"/>
+	<include file="change6.xml" relativeToChangelogFile="true"/>
+	<include file="change7.xml" relativeToChangelogFile="true"/>
+	<include file="aggregationModifications.xml" relativeToChangelogFile="true" />
+	<include file="persistDownloads.xml" relativeToChangelogFile="true" />
+	<include file="updateServiceModel.xml" relativeToChangelogFile="true" />
+	<include file="addItemFlags.xml" relativeToChangelogFile="true" />
+	<include file="addThumbnails.xml" relativeToChangelogFile="true" />
+	<include file="addPublicationType.xml" relativeToChangelogFile="true" />
+	<include file="sessionItemAttributes.xml" relativeToChangelogFile="true" />
+	<include file="fixConstraints.xml" relativeToChangelogFile="true" />
+	<include file="subtreeFunction.xml" relativeToChangelogFile="true" />
+	<include file="itemUpdates.xml" relativeToChangelogFile="true" />
+	<include file="bbox.xml" relativeToChangelogFile="true" />
+	<include file="keywordToText.xml" relativeToChangelogFile="true" />
+	<include file="domains.xml" relativeToChangelogFile="true" />
 	<include file="addItemLastChanged.xml" relativeToChangelogFile="true"/>
+	<include file="10reverseServiceRef.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

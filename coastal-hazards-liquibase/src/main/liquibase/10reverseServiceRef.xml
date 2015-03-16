@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+	<changeSet author="jiwalker" id="reverse_service_foreign_key">
+		<comment>Change to foreign key on join table from service table</comment>
+		
+		<dropForeignKeyConstraint constraintName="fk_service_item_id" baseTableName="service" />
+		
+		<createTable tableName="service_item">
+			<column name="item_id" type="VARCHAR(10)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="service_id" type="INT4">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint baseColumnNames="item_id" baseTableName="service_item" constraintName="fk_service_item_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item"/>
+		<addForeignKeyConstraint baseColumnNames="service_id" baseTableName="service_item" constraintName="fk_service_service_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="service"/>
+		
+		<sql>
+			INSERT INTO service_item SELECT item_id, id FROM service;
+		</sql>
+		
+		<dropColumn tableName="service" columnName="item_id" />
+		
+		<rollback>
+			<dropAllForeignKeyConstraints baseTableName="service_item" />
+			<sql>
+				ALTER TABLE service ADD item_id VARCHAR(10);
+				UPDATE service SET item_id = service_item.item_id 
+					FROM service as s INNER JOIN service_item 
+					ON s.id = service_item.service_id WHERE s.id=service.id;
+				ALTER TABLE service ALTER COLUMN item_id SET NOT NULL;
+			</sql>
+			<dropTable tableName="service_item" />
+			<addForeignKeyConstraint constraintName="fk_service_item_id" baseTableName="service" baseColumnNames="item_id" referencedColumnNames="id" referencedTableName="item" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" />
+		</rollback>
+	</changeSet>
+	
+</databaseChangeLog>
