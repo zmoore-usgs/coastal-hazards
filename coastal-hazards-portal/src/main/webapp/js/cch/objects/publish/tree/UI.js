@@ -9,6 +9,8 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 	me.updatedItems = {};
 
+	
+
 	// The individual tree node.
 	me.createTreeNode = function (item) {
 		var id = item.id,
@@ -16,13 +18,14 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				itemType = item.itemType,
 				title = item.title,
 				state = {
-					opened: false,
-					itemType: itemType,
-					title: title
+					'opened': false,
+					'itemType': itemType,
+					'title': title,
+					'original-id': id
 				};
 
 		return {
-			id: id,
+			id: CCH.Util.Util.generateUUID(),
 			text: text,
 			state: state,
 			type: itemType,
@@ -104,21 +107,22 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			'plugins': ['contextmenu', 'dnd',  'types', 'state', 'search']
 		});
 
-		me.$treeContainer.bind('move_node.jstree', function (evt, moveEvt) {
-			var oldParent = moveEvt.old_parent,
+		me.$treeContainer.bind({
+			'move_node.jstree': function (evt, moveEvt) {
+				var oldParent = moveEvt.old_parent,
 					newParent = moveEvt.parent;
 
-			// I don't want to allow users to move nodes to the root node. If they 
-			// try to, move back to the old node
-			if (newParent === 'root') {
-				CCH.ui.getTree().move_node(moveEvt.node, oldParent);
-			} else {
-				[oldParent, newParent].each(function (itemId) {
-					me.itemUpdated(itemId);
-				});
+				// I don't want to allow users to move nodes to the root node. If they 
+				// try to, move back to the old node
+				if (newParent === 'root') {
+					CCH.ui.getTree().move_node(moveEvt.node, oldParent);
+				} else {
+					[oldParent, newParent].each(function (itemId) {
+						me.itemUpdated(itemId);
+					});
+				}
 			}
 		});
-
 	};
 
 	// When a user hits save, I need to reconstruct the data into the same format
@@ -147,6 +151,18 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		return data;
 	};
 
+	me.updateRandomIdToOriginalId = function (data) {
+		var dataClone = Object.clone(data, true);
+		Object.keys(dataClone, function (k, v) {
+			dataClone[k] = v.map(function (id) {
+				return CCH.ui.getTree().get_node(id).state['original-id'];
+			});
+			dataClone[CCH.ui.getTree().get_node(k).state['original-id']] = dataClone[k];
+			delete dataClone[k];
+		});
+		return dataClone;
+	};
+
 	// User has hit the save button. Reconstruct the data and persist it to the server
 	me.saveItems = function () {
 		var data = me.updatedItems;
@@ -154,7 +170,8 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		// Delete the orphans node in the data object if it exists. This is an 
 		// artifact of how I build this data. 
 		delete data.orphans;
-
+		data = me.updateRandomIdToOriginalId(data);
+		
 		$.ajax(CCH.config.relPath + 'data/tree/item', {
 			data: JSON.stringify(data),
 			method: 'POST',

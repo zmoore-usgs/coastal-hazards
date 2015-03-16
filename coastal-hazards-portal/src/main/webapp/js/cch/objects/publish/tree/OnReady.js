@@ -16,7 +16,7 @@ $(document).ready(function () {
 	
 	var id = CCH.config.id;
 	
-	CCH.ui = CCH.Objects.Publish.Tree.UI({
+	CCH.ui = new CCH.Objects.Publish.Tree.UI({
 		'id' : id,
 		'$diagramContainer' : $('#app-container'),
 		'$treeContainer' : $('#tree-container'),

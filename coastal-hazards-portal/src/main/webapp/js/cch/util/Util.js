@@ -3,6 +3,17 @@
 window.CCH = CCH || {};
 CCH.Util = CCH.Util || {};
 CCH.Util.Util = {
+	
+	/**
+	 * http://guid.us/GUID/JavaScript
+	 * 
+	 * @returns {Number}
+	 */
+	generateUUID: function () {
+		"use strict";
+		return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+	},
+	
 	/** 
 	 * Creates a legend for display on back of card
 	 */
