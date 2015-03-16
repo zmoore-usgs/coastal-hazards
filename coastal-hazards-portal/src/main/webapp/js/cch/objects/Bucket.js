@@ -225,6 +225,10 @@ CCH.Objects.Bucket = function (args) {
 			});
 			
 			me.bucketSVG.bucketSubtract();
+			
+			if (count === 0) {
+				me.bucketSVG.bucketDump();
+			}
 		},
 		CLASS_NAME: 'CCH.Objects.Bucket'
 	});
