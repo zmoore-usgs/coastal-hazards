@@ -53,12 +53,12 @@
 							}
 								
 							function bucketOpen(){
-								var ele = document.getElementById('flip1');
+								var ele = document.getElementById('jiggle1');
 								ele.beginElement();
 							}
 								
 							function bucketClose(){
-								var ele = document.getElementById('flip3');
+								var ele = document.getElementById('jiggle1');
 								ele.beginElement();
 							}
 								
@@ -120,37 +120,9 @@
 	<animateTransform attributeType="xml" id="jiggle2" attributeName="transform" type="rotate" from="-2 16.5 46" to="0 16.5 46" begin="jiggle1.end" dur="0.1s" fill="freeze"/>
 	<animateTransform attributeType="xml" id="jiggle3" attributeName="transform" type="rotate" from="0 41.5 46" to="1 41.5 46" begin="jiggle2.end" dur="0.1s" fill="freeze"/>
 	<animateTransform attributeType="xml" id="jiggle4" attributeName="transform" type="rotate" from="1 41.5 46" to="0 41.5 46" begin="jiggle3.end" dur="0.1s" fill="freeze"/>
-	<animateTransform attributeType="xml" id="flip1" attributeName="transform" type="rotate" from="0 41.5 46" to="11 41.5 46" begin="indefinite" dur="0.1s" fill="freeze"/>
-	<animateTransform attributeType="xml" id="flip2" attributeName="transform" type="rotate" from="11 41.5 46" to="120 40 0" begin="flip1.end" dur="0.6s" fill="freeze"/>
-	<animateTransform attributeType="xml" id="flip3" attributeName="transform" type="rotate" from="120 40 0" to= "11 41.5 46" begin="flip3.begin.begin" dur="0.6s" fill="freeze"/>
-	<animateTransform attributeType="xml" id="flip4" attributeName="transform" type="rotate" from="11 41.5 46" to="0 41.5 46" begin="flip3.end" dur="0.1s" fill="freeze"/>
 	
 </g>
-<g id="open_sand">
-	<path id="falling_path" d="M29 -1 L 29 45 M29 -1 L 29 45 M-5 -5" visibility="hidden"/>
-	<circle cy="-1" r="1" fill="#FFFFFF" opacity="1">
-        <animateMotion id="grainf1" begin="flip2.end" dur="0.5s" repeatCount="4">
-            <mpath xlink:href="#falling_path"/>
-        </animateMotion>
-	</circle>
-	<circle cy="-2" cx="-2.3" r="1" fill="#FFFFFF" opacity="1">
-        <animateMotion id="grainf1" begin="flip2.end+0.02" dur="0.6s" repeatCount="4">
-            <mpath xlink:href="#falling_path"/>
-        </animateMotion>
-	</circle>
-	<circle cy="-2" cx="3.1" r="1" fill="#FFFFFF" opacity="1">
-        <animateMotion id="grainf1" begin="flip2.end" dur="0.55s" repeatCount="4">
-            <mpath xlink:href="#falling_path"/>
-        </animateMotion>
-	</circle>
-	<path id="sand_triangle" fill="#FFFFFF" d="M29,46 l 0,0 l 0 0z">
-		<animate attributeName="d" dur="2s" begin = "flip2.end" fill = "freeze" values="M29,46 l 0,0 l 0 0z;M16.5,46 l 25,0 l -12.5 -8z"/>
-		<set attributeName="opacity" begin = "flip2.end" to="1"/>
-		<set attributeName="d" begin = "flip1.begin" to="M29,46 l 0,0 l 0 0z"/>
-	</path>
-	<animate attributeName="opacity" dur="0.1s" begin = "flip3.begin;flip1.begin" fill = "freeze" values="1;0"/>
-	<animate attributeName="opacity" dur="1.0s" begin = "flip2.end" fill = "freeze" values="0;1"/>	
-</g>
+
 <g id="falling_sand">
     <circle cx="12.4" cy="18.5" r="1" fill="#FFFFFF" opacity="0">
    	 	<animate attributeName="cy" id="grain1" dur="0.4s" begin = "grow1.end;grow1.end" to="46" fill="freeze"/>
