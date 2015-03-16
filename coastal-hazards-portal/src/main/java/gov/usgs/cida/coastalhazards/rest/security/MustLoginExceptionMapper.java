@@ -30,7 +30,7 @@ public class MustLoginExceptionMapper implements
 		try {
 			DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 			props = props.addJNDIContexts(new String[0]);
-			BASE_URL = props.getProperty("coastal-hazards.base.url"); //TODO really should build this dynamically
+			BASE_URL = props.getProperty("coastal-hazards.base.url", ""); //TODO really should build this dynamically
 		} catch (Exception e) {
 			LOG.warn("Failed to load JNDI coastal-hazards.base.url");
 		}
