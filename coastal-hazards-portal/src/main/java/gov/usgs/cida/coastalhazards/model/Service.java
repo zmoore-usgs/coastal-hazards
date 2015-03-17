@@ -26,7 +26,6 @@ public class Service implements Serializable {
 
 	private transient int id;
 	private ServiceType type;
-	private transient String itemId;
 	private String endpoint;
 	private String serviceParameter;
 
@@ -68,15 +67,6 @@ public class Service implements Serializable {
 
 	public void setType(ServiceType type) {
 		this.type = type;
-	}
-
-	@Column(name = "item_id")
-	public String getItemId() {
-		return itemId;
-	}
-
-	public void setItemId(String itemId) {
-		this.itemId = itemId;
 	}
 
 	@Column(name = "service_parameter", length = PARAMETER_MAX_LENGTH)
