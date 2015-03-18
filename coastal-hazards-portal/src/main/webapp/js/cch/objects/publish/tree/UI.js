@@ -55,9 +55,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	me.itemUpdated = function (itemId) {
 		var node = CCH.ui.getTree().get_node(itemId);
 
-//		if (!me.updatedItems[node.id]) {
-			me.updatedItems[node.id] = node.children;
-//		}
+		me.updatedItems[node.id] = node.children;
 	};
 
 	// Use the items data to build out the tree UI
