@@ -52,10 +52,12 @@ public class ItemUtil {
 
 	public static Item gatherNewest(List<Item> items) {
 		Item newest = null;
-		for (Item item : items) {
-			Item localNewest = gatherNewest(item);
-			if (newest == null || updateComparator.compare(localNewest, newest) > 0) {
-				newest = localNewest;
+		if (items != null) {
+			for (Item item : items) {
+				Item localNewest = gatherNewest(item);
+				if (newest == null || updateComparator.compare(localNewest, newest) > 0) {
+					newest = localNewest;
+				}
 			}
 		}
 		return newest;
@@ -68,10 +70,12 @@ public class ItemUtil {
 			if (type == Item.ItemType.aggregation || type == Item.ItemType.uber
 					|| type == Item.ItemType.template) {
 				List<Item> children = item.getChildren();
-				for (Item child : children) {
-					Item newestChild = gatherNewest(child, depth + 1);
-					if (updateComparator.compare(newestChild, item) > 0) {
-						newest = newestChild;
+				if (children != null) {
+					for (Item child : children) {
+						Item newestChild = gatherNewest(child, depth + 1);
+						if (updateComparator.compare(newestChild, item) > 0) {
+							newest = newestChild;
+						}
 					}
 				}
 			}
