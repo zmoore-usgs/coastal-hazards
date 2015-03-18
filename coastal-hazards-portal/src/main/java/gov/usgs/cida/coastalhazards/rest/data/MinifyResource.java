@@ -1,17 +1,14 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
-
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.TinyGovManager;
 import gov.usgs.cida.coastalhazards.model.TinyGov;
 import gov.usgs.cida.utilities.gov.usa.go.GoUsaGovUtils;
-
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -19,7 +16,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author isuftin
  */
-@Path("/minifier")
+@Path(DataURI.MINIFY_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class MinifyResource {
 

@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
+import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.download.DownloadUtility;
 import gov.usgs.cida.coastalhazards.exception.DownloadStagingUnsuccessfulException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
@@ -10,7 +11,6 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.coastalhazards.model.util.Download;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,7 +19,6 @@ import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -32,16 +31,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.apache.commons.io.FileUtils;
-
-import com.google.gson.Gson;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Path("download")
+@Path(DataURI.DOWNLOAD_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class DownloadResource {
 
@@ -56,7 +52,7 @@ public class DownloadResource {
      * @throws java.io.IOException
      */
     @GET
-    @Path("item/{id}")
+    @Path("/item/{id}")
     @Produces("application/zip")
     public Response downloadItem(@PathParam("id") String id) throws IOException {
         Response response = null;
@@ -111,7 +107,7 @@ public class DownloadResource {
      * @throws java.io.IOException
      */
     @GET
-    @Path("view/{id}")
+    @Path("/view/{id}")
     @Produces("application/zip")
     public Response getSession(@PathParam("id") String id) throws IOException, NoSuchAlgorithmException {
         Response response = null;
@@ -171,7 +167,7 @@ public class DownloadResource {
     @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @DELETE
     @Produces("application/json")
-    @Path("item/{itemId}")
+    @Path("/item/{itemId}")
     public Response deleteStagedItem(@PathParam("itemId") String itemId, @Context HttpServletRequest request) {
         Response response = null;
         try (DownloadManager downloadManager = new DownloadManager()) {

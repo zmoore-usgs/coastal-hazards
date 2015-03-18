@@ -1,16 +1,14 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
-import gov.usgs.cida.coastalhazards.session.io.SessionIO;
-import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
 import gov.usgs.cida.coastalhazards.jpa.SessionManager;
 import gov.usgs.cida.coastalhazards.model.Session;
+import gov.usgs.cida.coastalhazards.session.io.SessionIO;
+import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
-
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -27,28 +25,30 @@ import javax.ws.rs.core.Response;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Path("view")
+@Path(DataURI.VIEW_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ViewResource {
 
 	private static SessionIO sessionIo = new SessionManager();
 
 	@GET
-	@Path("{sid}")
+	@Path("/{sid}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSession(@PathParam("sid") String sid, @Context Request request) throws SessionIOException {
 		String jsonSession = sessionIo.load(sid);
 		Response response;
 		if (null == jsonSession) {
 			response = Response.status(Response.Status.NOT_FOUND).build();
-		} else {
-            Session session = GsonUtil.getDefault().fromJson(jsonSession, Session.class);
-            Response checkModified = HTTPCachingUtil.checkModified(request, session);
-            if (checkModified != null) {
-                response = checkModified;
-            } else {
-                response = Response.ok(jsonSession, MediaType.APPLICATION_JSON_TYPE).lastModified(session.getLastModified()).build();
-            }
+		}
+		else {
+			Session session = GsonUtil.getDefault().fromJson(jsonSession, Session.class);
+			Response checkModified = HTTPCachingUtil.checkModified(request, session);
+			if (checkModified != null) {
+				response = checkModified;
+			}
+			else {
+				response = Response.ok(jsonSession, MediaType.APPLICATION_JSON_TYPE).lastModified(session.getLastModified()).build();
+			}
 		}
 		return response;
 	}
@@ -63,14 +63,16 @@ public class ViewResource {
 		String sid = null;
 		if (null != existingSession) {
 			sid = session.getId();
-		} else {
+		}
+		else {
 			sid = sessionIo.save(content);
 		}
-		
+
 		Response response;
 		if (null == sid) {
 			response = Response.status(Response.Status.BAD_REQUEST).build();
-		} else {
+		}
+		else {
 			Map<String, Object> ok = new HashMap<>();
 			ok.put("sid", sid);
 			response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();

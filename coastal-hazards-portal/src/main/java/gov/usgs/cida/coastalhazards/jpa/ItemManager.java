@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,16 +31,20 @@ public class ItemManager implements AutoCloseable {
 
 	public Item load(String itemId) {
 		Item item = null;
-		item = em.find(Item.class, itemId);
-		if (item != null) {
-			List<Item> children = item.getChildren();
-			List<Item> replaceList = new LinkedList<>();
-			if (children != null) {
-				for (Item child : children) {
-					replaceList.add(load(child.getId()));
+		try {
+			item = em.find(Item.class, itemId);
+			if (item != null) {
+				List<Item> children = item.getChildren();
+				List<Item> replaceList = new LinkedList<>();
+				if (children != null) {
+					for (Item child : children) {
+						replaceList.add(load(child.getId()));
+					}
+					item.setChildren(replaceList);
 				}
-				item.setChildren(replaceList);
 			}
+		} catch (PersistenceException ex) {
+			log.error("Unable to load item", ex);
 		}
 		return item;
 	}

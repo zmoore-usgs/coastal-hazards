@@ -15,7 +15,6 @@ import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -195,8 +194,14 @@ public class Item implements Serializable, Cacheable {
 		this.summary = summary;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "item_id", referencedColumnName = "id")
+	@OneToMany
+	@JoinTable(name = "service_item",
+			joinColumns = {
+				@JoinColumn(name = "item_id", referencedColumnName = "id")
+			},
+			inverseJoinColumns = {
+				@JoinColumn(name = "service_id", referencedColumnName = "id")
+			})
 	@IndexColumn(name = "list_index")
 	public List<Service> getServices() {
 		return services;
@@ -315,7 +320,7 @@ public class Item implements Serializable, Cacheable {
 		item.setRibbonable(from.isRibbonable());
 		item.setShowChildren(from.isShowChildren());
 		item.setEnabled(from.isEnabled());
-		item.setServices(fillInServices(from.getServices(), to.getId()));
+		item.setServices(from.getServices());
 		item.setChildren(from.getChildren());
 		item.setDisplayedChildren(from.getDisplayedChildren());
 
@@ -342,18 +347,9 @@ public class Item implements Serializable, Cacheable {
 		
 		List<Service> tmpServices = getServices();
 		tmpServices.addAll(withServices);
-		item.setServices(fillInServices(tmpServices, item.getId()));
+		item.setServices(tmpServices);
 		
 		return item;
-	}
-
-	public static List<Service> fillInServices(List<Service> from, String itemId) {
-		List<Service> services = new LinkedList<>();
-		for (Service service : from) {
-			service.setItemId(itemId);
-			services.add(service);
-		}
-		return services;
 	}
 
 	/**

@@ -4,9 +4,7 @@ import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Thumbnail;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
-
 import java.io.InputStream;
-
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -26,12 +24,12 @@ import javax.ws.rs.core.Response;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Path("thumbnail/item")
+@Path(DataURI.THUMBNAIL_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ThumbnailResource {
 
     @GET
-    @Path("{id}")
+    @Path("/item/{id}")
     @Produces(Thumbnail.MIME_TYPE)
     public Response getImage(@PathParam("id") String id, @Context Request request) {
         Response response = null;
@@ -58,7 +56,7 @@ public class ThumbnailResource {
 
     @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @PUT
-    @Path("{id}")
+    @Path("/item/{id}")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public Response putImage(@PathParam("id") String id, String content, @Context HttpServletRequest request) {

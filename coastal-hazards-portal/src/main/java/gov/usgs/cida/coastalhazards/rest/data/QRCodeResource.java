@@ -4,13 +4,11 @@ import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.utilities.QRCodeGenerator;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -19,7 +17,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-
 import org.glassfish.jersey.server.ParamException;
 
 /**
@@ -29,7 +26,7 @@ import org.glassfish.jersey.server.ParamException;
  *
  * @author isuftin
  */
-@Path("qr")
+@Path(DataURI.QR_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class QRCodeResource {
 
@@ -47,7 +44,7 @@ public class QRCodeResource {
 	 * @return
 	 */
 	@GET
-	@Path("info/item/{id}")
+	@Path("/info/item/{id}")
 	@Produces("image/png")
 	public Response generateQRImageUsingItemID(@PathParam("id") String id, @QueryParam("width") int width, @QueryParam("height") int height) throws IOException {
 		URL url = null;
