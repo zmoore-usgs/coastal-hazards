@@ -55,9 +55,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	me.itemUpdated = function (itemId) {
 		var node = CCH.ui.getTree().get_node(itemId);
 
-		if (!me.updatedItems[node.id]) {
-			me.updatedItems[node.id] = node.children;
-		}
+		me.updatedItems[node.id] = node.children;
 	};
 
 	// Use the items data to build out the tree UI
@@ -175,7 +173,13 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		$.ajax(CCH.config.relPath + 'data/tree/item', {
 			data: JSON.stringify(data),
 			method: 'POST',
-			contentType: 'application/json'
+			contentType: 'application/json',
+			success : function () {
+				location.reload();
+			},
+			error : function () {
+				
+			}
 		});
 	};
 
