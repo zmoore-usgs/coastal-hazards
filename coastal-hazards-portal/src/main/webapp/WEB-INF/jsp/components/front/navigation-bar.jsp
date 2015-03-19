@@ -22,7 +22,7 @@
 <%-- Help Button --%>
 <div class='app-navbar-item-container' title="More Info For USGS Coastal Change Hazards Portal">
     <span id='app-navbar-help-container'>
-        <a href="<%=request.getParameter("base-url")%>/info/"><i class="fa fa-question-circle" alt="question mark inside a circle"></i></a>
+        <a href="${param['baseUrl']}/info/"><i class="fa fa-question-circle" alt="question mark inside a circle"></i></a>
     </span>
 </div>
 
