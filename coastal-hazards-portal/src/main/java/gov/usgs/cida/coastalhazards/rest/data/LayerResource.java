@@ -9,7 +9,10 @@ import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +29,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.commons.io.input.TeeInputStream;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Works with ArcGIS and Geoserver services for service like importing layers
@@ -37,6 +43,8 @@ import org.apache.commons.lang.StringUtils;
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class LayerResource {
 
+	private static final Logger log = LoggerFactory.getLogger(LayerResource.class);
+	
 	private static final String geoserverEndpoint;
 	private static final String geoserverUser;
 	private static final String geoserverPass;
@@ -59,9 +67,18 @@ public class LayerResource {
 		Map<String, String> responseMap = new HashMap<>();
 		
 		String newId = IdGenerator.generate();
-		// TODO metadata is ignored for now, would need to pull metadata out of zip
-		List<Service> added = GeoserverUtil.addLayer(postBody, newId);
-		if (!added.isEmpty()) {
+		
+		List<Service> added = null;
+		try {
+			PipedInputStream pipe = new PipedInputStream();
+			TeeInputStream tee = new TeeInputStream(postBody, new PipedOutputStream(pipe));
+			MetadataUtil.
+			// TODO metadata is ignored for now, would need to pull metadata out of zip
+			added = GeoserverUtil.addLayer(postBody, newId);
+		} catch (IOException e) {
+			log.error("Log for now, error reading input");
+		}
+		if (added != null && !added.isEmpty()) {
 			// just get the first (WFS) until we add to database TODO
 			Service service = added.get(0);
 			String endpoint = service.getEndpoint();

@@ -14,6 +14,7 @@
         <class>gov.usgs.cida.coastalhazards.model.Center</class>
         <class>gov.usgs.cida.coastalhazards.model.Service</class>
         <class>gov.usgs.cida.coastalhazards.model.Thumbnail</class>
+        <class>gov.usgs.cida.coastalhazards.model.Layer</class>
         <class>gov.usgs.cida.coastalhazards.model.util.Download</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Summary</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Tiny</class>
