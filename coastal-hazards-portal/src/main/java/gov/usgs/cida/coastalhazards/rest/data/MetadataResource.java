@@ -7,6 +7,7 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
+import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.communication.FormUploadHandler;
 import gov.usgs.cida.utilities.string.StringHelper;
 import java.io.File;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -53,6 +55,7 @@ public class MetadataResource {
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response acceptMetadata(@Context HttpServletRequest req) throws IOException {
 		int maxFileSize = FILE_UPLOAD_MAX_SIZE;
 		int fileSize = Integer.parseInt(req.getHeader("Content-Length"));

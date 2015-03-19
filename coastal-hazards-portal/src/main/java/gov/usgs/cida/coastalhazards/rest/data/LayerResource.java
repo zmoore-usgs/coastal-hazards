@@ -4,6 +4,7 @@ import gov.usgs.cida.coastalhazards.exception.PreconditionFailedException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.util.GeoserverUtil;
+import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.IdGenerator;
@@ -29,10 +30,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.input.TeeInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * Works with ArcGIS and Geoserver services for service like importing layers
@@ -72,11 +75,12 @@ public class LayerResource {
 		try {
 			PipedInputStream pipe = new PipedInputStream();
 			TeeInputStream tee = new TeeInputStream(postBody, new PipedOutputStream(pipe));
-			MetadataUtil.
-			// TODO metadata is ignored for now, would need to pull metadata out of zip
+			String metadataId = MetadataUtil.doCSWInsertFromString(MetadataUtil.extractMetadataFromShp(tee));
 			added = GeoserverUtil.addLayer(postBody, newId);
-		} catch (IOException e) {
-			log.error("Log for now, error reading input");
+			
+			added.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
+		} catch (IOException | ParserConfigurationException | SAXException e) {
+			log.error("Problem creating services from input", e);
 		}
 		if (added != null && !added.isEmpty()) {
 			// just get the first (WFS) until we add to database TODO
