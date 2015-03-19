@@ -167,8 +167,9 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 		// Delete the orphans node in the data object if it exists. This is an 
 		// artifact of how I build this data. 
-		delete data.orphans;
 		data = me.updateRandomIdToOriginalId(data);
+		
+		delete data.orphans;
 		
 		$.ajax(CCH.config.relPath + 'data/tree/item', {
 			data: JSON.stringify(data),
