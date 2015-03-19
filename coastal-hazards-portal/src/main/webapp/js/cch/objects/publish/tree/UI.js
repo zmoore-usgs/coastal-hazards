@@ -25,7 +25,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				};
 
 		return {
-			id: CCH.Util.Util.generateUUID(),
+			id: id === 'uber' || id === 'orphans' ? id : CCH.Util.Util.generateUUID(),
 			text: text,
 			state: state,
 			type: itemType,
@@ -119,7 +119,22 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 						me.itemUpdated(itemId);
 					});
 				}
-			}
+			},
+			'copy_node.jstree' : function (evt, copyEvt) {
+				var oldParent = copyEvt.old_parent,
+					newParent = copyEvt.parent;
+			
+				// I don't want to allow users to move nodes to the root node. If they 
+				// try to, move back to the old node
+				if (newParent === 'root') {
+					CCH.ui.getTree().copy_node(copyEvt.original, oldParent);
+				} else {
+					[newParent].each(function (itemId) {
+						me.itemUpdated(itemId);
+					});
+					copyEvt.node.state = copyEvt.original.state;
+				}
+			} 
 		});
 	};
 
