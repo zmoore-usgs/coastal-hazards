@@ -137,9 +137,21 @@ CCH.CONFIG.onAppInitialize = function () {
 								// User is coming in with a view (from a shared bucket)
 								// so open the bucket when the app is finished loading.
 								// Only do this if bucket has items in it
-								if (CCH.ui.bucket.getCount() !== 0) {
-									CCH.ui.bucketSlide.open();
+								// 
+								// The bucket SVG may or may not be loaded by the time
+								// I am at this point in the code. 
+								var openBucketFunction = function () {
+									if (CCH.ui.bucket.getCount() !== 0) {
+										CCH.ui.bucketSlide.open();
+									}
+								};
+								
+								if (CCH.ui.bucket.bucketSVG) {
+									openBucketFunction();
+								} else {
+									$(document).on(CCH.ui.bucket.bucketLoadEvent, openBucketFunction);
 								}
+								
 							});
 						}
 					],

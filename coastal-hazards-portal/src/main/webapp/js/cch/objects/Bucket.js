@@ -6,7 +6,7 @@ CCH.Objects.Bucket = function (args) {
 	CCH.LOG.trace('CCH.Objects.Bucket::constructor: Bucket class is initializing.');
 
 	var me = (this === window) ? {} : this;
-
+	me.bucketLoadEvent = 'svg-bucket-loaded';
 	me.slide = args.slide;
 	me.$BUCKET_CONTAINER_CONTROL_CONTAINER_ID = $('#app-navbar-bucket-control-container');
 	me.BUCKET_COUNT_CONTAINER_ID = 'app-navbar-bucket-button-count';
@@ -20,8 +20,15 @@ CCH.Objects.Bucket = function (args) {
 	me.bucketContainer = document.getElementById('animated-bucket-object');
 	me.bucketSVG = me.bucketContainer.getSVGDocument();
 	
+	// Depending on the browser, the bucket SVG may be loaded at this time
+	if (me.bucketSVG) {
+		$(document).trigger(me.bucketLoadEvent);
+	}
+	
+	// Otherwise, we need to attach the onload event to the Object node
 	me.bucketContainer.onload = function () {
 		me.bucketSVG = this.getSVGDocument();
+		$(document).trigger(me.bucketLoadEvent);
 	};
 
 	me.bucketAddClickHandler = function (evt, args) {
@@ -64,8 +71,7 @@ CCH.Objects.Bucket = function (args) {
 		}
 		
 		CCH.LOG.debug('CCH.Objects.Bucket::countChanged: Bucket count changed. Current count: ' + count);
-		// TODO: Not sure what we're doing after 999
-		// TODO: Make 0-99 text larger
+		
 		return count;
 	};
 
@@ -82,9 +88,14 @@ CCH.Objects.Bucket = function (args) {
 		'cch.slide.search.button.bucket.add': me.bucketAddClickHandler,
 		'cch.card.bucket.remove': me.bucketRemoveClickHandler,
 		'cch.slide.bucket.remove': me.bucketRemoveClickHandler,
-		'bucket-remove': me.bucketRemoveClickHandler,
-		'cch.slide.bucket.opening' : function ()  { me.bucketSVG.bucketOpen(); },
-		'cch.slide.bucket.closing' : function ()  { me.bucketSVG.bucketClose(); }
+		'bucket-remove': me.bucketRemoveClickHandler
+	});
+	
+	$(document).on(me.bucketLoadEvent, function () {
+		$(window).on({
+			'cch.slide.bucket.opening' : function ()  { me.bucketSVG.bucketOpen(); },
+			'cch.slide.bucket.closing' : function ()  { me.bucketSVG.bucketClose(); }
+		});
 	});
 
 	// Preload required images
@@ -95,6 +106,8 @@ CCH.Objects.Bucket = function (args) {
 	CCH.LOG.trace('CCH.Objects.Bucket::constructor: Bucket class initialized.');
 
 	return $.extend(me, {
+		bucketLoadEvent : me.bucketLoadEvent,
+		bucketSVG: me.bucketSVG,
 		add: function (args) {
 			args = args || {};
 
@@ -203,32 +216,49 @@ CCH.Objects.Bucket = function (args) {
 			return count;
 		},
 		increaseCount: function () {
-			var count = me.getCount();
+			var increaseCountFunction = function () {
+				var count = me.getCount();
 
-			count = count + 1;
-			me.setCount({
-				count: count
-			});
+				count = count + 1;
+				me.setCount({
+					count: count
+				});
+
+				me.bucketSVG.bucketAdd();
+			};
 			
-			me.bucketSVG.bucketAdd();
+			if (me.bucketSVG) {
+				increaseCountFunction();
+			} else {
+				$(document).on(me.bucketLoadEvent, increaseCountFunction);
+			}
 			
 		},
 		decreaseCount: function () {
-			var count = me.getCount();
+			var decreaseCountFunction = function () {
+				var count = me.getCount();
 
-			if (count > 0) {
-				count = count - 1;
-			}
+				if (count > 0) {
+					count = count - 1;
+				}
 
-			me.setCount({
-				count: count
-			});
+				me.setCount({
+					count: count
+				});
+
+				me.bucketSVG.bucketSubtract();
+
+				if (count === 0) {
+					me.bucketSVG.bucketDump();
+				}
+			};
 			
-			me.bucketSVG.bucketSubtract();
-			
-			if (count === 0) {
-				me.bucketSVG.bucketDump();
+			if (me.bucketSVG) {
+				decreaseCountFunction();
+			} else {
+				$(document).on(me.bucketLoadEvent, decreaseCountFunction);
 			}
+			
 		},
 		CLASS_NAME: 'CCH.Objects.Bucket'
 	});
