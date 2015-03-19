@@ -15,7 +15,9 @@
 <jsp:include page="combined-searchbar.jsp"></jsp:include>
 
 <%-- Bucket Control --%>
-<jsp:include page="navbar-bucket.jsp"></jsp:include>
+<jsp:include page="navbar-bucket.jsp">
+	<jsp:param name="baseUrl" value="${param['baseUrl']}" />
+</jsp:include>
 
 <%-- Help Button --%>
 <div class='app-navbar-item-container' title="More Info For USGS Coastal Change Hazards Portal">
