@@ -37,8 +37,6 @@ CCH.Objects.Publish.UI = function () {
 		$proxyWmsServiceInput = $form.find('#form-publish-item-service-proxy-wms'),
 		$proxyWmsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
 		$publicationsPanel = $form.find('#publications-panel'),
-		$dataPanel = $('#data-panel'),
-		$resourcePanel = $('#resources-panel'),
 		$ribbonableCb = $form.find('#form-publish-item-ribbonable'),
 		$showChildrenCb = $form.find('#form-publish-item-showchildren'),
 		$itemType = $form.find('#form-publish-info-item-itemtype'),
@@ -60,6 +58,7 @@ CCH.Objects.Publish.UI = function () {
 		$buttonSave = $('#publish-button-save'),
 		$buttonDelete = $('#publish-button-delete'),
 		$buttonLogout = $('#publish-button-logout'),
+		$buttonViewAll = $('#publish-button-view-all'),
 		$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
 		$wfsHelpLink = $form.find('.form-publish-item-service-source-wfs-import-button-service-help-link'),
 		$wmsHelpLink = $form.find('.form-publish-item-service-source-wms-import-button-service-help-link'),
@@ -2188,6 +2187,10 @@ CCH.Objects.Publish.UI = function () {
 					}]
 			}
 		});
+	});
+
+	$buttonViewAll.on(CCH.CONFIG.strings.click, function () {
+		window.location = CCH.baseUrl + 'publish/tree/';
 	});
 
 	$imageGenButton.on(CCH.CONFIG.strings.click, function () {

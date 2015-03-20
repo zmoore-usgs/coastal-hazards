@@ -8,7 +8,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	$.extend(me, args);
 
 	me.updatedItems = {};
-
+	me.autoSearch = "";
 	
 
 	// The individual tree node.
@@ -39,7 +39,12 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	// data set ready to go into the tree UI
 	me.buildAdjacencyListFromData = function (item) {
 		var children = item.children || [],
-				node = this.createTreeNode(item);
+				node = this.createTreeNode(item),
+				referer = CCH.config.referer;
+
+		if (referer && referer === item.id) {
+			me.autoSearch = item.title;
+		}
 
 		if (children.length) {
 			for (var childIndex = 0; childIndex < children.length; childIndex++) {
@@ -67,6 +72,17 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			},
 			'contextmenu': {
 				'items': {
+					'edit': {
+						'label' : 'Edit',
+						'icon': 'fa fa-pencil-square-o',
+						'action' : function () {
+							var tree = CCH.ui.getTree(),
+								selectedId = tree.get_selected()[0],
+								originalId = CCH.ui.getTree().get_node(selectedId).state['original-id'];
+						
+							window.location = CCH.config.baseUrl + "/publish/item/" + originalId;
+						}
+					},
 					'delete': {
 						'label': 'Orphan',
 						'icon': 'fa fa-eraser',
@@ -226,8 +242,6 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				this.createTree([parentItem]);
 
 				this.loadOrphans();
-
-
 			}
 		});
 
@@ -244,6 +258,9 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					},
 					orphanNode = this.buildAdjacencyListFromData(orphanItem);
 					CCH.ui.getTree().create_node('root', orphanNode, 'last');
+					if (me.autoSearch) {
+						CCH.ui.getTree().search(me.autoSearch, true);
+					}
 				}
 			});
 		};
