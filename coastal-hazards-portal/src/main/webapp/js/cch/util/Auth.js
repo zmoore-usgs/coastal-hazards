@@ -1,16 +1,18 @@
 /*jslint browser: true*/
 /*global CCH*/
+/*global alertify*/
 window.CCH = CCH || {};
 CCH.Auth = {
-	checkAuthStatus : function() {
+	checkAuthStatus: function () {
+		"use strict";
 		$.ajax({
 			url: CCH.CONFIG.contextPath + '/security/auth/check/',
 			type: 'GET',
 			dataType: 'json'
 		});
-	}, 
-
-	submitLogin : function(forward) {
+	},
+	submitLogin: function (forward) {
+		"use strict";
 		$.ajax({
 			url: CCH.CONFIG.contextPath + '/authentication/auth/authenticate',
 			type: 'POST',
@@ -19,60 +21,59 @@ CCH.Auth = {
 				username: $('#username').val(),
 				password: $('#password').val()
 			},
-			success: function(data) {
+			success: function (data) {
 				//set authtoken
 				CCH.Auth.setAuthToken(data.tokenId);
-				
+
 				//forward
 				window.location = forward || CCH.CONFIG.contextPath + '/publish/item';
-			}, 
-			error: function(xhr, status, error) {
-				if(error == "Unauthorized") {
-					alertify.error("Username and password invalid.", 3000);
-				}
+			},
+			error: function (xhr, status, error) {
+				alertify.error(error, 3000);
 			}
 		});
 	},
-	
-	logout : function() {
+	logout: function () {
+		"use strict";
 		$.ajax({
 			url: CCH.CONFIG.contextPath + '/authentication/auth/logout',
 			type: 'POST',
 			dataType: 'json',
-			success: function(data) {
+			success: function () {
 				//set authtoken
 				CCH.Auth.setAuthToken("");
-				
+
 				//forward
 				window.location = CCH.CONFIG.contextPath + '/security/auth/login';
-			}, 
-			error: function(xhr, status, error) {
+			},
+			error: function () {
 				//forward
 				window.location = CCH.CONFIG.contextPath + '/security/auth/login';
 			}
 		});
 	},
-	
-	setAuthToken : function (tokenId) {
-		if(!tokenId) {
+	setAuthToken: function (tokenId) {
+		"use strict";
+		if (!tokenId) {
 			$.removeCookie('CoastalHazardsAuthCookie');
 		}
 		$.cookie("CoastalHazardsAuthCookie", tokenId);
 	},
-	
-	getAuthToken : function () {
+	getAuthToken: function () {
+		"use strict";
 		var token = $.cookie("CoastalHazardsAuthCookie");
 		return token;
 	}
 };
 
 //set global JQuery handler to always intercept 401/403s
-$( document ).ajaxError(function(event, jqxhr, settings, thrownError){
-	if(thrownError == "Forbidden" || thrownError == "Unauthorized") {
+$(document).ajaxError(function (event, jqxhr, settings, thrownError) {
+	"use strict";
+	if (thrownError === "Forbidden" || thrownError === "Unauthorized") {
 		CCH.Auth.setAuthToken(""); //clear token
 		var currentLocation = window.location;
 		//reroute to login page
-		window.location = CCH.CONFIG.contextPath + "/security/auth/login/?forward=" + encodeURI(currentLocation) + "&cause=" + thrownError; 
+		window.location = CCH.CONFIG.contextPath + "/security/auth/login/?forward=" + encodeURI(currentLocation) + "&cause=" + thrownError;
 	}
 });
 
