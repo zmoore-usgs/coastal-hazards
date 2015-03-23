@@ -372,6 +372,13 @@ CCH.Objects.Front.Map = function (args) {
 			return layer;
 		},
 		zoomendCallback: function () {
+			var map = me.map;
+			if (map.baseLayer.name.toLowerCase() === "ocean" && map.getZoom() > 13) {
+				var baseLayers = map.getLayersByName("World Imagery");
+				if (baseLayers.length > 0) {
+					map.setBaseLayer(baseLayers[0]);
+				}
+			}
 			CCH.session.updateSession();
 		},
 		moveendCallback: function () {

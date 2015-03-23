@@ -86,7 +86,8 @@
 		</jsp:include>
 		<jsp:include page="<%= configration%>"></jsp:include>
 			<script type="text/javascript">
-				CCH.itemid = '<%= id%>';
+				CCH.itemid = '<%= id %>';
+				CCH.baseUrl = '<%= relPath %>';
 				CCH.CONFIG.limits = {
 					map: {
 						modelProjection: new OpenLayers.Projection('EPSG:4326')
@@ -138,6 +139,11 @@
 				</div>
 				<div class="panel-body">
 					<div class="row row-control center-block">
+						<div class="btn-group">
+							<button type="button" id="publish-button-view-all" class="btn btn-success btn-lg" data-toggle="dropdown">
+								View All
+							</button>
+						</div>
 						<div class="btn-group">
 							<button type="button" id="publish-button-edit-existing" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown">
 								Edit Existing <span class="caret"></span>

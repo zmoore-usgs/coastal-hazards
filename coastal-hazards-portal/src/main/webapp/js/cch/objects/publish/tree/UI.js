@@ -8,7 +8,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	$.extend(me, args);
 
 	me.updatedItems = {};
-
+	me.autoSearch = "";
 	
 
 	// The individual tree node.
@@ -25,7 +25,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				};
 
 		return {
-			id: CCH.Util.Util.generateUUID(),
+			id: id === 'uber' || id === 'orphans' ? id : CCH.Util.Util.generateUUID(),
 			text: text,
 			state: state,
 			type: itemType,
@@ -39,7 +39,12 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	// data set ready to go into the tree UI
 	me.buildAdjacencyListFromData = function (item) {
 		var children = item.children || [],
-				node = this.createTreeNode(item);
+				node = this.createTreeNode(item),
+				referer = CCH.config.referer;
+
+		if (referer && referer === item.id) {
+			me.autoSearch = item.title;
+		}
 
 		if (children.length) {
 			for (var childIndex = 0; childIndex < children.length; childIndex++) {
@@ -67,6 +72,17 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			},
 			'contextmenu': {
 				'items': {
+					'edit': {
+						'label' : 'Edit',
+						'icon': 'fa fa-pencil-square-o',
+						'action' : function () {
+							var tree = CCH.ui.getTree(),
+								selectedId = tree.get_selected()[0],
+								originalId = CCH.ui.getTree().get_node(selectedId).state['original-id'];
+						
+							window.location = CCH.config.baseUrl + "/publish/item/" + originalId;
+						}
+					},
 					'delete': {
 						'label': 'Orphan',
 						'icon': 'fa fa-eraser',
@@ -119,7 +135,21 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 						me.itemUpdated(itemId);
 					});
 				}
-			}
+			},
+			'copy_node.jstree' : function (evt, copyEvt) {
+				var oldParent = copyEvt.old_parent,
+					newParent = copyEvt.parent;
+			
+				// I don't want to allow users to move nodes to the root node. If they 
+				// try to, move back to the old node
+				if (newParent === 'root') {
+					CCH.ui.getTree().copy_node(copyEvt.original, oldParent);
+				} else {
+					copyEvt.node.state = copyEvt.original.state;
+					copyEvt.node.id = CCH.Util.Util.generateUUID();
+					me.itemUpdated(newParent);
+				}
+			} 
 		});
 	};
 
@@ -167,8 +197,9 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 		// Delete the orphans node in the data object if it exists. This is an 
 		// artifact of how I build this data. 
-		delete data.orphans;
 		data = me.updateRandomIdToOriginalId(data);
+		
+		delete data.orphans;
 		
 		$.ajax(CCH.config.relPath + 'data/tree/item', {
 			data: JSON.stringify(data),
@@ -210,8 +241,6 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				this.createTree([parentItem]);
 
 				this.loadOrphans();
-
-
 			}
 		});
 
@@ -228,6 +257,9 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					},
 					orphanNode = this.buildAdjacencyListFromData(orphanItem);
 					CCH.ui.getTree().create_node('root', orphanNode, 'last');
+					if (me.autoSearch) {
+						CCH.ui.getTree().search(me.autoSearch, true);
+					}
 				}
 			});
 		};

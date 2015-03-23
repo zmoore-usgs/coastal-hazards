@@ -30,9 +30,14 @@
 	String vJquery = getProp("version.jquery");
 %>
 <%
+	String fullRefererUrl = request.getHeader("referer");
+	String referer = "";
 	String baseUrlJndiString = props.getProperty("coastal-hazards.base.url");
 	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
 	String relPath = baseUrl+"/";
+	if (null != fullRefererUrl && fullRefererUrl.toLowerCase().contains("/publish/item/")) {
+		referer = fullRefererUrl.substring(fullRefererUrl.lastIndexOf("/") + 1);
+	}
 %>
 <html lang="en">
     <head>
@@ -97,7 +102,8 @@
 			CCH.config = {
 				'id': '${it.id}' || 'uber',
 				'baseUrl': '<%=baseUrl%>',
-				'relPath' : '<%=relPath%>'
+				'relPath' : '<%=relPath%>',
+				'referer' : '<%=referer%>'
 			};
 		</script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>

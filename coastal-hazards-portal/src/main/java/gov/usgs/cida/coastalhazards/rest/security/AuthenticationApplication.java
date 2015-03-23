@@ -6,8 +6,6 @@ import gov.usgs.cida.auth.client.CachingAuthClient;
 import javax.ws.rs.ApplicationPath;
 
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

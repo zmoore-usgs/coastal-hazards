@@ -16,12 +16,13 @@ $(document).ready(function () {
 	CCH.items = new CCH.Objects.Items();
 
 	CCH.ows = new CCH.Util.OWS();
+	
+	CCH.session = new CCH.Objects.Session();
 
 	// I am loading an item with the full subtree so once that item is loaded, start loading the rest of the application
 	$(window).on('cch.item.loaded', function (evt, args) {
 		var id = args.id || '',
-			item,
-			layers;
+			item;
 
 		if (CCH.CONFIG.itemId === id) {
 			CCH.CONFIG.item = CCH.items.getById({id : id});

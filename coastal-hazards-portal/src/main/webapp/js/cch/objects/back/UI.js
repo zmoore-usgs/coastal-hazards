@@ -4,6 +4,7 @@
 /*global CCH */
 /*global OpenLayers */
 /*global twttr */
+/*global alertify */
 window.CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
 CCH.Objects.Back = CCH.Objects.Back || {};
@@ -20,8 +21,13 @@ CCH.Objects.Back.UI = function (args) {
 
 	me.init = function (args) {
 		var $metadataButton = $('#metadata-link-button'),
+			$infoButton = $('#application-info-button'),
 			$downloadDataButton = $('#download-link-button'),
 			$applicationButton = $('#application-link-button'),
+			$addToBucketButton = $('#add-bucket-link-button'),
+			$printSnapshotButton = $('#print-snapshot-button'),
+			$mapServicesButton = $('#map-services-link-button'),
+			$computeAnalysissButton = $('#analysis-link-button'),
 			$qrImage = $('#qr-code-img'),
 			$infoTitle = $('#info-title'),
 			$infoSummary = $('#info-summary'),
@@ -31,12 +37,33 @@ CCH.Objects.Back.UI = function (args) {
 			$publist,
 			item = args.item;
 
+		$infoButton.on('click', function () {
+			window.location.href = CCH.CONFIG.contextPath + '/info';
+		});
+		
 		$applicationButton.on('click', function () {
 			window.location.href = CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId;
 		});
 
 		$downloadDataButton.on('click', function () {
 			window.location.href = CCH.CONFIG.contextPath + '/data/download/item/' + CCH.CONFIG.itemId;
+		});
+		
+		$addToBucketButton.on('click', function () {
+			CCH.session.addItem({
+				item: item,
+				visible: true
+			});
+			$addToBucketButton.addClass('disabled');
+			alertify.log('Item added to bucket!');
+		});
+		
+		$printSnapshotButton.on('click', function () {
+			alertify.log('Not yet.');
+		});
+		
+		$computeAnalysissButton.on('click', function () {
+			alertify.log('Not yet.');
 		});
 
 		me.createModalServicesTab({
@@ -91,7 +118,7 @@ CCH.Objects.Back.UI = function (args) {
 		$infoPubListSpan.append($publist);
 
 		$labelActionCenter.on('click', me.toggleControlCenterVisibility);
-                $labelActionCenter.on('click', me.toggleArrowRotation);
+		$labelActionCenter.on('click', me.toggleArrowRotation);
 
 		var minificationCallback = function (data) {
 			var url = data.tinyUrl || data.responseJSON.full_url,
@@ -119,6 +146,7 @@ CCH.Objects.Back.UI = function (args) {
 					count: 'none'
 				}
 			);
+	
 			twttr.events.bind('tweet', function () {
 				alertify.log('Your view has been tweeted. Thank you.');
 			});
@@ -132,6 +160,11 @@ CCH.Objects.Back.UI = function (args) {
 				error: [minificationCallback]
 			}
 		});
+
+		// Is this item already in the bucket? If so, disable the add to bucket button
+		if (CCH.session.getItemById(item.id)) {
+			$addToBucketButton.addClass('disabled');
+		}
 
 		return me;
 	};
@@ -163,24 +196,14 @@ CCH.Objects.Back.UI = function (args) {
 		}
 	};
         
-        me.toggleArrowRotation = function(){
-           var $actionArrow = $('.action-arrow');
-           
-           if(!$('#container-control-button').hasClass('hidden')){
-               $actionArrow.removeClass('action-arrow-right').addClass('action-arrow');
-           }else{
-               $actionArrow.addClass('action-arrow-right');
-           }
-           
-            
-        };
+	me.toggleArrowRotation = function(){
+	   var $actionArrow = $('.action-arrow');
 
-	me.removeLegendContainer = function () {
-		$('#info-legend-row').remove();
-	};
-	
-	me.removeMapContainer = function () {
-		$('#map').remove();
+	   if(!$('#container-control-button').hasClass('hidden')){
+		   $actionArrow.removeClass('action-arrow-right').addClass('action-arrow');
+	   }else{
+		   $actionArrow.addClass('action-arrow-right');
+	   }
 	};
 
 	me.createModalServicesTab = function (args) {

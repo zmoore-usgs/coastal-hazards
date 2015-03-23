@@ -15,12 +15,14 @@
 <jsp:include page="combined-searchbar.jsp"></jsp:include>
 
 <%-- Bucket Control --%>
-<jsp:include page="navbar-bucket.jsp"></jsp:include>
+<jsp:include page="navbar-bucket.jsp">
+	<jsp:param name="baseUrl" value="${param['baseUrl']}" />
+</jsp:include>
 
 <%-- Help Button --%>
 <div class='app-navbar-item-container' title="More Info For USGS Coastal Change Hazards Portal">
     <span id='app-navbar-help-container'>
-        <a href="<%=request.getParameter("base-url")%>/info/"><i class="fa fa-question-circle" alt="question mark inside a circle"></i></a>
+        <a href="${param['baseUrl']}/info/"><i class="fa fa-question-circle" alt="question mark inside a circle"></i></a>
     </span>
 </div>
 
@@ -37,10 +39,9 @@
                 <div class="row">
                     <div class="well well-small">
                         <label for="modal-share-summary-url-inputbox-div"><div id="modal-share-summary-url-inputbox-div">
-                            <label for="modal-share-summary-url-inputbox"><input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." title="modal-share-summary-url-inputbox"/></label>
-                        </div></label>
+								<label for="modal-share-summary-url-inputbox"><input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." title="modal-share-summary-url-inputbox"/></label>
+							</div></label>
                         <a id="modal-share-summary-url-button" class="btn btn-default" target="portal_view_window" role="button">View In Portal</a>
-
                     </div>
                     <span class="pull-right" id='multi-card-twitter-button'></span>
                 </div>

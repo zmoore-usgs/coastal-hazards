@@ -42,7 +42,7 @@
 	String vOpenlayers = getProp("version.openlayers");
 	String vSugarJs = getProp("version.sugarjs");
 	String referer = request.getHeader("referer");
-        String vFontAwesome = getProp("version.fontawesome");
+	String vFontAwesome = getProp("version.fontawesome");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -105,20 +105,7 @@
 				window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
 			}
 		</script>
-		<jsp:include page="<%= log4js%>">
-			<jsp:param name="relPath" value="<%=relPath%>" /> 
-			<jsp:param name="debug-qualifier" value="<%= development%>" />
-		</jsp:include>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/Map<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/UI<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Legend<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= development ? "" : "-min"%>.js'></script>
+		
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/legend<%= development ? "" : "-min"%>.css" />
@@ -139,6 +126,10 @@
 			<jsp:param name="version" value="<%=version%>" />
 			<jsp:param name="debug-qualifier" value="<%=development%>" />
 			<jsp:param name="original-referer" value="<%=referer%>" />
+		</jsp:include>
+		<jsp:include page="../../../../js/third-party/alertify/alertify.jsp">
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
+			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<%-- Content Here --%>
 		<div id="info-content" class="container">
@@ -182,14 +173,14 @@
                                                         
 							<%-- Application Links --%>
 							<div id="container-control-button">
-                                                                <button type="button" class="btn btn-default help-button" id="application-link-button"><i class="fa fa-question-circle action-question"></i></button>
+								<button type="button" class="btn btn-default help-button" id="application-info-button"><i class="fa fa-question-circle action-question"></i></button>
 								<button type="button" class="btn btn-default control-button" id="application-link-button">Return To Map</button>
 								<button type="button" class="btn btn-default control-button" id="add-bucket-link-button">Add to My Bucket</button>
 								<button type="button" class="btn btn-default control-button" id="print-snapshot-button">Print Snapshot</button>
-								<button type="button" class="btn btn-default control-button" id="map-services-link-button">Map Services</button>
-								<button type="button" class="btn btn-default control-button" id="metadata-link-button">Metadata</button>
+								<button type="button" class="btn btn-default control-button" id="map-services-link-button" data-toggle="modal" data-target="#modal-services-view">Map Services</button>
+								<button type="button" class="btn btn-default control-button" id="metadata-link-button"  role="button" target="portal_metadata_window">Metadata</button>
 								<button type="button" class="btn btn-default control-button" id="download-link-button">Download Dataset</button>
-								<button type="button" class="btn btn-default control-button" id="analysis-link-button">Computing Hazard Analysis</button>
+								<button type="button" class="btn btn-default control-button" id="analysis-link-button">Make a Hazard Analysis</button>
 								<button type="button" class="btn btn-default control-button" data-toggle="modal" data-target="#modal-sharing-view">Share This Info</button>
 							</div>
 						</div>
@@ -260,5 +251,21 @@
 				</div>
 			</div>
 		</div>
+		
+		<jsp:include page="<%= log4js%>">
+			<jsp:param name="relPath" value="<%=relPath%>" /> 
+			<jsp:param name="debug-qualifier" value="<%= development%>" />
+		</jsp:include>
+		<script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Session<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/UI<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Legend<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= development ? "" : "-min"%>.js'></script>
 	</body>
 </html>
