@@ -189,8 +189,8 @@
 								<button type="button" class="btn btn-default control-button" id="application-link-button">Return To Map</button>
 								<button type="button" class="btn btn-default control-button" id="add-bucket-link-button">Add to My Bucket</button>
 								<button type="button" class="btn btn-default control-button" id="print-snapshot-button">Print Snapshot</button>
-								<button type="button" class="btn btn-default control-button" id="map-services-link-button">Map Services</button>
-								<button type="button" class="btn btn-default control-button" id="metadata-link-button">Metadata</button>
+								<button type="button" class="btn btn-default control-button" id="map-services-link-button" data-toggle="modal" data-target="#modal-services-view">Map Services</button>
+								<button type="button" class="btn btn-default control-button" id="metadata-link-button"  role="button" target="portal_metadata_window">Metadata</button>
 								<button type="button" class="btn btn-default control-button" id="download-link-button">Download Dataset</button>
 								<button type="button" class="btn btn-default control-button" id="analysis-link-button">Computing Hazard Analysis</button>
 								<button type="button" class="btn btn-default control-button" data-toggle="modal" data-target="#modal-sharing-view">Share This Info</button>
