@@ -59,7 +59,7 @@ CCH.Objects.Session = function (args) {
 			cookie.items = me.session.items;
 			cookie.center = me.session.center;
 			cookie.scale = me.session.scale;
-			$.cookie(me.cookieName, cookie);
+			$.cookie(me.cookieName, cookie, { 'path' : '/' });
 		}
 	};
 
@@ -151,7 +151,7 @@ CCH.Objects.Session = function (args) {
 				cookie = $.cookie(me.cookieName);
 				cookie.bbox = me.session.bbox;
 				cookie.items = me.session.items;
-				$.cookie(me.cookieName, cookie);
+				$.cookie(me.cookieName, cookie, { 'path' : '/' });
 
 				$(window).trigger('cch.data.session.loaded.true');
 			} else {
@@ -205,7 +205,7 @@ CCH.Objects.Session = function (args) {
 
 		cookie = $.cookie(me.cookieName);
 		cookie.items = me.session.items;
-		$.cookie(me.cookieName, cookie);
+		$.cookie(me.cookieName, cookie, { 'path' : '/' });
 
 		return me.session;
 	};
@@ -222,7 +222,7 @@ CCH.Objects.Session = function (args) {
 
 		cookie = $.cookie(me.cookieName);
 		cookie.items = me.session.items;
-		$.cookie(me.cookieName, cookie);
+		$.cookie(me.cookieName, cookie, { 'path' : '/' });
 		return me.session;
 	};
 

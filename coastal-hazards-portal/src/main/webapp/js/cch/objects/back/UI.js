@@ -50,7 +50,10 @@ CCH.Objects.Back.UI = function (args) {
 		});
 		
 		$addToBucketButton.on('click', function () {
-			alertify.log('Not yet.');
+			CCH.session.addItem({
+				item: item,
+				visible: true
+			});
 		});
 		
 		$printSnapshotButton.on('click', function () {
