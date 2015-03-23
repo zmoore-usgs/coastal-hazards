@@ -105,19 +105,7 @@
 				window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
 			}
 		</script>
-		<jsp:include page="<%= log4js%>">
-			<jsp:param name="relPath" value="<%=relPath%>" /> 
-			<jsp:param name="debug-qualifier" value="<%= development%>" />
-		</jsp:include>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/UI<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Legend<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= development ? "" : "-min"%>.js'></script>
+		
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/legend<%= development ? "" : "-min"%>.css" />
@@ -263,5 +251,21 @@
 				</div>
 			</div>
 		</div>
+		
+		<jsp:include page="<%= log4js%>">
+			<jsp:param name="relPath" value="<%=relPath%>" /> 
+			<jsp:param name="debug-qualifier" value="<%= development%>" />
+		</jsp:include>
+		<script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Session<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/UI<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Legend<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= development ? "" : "-min"%>.js'></script>
 	</body>
 </html>
