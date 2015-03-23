@@ -145,10 +145,9 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				if (newParent === 'root') {
 					CCH.ui.getTree().copy_node(copyEvt.original, oldParent);
 				} else {
-					[newParent].each(function (itemId) {
-						me.itemUpdated(itemId);
-					});
 					copyEvt.node.state = copyEvt.original.state;
+					copyEvt.node.id = CCH.Util.Util.generateUUID();
+					me.itemUpdated(newParent);
 				}
 			} 
 		});
