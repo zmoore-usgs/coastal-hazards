@@ -194,7 +194,7 @@ public class Item implements Serializable, Cacheable {
 		this.summary = summary;
 	}
 
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	@JoinTable(name = "service_item",
 			joinColumns = {
 				@JoinColumn(name = "item_id", referencedColumnName = "id")
@@ -351,7 +351,7 @@ public class Item implements Serializable, Cacheable {
 		
 		return item;
 	}
-
+	
 	/**
 	 * Get the WMSService to display from the services
 	 *
