@@ -11,11 +11,12 @@
 				svgDocument = evt.target.ownerDocument;
 
 				svgDocument.updateErrorCode = function (code) {
-					document.getElementById('error-code').textContent = code;
+					document.getElementById('error-code').children[0].textContent = code;
 				};
 
-				svgDocument.updateErrorMessage = function (msg) {
-					document.getElementById('error-message').textContent = msg;
+				svgDocument.updateErrorMessage = function (msg1, msg2) {
+					document.getElementById('error-message').children[0].children[0].textContent = msg1;
+					document.getElementById('error-message').children[0].children[1].textContent = msg2;
 				};
 			}
 		}
@@ -2518,7 +2519,10 @@ e+jPi1ZnDNvbFlT3XIEGPqvGRyg4mODx/wDZaot5RmCtp8Cv/9k=">
 		<text transform="matrix(1 0 0 1 763.245 753.0328)" fill="#8C1017" font-family="'OpenSans-Semibold'" font-size="28.4707">USGS Coastal Change Hazards</text>
 	</g>
 	<g id="error-message">
-		<text transform="matrix(1 0 0 1 757.3 794.9955)"><tspan x="0" y="0" fill="#8C1017" font-family="'OpenSans-Semibold'" font-size="25.252">Unfortunately the page that you’re</tspan><tspan x="13.2" y="30.3" fill="#8C1017" font-family="'OpenSans-Semibold'" font-size="25.252">searching for could not be found</tspan></text>
+		<text transform="matrix(1 0 0 1 757.3 794.9955)">
+			<tspan x="0" y="0" fill="#8C1017" font-family="'OpenSans-Semibold'" font-size="25.252">Unfortunately the page that you’re</tspan>
+			<tspan x="13.2" y="30.3" fill="#8C1017" font-family="'OpenSans-Semibold'" font-size="25.252">searching for could not be found</tspan>
+		</text>
 	</g>
 </g>
 </svg>
