@@ -112,7 +112,6 @@
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS<%= development ? "" : "-min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/Map<%= development ? "" : "-min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/UI<%= development ? "" : "-min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= development ? "" : "-min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
@@ -139,6 +138,10 @@
 			<jsp:param name="version" value="<%=version%>" />
 			<jsp:param name="debug-qualifier" value="<%=development%>" />
 			<jsp:param name="original-referer" value="<%=referer%>" />
+		</jsp:include>
+		<jsp:include page="../../../../js/third-party/alertify/alertify.jsp">
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
+			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<%-- Content Here --%>
 		<div id="info-content" class="container">
@@ -182,7 +185,7 @@
                                                         
 							<%-- Application Links --%>
 							<div id="container-control-button">
-                                                                <button type="button" class="btn btn-default help-button" id="application-info-button"><i class="fa fa-question-circle action-question"></i></button>
+								<button type="button" class="btn btn-default help-button" id="application-info-button"><i class="fa fa-question-circle action-question"></i></button>
 								<button type="button" class="btn btn-default control-button" id="application-link-button">Return To Map</button>
 								<button type="button" class="btn btn-default control-button" id="add-bucket-link-button">Add to My Bucket</button>
 								<button type="button" class="btn btn-default control-button" id="print-snapshot-button">Print Snapshot</button>
