@@ -54,6 +54,8 @@ CCH.Objects.Back.UI = function (args) {
 				item: item,
 				visible: true
 			});
+			$addToBucketButton.addClass('disabled');
+			alertify.log('Item added to bucket!');
 		});
 		
 		$printSnapshotButton.on('click', function () {
@@ -158,6 +160,11 @@ CCH.Objects.Back.UI = function (args) {
 				error: [minificationCallback]
 			}
 		});
+
+		// Is this item already in the bucket? If so, disable the add to bucket button
+		if (CCH.session.getItemById(item.id)) {
+			$addToBucketButton.addClass('disabled');
+		}
 
 		return me;
 	};
