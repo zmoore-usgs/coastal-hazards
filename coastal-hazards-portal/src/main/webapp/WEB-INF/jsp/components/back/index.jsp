@@ -42,7 +42,7 @@
 	String vOpenlayers = getProp("version.openlayers");
 	String vSugarJs = getProp("version.sugarjs");
 	String referer = request.getHeader("referer");
-        String vFontAwesome = getProp("version.fontawesome");
+	String vFontAwesome = getProp("version.fontawesome");
 %>
 <!DOCTYPE html>
 <html lang="en">
