@@ -57,10 +57,6 @@ CCH.Objects.Back.UI = function (args) {
 			alertify.log('Not yet.');
 		});
 		
-		$mapServicesButton.on('click', function () {
-			alertify.log('Not yet.');
-		});
-		
 		$computeAnalysissButton.on('click', function () {
 			alertify.log('Not yet.');
 		});
@@ -117,7 +113,7 @@ CCH.Objects.Back.UI = function (args) {
 		$infoPubListSpan.append($publist);
 
 		$labelActionCenter.on('click', me.toggleControlCenterVisibility);
-                $labelActionCenter.on('click', me.toggleArrowRotation);
+		$labelActionCenter.on('click', me.toggleArrowRotation);
 
 		var minificationCallback = function (data) {
 			var url = data.tinyUrl || data.responseJSON.full_url,
