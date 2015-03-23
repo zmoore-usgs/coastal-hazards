@@ -37,7 +37,6 @@
 	String relPath = baseUrl+"/";
 	if (null != fullRefererUrl && fullRefererUrl.toLowerCase().contains("/publish/item/")) {
 		referer = fullRefererUrl.substring(fullRefererUrl.lastIndexOf("/") + 1);
-		System.out.println(referer);
 	}
 %>
 <html lang="en">
