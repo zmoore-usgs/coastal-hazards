@@ -35,9 +35,8 @@
 	String baseUrlJndiString = props.getProperty("coastal-hazards.base.url");
 	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
 	String relPath = baseUrl+"/";
-	if (fullRefererUrl.toLowerCase().contains("/publish/item/")) {
+	if (null != fullRefererUrl && fullRefererUrl.toLowerCase().contains("/publish/item/")) {
 		referer = fullRefererUrl.substring(fullRefererUrl.lastIndexOf("/") + 1);
-		System.out.println(referer);
 	}
 %>
 <html lang="en">
