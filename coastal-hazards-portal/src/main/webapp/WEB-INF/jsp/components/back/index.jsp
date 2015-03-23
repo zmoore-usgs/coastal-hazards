@@ -180,7 +180,7 @@
 								<button type="button" class="btn btn-default control-button" id="map-services-link-button" data-toggle="modal" data-target="#modal-services-view">Map Services</button>
 								<button type="button" class="btn btn-default control-button" id="metadata-link-button"  role="button" target="portal_metadata_window">Metadata</button>
 								<button type="button" class="btn btn-default control-button" id="download-link-button">Download Dataset</button>
-								<button type="button" class="btn btn-default control-button" id="analysis-link-button">Computing Hazard Analysis</button>
+								<button type="button" class="btn btn-default control-button" id="analysis-link-button">Make a Hazard Analysis</button>
 								<button type="button" class="btn btn-default control-button" data-toggle="modal" data-target="#modal-sharing-view">Share This Info</button>
 							</div>
 						</div>
