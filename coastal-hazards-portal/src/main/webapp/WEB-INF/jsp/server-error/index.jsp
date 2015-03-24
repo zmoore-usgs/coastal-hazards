@@ -50,7 +50,7 @@
 					case 404 :
 					{
 						description = 'Page Not Found At...';
-						contact.content = 'The application could not fine the path at ' + errorPath;
+						contact.content = 'The application could not find the path at ' + errorPath;
 						break;
 					}
 					case 405 :
