@@ -1,5 +1,5 @@
 <%-- Logo --%>
-<a href="<%=request.getParameter("base-url")%>/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+<a href="${param['baseUrl']}/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
     <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="${param['baseUrl']}/images/banner/cida-cmgp.svg" />
 </a>
 

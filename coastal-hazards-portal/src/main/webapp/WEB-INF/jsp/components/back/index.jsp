@@ -48,75 +48,17 @@
 <html lang="en">
 	<head>
 		<jsp:include page="<%=metaTags%>"></jsp:include>
-			<title>USGS Coastal Change Hazards Portal</title>
-			<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
-			<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
+		<title>USGS Coastal Change Hazards Portal</title>
+			
 		<link type="text/css" rel="stylesheet" media="all" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
-		<script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/<%=vOpenlayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
-		<script type="text/javascript">
-			var CCH = {
-				Objects: {},
-				CONFIG: {
-					itemId: '${it.id}',
-					contextPath: '<%=baseUrl%>',
-					development: <%=development%>,
-					map: null,
-					projection: "EPSG:3857",
-					initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
-					item: null,
-					emailLink: 'CCH_Help@usgs.gov',
-					publicUrl: '<%=publicUrl%>',
-					data: {
-						sources: {
-							'item': {
-								'endpoint': '/data/item'
-							},
-							'geocoding': {
-								'endpoint': '<%=geocodeEndpoint%>'
-							},
-							'cida-geoserver': {
-								'endpoint': '<%=geoserverEndpoint%>',
-								'proxy': '/geoserver/'
-							},
-							'stpete-arcserver': {
-								'endpoint': '<%=stPeteArcServerEndpoint%>',
-								'proxy': '/stpgis/'
-							},
-							'marine-arcserver': {
-								'endpoint': '<%=marineArcServerEndpoint%>',
-								'proxy': '/marine/'
-							},
-							'session': {
-								'endpoint': '/data/view/'
-							},
-							'external-csw': {
-								'endpoint': '<%=externalCSWEndpoint%>'
-							}
-						}
-					}
-				}
-			};
-
-			// Internet Explorer Fix
-			// http://tosbourn.com/2013/08/javascript/a-fix-for-window-location-origin-in-internet-explorer/
-			if (!window.location.origin) {
-				window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
-			}
-		</script>
-		
-		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />
-		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/legend<%= development ? "" : "-min"%>.css" />
-		<link type="text/css" rel="stylesheet" media="print" href="<%=baseUrl%>/css/back/print<%= development ? "" : "-min"%>.css" />
-                <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
-
+		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
 		<script type="text/javascript">
 			<jsp:include page="<%=ga%>" />
 		</script>
 	</head>
 	<body>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
 		<jsp:include page="<%=overlay%>">
 			<jsp:param name="application-overlay-description" value="USGS coastal change hazards research produces data, 
 					   knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
@@ -127,29 +69,24 @@
 			<jsp:param name="debug-qualifier" value="<%=development%>" />
 			<jsp:param name="original-referer" value="<%=referer%>" />
 		</jsp:include>
-		<jsp:include page="../../../../js/third-party/alertify/alertify.jsp">
-			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
-			<jsp:param name="debug-qualifier" value="<%= development%>" />
-		</jsp:include>
 		<%-- Content Here --%>
 		<div id="info-content" class="container">
 			<div id="header-row" class="row">
 				<%-- Logo --%>
-				<a href="<%=baseUrl%>/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+				<span id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
 					<img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="<%=baseUrl%>/images/banner/cida-cmgp.svg" />
-				</a>
+				</span>
 				<%-- Application Title --%>
 				<div id="app-navbar-site-title-container" class="app-navbar-item-container">
-					<a href="<%=baseUrl%>/" id="titleAnchor">
-						<div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">
-							USGS Coastal Change Hazards Portal
-						</div>
-					</a> 
-                                        <a href="<%=baseUrl%>/" id="titleAnchor">        
-                                            <div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">
-                                                Coastal Change Hazards Portal
-                                            </div>
-                                        </a>
+
+					<div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">
+						USGS Coastal Change Hazards Portal
+					</div>
+      
+					<div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">
+						Coastal Change Hazards Portal
+					</div>
+
 					<div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">&nbsp;</div>
 				</div>
 				<%-- Help Button --%>
@@ -170,7 +107,7 @@
 					<div class="row">
 						<div class='well well'>
 							<div id="label-action-center" class="hidden-md hidden-lg"><i class="fa fa-caret-down action-arrow" alt="downward facing arrow"></i> Action Center</div>
-                                                        
+
 							<%-- Application Links --%>
 							<div id="container-control-button">
 								<button type="button" class="btn btn-default help-button" id="application-info-button"><i class="fa fa-question-circle action-question"></i></button>
@@ -251,9 +188,66 @@
 				</div>
 			</div>
 		</div>
-		
+		<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/<%=vOpenlayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+		<script type="text/javascript">
+			var CCH = {
+				Objects: {},
+				CONFIG: {
+					itemId: '${it.id}',
+					contextPath: '<%=baseUrl%>',
+					development: <%=development%>,
+					map: null,
+					projection: "EPSG:3857",
+					initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
+					item: null,
+					emailLink: 'CCH_Help@usgs.gov',
+					publicUrl: '<%=publicUrl%>',
+					data: {
+						sources: {
+							'item': {
+								'endpoint': '/data/item'
+							},
+							'geocoding': {
+								'endpoint': '<%=geocodeEndpoint%>'
+							},
+							'cida-geoserver': {
+								'endpoint': '<%=geoserverEndpoint%>',
+								'proxy': '/geoserver/'
+							},
+							'stpete-arcserver': {
+								'endpoint': '<%=stPeteArcServerEndpoint%>',
+								'proxy': '/stpgis/'
+							},
+							'marine-arcserver': {
+								'endpoint': '<%=marineArcServerEndpoint%>',
+								'proxy': '/marine/'
+							},
+							'session': {
+								'endpoint': '/data/view/'
+							},
+							'external-csw': {
+								'endpoint': '<%=externalCSWEndpoint%>'
+							}
+						}
+					}
+				}
+			};
+
+			// Internet Explorer Fix
+			// http://tosbourn.com/2013/08/javascript/a-fix-for-window-location-origin-in-internet-explorer/
+			if (!window.location.origin) {
+				window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+			}
+		</script>
 		<jsp:include page="<%= log4js%>">
 			<jsp:param name="relPath" value="<%=relPath%>" /> 
+			<jsp:param name="debug-qualifier" value="<%= development%>" />
+		</jsp:include>
+		<jsp:include page="../../../../js/third-party/alertify/alertify.jsp">
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>

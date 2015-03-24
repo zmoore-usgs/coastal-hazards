@@ -70,6 +70,10 @@ html, body {
 	font-size: 2em;
 }
 
+.container >#header-row:hover {
+	cursor: pointer;
+}
+
 .container >#header-row  #app-navbar-site-title-container > #app-navbar-title-print {
 	display: none !important;
 }

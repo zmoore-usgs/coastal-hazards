@@ -18,6 +18,10 @@ $(document).ready(function () {
 	CCH.ows = new CCH.Util.OWS();
 	
 	CCH.session = new CCH.Objects.Session();
+	
+	$('#header-row').on('click', function () {
+		window.location.href = CCH.CONFIG.contextPath;
+	});
 
 	// I am loading an item with the full subtree so once that item is loaded, start loading the rest of the application
 	$(window).on('cch.item.loaded', function (evt, args) {
