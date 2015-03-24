@@ -5,9 +5,11 @@ import gov.usgs.cida.coastalhazards.rest.data.MetadataResource;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.HttpClientSingleton;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -202,9 +204,13 @@ public class MetadataUtil {
 			ZipEntry entry = null;
 			while (null != (entry = zip.getNextEntry())) {
 				String name = entry.getName();
-				if (name.endsWith(".shp.xml")) {
+				if (name.endsWith(".xml")) {
+					BufferedReader buf = new BufferedReader(new InputStreamReader(zip));
 					StringWriter writer = new StringWriter();
-					IOUtils.copy(is, writer);
+					String line = null;
+					while (null != (line = buf.readLine())) {
+						writer.write(line);
+					}
 					metadata = writer.toString();
 					zip.closeEntry();
 				} else {

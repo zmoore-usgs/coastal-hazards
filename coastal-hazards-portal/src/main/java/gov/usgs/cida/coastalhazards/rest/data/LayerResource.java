@@ -2,6 +2,9 @@ package gov.usgs.cida.coastalhazards.rest.data;
 
 import gov.usgs.cida.coastalhazards.exception.PreconditionFailedException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
+import gov.usgs.cida.coastalhazards.jpa.LayerManager;
+import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.Layer;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.util.GeoserverUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
@@ -10,10 +13,10 @@ import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +26,8 @@ import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -30,12 +35,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.io.input.TeeInputStream;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import static gov.usgs.cida.coastalhazards.rest.data.ItemResource.PUBLIC_URL;
 
 /**
  * Works with ArcGIS and Geoserver services for service like importing layers
@@ -60,36 +68,51 @@ public class LayerResource {
 		geoserverPass = props.getProperty("coastal-hazards.geoserver.password");
 	}
 
+	@GET
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getLayer(@Context HttpServletRequest req, @PathParam("id") String id) {
+		Response response = null;
+		try (LayerManager manager = new LayerManager()) {
+			Layer layer = manager.load(id);
+			if (layer == null) {
+				throw new NotFoundException();
+			}
+			response = Response.ok(GsonUtil.getDefault().toJson(layer), MediaType.APPLICATION_JSON).build();
+		}
+		return response;
+	}
+	
 	@POST
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
-	@Produces(MediaType.APPLICATION_JSON)
-	//@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@Produces(MediaType.TEXT_PLAIN)
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response createLayer(@Context HttpServletRequest req, InputStream postBody) {
 		Response response = null;
-		Map<String, String> responseMap = new HashMap<>();
 		
 		String newId = IdGenerator.generate();
 		
 		List<Service> added = null;
 		try {
-			PipedInputStream pipe = new PipedInputStream();
-			TeeInputStream tee = new TeeInputStream(postBody, new PipedOutputStream(pipe));
-			String metadataId = MetadataUtil.doCSWInsertFromString(MetadataUtil.extractMetadataFromShp(tee));
-			added = GeoserverUtil.addLayer(postBody, newId);
+			byte[] inmemory = IOUtils.toByteArray(postBody);
+			ByteArrayInputStream bais = new ByteArrayInputStream(inmemory);
+			String metadataId = MetadataUtil.doCSWInsertFromString(MetadataUtil.extractMetadataFromShp(bais));
+			bais.reset();
+			added = GeoserverUtil.addLayer(bais, newId);
 			
 			added.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
 		} catch (IOException | ParserConfigurationException | SAXException e) {
 			log.error("Problem creating services from input", e);
 		}
 		if (added != null && !added.isEmpty()) {
-			// just get the first (WFS) until we add to database TODO
-			Service service = added.get(0);
-			String endpoint = service.getEndpoint();
-			String serviceParameter = service.getServiceParameter();
-			responseMap.put("endpoint", endpoint);
-			responseMap.put("serviceParameter", serviceParameter);
-			response = Response.ok(GsonUtil.getDefault().toJson(responseMap, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+			Layer layer = new Layer();
+			layer.setId(newId);
+			layer.setServices(added);
+			try (LayerManager manager = new LayerManager()) {
+				manager.save(layer);
+			}
+			response = Response.created(layerURI(layer)).build();
 		} else {
 			response = Response.serverError().entity("Unable to create layer").build();
 		}
@@ -99,6 +122,7 @@ public class LayerResource {
 	@DELETE
 	@Path("/{layer}")
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteLaterFromGeoserver(@Context HttpServletRequest req, @PathParam("layer") String layer) throws URISyntaxException {
 		if (StringUtils.isBlank(layer)) {
 			throw new PreconditionFailedException();
@@ -111,5 +135,12 @@ public class LayerResource {
 		else {
 			throw new Error();
 		}
+	}
+	
+	public static URI layerURI(Layer layer) {
+		UriBuilder fromUri = UriBuilder.fromUri(PUBLIC_URL);
+		URI uri = fromUri.path(DataURI.DATA_SERVICE_ENDPOINT + DataURI.LAYER_PATH)
+				.path(layer.getId()).build();
+		return uri;
 	}
 }

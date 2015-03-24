@@ -2,8 +2,10 @@ package gov.usgs.cida.coastalhazards.model;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -38,8 +40,8 @@ public class Layer implements Serializable {
 		this.id = id;
 	}
 
-	@OneToMany
-	@JoinTable(name = "service_item",
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	@JoinTable(name = "service_layer",
 			joinColumns = {
 				@JoinColumn(name = "layer_id", referencedColumnName = "id")
 			},
