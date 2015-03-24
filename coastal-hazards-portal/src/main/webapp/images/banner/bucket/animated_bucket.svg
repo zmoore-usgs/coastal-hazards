@@ -5,7 +5,7 @@
      <style>
                             text{
                             font-size: 3px;
-                            cursor: default;
+                            cursor: pointer;
                             font-family: Tahoma, Geneva, sans-serif;
                             }
 		 
