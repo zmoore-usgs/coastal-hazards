@@ -3,10 +3,14 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 1921 1439" enable-background="new 0 0 1921 1439" xml:space="preserve" onload="init(evt)">
-	
+	<style>
+		.link {
+			text-decoration: underline;
+			cursor: pointer;
+		}
+	</style>
 	<script type="text/ecmascript"><![CDATA[
-		function init(evt)
-		{
+		function init(evt) {
 			if ( window.svgDocument == null ){
 				svgDocument = evt.target.ownerDocument;
 
@@ -16,8 +20,13 @@
 
 				svgDocument.updateErrorMessage = function (msg1, msg2) {
 					document.getElementById('error-message').children[0].children[0].textContent = msg1;
+					
+					if (msg2.length > 40) {
+						msg2 = msg2.substring(0,39) + "...";
+					}
 					document.getElementById('error-message').children[0].children[1].textContent = msg2;
 				};
+		
 			}
 		}
 
@@ -2513,15 +2522,17 @@ e+jPi1ZnDNvbFlT3XIEGPqvGRyg4mODx/wDZaot5RmCtp8Cv/9k=">
 	c9.6,0,17.3,7.8,17.3,17.3v406C1190.4,937,1182.6,944.7,1173,944.7z"/>
 <g>
 	<g id="error-code">
-		<text transform="matrix(1 0 0 1 846.338 707.1757)" fill="#8C1017" font-family="'OpenSans-Bold'" font-size="143.3077">404</text>
+		<text transform="matrix(1 0 0 1 846.338 630)" fill="#8C1017" font-family="'OpenSans-Bold'" font-size="143.3077"></text>
 	</g>
 	<g>
-		<text transform="matrix(1 0 0 1 763.245 753.0328)" fill="#8C1017" font-family="'OpenSans-Semibold'" font-size="28.4707">USGS Coastal Change Hazards</text>
+		<text transform="matrix(1 0 0 1 755 680)" fill="#8C1017" font-family="'OpenSans-Semibold'" font-size="34">USGS Coastal Change Hazards</text>
 	</g>
 	<g id="error-message">
-		<text transform="matrix(1 0 0 1 757.3 794.9955)">
-			<tspan x="0" y="0" fill="#8C1017" font-family="'OpenSans-Semibold'" font-size="25.252">Unfortunately the page that you’re</tspan>
-			<tspan x="13.2" y="30.3" fill="#8C1017" font-family="'OpenSans-Semibold'" font-size="25.252">searching for could not be found</tspan>
+		<text transform="matrix(1 0 0 1 757.3 750)">
+			<tspan x="0" y="0" fill="#8C1017" font-family="'OpenSans-Semibold'" font-size="30"></tspan>
+			<tspan x="0" y="35" fill="#8C1017" font-family="'OpenSans-Semibold'" font-size="25.252"></tspan>
+			<tspan id="back-to-portal-link" class="link" x="140" y="120" fill="#8C1017" font-family="'OpenSans-Semibold'" font-size="25.252">Back To Portal</tspan>
+			<tspan id="contact-link" class="link" x="160" y="160" fill="#8C1017" font-family="'OpenSans-Semibold'" font-size="25.252">Contact Us</tspan>
 		</text>
 	</g>
 </g>
