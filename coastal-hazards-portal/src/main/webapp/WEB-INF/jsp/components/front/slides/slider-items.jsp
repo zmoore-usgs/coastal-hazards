@@ -48,13 +48,13 @@
 							<img src="${param['baseUrl']}/images/cards/item-space.svg" alt="Space Aggregation Image"/>
 						</button>
 						<button class="btn btn-default item-control-button application-card-more-info-btn">
-                                                    <img src="${param['baseUrl']}/images/cards/info-01.svg" alt="More Info Image"/> More Info
+							<img src="${param['baseUrl']}/images/cards/info-01.svg" alt="More Info Image"/> More Info
 						</button>
 						<button class="btn btn-default item-control-button application-card-zoom-to-btn">
-                                                    <img src="${param['baseUrl']}/images/cards/zoom-01.svg" alt="Zoom To Image"/> Zoom To
+							<img src="${param['baseUrl']}/images/cards/zoom-01.svg" alt="Zoom To Image"/> Zoom To
 						</button>
 						<button class="btn btn-primary item-control-button item-control-button-bucket application-card-add-bucket-btn">
-                                                    <img src="${param['baseUrl']}/images/banner/bucket/bucket-no-sand.svg" alt="Bucket Image"/> Add To Bucket
+							<img src="${param['baseUrl']}/images/banner/bucket/bucket-no-sand.svg" alt="Bucket Image"/> Add To Bucket
 						</button>
 					</div>
                 </div>

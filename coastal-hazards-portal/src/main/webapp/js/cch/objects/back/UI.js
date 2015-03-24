@@ -38,7 +38,7 @@ CCH.Objects.Back.UI = function (args) {
 			item = args.item;
 
 		$infoButton.on('click', function () {
-			window.location.href = CCH.CONFIG.contextPath + '/info';
+			window.location.href = CCH.CONFIG.contextPath + '/info/';
 		});
 		
 		$applicationButton.on('click', function () {
