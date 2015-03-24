@@ -267,7 +267,7 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 					$pagingContainer = $contentContainer.find('> div:nth-child(3)');
 
 					// Hide the spinner in the product card container since we're only doing a location search
-					$productContentContainer.find('#application-slide-search-product-results-card-container img').addClass('hidden');
+					$productContentContainer.find('#splash-spinner').addClass('hidden');
 
 					// I want to show locations if we have locations to show
 					if (locationSize > 0) {
@@ -687,7 +687,8 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 			$content = $(me.locationResultTemplate({
 				title : name,
 				id: id,
-				address : address
+				address : address,
+				baseUrl : CCH.CONFIG.publicUrl
 			})),
 			$zoomToBadge = $content.find('.application-slide-search-location-card-link-zoomto'),
 			$compassIcon = $content.find('.application-slide-search-location-card-icon-compass');
