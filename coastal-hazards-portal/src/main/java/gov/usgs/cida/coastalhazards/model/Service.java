@@ -1,7 +1,12 @@
 package gov.usgs.cida.coastalhazards.model;
 
+import gov.usgs.cida.coastalhazards.util.ogc.CSWService;
+import gov.usgs.cida.coastalhazards.util.ogc.OGCService;
+import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
+import gov.usgs.cida.coastalhazards.util.ogc.WMSService;
 import gov.usgs.cida.utilities.StringPrecondition;
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -78,5 +83,30 @@ public class Service implements Serializable {
 		StringPrecondition.checkStringArgument(serviceParameter, PARAMETER_MAX_LENGTH);
 		this.serviceParameter = serviceParameter;
 	}
-
+	
+	public static OGCService ogcHelper(ServiceType type, List<Service> services) {
+		OGCService ogc = null;
+		if (services != null) {
+			for (Service service : services) {
+				if (service.getType() == type) {
+					switch (type) {
+						case csw:
+							ogc = new CSWService(service);
+							break;
+						case proxy_wms:
+						case source_wms:
+							ogc = new WMSService(service);
+							break;
+						case proxy_wfs:
+						case source_wfs:
+							ogc = new WFSService(service);
+							break;
+						default:
+							throw new IllegalArgumentException("Specified service type not valid OGC service");
+					}
+				}
+			}
+		}
+		return ogc;
+	}
 }
