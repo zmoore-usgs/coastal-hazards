@@ -318,6 +318,7 @@ CCH.Objects.Widget.Card = function (args) {
 				$buttonItem.addClass('btn');
 				$buttonItem.addClass('btn-default');
 				$buttonItem.addClass('item-control-button');
+                                $buttonItem.addClass('larger-text');
 				$buttonItem.on('click', clickHandler);
                                 downFacingArrow.on('click', clickHandler);
                                 $buttonItem.append(downFacingArrow,name );
