@@ -102,7 +102,7 @@
 }
 
 .application-card-content-row .application-card-content-container-medium {
-	font-size: 13px;
+	font-size: 16px;
 }
 
 /* More Info Link */
@@ -151,8 +151,13 @@
 	width: 15px;
 }
 
+.larger-text{
+            font-size:16px !important;
+        }
+
 .explore-contents-arrow{
-    margin-right:5px;
+    margin:-5px 5px 0 0;
+    font-size:12px !important;
 }
 
 .application-card-container .zoom-to-badge {
@@ -294,6 +299,7 @@
         .application-card-explore-row button {
             font-size: 12px;
         }
+        
         /*more padding on desktop*/
         .panel-collapse > .panel-body {
             padding:0px 8px 8px 8px
