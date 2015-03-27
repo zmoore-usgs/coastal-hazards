@@ -113,10 +113,10 @@ public class TemplateResource {
 				newItem.setItemType(Item.ItemType.data);
 				newItem.setSummary(summary);
 				newItem.setId(newId);
-				itemMan.persist(newItem);
 				newItemList.add(newItem);
 			}
 
+			itemMan.persistAll(newItemList);
 			template.setChildren(newItemList);
 			itemMan.merge(template);
 			response = Response.ok().build();
