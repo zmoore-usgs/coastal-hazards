@@ -1,5 +1,7 @@
 package gov.usgs.cida.coastalhazards.model;
 
+import gov.usgs.cida.coastalhazards.model.summary.Full;
+import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.util.ogc.CSWService;
 import gov.usgs.cida.coastalhazards.util.ogc.OGCService;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
@@ -108,5 +110,16 @@ public class Service implements Serializable {
 			}
 		}
 		return ogc;
+	}
+	
+	public static Service copyValues(final Service from, final Service to) {
+		Service service = new Service();
+		if (to != null) {
+			service.setId(to.getId());
+		}
+		service.setEndpoint(from.getEndpoint());
+		service.setServiceParameter(from.getServiceParameter());
+		service.setType(from.getType());
+		return service;
 	}
 }

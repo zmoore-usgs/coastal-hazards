@@ -133,10 +133,6 @@ public class MetadataUtil {
 	 * @throws SAXException
 	 */
 	static public String getSummaryFromWPS(String metadataEndpoint, String attr) throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-		HttpGet httpGet = new HttpGet(new URI(metadataEndpoint));
-		HttpClient httpClient = HttpClientSingleton.getInstance();
-		String response = httpClient.execute(httpGet, new BasicResponseHandler());
-		String xmlWithoutHeader = response.replaceAll(XML_PROLOG_PATTERN, "");
 		String wpsRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 				+ "<wps:Execute xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" service=\"WPS\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd\">"
 				+ "<ows:Identifier>org.n52.wps.server.r.item.summary</ows:Identifier>"
@@ -144,9 +140,9 @@ public class MetadataUtil {
 				+ "<wps:Input>"
 				+ "<ows:Identifier>input</ows:Identifier>"
 				+ "<wps:Data>"
-				+ "<wps:ComplexData mimeType=\"text/xml\">"
-				+ xmlWithoutHeader
-				+ "</wps:ComplexData>"
+				+ "<wps:LiteralData><![CDATA["
+				+ metadataEndpoint
+				+ "]]></wps:LiteralData>"
 				+ "</wps:Data>"
 				+ "</wps:Input>"
 				+ "<wps:Input>"

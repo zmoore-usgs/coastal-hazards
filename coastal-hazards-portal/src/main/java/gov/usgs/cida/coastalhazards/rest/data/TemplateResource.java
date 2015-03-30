@@ -109,7 +109,12 @@ public class TemplateResource {
 				Summary summary = gson.fromJson(summaryJson, Summary.class);
 				Item newItem = new Item();
 				newItem.setAttr(attr);
-				newItem.setServices(layer.getServices());
+				List<Service> services = layer.getServices();
+				List<Service> serviceCopies = new LinkedList<>();
+				for (Service service : services) {
+					serviceCopies.add(Service.copyValues(service, null));
+				}
+				newItem.setServices(serviceCopies);
 				newItem.setItemType(Item.ItemType.data);
 				newItem.setSummary(summary);
 				newItem.setId(newId);
