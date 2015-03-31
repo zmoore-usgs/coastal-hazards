@@ -26,7 +26,6 @@ CCH.Objects.Back.UI = function (args) {
 			$applicationButton = $('#application-link-button'),
 			$addToBucketButton = $('#add-bucket-link-button'),
 			$printSnapshotButton = $('#print-snapshot-button'),
-			$mapServicesButton = $('#map-services-link-button'),
 			$computeAnalysissButton = $('#analysis-link-button'),
 			$qrImage = $('#qr-code-img'),
 			$infoTitle = $('#info-title'),
@@ -119,6 +118,9 @@ CCH.Objects.Back.UI = function (args) {
 
 		$labelActionCenter.on('click', me.toggleControlCenterVisibility);
 		$labelActionCenter.on('click', me.toggleArrowRotation);
+		if (me.isSmall()) {
+			$labelActionCenter.click();
+		}
 
 		var minificationCallback = function (data) {
 			var url = data.tinyUrl || data.responseJSON.full_url,
@@ -172,6 +174,7 @@ CCH.Objects.Back.UI = function (args) {
 	me.windowResizeHandler = function () {
 		if (!me.isSmall()) {
 			me.toggleControlCenterVisibility(true);
+			me.rotateArrow('down');
 		}
 	};
 
@@ -195,8 +198,21 @@ CCH.Objects.Back.UI = function (args) {
 			}
 		}
 	};
-        
-	me.toggleArrowRotation = function(){
+    
+	me.rotateArrow = function (direction) {
+		if (!direction) {
+			return;
+		}
+		 var $actionArrow = $('.action-arrow');
+		if (direction === 'right') {
+			$actionArrow.addClass('action-arrow-right');
+		} else if (direction === 'down') {
+			$actionArrow.removeClass('action-arrow-right').addClass('action-arrow');
+		}
+		return $actionArrow;
+	};
+	
+	me.toggleArrowRotation = function(direction){
 	   var $actionArrow = $('.action-arrow');
 
 	   if(!$('#container-control-button').hasClass('hidden')){
@@ -204,6 +220,7 @@ CCH.Objects.Back.UI = function (args) {
 	   }else{
 		   $actionArrow.addClass('action-arrow-right');
 	   }
+	   return $actionArrow;
 	};
 
 	me.createModalServicesTab = function (args) {

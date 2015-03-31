@@ -93,9 +93,13 @@ html, body {
         }
         
 #label-action-center{
-        margin-bottom:8px;
-        font-size:1.3em;
-        }
+	margin-bottom:8px;
+	font-size:1.3em;
+}
+
+#label-action-center:hover{
+	cursor: pointer;
+}
         
 .action-arrow{
         -ms-transform: rotate(0); /* IE 9 */
