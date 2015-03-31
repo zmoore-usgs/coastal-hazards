@@ -3,7 +3,6 @@ package gov.usgs.cida.coastalhazards.rest.data;
 import gov.usgs.cida.coastalhazards.exception.PreconditionFailedException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.LayerManager;
-import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Layer;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.util.GeoserverUtil;
@@ -18,9 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -96,15 +93,18 @@ public class LayerResource {
 		List<Service> added = null;
 		try {
 			byte[] inmemory = IOUtils.toByteArray(postBody);
-			ByteArrayInputStream bais = new ByteArrayInputStream(inmemory);
-			String metadataId = MetadataUtil.doCSWInsertFromString(MetadataUtil.extractMetadataFromShp(bais));
-			bais.reset();
-			added = GeoserverUtil.addLayer(bais, newId);
-			
-			added.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
+			try (ByteArrayInputStream bais = new ByteArrayInputStream(inmemory)) {
+				String metadataId = MetadataUtil.doCSWInsertFromString(MetadataUtil.extractMetadataFromShp(bais));
+				bais.reset();
+				added = GeoserverUtil.addLayer(bais, newId);
+
+				added.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
+			} finally {
+				inmemory = null; // just in case
+			}
 		} catch (IOException | ParserConfigurationException | SAXException e) {
 			log.error("Problem creating services from input", e);
-		}
+		} 
 		if (added != null && !added.isEmpty()) {
 			Layer layer = new Layer();
 			layer.setId(newId);
