@@ -2190,7 +2190,7 @@ CCH.Objects.Publish.UI = function () {
 	});
 
 	$buttonViewAll.on(CCH.CONFIG.strings.click, function () {
-		window.location = CCH.baseUrl + 'publish/tree/';
+		window.open(CCH.baseUrl + 'publish/tree/', '_blank');
 	});
 
 	$imageGenButton.on(CCH.CONFIG.strings.click, function () {

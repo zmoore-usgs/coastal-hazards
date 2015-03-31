@@ -41,5 +41,9 @@
 	var splashAppend = function(elements) {
 		$('.splash-status-update').append(elements);
 	};
-    splashUpdate("Refreshing View...");
+	if ('null' === '<%= referer %>' || !'<%= referer %>') {
+		splashUpdate("Loading Application...");
+	} else {
+		splashUpdate("Refreshing View...");
+	}
 </script>
