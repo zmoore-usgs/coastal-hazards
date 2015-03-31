@@ -88,11 +88,11 @@ public class PublishResource {
         Map<String, String> responseContent = new HashMap<>();
         
         try {
-            String identifier = MetadataUtil.doCSWTransaction(metaToken);
+            String identifier = MetadataUtil.doCSWInsertFromUploadId(metaToken);
             if (identifier == null) {
                 throw new RuntimeException("Could not get identifier from CSW transaction response");
             }
-            String url = cswExternalEndpoint + "?service=CSW&request=GetRecordById&version=2.0.2&typeNames=fgdc:metadata&id=" + identifier +"&outputSchema=http://www.opengis.net/cat/csw/csdgm&elementSetName=full";
+            String url = MetadataUtil.getMetadataByIdUrl(identifier);
             responseContent.put("metadata", url);
             response = Response.ok(GsonUtil.getDefault().toJson(responseContent, HashMap.class)).build();
         } catch (IOException | RuntimeException | ParserConfigurationException | SAXException ex) {

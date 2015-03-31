@@ -83,7 +83,7 @@ public class SLDGenerator {
             if (null != conf) {
                 generator = new SLDGenerator(item, ribbon, conf);
             }
-        } else if (itemType == Item.ItemType.aggregation) {
+        } else if (itemType == Item.ItemType.aggregation || itemType == Item.ItemType.template) {
             SortedSet<String> aggAttributes = ItemUtil.gatherAttributes(item);
             Map<String, SLDConfig> typeLookup = generatorMap.get(itemDotType);
             // TODO enforce all attributes map to same SLD type
