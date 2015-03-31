@@ -65,12 +65,24 @@ public class ItemManager implements AutoCloseable {
 		return items;
 	}
 	
+	private synchronized String persistItem(Item item) throws CycleIntroductionException {
+		String id = null;
+		
+		if (anyCycles(item)) {
+			throw new CycleIntroductionException();
+		}
+		em.persist(item);
+		id = item.getId();
+			
+		return id;
+	}
+	
 	public synchronized String persist(Item item) throws CycleIntroductionException {
 		String id = null;
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			transaction.begin();
-			em.persist(item);
+			persistItem(item);
 			id = item.getId();
 			transaction.commit();
 		} catch (Exception ex) {
@@ -86,6 +98,29 @@ public class ItemManager implements AutoCloseable {
 		
 		fixEnabledStatus();
 		return id;
+	}
+	
+	public synchronized boolean persistAll(List<Item> items) throws CycleIntroductionException {
+		boolean worked = false;
+		EntityTransaction transaction = em.getTransaction();
+		try {
+			transaction.begin();
+			for (Item item : items) {
+				persistItem(item);
+			}
+			transaction.commit();
+			worked = true;
+		} catch (Exception ex) {
+			log.debug("Exception during save", ex);
+			if (transaction.isActive()) {
+				transaction.rollback();
+			}
+			if (ex instanceof CycleIntroductionException) {
+				throw ex;
+			}
+		}
+		fixEnabledStatus();
+		return worked;
 	}
 	
 	public synchronized boolean mergeAll(List<Item> items) throws CycleIntroductionException {

@@ -385,28 +385,7 @@ public class Item implements Serializable, Cacheable {
 	}
 
 	private OGCService fetchOgcService(ServiceType type) {
-		OGCService ogc = null;
-		if (services != null) {
-			for (Service service : services) {
-				if (service.getType() == type) {
-					switch (type) {
-						case csw:
-							ogc = new CSWService(service);
-							break;
-						case proxy_wms:
-						case source_wms:
-							ogc = new WMSService(service);
-							break;
-						case proxy_wfs:
-						case source_wfs:
-							ogc = new WFSService(service);
-							break;
-						default:
-							throw new IllegalArgumentException("Specified service type not valid OGC service");
-					}
-				}
-			}
-		}
+		OGCService ogc = Service.ogcHelper(type, services);
 		return ogc;
 	}
 }

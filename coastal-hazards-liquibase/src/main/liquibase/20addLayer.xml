@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+	<changeSet author="jiwalker" id="add_layer_table">
+		<comment>Creates layer table for keeping track of uploads, more attributes can be added</comment>
+
+		<createTable tableName="layer">
+			<column name="id" type="VARCHAR(10)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<addPrimaryKey tableName="layer" columnNames="id" constraintName="layer_id_pkey" />
+	</changeSet>
+	<changeSet id="add_layer_service_join" author="jiwalker">
+		
+		<createTable tableName="service_layer">
+			<column name="layer_id" type="VARCHAR(10)">
+				<constraints nullable="false" />
+			</column>
+			<column name="service_id" type="INT4">
+				<constraints nullable="false" />
+			</column>
+			<column name="list_index" type="INT4" />
+		</createTable>
+		<addForeignKeyConstraint baseColumnNames="layer_id" baseTableName="service_layer" constraintName="fk_service_layer_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="layer"/>
+		<addForeignKeyConstraint baseColumnNames="service_id" baseTableName="service_layer" constraintName="fk_service_layer_service_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="service"/>
+	</changeSet>
+	
+</databaseChangeLog>

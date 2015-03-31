@@ -1,0 +1,44 @@
+{
+	"version": "manual",
+	"tiny": {
+		"text": "Mean water levels (setup + surge) CAT1 hurricane"
+	},
+	"medium": {
+		"title": "Mean water levels during a category 1 hurricane",
+		"text": "These data represent the storm-induced mean water levels at the shoreline for generalized category 1 hurricane conditions. Values were computed by summing modeled storm surge (NOAA SLOSH) and parameterized wave setup."
+	},
+	"full": {
+		"title": "Mean water levels expected during a category 1 hurricane: National Assessment of Hurricane-Induced Coastal Erosion Hazards",
+		"text": "These data represent the storm-induced mean water levels at the shoreline for generalized category 1 hurricane conditions. Values were computed by summing modeled storm surge (NOAA SLOSH) and parameterized wave setup. Data for mid-Atlantic states were updated using new lidar data collected in November 2012 following Hurricane Sandy. For additional information, please see publications listed on the USGS National Assessment of Hurricane-Induced Coastal Erosion Hazards website (http://coastal.er.usgs.gov/hurricanes/erosionhazards/).",
+		"publications": {
+			"data": [],
+			"publications": [{
+					"title": "National Assessment of Hurricane-Induced Coastal Erosion Hazards: Southeast Atlantic",
+					"link": "http://pubs.usgs.gov/of/2013/1130/"
+				}, {
+					"title": "National Assessment of Hurricane-Induced Coastal Erosion Hazards: Mid-Atlantic Coast",
+					"link": "http://pubs.usgs.gov/of/2013/1131"
+				}, {
+					"title": "National Assessment of Hurricane-Induced Coastal Erosion Hazards: Gulf of Mexico",
+					"link": "http://pubs.usgs.gov/of/2012/1084/"
+				}, {
+					"title": "National Assessment of Hurricane-Induced Coastal Erosion Hazards: Northeast Atlantic Coast",
+					"link": "http://pubs.usgs.gov/of/2014/1243/"
+				}],
+			"resources": [{
+					"title": "National Assessment of Hurricane-Induced Coastal Erosion Hazards",
+					"link": "http://olga.er.usgs.gov/hurricane_erosion_hazards/"
+				}, {
+					"title": "Coastal Change Hazards: Hurricanes and Extreme Storms",
+					"link": "http://coastal.er.usgs.gov/hurricanes/erosion_hazards/"
+				}, {
+					"title": "Storm Surge Maximum of the Maximum",
+					"link": "http://www.nhc.noaa.gov/ssurge/ssurge_momOverview.shtml"
+				}, {
+					"title": "Simulating WAves Nearshore (SWAN) model",
+					"link": "http://www.swan.tudelft.nl/"
+				}]
+		}
+	},
+	"keywords": "OFR 2014-1243|Open-File Report 2014-1243|Maine|New Hampshire|Massachusetts|Rhode Island|U.S. Northeast Atlantic|surge and setup|category 1|wave setup|storm surge|U.S. Geological Survey|USGS|St. Petersburg Coastal and Marine Science Center|Coastal and Marine Geology Program|CMGP|SPCMSC|Open-File Report 2012-1084|OFR 2012-1084|Open-File Report 2013-1130|OFR 2013-1130|Open-File Report 2013-1131|OFR 2013-1131|coastal|elevation|environment|Gulf of Mexico|Texas|Louisiana|Alabama|Mississippi|Florida|U.S. Gulf Coast|Southeast|Georgia|South Carolina|North Carolina|Atlantic Ocean|United States|U.S. Mid-Atlantic|Virginia|Maryland|Delaware|New Jersey|New York|water level|setup|surge|mean water|hurricane|storm|Mean water levels during a category 1 hurricane|category 1 hurricane|mean water levels|setup and surge|category 1 storm|mean water levels category 1 storm|coastal change|coastal change forecasts|scenario-based coastal change forecasts|scenario-based coastal change|scenario-based forecasts|extreme storms|water levels|hydrodynamics|hydrodynamic|category 1 water levels"
+}
