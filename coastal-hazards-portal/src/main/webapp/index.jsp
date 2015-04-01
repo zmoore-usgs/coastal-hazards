@@ -110,6 +110,7 @@
 			<jsp:param name="id" value="${it.id}" /> 
 			<jsp:param name="idType" value="${it.type}" /> 
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
+			<jsp:param name="version" value="<%=version%>" /> 
 		</jsp:include>
 		<%-- TODO: Refactor log4javascript to take the log4js script from webjars --%>
 		<jsp:include page="js/log4javascript/log4javascript.jsp">
