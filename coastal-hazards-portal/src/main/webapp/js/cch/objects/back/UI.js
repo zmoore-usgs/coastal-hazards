@@ -171,7 +171,15 @@ CCH.Objects.Back.UI = function (args) {
 			$addToBucketButton.addClass('disabled');
 		}
 
+		$(function () {
+			$('[data-tooltip="tooltip"]').tooltip({
+				container: 'body'
+			});
+		});
+
 		return me;
+		
+		
 	};
 	
 	me.windowResizeHandler = function () {
