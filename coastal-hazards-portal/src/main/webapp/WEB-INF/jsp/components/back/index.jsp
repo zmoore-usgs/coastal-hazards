@@ -112,7 +112,7 @@
 							<div id="container-control-button">
 								<button type="button" class="btn btn-default help-button" id="application-info-button"><i class="fa fa-question-circle action-question"></i></button>
 								<button type="button" class="btn btn-default control-button" id="application-link-button">Return To Map</button>
-								<button type="button" class="btn btn-default control-button" id="add-bucket-link-button">Add to My Bucket</button>
+								<button type="button" class="btn btn-default control-button" id="add-bucket-link-button">Add to Your Bucket</button>
 								<button type="button" class="btn btn-default control-button" id="print-snapshot-button">Print Snapshot</button>
 								<button type="button" class="btn btn-default control-button" id="map-services-link-button" data-toggle="modal" data-target="#modal-services-view">Map Services</button>
 								<button type="button" class="btn btn-default control-button" id="metadata-link-button"  role="button" target="portal_metadata_window">Metadata</button>
