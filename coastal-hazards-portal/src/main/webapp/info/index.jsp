@@ -164,7 +164,7 @@
 						</tbody>
 					</table>
 					 <span class="header">
-						<a name="infoCenter">More Info Action Center Descriptions</a>
+						<a name="helpModal">More Info Action Center Descriptions</a>
 					</span>
 							<table id="application-icon-table">
 								<thead>
