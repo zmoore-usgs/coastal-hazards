@@ -5,6 +5,7 @@
 /*global OpenLayers */
 /*global twttr */
 /*global alertify */
+/*global Handlebars */
 window.CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
 CCH.Objects.Back = CCH.Objects.Back || {};
@@ -18,7 +19,7 @@ CCH.Objects.Back.UI = function (args) {
 	me.isSmall = function () {
 		return $(window).outerWidth() < me.magicResizeNumber;
 	};
-
+	
 	me.init = function (args) {
 		var $metadataButton = $('#metadata-link-button'),
 			$infoButton = $('#application-info-button'),
@@ -35,6 +36,8 @@ CCH.Objects.Back.UI = function (args) {
 			cswService,
 			$publist,
 			item = args.item;
+
+		me.serviceTemplate = null; // Lazy loaded
 
 		$infoButton.on('click', function () {
 			window.location.href = CCH.CONFIG.contextPath + '/info/';
@@ -225,103 +228,98 @@ CCH.Objects.Back.UI = function (args) {
 
 	me.createModalServicesTab = function (args) {
 		var item = args.item,
-			$container = args.container || $('#modal-services-view .modal-body'),
-			$tabUl = $container.find('> ul'),
-			$tabContentContainer = $container.find('> div'),
-			$tabLi = $('<li />'),
-			$tabLink = $('<a />').
-			attr({
-				'data-toggle': 'tab',
-				'href': '#tab-' + item.id
-			}).html(item.summary.tiny.text),
-			$tabBody = $('<div />').
-			addClass('tab-pane').
-			attr('id', 'tab-' + item.id);
-
-		if ($tabUl.length === 0) {
-			$tabUl = $('<ul />').addClass('nav nav-tabs');
-			$tabContentContainer = $('<div />').addClass('tab-content');
-			$container.append($tabUl, $tabContentContainer);
-		}
-
-		if ($tabUl.children().length === 0) {
-			$tabLi.addClass('active');
-			$tabBody.addClass('active');
-		}
-
-		$tabLi.append($tabLink);
-		$tabUl.append($tabLi);
-		$tabContentContainer.append($tabBody);
-
-		if (item.children.length !== 0) {
-			item.children.each(function (childId) {
-				var child = CCH.items.getById({id: childId});
-				me.createModalServicesTab({
-					item: child,
-					container: $tabBody
-				});
-			});
-		} else {
-			item.services.each(function (service) {
-				var endpoint = service.endpoint,
-					serviceType = service.type,
-					serviceParam = service.serviceParameter,
-					$link = $('<a />').attr({
-					'href': endpoint,
-					'target': '_services'
-				}),
-					$textBox = $('<input />').attr({
-					'type': 'text'
-				}),
-					$serviceParamSpan = $('<span />').html(' (Service Parameter: '),
-					$newRow = $('<div />').
-					addClass('row').
-					append($link);
-
-				switch (serviceType) {
-					case ('csw') :
-						{
-							$link.html('CSW :');
-							$textBox.val(endpoint);
-							$newRow.append($link, $textBox);
-							break;
-						}
-					case ('source_wms') :
-						{
-							$link.html('Source WMS :');
-							$textBox.val(endpoint);
-							$serviceParamSpan.append(serviceParam, ' )');
-							$newRow.append($link, $serviceParamSpan, $textBox);
-							break;
-						}
-					case ('source_wfs') :
-						{
-							$link.html('Source WFS :');
-							$textBox.val(endpoint);
-							$serviceParamSpan.append(serviceParam, ' )');
-							$newRow.append($link, $serviceParamSpan, $textBox);
-							break;
-						}
-					case ('proxy_wfs') :
-						{
-							$link.html('Proxy WFS :');
-							$textBox.val(endpoint);
-							$serviceParamSpan.append(serviceParam, ' )');
-							$newRow.append($link, $serviceParamSpan, $textBox);
-							break;
-						}
-					case ('proxy_wms') :
-						{
-							$link.html('Proxy WMS :');
-							$textBox.val(endpoint);
-							$serviceParamSpan.append(serviceParam, ' )');
-							$newRow.append($link, $serviceParamSpan, $textBox);
-							break;
-						}
+			$treeContainer = $('#modal-services-view-tree-container'),
+			createTreeData = function (item, data) {
+				data.id = item.id;
+				data.text = item.summary.tiny.text;
+				data.children = [];
+				data.type = item.itemType;
+				data.li_attr = {
+					'item_data' : {
+						'services' : (function (s) {
+							var svcs = [];
+							s.each(function (svc) {
+								if (svc.endpoint) {
+									svcs.push(svc);
+								}
+							});
+							return svcs;
+						})(item.services)
+					}
+				};
+				
+				if (item.children && item.children.length) {
+					// This item has children. We must go...deeper
+					for (var itemIdx = 0;itemIdx < item.children.length;itemIdx++) {
+						data.children.push(createTreeData(CCH.items.getById({id: item.children[itemIdx]}), {}));
+					}
 				}
-				$tabBody.append($newRow);
+				return data;
+			};
+			
+		Handlebars.registerHelper('list_translation', function (serviceType) {
+			var serviceString = '';
+			switch (serviceType) {
+				case ('csw') :
+					{
+						serviceString = 'CSW';
+						break;
+					}
+				case ('source_wms') :
+					{
+						serviceString = 'Source WMS';
+						break;
+					}
+				case ('source_wfs') :
+					{
+						serviceString = 'Source WFS';
+						break;
+					}
+				case ('proxy_wfs') :
+					{
+						serviceString = 'Proxy WFS';
+						break;
+					}
+				case ('proxy_wms') :
+					{
+						serviceString = 'Proxy WMS';
+						break;
+					}
+			}
+			return serviceString;
+		});
+
+		$treeContainer
+			.on('select_node.jstree', function (e, data) {
+				var services = data.node.li_attr.item_data.services;
+				if (services && services.length) {
+					$('#modal-services-view-services').html(CCH.ui.serviceTemplate({services : services}));
+				}
+			})
+			.jstree({
+				'core' : {
+					'data' : createTreeData(item, {}),
+					'check_callback' : true
+				},
+				'types': {
+					'aggregation': {
+						'icon': 'fa fa-user-plus'
+					},
+					'uber': {
+						'icon': 'fa fa-users'
+					},
+					'data': {
+						'icon': 'fa fa-user'
+					}
+				},
+				'plugins': ['types']
 			});
-		}
+				
+		$.ajax(CCH.CONFIG.contextPath + '/resource/template/handlebars/search/services_display.mustache', {
+			success : function (data) {
+				CCH.ui.serviceTemplate = Handlebars.compile(data);
+			}
+		});
 	};
 
 	$(window).on({

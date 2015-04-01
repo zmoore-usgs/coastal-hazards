@@ -41,6 +41,8 @@
 	String vBootstrap = getProp("version.bootstrap");
 	String vOpenlayers = getProp("version.openlayers");
 	String vSugarJs = getProp("version.sugarjs");
+	String vJsTree = getProp("version.jstree");
+	String vHandlebars = getProp("version.handlebars");
 	String referer = request.getHeader("referer");
 	String vFontAwesome = getProp("version.fontawesome");
 %>
@@ -53,6 +55,7 @@
 		<link type="text/css" rel="stylesheet" media="all" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
+		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/themes/default/style<%= development ? "" : ".min"%>.css" />
 		<script type="text/javascript">
 			<jsp:include page="<%=ga%>" />
 		</script>
@@ -154,8 +157,10 @@
 						<h4 id="modal-label">Available Services</h4>
 					</div>
 					<div class="modal-body">
-						<ul class="nav nav-tabs"></ul>
-						<div class="tab-content"></div>
+						<div id="modal-services-view-tree" class="row">
+							<div id="modal-services-view-tree-container"></div>
+						</div>
+						<div id="modal-services-view-services"></div>
 					</div>
 					<div class="modal-footer">
 						<a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
@@ -251,6 +256,8 @@
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/handlebars/<%=vHandlebars%>/handlebars<%= development ? "" : ".min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/jstree<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Session<%= development ? "" : "-min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>

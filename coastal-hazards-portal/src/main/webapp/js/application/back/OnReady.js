@@ -6,7 +6,6 @@
 /*global OpenLayers*/
 /*global splashUpdate*/
 $(document).ready(function () {
-
 	initializeLogging({
 		LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
 	});
