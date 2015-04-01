@@ -163,7 +163,47 @@
                             
 						</tbody>
 					</table>
-                                        <span class="header">
+					 <span class="header">
+						<a name="infoCenter">More Info Action Center Descriptions</a>
+					</span>
+							<table id="application-icon-table">
+								<thead>
+                                                <p>
+                                                    
+                                                </p>
+								<tr>
+									<th>Name</th>
+									<th>Description</th>
+								</tr>
+								</thead>
+						<tbody>
+							<tr>
+								<td>Return to Map: </td>
+								<td>Go back to the map view of the portal.</td>
+							</tr>
+							<tr>
+								<td>Add to Your Bucket: </td>
+								<td>Add this item to your bucket. Use the bucket to collect, view, and download lots of data and products, or share your bucket with friends and colleagues.</td>
+							</tr>
+							<!--tr>
+								<td>Print Snapshot: </td>
+								<td>Create a printer-friendly view of this information to print or save.</td>
+							</tr-->
+							<tr>
+								<td>Map Services: </td>
+								<td>Explore available services that can be added to your own or other web-based mapping applications.</td>
+							</tr>
+							<tr>
+								<td>Download Dataset: </td>
+								<td>Download this item to your computer.</td>
+							</tr>
+							<tr>
+								<td>Share This Info: </td>
+								<td>Get a short URL to share this information with others.</td>
+							</tr>
+						</tbody>
+					</table>		
+					<span class="header">
 						Background
 					</span>
 					<p class="descriptive-text">
