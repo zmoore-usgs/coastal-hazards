@@ -303,13 +303,10 @@ CCH.Objects.Back.UI = function (args) {
 				},
 				'types': {
 					'aggregation': {
-						'icon': 'fa fa-user-plus'
-					},
-					'uber': {
-						'icon': 'fa fa-users'
+						'icon': 'fa fa-angle-double-right'
 					},
 					'data': {
-						'icon': 'fa fa-user'
+						'icon': 'fa fa-angle-right'
 					}
 				},
 				'plugins': ['types']
