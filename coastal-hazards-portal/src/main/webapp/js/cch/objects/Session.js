@@ -7,12 +7,14 @@ CCH.Objects.Session = function (args) {
 	"use strict";
 
 	CCH.LOG.trace('Session.js::constructor: Session class is initializing.');
-
+	
 	var me = (this === window) ? {} : this;
 
 	args = args || {};
 
 	me.cookieName = args.cookieName || 'cch';
+	me.version = parseInt(CCH.CONFIG.version.remove('-SNAPSHOT').remove(/\./g));
+	me.breakCompatibilityVersion = 1120;
 
 	me.session = {
 		items: [],
@@ -236,14 +238,29 @@ CCH.Objects.Session = function (args) {
 
 	// Cookie handling
 	$.cookie.json = true;
+	
+	if ($.cookie(me.cookieName) !== undefined) {
+		// I have a cookie. I need to check if it's an old version of the cookie.
+		// An old cookie won't have a version or it will have an old version number
+		// If it is, I need to remove it and recreate the cookie below. This is 
+		// to fix a compatibility issue
+		var cookie = $.cookie(me.cookieName);
+		if (!cookie.version || cookie.version < me.breakCompatibilityVersion) {
+			$.removeCookie('cch', {'path' : '/'});
+		}
+	}
+	
 	if ($.cookie(me.cookieName) === undefined) {
 		$.cookie(me.cookieName, {
-			'items': me.session.items
+			'items': me.session.items,
+			'version' : me.version
 		},
 		{
 			path: '/'
 		});
 	}
+	
+	
 	$.cookie(me.cookieName).items.each(function (item) {
 		me.addItem({
 			item: {

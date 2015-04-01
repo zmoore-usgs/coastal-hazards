@@ -41,6 +41,7 @@
 		},
 		items : [],
 		CONFIG: {
+			version : '${param.version}',
 			item : null,
 			development: <%= development%>,
 			ajaxTimeout: 300000,
