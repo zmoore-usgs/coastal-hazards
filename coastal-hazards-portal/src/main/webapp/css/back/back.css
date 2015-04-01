@@ -132,6 +132,20 @@ html, body {
             padding-bottom:5px;
         }
 
+.tooltip {
+	font-size: 1em;
+}
+
+.tooltip-arrow {
+	color: #003366;
+}
+
+.tooltip-inner {
+	background-color: #003366;
+	font-size: 1em;
+	color: #FFFFFF;
+}
+		
 /* Summary container */
 .container > div.row:nth-child(3) > div:nth-child(2) > div > div {
 	font-size: 1em;

@@ -41,6 +41,8 @@
 	String vBootstrap = getProp("version.bootstrap");
 	String vOpenlayers = getProp("version.openlayers");
 	String vSugarJs = getProp("version.sugarjs");
+	String vJsTree = getProp("version.jstree");
+	String vHandlebars = getProp("version.handlebars");
 	String referer = request.getHeader("referer");
 	String vFontAwesome = getProp("version.fontawesome");
 %>
@@ -53,6 +55,7 @@
 		<link type="text/css" rel="stylesheet" media="all" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
+		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/themes/default/style<%= development ? "" : ".min"%>.css" />
 		<script type="text/javascript">
 			<jsp:include page="<%=ga%>" />
 		</script>
@@ -110,15 +113,15 @@
 
 							<%-- Application Links --%>
 							<div id="container-control-button">
-								<button type="button" class="btn btn-default help-button" id="application-info-button"><i class="fa fa-question-circle action-question"></i></button>
-								<button type="button" class="btn btn-default control-button" id="application-link-button">Return To Map</button>
-								<button type="button" class="btn btn-default control-button" id="add-bucket-link-button">Add to Your Bucket</button>
-								<button type="button" class="btn btn-default control-button" id="print-snapshot-button">Print Snapshot</button>
-								<button type="button" class="btn btn-default control-button" id="map-services-link-button" data-toggle="modal" data-target="#modal-services-view">Map Services</button>
-								<button type="button" class="btn btn-default control-button" id="metadata-link-button"  role="button" target="portal_metadata_window">Metadata</button>
-								<button type="button" class="btn btn-default control-button" id="download-link-button">Download Dataset</button>
-								<button type="button" class="btn btn-default control-button hidden" id="analysis-link-button">Make a Hazard Analysis</button>
-								<button type="button" class="btn btn-default control-button" data-toggle="modal" data-target="#modal-sharing-view">Share This Info</button>
+								<button type="button" class="btn btn-default help-button" id="application-info-button" data-tooltip="tooltip" data-placement="right" title="Go back to the map view of the portal"><i class="fa fa-question-circle action-question"></i></button>
+								<button type="button" class="btn btn-default control-button" id="application-link-button" data-tooltip="tooltip" data-placement="right" title="Go back to the map view of the portal">Return To Map</button>
+								<button type="button" class="btn btn-default control-button" id="add-bucket-link-button" data-tooltip="tooltip" data-placement="right" title="Add this item to your bucket. Use the bucket to collect, view, and download lots of data and products, or share your bucket with friends and colleagues">Add to Your Bucket</button>
+								<button type="button" class="btn btn-default control-button" id="print-snapshot-button" data-tooltip="tooltip" data-placement="right" title="Create a printer-friendly view of this information to print or save">Print Snapshot</button>
+								<button type="button" class="btn btn-default control-button" id="map-services-link-button" data-tooltip="tooltip" data-toggle="modal" data-target="#modal-services-view" data-placement="right" title="Explore available services that can be added to your own or other web-based mapping applications">Map Services</button>
+								<button type="button" class="btn btn-default control-button" id="metadata-link-button"  role="button" target="portal_metadata_window" data-tooltip="tooltip" data-placement="right" title="....">Metadata</button>
+								<button type="button" class="btn btn-default control-button" id="download-link-button" data-tooltip="tooltip" data-placement="right" title="Download this item to your computer">Download Dataset</button>
+								<button type="button" class="btn btn-default control-button hidden" id="analysis-link-button" data-tooltip="tooltip" data-placement="right" title="....">Make a Hazard Analysis</button>
+								<button type="button" class="btn btn-default control-button" data-toggle="modal" data-tooltip="tooltip" data-target="#modal-sharing-view" data-placement="right" title="Get a short URL to share this information with others">Share This Info</button>
 							</div>
 						</div>
 					</div>
@@ -154,8 +157,10 @@
 						<h4 id="modal-label">Available Services</h4>
 					</div>
 					<div class="modal-body">
-						<ul class="nav nav-tabs"></ul>
-						<div class="tab-content"></div>
+						<div id="modal-services-view-tree" class="row">
+							<div id="modal-services-view-tree-container"></div>
+						</div>
+						<div id="modal-services-view-services"></div>
 					</div>
 					<div class="modal-footer">
 						<a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
@@ -251,6 +256,8 @@
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/handlebars/<%=vHandlebars%>/handlebars<%= development ? "" : ".min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/jstree<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Session<%= development ? "" : "-min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
