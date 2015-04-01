@@ -29,24 +29,102 @@
 			<script type="text/javascript">
 				<jsp:include page="../components/common/google-analytics.jsp" />
 			</script>
+		<style>
+			@media (min-width: 992px) {
+				#mobile-error-container {
+					visibility : hidden;
+					display: none;
+				}
+			}
+			@media (max-width: 991px) {
+				#error-image-container {
+					visibility : hidden;
+					display: none;
+				}
+				
+				html {
+				    background: url("${param['baseUrl']}images/error/mobile_error.jpg") no-repeat 0 0 scroll;
+					background-size: 100% 100%;
+					height:100%;
+					width:100%;
+				}
+				
+				body {
+					height: 100%;
+				}
+				
+				* {
+					margin: 0;
+					padding: 0;
+				}
+				
+				main{
+					padding:15px;
+					height:100%;
+				}
+
+				section{
+					width:100%;
+					text-align:center;
+					font-family:Arial;
+					background:rgba(255,255,255,.9);
+					padding:10px 0;
+				}
+
+				section h1,
+				section h4,
+				section p{
+					margin-bottom:10px;
+				}
+
+				section h1{
+					color:#003366;
+				}
+
+
+				section button{
+					background:#f5f5f5;
+					border:1px solid rgb(150,150,150);
+					width:170px;
+					padding:10px;
+					display:block;
+					margin:15px auto;
+					border-radius:5px;
+					font-size:.9em;
+					outline:none;
+				}
+				
+				#mobile-back-btn:hover,
+				#mobile-contact-btn:hover {
+					cursor: pointer;
+				}
+			}
+		</style>
 	</head>
 
 	<body>
-		<object id="error-image-container" data='${param['baseUrl']}images/error/error.svg' type='image/svg+xml' />
+		<object id="error-image-container" data='${param['baseUrl']}images/error/error.svg' type='image/svg+xml'></object>
+		<main id="mobile-error-container">
+			<section>
+				<h1 id="mobile-error-type">Error Type</h1>
+				<h4>USGS Coastal Change Hazards Portal</h4>
+				<p id="mobile-current-addr">Bad URL goes here</p>
+				<button id="mobile-back-btn">Back to Mapper</button>
+				<button id="mobile-contact-btn">Contact Us</button>
+			</section>
+		</main>
 		<script type="text/javascript">
-			document.getElementById("error-image-container").onload = function (evt) {
-
-				var errorCode = <%=request.getAttribute("javax.servlet.error.status_code")%>;
-				var errorPath = '<%=request.getAttribute("javax.servlet.error.request_uri")%>';
-				var errorException = '<%=request.getAttribute("javax.servlet.error.exception")%>';
-				var description = '';
-				var method = '<%=request.getMethod()%>';
-				var contact = {
-					subject: 'Error ' + errorCode + ': ' + errorPath,
-					content: ''
-				};
-
-				switch (errorCode) {
+			var errorCode = <%=request.getAttribute("javax.servlet.error.status_code")%>;
+			var errorPath = '<%=request.getAttribute("javax.servlet.error.request_uri")%>';
+			var errorException = '<%=request.getAttribute("javax.servlet.error.exception")%>';
+			var description = '';
+			var method = '<%=request.getMethod()%>';
+			var contact = {
+				subject: 'Error ' + errorCode + ': ' + errorPath,
+				content: ''
+			};
+			
+			switch (errorCode) {
 					case 404 :
 					{
 						description = 'Page Not Found At...';
@@ -72,14 +150,26 @@
 					}
 				}
 
-				var emailAttributes = '';
-				emailAttributes += contact.subject ? 'Subject=' + contact.subject : '';
-				emailAttributes += contact.content ? '&Body=' + contact.content : '';
+			var emailAttributes = '';
+			emailAttributes += contact.subject ? 'Subject=' + contact.subject : '';
+			emailAttributes += contact.content ? '&Body=' + contact.content : '';
+			
+			// Mobile wireup
+			document.querySelector('#mobile-error-type').textContent = errorCode;
+			document.querySelector('#mobile-current-addr').textContent = errorPath;
+			document.querySelector('#mobile-back-btn').addEventListener('click', function () {
+				window.location.href = '<%= baseUrl%>';
+			});
+			document.querySelector('#mobile-contact-btn').addEventListener('click', function () {
+				window.location.href = 'mailto:CCH_Help@usgs.gov?' + emailAttributes;
+			});
 
+			document.getElementById("error-image-container").onload = function (evt) {
+				// SVG wireup
 				var svg = evt.target.getSVGDocument();
 				svg.updateErrorCode('<%=request.getAttribute("javax.servlet.error.status_code")%>');
 				svg.updateErrorMessage(description, errorPath);
-
+				
 				svg.getElementById('back-to-portal-link').addEventListener('click', function () {
 					window.location.href = '<%= baseUrl%>';
 				});
