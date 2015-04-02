@@ -304,36 +304,37 @@ CCH.Objects.Back.UI = function (args) {
 			return serviceString;
 		});
 
-		$treeContainer
-			.on({
-				'select_node.jstree': function (e, data) {
-					var services = data.node.li_attr.item_data.services;
-					$('#modal-services-view-services').html(CCH.ui.serviceTemplate({services : services}));
-				},
-				'loaded.jstree' : function (evt, tree) {
-					tree.instance.select_node({id : CCH.CONFIG.itemId }, false, false);
-					tree.instance.open_node({id : CCH.CONFIG.itemId }, false, false);
-				}
-			})
-			.jstree({
-				'core' : {
-					'data' : createTreeData(item, {}),
-					'check_callback' : true
-				},
-				'types': {
-					'aggregation': {
-						'icon': 'fa fa-angle-double-right'
-					},
-					'data': {
-						'icon': 'fa fa-angle-right'
-					}
-				},
-				'plugins': ['types']
-			});
-				
 		$.ajax(CCH.CONFIG.contextPath + '/resource/template/handlebars/search/services_display.mustache', {
 			success : function (data) {
 				CCH.ui.serviceTemplate = Handlebars.compile(data);
+				
+				$treeContainer
+					.on({
+						'select_node.jstree': function (e, data) {
+							var services = data.node.li_attr.item_data.services;
+							$('#modal-services-view-services').html(CCH.ui.serviceTemplate({services : services}));
+						},
+						'loaded.jstree' : function (evt, tree) {
+							tree.instance.select_node({id : CCH.CONFIG.itemId }, false, false);
+							tree.instance.open_node({id : CCH.CONFIG.itemId }, false, false);
+						}
+					})
+					.jstree({
+						'core' : {
+							'data' : createTreeData(item, {}),
+							'check_callback' : true
+						},
+						'types': {
+							'aggregation': {
+								'icon': 'fa fa-angle-double-right'
+							},
+							'data': {
+								'icon': 'fa fa-angle-right'
+							}
+						},
+						'plugins': ['types']
+					});
+				
 			}
 		});
 	};
