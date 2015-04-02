@@ -171,22 +171,31 @@ CCH.Objects.Back.UI = function (args) {
 			$addToBucketButton.addClass('disabled');
 		}
 
-		$(function () {
-			$('[data-tooltip="tooltip"]').tooltip({
-				container: 'body'
-			});
-		});
-
+		// To start, I only want tooltips when the app is in desktop mode.
+		// I handle enabling/disabling tooltips during mode switch in windowResizeHandler()
+		if (!me.isSmall()) {
+			me.enableToolTips();
+		}
+		
 		return me;
-		
-		
 	};
 	
 	me.windowResizeHandler = function () {
 		if (!me.isSmall()) {
 			me.toggleControlCenterVisibility(true);
 			me.rotateArrow('down');
+			me.enableToolTips();
+		} else {
+			me.disableToolTips();
 		}
+	};
+	
+	me.enableToolTips = function () {
+		$('[data-tooltip="tooltip"]').tooltip({ container: 'body' });
+	};
+	
+	me.disableToolTips = function () {
+		$('[data-tooltip="tooltip"]').tooltip('destroy');
 	};
 
 	me.toggleControlCenterVisibility = function (open) {
