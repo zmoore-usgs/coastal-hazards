@@ -1,6 +1,6 @@
 {{#each services}}
 	<div class="row">
 		<a href="{{endpoint}}" target="_services">{{list_translation type}}</a><br/>
-		<input type="text" readonly="readonly" value="{{endpoint}}" />
+		<input type="text" readonly="readonly" value="{{endpoint}}{{#if serviceParameter}}/{{serviceParameter}}{{/if}}" />
 	</div>
 {{/each}}
