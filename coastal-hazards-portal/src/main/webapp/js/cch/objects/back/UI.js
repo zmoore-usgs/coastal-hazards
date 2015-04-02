@@ -40,7 +40,7 @@ CCH.Objects.Back.UI = function (args) {
 		me.serviceTemplate = null; // Lazy loaded
 
 		$infoButton.on('click', function () {
-			window.location.href = CCH.CONFIG.contextPath + '/info/';
+			window.location.href = CCH.CONFIG.contextPath + '/info/#helpModal';
 		});
 		
 		$applicationButton.on('click', function () {
