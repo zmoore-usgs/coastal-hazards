@@ -256,9 +256,7 @@ CCH.Objects.Back.UI = function (args) {
 						'services' : (function (s) {
 							var svcs = [];
 							s.each(function (svc) {
-								if (svc.endpoint) {
-									svcs.push(svc);
-								}
+								svcs.push(svc);
 							});
 							return svcs;
 						})(item.services)
@@ -307,10 +305,14 @@ CCH.Objects.Back.UI = function (args) {
 		});
 
 		$treeContainer
-			.on('select_node.jstree', function (e, data) {
-				var services = data.node.li_attr.item_data.services;
-				if (services && services.length) {
+			.on({
+				'select_node.jstree': function (e, data) {
+					var services = data.node.li_attr.item_data.services;
 					$('#modal-services-view-services').html(CCH.ui.serviceTemplate({services : services}));
+				},
+				'loaded.jstree' : function (evt, tree) {
+					tree.instance.select_node({id : CCH.CONFIG.itemId }, false, false);
+					tree.instance.open_node({id : CCH.CONFIG.itemId }, false, false);
 				}
 			})
 			.jstree({
