@@ -108,6 +108,7 @@
 			<section>
 				<h1 id="mobile-error-type">Error Type</h1>
 				<h4>USGS Coastal Change Hazards Portal</h4>
+				<h3 id="mobile-error-message"></h3>
 				<p id="mobile-current-addr">Bad URL goes here</p>
 				<button id="mobile-back-btn">Back to Map</button>
 				<button id="mobile-contact-btn">Contact Us</button>
@@ -157,6 +158,7 @@
 			// Mobile wireup
 			document.querySelector('#mobile-error-type').textContent = errorCode;
 			document.querySelector('#mobile-current-addr').textContent = errorPath;
+			document.querySelector('#mobile-error-message').textContent = description;
 			document.querySelector('#mobile-back-btn').addEventListener('click', function () {
 				window.location.href = '<%= baseUrl%>';
 			});
