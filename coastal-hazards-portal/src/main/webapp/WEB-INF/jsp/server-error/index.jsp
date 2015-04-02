@@ -109,7 +109,7 @@
 				<h1 id="mobile-error-type">Error Type</h1>
 				<h4>USGS Coastal Change Hazards Portal</h4>
 				<p id="mobile-current-addr">Bad URL goes here</p>
-				<button id="mobile-back-btn">Back to Mapper</button>
+				<button id="mobile-back-btn">Back to Map</button>
 				<button id="mobile-contact-btn">Contact Us</button>
 			</section>
 		</main>
