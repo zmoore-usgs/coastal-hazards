@@ -316,6 +316,8 @@ CCH.Objects.Back.UI = function (args) {
 							$('#modal-services-view-services').html(CCH.ui.serviceTemplate({services : services}));
 							if (!data.node.state.opened) {
 								data.instance.open_node(id, null, true);
+							} else {
+								data.instance.close_node(id, null, true);
 							}
 							
 						},
