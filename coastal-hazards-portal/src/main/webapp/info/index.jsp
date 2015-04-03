@@ -194,6 +194,10 @@
 								<td>Explore available services that can be added to your own or other web-based mapping applications.</td>
 							</tr>
 							<tr>
+								<td>Metadata: </td>
+								<td>Review detailed geographic, bibliographic and other descriptive information about this item. The data are presented in the Catalog Service Web metadata format, and are Federal Geographic Data Committee geospatial standards compliant.</td>
+							</tr>	
+							<tr>
 								<td>Download Dataset: </td>
 								<td>Download this item to your computer.</td>
 							</tr>
