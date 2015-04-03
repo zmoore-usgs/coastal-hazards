@@ -21,7 +21,6 @@
 		return result;
 	}
 	boolean development = Boolean.parseBoolean(getProp("development"));
-	boolean production = Boolean.parseBoolean(getProp("production"));
 	String version = getProp("application.version");
 	String vJqueryUI = getProp("version.jqueryui");
 	String vJquery = getProp("version.jquery");
