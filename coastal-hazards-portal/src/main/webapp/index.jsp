@@ -21,6 +21,7 @@
 		return result;
 	}
 	boolean development = Boolean.parseBoolean(getProp("development"));
+	boolean production = Boolean.parseBoolean(getProp("production"));
 	String version = getProp("application.version");
 	String vJqueryUI = getProp("version.jqueryui");
 	String vJquery = getProp("version.jquery");
@@ -59,7 +60,6 @@
 		<script  type="text/javascript">
 			<jsp:include page="/WEB-INF/jsp/components/common/google-analytics.jsp" />
 		</script>
-
 	</head>
 
 	<body>
