@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+	<changeSet author="jiwalker" id="move_bbox_to_join">
+		<comment>Change bbox to use join tables rather than being a member of item</comment>
+		
+		<createTable tableName="bbox_item">
+                    <column name="item_id" type="VARCHAR(10)">
+                        <constraints nullable="false"/>
+                    </column>
+                    <column name="bbox_id" type="INT4">
+                        <constraints nullable="false"/>
+                    </column>
+		</createTable>
+		
+                <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="bbox_item" constraintName="fk_bbox_item_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item"/>
+		<addForeignKeyConstraint baseColumnNames="bbox_id" baseTableName="bbox_item" constraintName="fk_bbox_bbox_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="bbox"/>
+		
+		<sql>
+			INSERT INTO bbox_item SELECT id, bbox_id FROM item;
+		</sql>
+		
+		<dropColumn tableName="item" columnName="bbox_id" />
+		
+		<rollback>
+			<dropAllForeignKeyConstraints baseTableName="bbox_item" />
+			<sql>
+				ALTER TABLE item ADD bbox_id INT4;
+				UPDATE item SET bbox_id = bbox_item.bbox_id
+					FROM item as i INNER JOIN bbox_item 
+					ON i.id = bbox_item.item_id WHERE i.id=item.id;
+			</sql>
+			<dropTable tableName="bbox_item" />
+		</rollback>
+	</changeSet>
+        <changeSet id="add_layer_bbox" author="jiwalker">
+            <createTable tableName="bbox_layer">
+                <column name="layer_id" type="VARCHAR(10)">
+                    <constraints nullable="false" />
+                </column>
+                <column name="bbox_id" type="INT4">
+                    <constraints nullable="false"/>
+                </column>
+            </createTable>
+            <addForeignKeyConstraint baseColumnNames="layer_id" baseTableName="bbox_item" constraintName="fk_bbox_layer_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="layer"/>
+            <addForeignKeyConstraint baseColumnNames="bbox_id" baseTableName="bbox_item" constraintName="fk_bbox_bbox_layer_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="bbox"/>
+        </changeSet>
+</databaseChangeLog>
