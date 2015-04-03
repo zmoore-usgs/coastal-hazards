@@ -54,7 +54,7 @@
 				<div id="title">
 					<a id="cch-back-to-portal-button" href="<%=baseUrl%>">
 						<div id="close">
-							<p>Back to Portal</p>
+							<p>Return to Portal</p>
 						</div>
 					</a>
 				</div>
