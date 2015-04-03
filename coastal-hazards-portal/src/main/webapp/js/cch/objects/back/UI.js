@@ -235,9 +235,9 @@ CCH.Objects.Back.UI = function (args) {
 	me.toggleArrowRotation = function(direction){
 	   var $actionArrow = $('.action-arrow');
 
-	   if(!$('#container-control-button').hasClass('hidden')){
+	   if (!$('#container-control-button').hasClass('hidden')) {
 		   $actionArrow.removeClass('action-arrow-right').addClass('action-arrow');
-	   }else{
+	   } else {
 		   $actionArrow.addClass('action-arrow-right');
 	   }
 	   return $actionArrow;
@@ -312,17 +312,27 @@ CCH.Objects.Back.UI = function (args) {
 					.on({
 						'select_node.jstree': function (e, data) {
 							var services = data.node.li_attr.item_data.services;
+							var id = data.node.li_attr.id;
 							$('#modal-services-view-services').html(CCH.ui.serviceTemplate({services : services}));
+							if (!data.node.state.opened) {
+								data.instance.open_node(id, null, true);
+							} else {
+								data.instance.close_node(id, null, true);
+							}
+							
 						},
 						'loaded.jstree' : function (evt, tree) {
-							tree.instance.select_node({id : CCH.CONFIG.itemId }, false, false);
-							tree.instance.open_node({id : CCH.CONFIG.itemId }, false, false);
+							tree.instance.select_node({id : CCH.CONFIG.itemId }, true, true);
 						}
 					})
 					.jstree({
 						'core' : {
 							'data' : createTreeData(item, {}),
-							'check_callback' : true
+							'check_callback' : true,
+							'dblclick_toggle' : false,
+							'themes' : {
+								'variant' : 'large'
+							}
 						},
 						'types': {
 							'aggregation': {
