@@ -18,7 +18,7 @@
 	}
 %>
 <%
-	String baseUrlJndiString = props.getProperty("coastal-hazards.base.url");
+	String baseUrlJndiString = props.getProperty("coastal-hazards.public.url");
 	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
 %>
 <!DOCTYPE html>
@@ -43,7 +43,7 @@
 				}
 				
 				html {
-				    background: url("${param['baseUrl']}images/error/mobile_error.jpg") no-repeat 0 0 scroll;
+				    background: url("<%= baseUrl %>/images/error/mobile_error.jpg") no-repeat 0 0 scroll;
 					background-size: 100% 100%;
 					height:100%;
 					width:100%;
@@ -103,7 +103,7 @@
 	</head>
 
 	<body>
-		<object id="error-image-container" data='${param['baseUrl']}images/error/error.svg' type='image/svg+xml'></object>
+		<object id="error-image-container" data='<%= baseUrl %>/images/error/error.svg' type='image/svg+xml'></object>
 		<main id="mobile-error-container">
 			<section>
 				<h1 id="mobile-error-type">Error Type</h1>
