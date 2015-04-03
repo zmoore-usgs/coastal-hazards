@@ -59,7 +59,6 @@
 		<script  type="text/javascript">
 			<jsp:include page="/WEB-INF/jsp/components/common/google-analytics.jsp" />
 		</script>
-
 	</head>
 
 	<body>

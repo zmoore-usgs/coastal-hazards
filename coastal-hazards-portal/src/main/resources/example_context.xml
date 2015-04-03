@@ -6,6 +6,9 @@ server. This variable may either be set to false on QA and production tiers or
 not exist. The effect is the same. -->
 <Environment name="development" type="java.lang.String" value="true" />
 
+<!-- Is only true on production - used for things like not using Google Analytics on other environments-->
+<Environment name="production" type="java.lang.String" value="false"/>
+
 <Environment name="cida.auth.service.endpoint" override="true" type="java.lang.String" value="cida authentication/authorization webservices" />
 
 <!--
