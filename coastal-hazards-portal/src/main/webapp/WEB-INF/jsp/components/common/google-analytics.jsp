@@ -36,5 +36,5 @@ boolean production = Boolean.parseBoolean(getProp("production"));
 	ga('set', 'anonymizeIp', true);
 	ga('send', 'pageview');
 <% }  else { %>
-	ga = function() { console.log(arguments) };
+	ga = function() { /* no-op */ };
 <% }%>
