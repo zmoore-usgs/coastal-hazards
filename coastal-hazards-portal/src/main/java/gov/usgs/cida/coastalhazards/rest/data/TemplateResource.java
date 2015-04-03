@@ -25,11 +25,14 @@ import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
@@ -45,6 +48,13 @@ public class TemplateResource {
 	
 	private static final Logger log = LoggerFactory.getLogger(TemplateResource.class);
 	
+        @GET
+        @Path("/item/{id}")
+        @Produces(MediaType.APPLICATION_JSON)
+        public Response getTemplate(@PathParam("id") String id, @Context Request request) {
+            return new ItemResource().getItem(id, false, request);
+        }
+        
 	@POST
 	@Path("/item/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
