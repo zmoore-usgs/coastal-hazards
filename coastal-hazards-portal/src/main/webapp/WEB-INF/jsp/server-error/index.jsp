@@ -170,7 +170,7 @@
 				// SVG wireup
 				var svg = evt.target.getSVGDocument();
 				svg.updateErrorCode('<%=request.getAttribute("javax.servlet.error.status_code")%>');
-				svg.updateErrorMessage(description);
+				svg.updateErrorMessage(description, "");
 				
 				svg.getElementById('back-to-portal-link').addEventListener('click', function () {
 					window.location.href = '<%= baseUrl%>';
