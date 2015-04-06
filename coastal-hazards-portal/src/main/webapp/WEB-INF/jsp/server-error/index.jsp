@@ -117,7 +117,7 @@
 		<script type="text/javascript">
 			var errorCode = <%=request.getAttribute("javax.servlet.error.status_code")%>;
 			var errorPath = '<%=request.getAttribute("javax.servlet.error.request_uri")%>';
-			var errorException = '<%=request.getAttribute("javax.servlet.error.exception")%>';
+			var errorException = '<%= request.getAttribute("javax.servlet.error.exception").toString().replaceAll("\n", " ").replaceAll("'", "").replaceAll("\r", " ") %>';
 			var description = '';
 			var method = '<%=request.getMethod()%>';
 			var contact = {
@@ -141,19 +141,19 @@
 					case 500 :
 					{
 						description = 'A Server Error Occurred';
-						contact.content = 'An error occured while I attempted to access the application.\n\nError Provided By Server: ' + errorException;
+						contact.content = 'An error occured while I attempted to access the application.\n\n Error Provided By Server: ' + errorException;
 						break;
 					}
 					default : {
 						description = 'An Error Has Occurred';
-						contact.content = 'An error occured while I attempted to access the application.\n\nError Provided By Server: ' + errorException;
+						contact.content = 'An error occured while I attempted to access the application.\n\n Error Provided By Server: ' + errorException;
 						break;
 					}
 				}
 
 			var emailAttributes = '';
-			emailAttributes += contact.subject ? 'Subject=' + contact.subject : '';
-			emailAttributes += contact.content ? '&Body=' + contact.content : '';
+			emailAttributes += contact.subject ? 'Subject=' + escape(contact.subject) : '';
+			emailAttributes += contact.content ? '&Body=' + escape(contact.content) : '';
 			
 			// Mobile wireup
 			document.querySelector('#mobile-error-type').textContent = errorCode;
