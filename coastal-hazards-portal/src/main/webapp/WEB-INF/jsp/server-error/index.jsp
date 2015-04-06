@@ -128,7 +128,7 @@
 			switch (errorCode) {
 					case 404 :
 					{
-						description = 'Page Not Found At URL...';
+						description = 'Page Not Found At...';
 						contact.content = 'The application could not find the path at ' + errorPath;
 						break;
 					}
