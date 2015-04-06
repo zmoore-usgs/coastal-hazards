@@ -12,7 +12,7 @@ CCH.Objects.Item = function (args) {
 
 	var me = this === window ? {} : this;
 
-	me.UNITED_STATES_BBOX = [24.956, -124.731, 49.372, -66.97];
+	me.UNITED_STATES_BBOX = [-124.731,24.956,  -66.97, 49.372 ];
 	me.id = args.id;
 	me.parent = args.parent || null;
 	me.loaded = args.loaded || false;
