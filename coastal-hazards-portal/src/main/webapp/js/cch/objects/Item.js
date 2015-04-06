@@ -164,7 +164,7 @@ CCH.Objects.Item = function (args) {
 			bbox = me.bbox,
 			itemType = me.itemType,
 			sldId = id,
-			aggregationId = args.aggregationName,
+//			aggregationId = args.aggregationName,
 			layer = null;
 
 		if (itemType !== 'aggregation') {
