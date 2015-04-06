@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.hibernate.annotations.IndexColumn;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ public class Layer implements Serializable {
 
 	private String id;
 	private List<Service> services;
+        private Bbox bbox;
 
 	@Id
 	@Column(name = "id")
@@ -57,5 +59,13 @@ public class Layer implements Serializable {
 		this.services = services;
 	}
 	
-	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(columnDefinition = "bbox_id")
+	public Bbox getBbox() {
+		return bbox;
+	}
+
+	public void setBbox(Bbox bbox) {
+		this.bbox = bbox;
+	}
 }
