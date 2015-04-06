@@ -117,7 +117,7 @@
 		<script type="text/javascript">
 			var errorCode = <%=request.getAttribute("javax.servlet.error.status_code")%>;
 			var errorPath = '<%=request.getAttribute("javax.servlet.error.request_uri")%>';
-			var errorException = '<%=request.getAttribute("javax.servlet.error.exception")%>';
+			var errorException = '<%=request.getAttribute("javax.servlet.error.message")%>';
 			var description = '';
 			var method = '<%=request.getMethod()%>';
 			var contact = {
