@@ -5,6 +5,7 @@
 /*global initializeLogging*/
 /*global CCH*/
 /*global LOG*/
+/*global err*/
 $(document).ready(function () {
 	"use strict";
 	try {
