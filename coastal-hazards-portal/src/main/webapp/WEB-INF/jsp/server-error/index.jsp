@@ -117,7 +117,7 @@
 		<script type="text/javascript">
 			var errorCode = <%=request.getAttribute("javax.servlet.error.status_code")%>;
 			var errorPath = '<%=request.getAttribute("javax.servlet.error.request_uri")%>';
-			var errorException = '<%=request.getAttribute("javax.servlet.error.exception")%>';
+			var errorException = '<%=request.getAttribute("javax.servlet.error.message")%>';
 			var description = '';
 			var method = '<%=request.getMethod()%>';
 			var contact = {
@@ -128,7 +128,7 @@
 			switch (errorCode) {
 					case 404 :
 					{
-						description = 'Page Not Found At...';
+						description = 'Page Not Found At URL...';
 						contact.content = 'The application could not find the path at ' + errorPath;
 						break;
 					}
