@@ -45,16 +45,16 @@ import org.xml.sax.SAXException;
  */
 @Path(DataURI.TEMPLATE_PATH)
 public class TemplateResource {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(TemplateResource.class);
-	
-        @GET
-        @Path("/item/{id}")
-        @Produces(MediaType.APPLICATION_JSON)
-        public Response getTemplate(@PathParam("id") String id, @Context Request request) {
-            return new ItemResource().getItem(id, false, request);
-        }
-        
+
+	@GET
+	@Path("/item/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getTemplate(@PathParam("id") String id, @Context Request request) {
+		return new ItemResource().getItem(id, false, request);
+	}
+
 	@POST
 	@Path("/item/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -68,7 +68,7 @@ public class TemplateResource {
 			}
 
 			List<String> childItems = template.proxiedChildren();
-			
+
 			JsonParser parser = new JsonParser();
 			JsonObject parsed = parser.parse(content).getAsJsonObject();
 			// TODO only supporting one level for now, bring in aggs later
@@ -79,12 +79,12 @@ public class TemplateResource {
 				String newId = IdGenerator.generate();
 				String attr = "";
 				Layer layer = null;
-				
+
 				JsonObject child = iterator.next().getAsJsonObject();
 				JsonElement childId = child.get("id");
 				JsonElement attrElement = child.get("attr");
 				JsonElement layerId = child.get("layerId");
-			
+
 				// Generate item JSON from metadata
 				if (layerId != null) {
 					layer = layerMan.load(layerId.getAsString());
@@ -138,5 +138,5 @@ public class TemplateResource {
 		}
 		return response;
 	}
-	
+
 }

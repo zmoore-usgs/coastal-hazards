@@ -29,8 +29,8 @@ public class Layer implements Serializable {
 	private static final long serialVersionUID = 1377960586550331014L;
 
 	private String id;
+	private Bbox bbox;
 	private List<Service> services;
-        private Bbox bbox;
 
 	@Id
 	@Column(name = "id")
@@ -68,4 +68,6 @@ public class Layer implements Serializable {
 	public void setBbox(Bbox bbox) {
 		this.bbox = bbox;
 	}
+	
+	
 }
