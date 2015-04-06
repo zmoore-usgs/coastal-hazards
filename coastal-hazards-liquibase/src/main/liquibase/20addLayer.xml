@@ -24,5 +24,9 @@
 		<addForeignKeyConstraint baseColumnNames="layer_id" baseTableName="service_layer" constraintName="fk_service_layer_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="layer"/>
 		<addForeignKeyConstraint baseColumnNames="service_id" baseTableName="service_layer" constraintName="fk_service_layer_service_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="service"/>
 	</changeSet>
-	
+        <changeSet id="jiwalker" author="add_bbox_to_layer">
+            <addColumn tableName="layer">
+                <column name="bbox_id" type="INT4"/>
+            </addColumn>
+        </changeSet>
 </databaseChangeLog>
