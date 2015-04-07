@@ -20,6 +20,11 @@
 <%
 	String baseUrlJndiString = props.getProperty("coastal-hazards.public.url");
 	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
+        Object errorMessageObject = request.getAttribute("javax.servlet.error.exception");
+        String errorMessage = "";
+        if (null != errorMessageObject) {
+            errorMessage = errorMessageObject.toString().replaceAll("\n", " ").replaceAll("'", "").replaceAll("\r", " ");
+        }
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -117,7 +122,7 @@
 		<script type="text/javascript">
 			var errorCode = <%=request.getAttribute("javax.servlet.error.status_code")%>;
 			var errorPath = '<%=request.getAttribute("javax.servlet.error.request_uri")%>';
-			var errorException = '<%= request.getAttribute("javax.servlet.error.exception").toString().replaceAll("\n", " ").replaceAll("'", "").replaceAll("\r", " ") %>';
+			var errorException = '<%= errorMessage %>';
 			var description = '';
 			var method = '<%=request.getMethod()%>';
 			var contact = {
