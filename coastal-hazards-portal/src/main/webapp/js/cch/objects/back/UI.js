@@ -51,15 +51,6 @@ CCH.Objects.Back.UI = function (args) {
 			window.location.href = CCH.CONFIG.contextPath + '/data/download/item/' + CCH.CONFIG.itemId;
 		});
 		
-		$addToBucketButton.on('click', function () {
-			CCH.session.addItem({
-				item: item,
-				visible: true
-			});
-			$addToBucketButton.addClass('disabled');
-			alertify.log('Item added to bucket!');
-		});
-		
 		$printSnapshotButton.on('click', function () {
 			alertify.log('Not yet.');
 		});
@@ -165,11 +156,6 @@ CCH.Objects.Back.UI = function (args) {
 				error: [minificationCallback]
 			}
 		});
-
-		// Is this item already in the bucket? If so, disable the add to bucket button
-		if (CCH.session.getItemById(item.id)) {
-			$addToBucketButton.addClass('disabled');
-		}
 
 		// To start, I only want tooltips when the app is in desktop mode.
 		// I handle enabling/disabling tooltips during mode switch in windowResizeHandler()

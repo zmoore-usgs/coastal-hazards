@@ -239,9 +239,6 @@ CCH.Objects.Session = function (args) {
 	if ($.cookie(me.cookieName) === undefined) {
 		$.cookie(me.cookieName, {
 			'items': me.session.items
-		},
-		{
-			path: '/'
 		});
 	}
 	$.cookie(me.cookieName).items.each(function (item) {
