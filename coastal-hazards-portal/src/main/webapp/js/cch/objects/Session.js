@@ -7,14 +7,12 @@ CCH.Objects.Session = function (args) {
 	"use strict";
 
 	CCH.LOG.trace('Session.js::constructor: Session class is initializing.');
-	
+
 	var me = (this === window) ? {} : this;
 
 	args = args || {};
 
 	me.cookieName = args.cookieName || 'cch';
-	me.version = parseInt(CCH.CONFIG.version.remove('-SNAPSHOT').remove(/\./g));
-	me.breakCompatibilityVersion = 1120;
 
 	me.session = {
 		items: [],
@@ -61,7 +59,7 @@ CCH.Objects.Session = function (args) {
 			cookie.items = me.session.items;
 			cookie.center = me.session.center;
 			cookie.scale = me.session.scale;
-			$.cookie(me.cookieName, cookie, { 'path' : '' });
+			$.cookie(me.cookieName, cookie);
 		}
 	};
 
@@ -153,7 +151,7 @@ CCH.Objects.Session = function (args) {
 				cookie = $.cookie(me.cookieName);
 				cookie.bbox = me.session.bbox;
 				cookie.items = me.session.items;
-				$.cookie(me.cookieName, cookie, { 'path' : '' });
+				$.cookie(me.cookieName, cookie);
 
 				$(window).trigger('cch.data.session.loaded.true');
 			} else {
@@ -207,7 +205,7 @@ CCH.Objects.Session = function (args) {
 
 		cookie = $.cookie(me.cookieName);
 		cookie.items = me.session.items;
-		$.cookie(me.cookieName, cookie, { 'path' : '' });
+		$.cookie(me.cookieName, cookie);
 
 		return me.session;
 	};
@@ -224,7 +222,7 @@ CCH.Objects.Session = function (args) {
 
 		cookie = $.cookie(me.cookieName);
 		cookie.items = me.session.items;
-		$.cookie(me.cookieName, cookie, { 'path' : '' });
+		$.cookie(me.cookieName, cookie);
 		return me.session;
 	};
 
@@ -238,32 +236,14 @@ CCH.Objects.Session = function (args) {
 
 	// Cookie handling
 	$.cookie.json = true;
-	
-	// House cleaning
-	$.removeCookie(me.cookieName, {'path' : '/'});
-	
-	if ($.cookie(me.cookieName) !== undefined) {
-		// I have a cookie. I need to check if it's an old version of the cookie.
-		// An old cookie won't have a version or it will have an old version number
-		// If it is, I need to remove it and recreate the cookie below. This is 
-		// to fix a compatibility issue
-		var cookie = $.cookie(me.cookieName);
-		if (!cookie.version || cookie.version < me.breakCompatibilityVersion) {
-			$.removeCookie(me.cookieName, {'path' : ''});
-		}
-	}
-	
 	if ($.cookie(me.cookieName) === undefined) {
 		$.cookie(me.cookieName, {
-			'items': me.session.items,
-			'version' : me.version
+			'items': me.session.items
 		},
 		{
-			path: ''
+			path: '/'
 		});
 	}
-	
-	
 	$.cookie(me.cookieName).items.each(function (item) {
 		me.addItem({
 			item: {
