@@ -2529,10 +2529,10 @@ e+jPi1ZnDNvbFlT3XIEGPqvGRyg4mODx/wDZaot5RmCtp8Cv/9k=">
 	</g>
 	<g id="error-message">
 		<text transform="matrix(1 0 0 1 757.3 750)">
-			<tspan x="0" y="0" fill="#8C1017" font-family="'Arial" font-size="30"></tspan>
+			<tspan x="220" y="0" text-anchor="middle" fill="#8C1017" font-family="'Arial" font-size="30"></tspan>
 			<tspan x="0" y="35" fill="#8C1017" font-family="Arial" font-size="1.35em"></tspan>
-			<tspan id="back-to-portal-link" class="link" x="140" y="120" fill="#8C1017" font-family="Arial, Sans-Serif" font-size="25.252">Back To Portal</tspan>
-			<tspan id="contact-link" class="link" x="160" y="160" fill="#8C1017" font-family="Arial, Sans-Serif" font-size="25.252">Contact Us</tspan>
+			<tspan id="back-to-portal-link" class="link" x="130" y="70" fill="#8C1017" font-family="Arial, Sans-Serif" font-size="25.252">Back To Portal</tspan>
+			<tspan id="contact-link" class="link" x="150" y="120" fill="#8C1017" font-family="Arial, Sans-Serif" font-size="25.252">Contact Us</tspan>
 		</text>
 	</g>
 </g>
