@@ -3,6 +3,7 @@
 /*global alertify*/
 window.CCH = CCH || {};
 CCH.Auth = {
+	authTokenLabel : 'CoastalHazardsAuthCookie',
 	checkAuthStatus: function () {
 		"use strict";
 		$.ajax({
@@ -55,13 +56,13 @@ CCH.Auth = {
 	setAuthToken: function (tokenId) {
 		"use strict";
 		if (!tokenId) {
-			$.removeCookie('CoastalHazardsAuthCookie');
+			$.removeCookie(this.authTokenLabel);
 		}
-		$.cookie("CoastalHazardsAuthCookie", tokenId);
+		$.cookie(this.authTokenLabel, tokenId, { expires : 1 });
 	},
 	getAuthToken: function () {
 		"use strict";
-		var token = $.cookie("CoastalHazardsAuthCookie");
+		var token = $.cookie(this.authTokenLabel);
 		return token;
 	}
 };
