@@ -52,7 +52,7 @@ CCH.CONFIG.loadUberItem = function (args) {
 					// Unbind this one-time function
 					$(window).off('cch.ui.resized', resizeHandler);
 					// Is the user coming in from another part of the application?
-					if (CCH.session.isReturning() === true && CCH.session.getCookie().center && !overridePreviousBounds) {
+					if (CCH.session.isReturning() === true && CCH.session.getSession().center && !overridePreviousBounds) {
 						// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
 						CCH.map.updateFromCookie();
 					} else if (zoomToBbox) {
@@ -90,7 +90,7 @@ CCH.CONFIG.onAppInitialize = function () {
 	//Begins the item loading process based on how the user is entering the application
 	var type = (CCH.CONFIG.params.type + String()).toLowerCase(),
 		id = CCH.CONFIG.params.id,
-		cookieItems = CCH.session.getItems();
+		sessionItems = CCH.session.getSession().items;
 
 	splashUpdate('Loading Application...');
 
@@ -220,7 +220,7 @@ CCH.CONFIG.onAppInitialize = function () {
 				}
 			});
 
-			CCH.ui.addItemsToBucketOnLoad(cookieItems);
+			CCH.ui.addItemsToBucketOnLoad(sessionItems);
 
 			CCH.CONFIG.loadUberItem({
 				subtree: true,
@@ -237,7 +237,7 @@ CCH.CONFIG.onAppInitialize = function () {
 	} else {
 		// The user is initially loading the application. I do not have any items or views
 		// to load, nor do I have any session to load, so just start with the top level item
-		CCH.ui.addItemsToBucketOnLoad(cookieItems);
+		CCH.ui.addItemsToBucketOnLoad(sessionItems);
 
 		CCH.CONFIG.loadUberItem({
 			subtree: true,
