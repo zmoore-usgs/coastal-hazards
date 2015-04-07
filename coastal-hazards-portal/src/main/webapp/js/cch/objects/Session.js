@@ -61,7 +61,7 @@ CCH.Objects.Session = function (args) {
 			cookie.items = me.session.items;
 			cookie.center = me.session.center;
 			cookie.scale = me.session.scale;
-			$.cookie(me.cookieName, cookie, { 'path' : '/' });
+			$.cookie(me.cookieName, cookie, { 'path' : '' });
 		}
 	};
 
@@ -153,7 +153,7 @@ CCH.Objects.Session = function (args) {
 				cookie = $.cookie(me.cookieName);
 				cookie.bbox = me.session.bbox;
 				cookie.items = me.session.items;
-				$.cookie(me.cookieName, cookie, { 'path' : '/' });
+				$.cookie(me.cookieName, cookie, { 'path' : '' });
 
 				$(window).trigger('cch.data.session.loaded.true');
 			} else {
@@ -207,7 +207,7 @@ CCH.Objects.Session = function (args) {
 
 		cookie = $.cookie(me.cookieName);
 		cookie.items = me.session.items;
-		$.cookie(me.cookieName, cookie, { 'path' : '/' });
+		$.cookie(me.cookieName, cookie, { 'path' : '' });
 
 		return me.session;
 	};
@@ -224,7 +224,7 @@ CCH.Objects.Session = function (args) {
 
 		cookie = $.cookie(me.cookieName);
 		cookie.items = me.session.items;
-		$.cookie(me.cookieName, cookie, { 'path' : '/' });
+		$.cookie(me.cookieName, cookie, { 'path' : '' });
 		return me.session;
 	};
 
@@ -239,6 +239,9 @@ CCH.Objects.Session = function (args) {
 	// Cookie handling
 	$.cookie.json = true;
 	
+	// House cleaning
+	$.removeCookie(me.cookieName, {'path' : '/'});
+	
 	if ($.cookie(me.cookieName) !== undefined) {
 		// I have a cookie. I need to check if it's an old version of the cookie.
 		// An old cookie won't have a version or it will have an old version number
@@ -246,7 +249,7 @@ CCH.Objects.Session = function (args) {
 		// to fix a compatibility issue
 		var cookie = $.cookie(me.cookieName);
 		if (!cookie.version || cookie.version < me.breakCompatibilityVersion) {
-			$.removeCookie('cch', {'path' : '/'});
+			$.removeCookie(me.cookieName, {'path' : ''});
 		}
 	}
 	
@@ -256,7 +259,7 @@ CCH.Objects.Session = function (args) {
 			'version' : me.version
 		},
 		{
-			path: '/'
+			path: ''
 		});
 	}
 	
