@@ -113,6 +113,7 @@
 
 							<%-- Application Links --%>
 							<div id="container-control-button">
+                                                                <h4 id="action-center-title">Action Center</h4>
 								<button type="button" class="btn btn-default help-button" id="application-info-button" data-tooltip="tooltip" data-placement="right" title="Action Center Descriptions"><i class="fa fa-question-circle action-question"></i></button>
 								<button type="button" class="btn btn-default control-button" id="application-link-button" data-tooltip="tooltip" data-placement="right" title="Go back to the map view of the portal">Return To Map</button>
 								<button type="button" class="btn btn-default control-button" id="add-bucket-link-button" data-tooltip="tooltip" data-placement="right" title="Add this item to your bucket. Use the bucket to collect, view, and download lots of data and products, or share your bucket with friends and colleagues">Add to Your Bucket</button>
