@@ -242,6 +242,7 @@ CCH.Objects.Front.Map = function (args) {
 			var map = me.map,
 				session = CCH.session.getSession(),
 				center = map.getCenter().transform(CCH.map.getMap().displayProjection, CCH.CONFIG.map.modelProjection);
+		
 			session.baselayer = map.baseLayer.name;
 			session.center = [
 				center.lon,
@@ -257,10 +258,10 @@ CCH.Objects.Front.Map = function (args) {
 		 */
 		updateFromCookie: function () {
 			CCH.LOG.info('Map.js::updateFromSession():Map being recreated from cookie');
-			var cookie = CCH.session.getCookie(),
-				center = new OpenLayers.LonLat(cookie.center[0], cookie.center[1]).
+			var session = CCH.session.getSession(),
+				center = new OpenLayers.LonLat(session.center[0], session.center[1]).
 				transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection),
-				scale = cookie.scale;
+				scale = session.scale;
 
 			// Becaue we don't want these events to write back to the session, 
 			// unhook the event handlers for map events tied to session writing.
