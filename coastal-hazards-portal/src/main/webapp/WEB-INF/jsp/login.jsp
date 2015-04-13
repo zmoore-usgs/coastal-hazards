@@ -32,9 +32,8 @@
 
 %>
 <% 
-	String baseUrlJndiString = props.getProperty("coastal-hazards.base.url");
+	String baseUrlJndiString = props.getProperty("coastal-hazards.base.secure.url");
 	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
-	baseUrl = baseUrl.replace("http://", "https://").replace(":8080", ":8443");
 	String relPath = baseUrl+"/";
 %>
 <html lang="en"> 
