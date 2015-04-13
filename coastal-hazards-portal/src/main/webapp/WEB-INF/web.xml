@@ -142,6 +142,10 @@
 			<url-pattern>/publish/*</url-pattern>
 		</web-resource-collection>
 		<web-resource-collection>
+			<web-resource-name>Secure the publishing endpoint</web-resource-name>
+			<url-pattern>/security/*</url-pattern>
+		</web-resource-collection>
+		<web-resource-collection>
 			<web-resource-name>Secure the data endpoint for everything but GET</web-resource-name>
 			<url-pattern>/data/*</url-pattern>
 			<http-method>DELETE</http-method>
