@@ -33,6 +33,12 @@
 %>
 <%
 	String baseUrlJndiString = props.getProperty("coastal-hazards.base.url");
+	String secureBaseUrlJndiString = props.getProperty("coastal-hazards.base.secure.url");
+	String requestUrl = request.getRequestURL().toString();
+	if (requestUrl.toLowerCase().contains("https")) {
+		baseUrlJndiString = secureBaseUrlJndiString;
+	}
+	
 	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
 	String relPath = baseUrl + "/";
 	String referer = request.getHeader("referer");
@@ -55,7 +61,6 @@
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/front/custom<%= development ? "" : "-min"%>.css" />
 
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
-
 		<script  type="text/javascript">
 			<jsp:include page="/WEB-INF/jsp/components/common/google-analytics.jsp" />
 		</script>
