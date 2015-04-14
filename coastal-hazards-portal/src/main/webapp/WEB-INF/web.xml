@@ -150,7 +150,6 @@
 			<url-pattern>/data/*</url-pattern>
 			<http-method>DELETE</http-method>
 			<http-method>PUT</http-method>
-			<http-method>POST</http-method>
 		</web-resource-collection>
 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
