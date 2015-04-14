@@ -23,6 +23,12 @@
 <%
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 	String baseUrl = props.getProperty("coastal-hazards.base.url");
+	String secureBaseUrlJndiString = props.getProperty("coastal-hazards.base.secure.url");
+	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
+	String requestUrl = request.getRequestURL().toString();
+	if (requestUrl.toLowerCase().contains("https")) {
+		baseUrl = secureBaseUrlJndiString;
+	}
 	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
 	String relPath = baseUrl + "/";
 	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
@@ -117,7 +123,7 @@
 								<button type="button" class="btn btn-default help-button" id="application-info-button" data-tooltip="tooltip" data-placement="right" title="Action Center Descriptions"><i class="fa fa-question-circle action-question"></i></button>
 								<button type="button" class="btn btn-default control-button" id="application-link-button" data-tooltip="tooltip" data-placement="right" title="Go back to the map view of the portal">Return To Map</button>
 								<button type="button" class="btn btn-default control-button" id="add-bucket-link-button" data-tooltip="tooltip" data-placement="right" title="Add this item to your bucket. Use the bucket to collect, view, and download lots of data and products, or share your bucket with friends and colleagues">Add to Your Bucket</button>
-								<button type="button" class="btn btn-default control-button" id="print-snapshot-button" data-tooltip="tooltip" data-placement="right" title="Create a printer-friendly view of this information to print or save">Print Snapshot</button>
+								<button type="button" class="btn btn-default control-button hidden" id="print-snapshot-button" data-tooltip="tooltip" data-placement="right" title="Create a printer-friendly view of this information to print or save">Print Snapshot</button>
 								<button type="button" class="btn btn-default control-button" id="map-services-link-button" data-tooltip="tooltip" data-toggle="modal" data-target="#modal-services-view" data-placement="right" title="Explore available services that can be added to your own or other web-based mapping applications">Map Services</button>
 								<button type="button" class="btn btn-default control-button" id="metadata-link-button"  role="button" target="portal_metadata_window" data-tooltip="tooltip" data-placement="right" title="Review detailed geographic, bibliographic and other descriptive information about this item.">Metadata</button>
 								<button type="button" class="btn btn-default control-button" id="download-link-button" data-tooltip="tooltip" data-placement="right" title="Download this item to your computer">Download Dataset</button>
