@@ -32,7 +32,7 @@
 <%
 	String fullRefererUrl = request.getHeader("referer");
 	String referer = "";
-	String baseUrlJndiString = props.getProperty("coastal-hazards.base..secure.url");
+	String baseUrlJndiString = props.getProperty("coastal-hazards.base.secure.url");
 	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
 	String relPath = baseUrl+"/";
 	if (null != fullRefererUrl && fullRefererUrl.toLowerCase().contains("/publish/item/")) {
