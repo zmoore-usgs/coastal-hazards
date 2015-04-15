@@ -1,7 +1,7 @@
 <div id="application-slide-search-container" class="application-slide-container">
     <div id="application-slide-search-content" class="application-slide-content">
         <div id="application-slide-search-controlset" class="application-slide-controlset">
-            <div class="pull-left"><i class="fa fa-minus-square-o" alt="minus inside a square"></i></div>
+            <div class="pull-left"><i class="fa fa-times" alt="minus inside a square"></i></div>
         </div>
         <div id="application-slide-search-content-container" class="application-slide-content-container row">
             <%-- Location Container --%>
