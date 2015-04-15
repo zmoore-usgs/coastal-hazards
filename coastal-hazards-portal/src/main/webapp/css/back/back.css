@@ -19,6 +19,8 @@ html, body {
 	color: #777;
 }
 
+.fa-times{color:#003366;}
+
 /* Container holding the main view */
 .container {
 	width: 100%;
