@@ -1261,7 +1261,6 @@ CCH.Objects.Publish.UI = function () {
 							processChildren = function () {
 								setTimeout(function () {
 									me.buildKeywordsFromChildren();
-									me.buildPublicationsFromChildren();
 									me.updateBoundingBox();
 								}, 100);
 							};
@@ -1328,22 +1327,6 @@ CCH.Objects.Publish.UI = function () {
 				return k.toLowerCase().trim();
 			}).each(function (keyword) {
 				me.addKeywordGroup(keyword);
-			});
-		});
-	};
-
-	me.buildPublicationsFromChildren = function () {
-		$('.form-publish-info-item-children-sortable-li button:first-child().active').each(function (i, o) {
-			var itemId = $(o).parent().parent().parent().attr('id').substring(11),
-					item = CCH.items.find(function (i) {
-						return i.id === itemId;
-					}),
-					publications = item.summary.full.publications;
-
-			['data', 'publications', 'resources'].each(function (type) {
-				publications[type].each(function (pub) {
-					me.createPublicationRow(pub.link, pub.title, type);
-				});
 			});
 		});
 	};
