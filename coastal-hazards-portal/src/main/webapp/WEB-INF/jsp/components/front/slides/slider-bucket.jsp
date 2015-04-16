@@ -3,7 +3,7 @@
         <div id="application-slide-bucket-controlset"  class="application-slide-controlset row">
             <div class="col-md-12">
                 <div id="application-slide-bucket-controlset-control-close" class="pull-left">
-                    <i class="fa fa-times"></i><i id="hide-your-bucket">Hide your Bucket</i>
+                   <i id="hide-your-bucket">Hide your Bucket</i>
                 </div>
                 <div class="btn-group pull-right hidden">
                     <button id="bucket-manage-menu-drop" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Manage Bucket <b class="caret"></b></button>

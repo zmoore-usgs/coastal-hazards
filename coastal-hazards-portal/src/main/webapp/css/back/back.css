@@ -21,6 +21,11 @@ html, body {
 
 .fa-times{color:#003366;}
 
+.close{opacity:1;}
+
+.close:hover,
+.close:focus{opacity:1;}
+
 /* Container holding the main view */
 .container {
 	width: 100%;
