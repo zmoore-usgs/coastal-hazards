@@ -106,8 +106,8 @@
 				'referer' : '<%=referer%>'
 			};
 		</script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/publish/tree/UI<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/publish/tree/OnReady<%= development ? "" : "-min"%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/publish/tree/UI.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/publish/tree/OnReady.js"></script>
     </body>
 </html>
