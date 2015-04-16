@@ -251,10 +251,9 @@
 					</execution>
 				</executions>
 				<configuration>
+					<suffix>-${project.version}-min</suffix>
 					<excludes>
 						<exclude>**/js/third-party/</exclude>
-						<exclude>**/custom-min.css</exclude>
-						<exclude>**/custom.css</exclude>
 					</excludes>
 				</configuration>  
 			</plugin>

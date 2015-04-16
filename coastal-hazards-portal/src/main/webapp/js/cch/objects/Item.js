@@ -164,19 +164,13 @@ CCH.Objects.Item = function (args) {
 			bbox = me.bbox,
 			itemType = me.itemType,
 			sldId = id,
-//			aggregationId = args.aggregationName,
-			layer = null;
+			layer = null,
+			sld;
 
 		if (itemType !== 'aggregation') {
-			
-			// If I am a histocial year layer, I'd like to use the id of my parent for the SLD
-			// TODO- Uncomment this when we've standardized our layer date attributes
-//			if (me.type === 'historical' && me.attr.toLowerCase().indexOf('date') !== -1) {
-//				if (aggregationId) {
-//					sldId = aggregationId.replace(/_$/, "");
-//				}
-//			}
-			
+			if (me.type !== 'storms') { // Storms uses the SLD from the remote storms service
+				sld = CCH.CONFIG.publicUrl + '/data/sld/' + sldId;
+			}
 			layer = new OpenLayers.Layer.WMS(
 				id,
 				endpoint,
@@ -202,7 +196,6 @@ CCH.Objects.Item = function (args) {
 				}
 			);
 		}
-
 
 		return layer;
 	};
