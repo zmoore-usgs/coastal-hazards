@@ -38,6 +38,7 @@
 	String marineArcServerEndpoint = props.getProperty("coastal-hazards.marine.endpoint");
 	String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");
 	String version = props.getProperty("application.version");
+	String resourceSuffix = development ? "" : "-" + version + "-min";
 	String path = "../../../../";
 	String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
 	String ga = path + "WEB-INF/jsp/components/common/google-analytics.jsp";
@@ -59,7 +60,7 @@
 		<title>USGS Coastal Change Hazards Portal</title>
 			
 		<link type="text/css" rel="stylesheet" media="all" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
-		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />
+		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= resourceSuffix %>.css" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/themes/default/style<%= development ? "" : ".min"%>.css" />
 		<script type="text/javascript">
@@ -266,15 +267,15 @@
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/handlebars/<%=vHandlebars%>/handlebars<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/jstree<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Session<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/UI<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Legend<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= development ? "" : "-min"%>.js'></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Session<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/FixedTileManager<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/UI<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Legend<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= resourceSuffix %>.js'></script>
 	</body>
 </html>

@@ -458,7 +458,7 @@ CCH.Objects.Front.UI = function (args) {
 		if (display) {
 			// I want to show a legend if either the item is a data item or an aggregation with visible children
 			// otherwise nothing is going to be shown 
-			if (item.getLayerList().layers.length > 0) {
+			if (item.getLayerList().layers.length > 0 && item.type !== 'storms') {
 				accordionLegends[item.id] = new CCH.Objects.Widget.Legend({
 					containerId: 'cchMapLegendInnerContainer',
 					legendClass: 'cchCardLegend',
