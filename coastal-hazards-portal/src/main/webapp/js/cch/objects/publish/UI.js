@@ -1456,38 +1456,40 @@ CCH.Objects.Publish.UI = function () {
 						item = CCH.items.find(function (item) {
 							return item.id === id;
 						});
-
-				if ($bboxWest.val()) {
-					if (item.bbox[0] < parseFloat($bboxWest.val())) {
+				if (item.bbox) {
+					if ($bboxWest.val()) {
+						if (item.bbox[0] < parseFloat($bboxWest.val())) {
+							$bboxWest.val(item.bbox[0]);
+						}
+					} else {
 						$bboxWest.val(item.bbox[0]);
 					}
-				} else {
-					$bboxWest.val(item.bbox[0]);
-				}
 
-				if ($bboxSouth.val()) {
-					if (item.bbox[1] < parseFloat($bboxSouth.val())) {
+					if ($bboxSouth.val()) {
+						if (item.bbox[1] < parseFloat($bboxSouth.val())) {
+							$bboxSouth.val(item.bbox[1]);
+						}
+					} else {
 						$bboxSouth.val(item.bbox[1]);
 					}
-				} else {
-					$bboxSouth.val(item.bbox[1]);
-				}
 
-				if ($bboxEast.val()) {
-					if (item.bbox[2] > parseFloat($bboxEast.val())) {
+					if ($bboxEast.val()) {
+						if (item.bbox[2] > parseFloat($bboxEast.val())) {
+							$bboxEast.val(item.bbox[2]);
+						}
+					} else {
 						$bboxEast.val(item.bbox[2]);
 					}
-				} else {
-					$bboxEast.val(item.bbox[2]);
-				}
 
-				if ($bboxNorth.val()) {
-					if (item.bbox[3] > parseFloat($bboxNorth.val())) {
+					if ($bboxNorth.val()) {
+						if (item.bbox[3] > parseFloat($bboxNorth.val())) {
+							$bboxNorth.val(item.bbox[3]);
+						}
+					} else {
 						$bboxNorth.val(item.bbox[3]);
 					}
-				} else {
-					$bboxNorth.val(item.bbox[3]);
 				}
+				
 			});
 		} else {
 			$bboxWest.val('');

@@ -168,7 +168,7 @@ CCH.Objects.Item = function (args) {
 			sld;
 
 		if (itemType !== 'aggregation') {
-			if (me.type !== 'storms') { // Storms uses the SLD from the remote storms service
+			if (me.type !== 'storms') { 
 				sld = CCH.CONFIG.publicUrl + '/data/sld/' + sldId;
 			}
 			layer = new OpenLayers.Layer.WMS(
@@ -178,7 +178,6 @@ CCH.Objects.Item = function (args) {
 					layers: layers,
 					format: 'image/png',
 					transparent: true,
-					sld: CCH.CONFIG.publicUrl + '/data/sld/' + sldId,
 					styles: 'cch',
 					version: '1.3.0',
 					exceptions: 'application/vnd.ogc.se_blank'
