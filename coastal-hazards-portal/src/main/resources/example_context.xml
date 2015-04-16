@@ -42,6 +42,10 @@ coastal-hazards.portal.geoserver.endpoint: Specifies where the back-end proxy se
 should send connections to for Geoserver-->
 <Environment name="coastal-hazards.portal.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/coastal-hazards-geoserver" />
 
+<!--
+coastal-hazards.portal.geoserver.cache.name: Specifies name of the geoserver "tile cache" -->
+<Environment name="coastal-hazards.portal.geoserver.cache.name" type="java.lang.String" value="cchGeoserverCache" />
+
 <!-- 
 coastal-hazards.stpetearcserver.endpoint: Specifies where the back-end proxy 
 server should send connections to for St Petersburg’s ArcGIS server -->

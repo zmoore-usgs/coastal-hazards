@@ -131,12 +131,12 @@
 			<artifactId>jersey-container-servlet</artifactId>
 		</dependency>
 		<dependency>
-		    <groupId>org.glassfish.jersey.ext</groupId>
-		    <artifactId>jersey-mvc-bean-validation</artifactId>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-mvc-bean-validation</artifactId>
 		</dependency>
 		<dependency>
-		    <groupId>org.glassfish.jersey.ext</groupId>
-		    <artifactId>jersey-mvc-jsp</artifactId>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-mvc-jsp</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
@@ -174,6 +174,12 @@
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-wfs</artifactId>
 			<version>${gt.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>gov.usgs.cida.coastalhazards</groupId>
+			<artifactId>ehcache-shaded</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<!-- this has to be after hibernate in the classpath :( -->

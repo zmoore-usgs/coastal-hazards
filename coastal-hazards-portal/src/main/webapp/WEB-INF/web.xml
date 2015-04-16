@@ -40,8 +40,8 @@
             <param-value>300000</param-value>
         </init-param>
         <init-param>
-            <param-name>proxy-cache-name</param-name>
-            <param-value>cchGeoserverCache</param-value>
+            <param-name>proxy-cache-name-param</param-name>
+            <param-value>coastal-hazards.portal.geoserver.cache.name</param-value>
         </init-param>
         <init-param>
             <param-name>max-megabytes-on-disk</param-name>
