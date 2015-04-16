@@ -1000,7 +1000,7 @@ CCH.Objects.Publish.UI = function () {
 						$button.click();
 					}
 				});
-
+				
 				item.displayedChildren.each(function (child) {
 					var $button = $childrenSortableList
 						.find('li#child-item-' + child)
@@ -1009,6 +1009,12 @@ CCH.Objects.Publish.UI = function () {
 					if (!$button.hasClass('active')) {
 						$button.click();
 					}
+				});
+				
+				// Bubble the displayed children to the top of the stack in proper order
+				item.displayedChildren.reverse().each(function (id) {
+					var $displayedChild = $('.form-publish-info-item-children-sortable-li#child-item-' + id);
+					$childrenSortableList.prepend($displayedChild);
 				});
 
 				$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
@@ -1215,6 +1221,7 @@ CCH.Objects.Publish.UI = function () {
 						return type === 'mixed' || item.type.toLowerCase().trim() === type.toLowerCase().trim();
 					}
 				};
+				
 		CCH.items.each(function (item) {
 			itemId = item.id;
 			if (itemId !== currentAggregationId && isOfType(item)) {
@@ -1307,6 +1314,7 @@ CCH.Objects.Publish.UI = function () {
 			}
 
 		});
+		
 		$childrenSortableList.sortable();
 	};
 

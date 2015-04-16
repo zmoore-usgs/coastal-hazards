@@ -482,8 +482,6 @@ var publishButtonClickHandler = function () {
 
 var bindCheckbox = function (evt) {
 	var cb = evt.target;
-	var value = cb.value;
-	var checked = cb.checked;
 	var li = cb.parentNode;
 	var buttons = $(li).find('button');
 	buttons.toggleClass('disabled');
