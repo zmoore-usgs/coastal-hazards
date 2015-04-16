@@ -28,8 +28,12 @@ html, body {
 
 .fa-times{
     color:#003366;
-    opacity:1;
 }
+
+.close{opacity:1;}
+
+.close:hover,
+.close:focus{opacity:1;}
 
 /*
 	This resets bootstrap's row margins of -15px on each side - This is useful 
