@@ -76,7 +76,7 @@ $(document).ready(function () {
 								attr({
 									'href': CCH.CONFIG.contextPath + '/publish/item/' + item.id
 								}).
-								html(item.summary.medium.title));
+								html(item.summary.full.title));
 						$list.append($option);
 					});
 					sortedItems = $list.find('li').toArray().sortBy(function (li) {
