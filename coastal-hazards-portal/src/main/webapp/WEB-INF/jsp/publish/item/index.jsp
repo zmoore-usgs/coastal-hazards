@@ -39,6 +39,7 @@
 	String vFontAwesome = getProp("version.fontawesome");
 	String vOpenlayers = getProp("version.openlayers");
 	String vSugarJs = getProp("version.sugarjs");
+	String vHandlebars = getProp("version.handlebars");
 	String baseUrl = props.getProperty("coastal-hazards.base.secure.url");
 	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
 
@@ -508,7 +509,7 @@
 				</div>
 			</div>
 		</div>
-
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/handlebars/<%=vHandlebars%>/handlebars.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/publish/UI.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util.js"></script>

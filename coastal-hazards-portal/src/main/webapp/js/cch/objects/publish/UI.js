@@ -3,6 +3,7 @@
 /*global $*/
 /*global CCH*/
 /*global qq*/
+/*global Handlebars*/
 window.CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
 CCH.Objects.Publish = CCH.Objects.Publish || {};
@@ -72,6 +73,8 @@ CCH.Objects.Publish.UI = function () {
 		$emphasisItemSpan = $form.find('.emphasis-item'),
 		$emphasisAggregationSpan = $form.find('.emphasis-aggregation'),
 		$resourceSortableContainers = $('.resource-list-container-sortable');
+
+	me.templates = {};
 
 	me.createHelpPopover = function ($content, $element) {
 		$element.popover('destroy');
@@ -833,48 +836,16 @@ CCH.Objects.Publish.UI = function () {
 	me.createPublicationRow = function (link, title, type, prepend) {
 		var exists = false,
 			$panel = $('#' + type + '-panel'),
-			$panelBodyListContainer = $panel.find('.panel-body > ul'),
-			$closeButtonRow = $('<div />').addClass('pull-right'),
-			$closeButton = $('<i />').addClass('fa fa-times'),
-			$smallWell = $('<div />').addClass('well well-small'),
-			$sortableWrapper = $('<li />').addClass('ui-state-default'),
-			$linkRow = $('<div />').addClass('row'),
-			$titleRow = $('<div />').addClass('row'),
-			$typeRow = $('<div />').addClass('row'),
-			$linkLabel = $('<label />').html('Link'),
-			$linkInput = $('<input />')
-			.attr({
-				type: 'text',
-				maxlength: CCH.CONFIG.limits.publication.link
-			})
-			.addClass('form-control panel-item-link')
-			.val(link),
-			$titleLabel = $('<label />').html('Title'),
-			$titleInput = $('<input />')
-				.attr({
-					type: 'text',
-					maxlength: CCH.CONFIG.limits.publication.title
-				})
-				.addClass('form-control panel-item-title')
-				.val(title),
-			$dataOption = $('<option />')
-				.attr('value', 'data')
-				.html('Data'),
-			$publicationOption = $('<option />')
-				.attr('value', 'publications')
-				.html('Publication'),
-			$resourceOption = $('<option />')
-				.attr('value', 'resources')
-				.html('Resource'),
-			$typeSelect = $('<select />')
-				.addClass('form-control')
-				.append($dataOption, $publicationOption, $resourceOption);
-
-		$sortableWrapper.append($smallWell);
-		$typeRow.append($typeSelect);
-		$typeSelect.val(type);
-		$typeSelect.on('change', me.resourceTypeChanged);
-
+			$panelBodyListContainer = $panel.find('.panel-body > ul');
+		
+		var publicationRowHtml = CCH.ui.templates.publication_row({
+			linkValue : link, 
+			titleValue : title,
+			linkInputMaxLength : CCH.CONFIG.limits.publication.link,
+			titleInputMaxLength : CCH.CONFIG.limits.publication.title
+		});
+		var $rowObject = $(publicationRowHtml);
+		
 		// Check that this item does not yet exist in the UI
 		$('.resource-panel .well').each(function (i, pubPanel) {
 			var pTitle = $(pubPanel).find('>.row:nth-child(2) input').val() || '',
@@ -889,25 +860,20 @@ CCH.Objects.Publish.UI = function () {
 		});
 
 		if (!exists) {
-			$closeButton
-				.on(CCH.CONFIG.strings.click, function () {
-					$sortableWrapper.remove();
-				});
-
-			$closeButtonRow.append($closeButton);
-
-			$linkRow.append($linkLabel, $linkInput);
-			$titleRow.append($titleLabel, $titleInput);
-
-			$smallWell.append($closeButtonRow, $titleRow, $linkRow, $typeRow);
-
 			if (!prepend) {
-				$panelBodyListContainer.append($sortableWrapper);
+				$panelBodyListContainer.append($rowObject);
 			} else {
-				$panelBodyListContainer.prepend($sortableWrapper);
+				$panelBodyListContainer.prepend($rowObject);
 			}
+			
+			$rowObject.find('.publicationrow-closebutton').on(CCH.CONFIG.strings.click, function (evt) {
+				$(evt.target).closest('.well').remove();
+			});
+			$rowObject.find('select').val(type);
+			$rowObject.find('select').on('change', me.resourceTypeChanged);
+			
 		}
-		return $smallWell;
+		return $rowObject;
 	};
 	
 	// When a resource type changes, I want to remove it from its current bin
@@ -2313,6 +2279,23 @@ CCH.Objects.Publish.UI = function () {
 		}
 	});
 	
+	me.loadTemplates = function () {
+		["publication_row"].each(function (templateName) {
+			$.ajax({
+				url : CCH.CONFIG.contextPath + '/resource/template/handlebars/publish/' + templateName + '.html',
+				context: {
+					templateName : templateName
+				},
+				success : function (data) {
+					CCH.ui.templates[this.templateName] = Handlebars.compile(data);
+				},
+				error : function () {
+					window.alert('Unable to load resources required for a functional publication page. Please contact CCH admin team.');
+				}
+			});
+		});
+	};
+	
 	me.initializeResourceSorting = function () {
 		$resourceSortableContainers.sortable({
 			placeholder: 'ui-state-highlight'
@@ -2320,6 +2303,7 @@ CCH.Objects.Publish.UI = function () {
 	};
 	
 	me.initializeResourceSorting();
-
+	me.loadTemplates();
+	
 	return $.extend(me, {});
 };
