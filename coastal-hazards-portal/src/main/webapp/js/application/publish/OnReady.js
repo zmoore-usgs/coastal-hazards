@@ -126,6 +126,7 @@ $(document).ready(function () {
 		}
 	});
 });
+
 var buildServiceEndpoint = function (endpoint) {
 	var updatedEndpoint = null;
 	var urlIndex = 0;
