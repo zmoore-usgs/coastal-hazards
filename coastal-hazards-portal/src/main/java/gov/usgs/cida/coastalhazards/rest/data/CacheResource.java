@@ -30,7 +30,7 @@ public class CacheResource {
 
 	private static final String CACHE_NAME_PROP = "coastal-hazards.portal.geoserver.cache.name";
 	private static final String CACHE_NAME = "proxyCache";
-	private static final String CACHE_LOCATION_PROP = "coastal-hazards.portal.geoserver.cache.name";
+	private static final String CACHE_LOCATION_PROP = "coastal-hazards.portal.geoserver.cache.location";
 	private static final String CACHE_LOCATION = "${java.io.tmpdir}/ehcache";
 	
 	private static final String cacheLocation;
@@ -66,11 +66,11 @@ public class CacheResource {
 				ehcache.removeAll();
 				response = Response.ok().build();
 			} else {
-				response = Response.serverError().entity("Error location cache to clear").build();
+				response = Response.serverError().entity("Error locating cache to clear").build();
 			}
 		} catch (Exception e) {
 			log.error("Unable to clear cache", e);
-			response = Response.serverError().entity("Error location cache to clear").build();
+			response = Response.serverError().entity("Unable to clear cache").build();
 		}
 		return response;
 	}
