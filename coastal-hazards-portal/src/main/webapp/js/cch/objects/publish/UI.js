@@ -830,7 +830,7 @@ CCH.Objects.Publish.UI = function () {
 		}
 	};
 
-	me.createPublicationRow = function (link, title, type) {
+	me.createPublicationRow = function (link, title, type, prepend) {
 		var exists = false,
 			$panel = $('#' + type + '-panel'),
 			$panelBodyListContainer = $panel.find('.panel-body > ul'),
@@ -901,7 +901,11 @@ CCH.Objects.Publish.UI = function () {
 
 			$smallWell.append($closeButtonRow, $titleRow, $linkRow, $typeRow);
 
-			$panelBodyListContainer.append($sortableWrapper);
+			if (!prepend) {
+				$panelBodyListContainer.append($sortableWrapper);
+			} else {
+				$panelBodyListContainer.prepend($sortableWrapper);
+			}
 		}
 		return $smallWell;
 	};
@@ -1760,7 +1764,7 @@ CCH.Objects.Publish.UI = function () {
 
 	['publications', 'resources', 'data'].forEach(function(type) {
 		$('#form-publish-info-item-panel-' + type + '-button-add').on(CCH.CONFIG.strings.click, function () {
-			me.createPublicationRow('', '', type);
+			me.createPublicationRow('', '', type, true);
 		});
 	});
 	
