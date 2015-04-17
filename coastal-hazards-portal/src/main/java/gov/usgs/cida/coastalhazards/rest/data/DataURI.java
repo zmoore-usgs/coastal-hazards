@@ -22,5 +22,6 @@ public class DataURI {
 	public static final String DOMAIN_PATH = "/domain";
 	public static final String DOWNLOAD_PATH = "/download";
 	public static final String HEALTH_PATH = "/health";
+	public static final String CACHE_PATH = "/cache";
 
 }
