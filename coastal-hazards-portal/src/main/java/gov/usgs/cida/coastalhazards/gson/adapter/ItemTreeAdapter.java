@@ -25,7 +25,7 @@ public class ItemTreeAdapter implements JsonSerializer<Item> {
 			JsonObject json = (JsonObject) fullItem;
 			simplified.add("id", json.get("id"));
 			simplified.add("itemType", json.get("itemType"));
-			simplified.add("title", json.getAsJsonObject("summary").getAsJsonObject("medium").get("title"));
+			simplified.add("title", json.getAsJsonObject("summary").getAsJsonObject("full").get("title"));
 
 			List<Item> items = src.getChildren();
 			if (items != null) {
