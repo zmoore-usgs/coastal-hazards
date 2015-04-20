@@ -180,6 +180,7 @@ CCH.Objects.Item = function (args) {
 					transparent: true,
 					styles: 'cch',
 					version: '1.3.0',
+					sld: CCH.CONFIG.publicUrl + '/data/sld/' + sldId,
 					exceptions: 'application/vnd.ogc.se_blank'
 				}, {
 					displayOutsideMaxExtent: false,

@@ -49,7 +49,7 @@ CCH.Objects.Front.Map = function (args) {
 
 		layer.name = name;
 		
-		if (ribbonIndex !== 0 && layer.params.SLD && layer.params.SLD.indexOf('ribbon') === -1 && item.type.toLowerCase() !== 'storms') {
+		if (ribbonIndex !== 0 && layer.params.SLD && layer.params.SLD.indexOf('ribbon') === -1) {
 			layer.mergeNewParams({
 				'SLD': layer.params.SLD + '?ribbon=' + ribbonIndex,
 				'buffer': (ribbonIndex - 1) * 6
