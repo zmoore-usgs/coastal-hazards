@@ -3,6 +3,8 @@ package gov.usgs.cida.coastalhazards.jpa;
 import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.model.util.Status.StatusName;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
@@ -18,6 +20,7 @@ public class StatusManager implements AutoCloseable {
 	private static final Logger log = LoggerFactory.getLogger(StatusManager.class);
 
 	private static final String HQL_SELECT_BY_ID = "select s from Status s where s.statusName = :name";
+	private static final String HQL_SELECT_ALL = "select s from Status s";
 
 	private EntityManager em;
 
@@ -34,6 +37,16 @@ public class StatusManager implements AutoCloseable {
 			status = resultList.get(0);
 		}
 		return status;
+	}
+	
+	public Map<StatusName, Status> loadAll() {
+		Map<StatusName, Status> result = new TreeMap<>();
+		Query selectQuery = em.createQuery(HQL_SELECT_ALL);
+		List<Status> resultList = selectQuery.getResultList();
+		for (Status status : resultList) {
+			result.put(status.getStatusName(), status);
+		}
+		return result;
 	}
 
 	public boolean save(Status status) {
