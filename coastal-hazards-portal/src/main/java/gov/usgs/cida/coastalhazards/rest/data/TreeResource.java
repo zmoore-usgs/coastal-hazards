@@ -9,7 +9,9 @@ import com.google.gson.JsonParser;
 import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.adapter.ItemTreeAdapter;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
+import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -101,9 +103,9 @@ public class TreeResource {
 		return response;
 	}
 
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@PUT
 	@Path("/item/{id}")
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response updateChildren(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response = null;
 		JsonParser parser = new JsonParser();
@@ -113,7 +115,7 @@ public class TreeResource {
 			if (jsonObj.has("children")) {
 				JsonArray childrenArray = (JsonArray) jsonObj.get("children");
 
-				try (ItemManager manager = new ItemManager()) {
+				try (ItemManager manager = new ItemManager(); StatusManager statusMan = new StatusManager()) {
 					Item item = manager.load(id);
 					List<Item> children = new LinkedList<>();
 					Iterator<JsonElement> iterator = childrenArray.iterator();
@@ -124,8 +126,14 @@ public class TreeResource {
 					}
 					item.setChildren(children);
 					manager.merge(item);
+					
+					Status status = new Status();
+					status.setStatusName(Status.StatusName.STRUCTURE_UPDATE);
+					statusMan.save(status);
 				}
 				response = Response.ok().build();
+				
+				
 			}
 			else {
 				throw new BadRequestException();
@@ -137,9 +145,9 @@ public class TreeResource {
 		return response;
 	}
 
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@POST
 	@Path("/item")
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response updateChildrenBulk(@Context HttpServletRequest request, String content) {
 		Response response = null;
 		JsonParser parser = new JsonParser();
@@ -147,7 +155,7 @@ public class TreeResource {
 		if (parsed instanceof JsonObject) {
 			JsonObject jsonObj = (JsonObject) parsed;
 
-			try (ItemManager manager = new ItemManager()) {
+			try (ItemManager manager = new ItemManager(); StatusManager statusMan = new StatusManager()) {
 				List<Item> itemList = new LinkedList<>();
 				for (Entry<String, JsonElement> entry : jsonObj.entrySet()) {
 					Item parentItem = manager.load(entry.getKey());
@@ -162,6 +170,10 @@ public class TreeResource {
 					itemList.add(parentItem);
 				}
 				manager.mergeAll(itemList);
+				
+				Status status = new Status();
+				status.setStatusName(Status.StatusName.STRUCTURE_UPDATE);
+				statusMan.save(status);
 			}
 			response = Response.ok().build();
 		}

@@ -1,5 +1,7 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
+import gov.usgs.cida.coastalhazards.jpa.StatusManager;
+import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
@@ -13,6 +15,7 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.Configuration;
 import net.sf.ehcache.config.DiskStoreConfiguration;
+import net.sf.ehcache.config.MemoryUnit;
 import net.sf.ehcache.config.PersistenceConfiguration;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 import org.slf4j.Logger;
@@ -45,33 +48,55 @@ public class CacheResource {
 	@Path("/")
 	@DELETE
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-	public Response clearCache() {
+	public Response deleteCache() {
 		Response response = null;
 		
-		try {
-			CacheConfiguration ehConfig = new CacheConfiguration()
-					.name(cacheName)
-					.memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LRU)
-					.persistence(new PersistenceConfiguration()
-							.strategy(PersistenceConfiguration.Strategy.LOCALTEMPSWAP))
-					.clearOnFlush(true);
-			Configuration managerConfig = new Configuration()
-					.diskStore(new DiskStoreConfiguration().path(cacheLocation))
-					.dynamicConfig(false)
-					.cache(ehConfig);
-			CacheManager cacheManager = CacheManager.create(managerConfig);
-			Ehcache ehcache = cacheManager.getEhcache(cacheName);
-			if (ehcache != null) {
-				ehcache.flush();
-				ehcache.removeAll();
+		try (StatusManager statusMan = new StatusManager()) {
+			if (clearCache()) {
+				Status clearedStatus = new Status();
+				clearedStatus.setStatusName(Status.StatusName.CACHE_CLEAR);
+				statusMan.save(clearedStatus);
 				response = Response.ok().build();
 			} else {
-				response = Response.serverError().entity("Error locating cache to clear").build();
+				response = Response.serverError().entity("Error clearing cache").build();
 			}
 		} catch (Exception e) {
 			log.error("Unable to clear cache", e);
 			response = Response.serverError().entity("Unable to clear cache").build();
 		}
 		return response;
+	}
+	
+	boolean clearCache() {
+		boolean cleared = false;
+		
+		try {
+			CacheConfiguration ehConfig = new CacheConfiguration()
+				.name(cacheName)
+				.memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LRU)
+				.persistence(new PersistenceConfiguration()
+					.strategy(PersistenceConfiguration.Strategy.LOCALTEMPSWAP))
+				.maxBytesLocalDisk(10, MemoryUnit.MEGABYTES)
+				.maxBytesLocalHeap(1, MemoryUnit.MEGABYTES)
+				.clearOnFlush(true);
+			Configuration managerConfig = new Configuration()
+				.diskStore(new DiskStoreConfiguration().path(cacheLocation))
+				.dynamicConfig(false)
+				.cache(ehConfig);
+			CacheManager cacheManager = CacheManager.create(managerConfig);
+			Ehcache ehcache = cacheManager.getEhcache(cacheName);
+			if (ehcache != null) {
+				ehcache.flush();
+				ehcache.removeAll();
+				cleared = true;
+			} else {
+				cleared = false;
+			}
+		} catch (Exception e) {
+			log.debug("Unable to clear cache", e);
+			cleared = false;
+		}
+		
+		return cleared;
 	}
 }
