@@ -6,11 +6,11 @@ import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
-import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.net.URI;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,24 +62,24 @@ public class ItemResource {
 			@DefaultValue("false") @QueryParam("subtree") boolean subtree,
 			@Context Request request) {
 		Response response = null;
-		try (ItemManager itemManager = new ItemManager()) {
+		try (ItemManager itemManager = new ItemManager(); StatusManager statusMan = new StatusManager()) {
 			Item item = itemManager.load(id);
 			if (item == null) {
 				throw new NotFoundException();
 			}
 			else {
-				Item newestItem = item;
-				if (subtree) {
-					newestItem = ItemUtil.gatherNewest(item);
+				Status lastUpdate = statusMan.load(Status.StatusName.ITEM_UPDATE);
+				Date modified = new Date();
+				if (lastUpdate != null) {
+					modified = lastUpdate.getLastUpdate();
 				}
-
-				Response unmodified = HTTPCachingUtil.checkModified(request, newestItem);
+				
+				Response unmodified = HTTPCachingUtil.checkModified(request, modified);
 				if (unmodified != null) {
 					response = unmodified;
-				}
-				else {
+				} else {
 					String jsonResult = item.toJSON(subtree);
-					response = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).lastModified(newestItem.getLastModified()).build();
+					response = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).lastModified(modified).build();
 				}
 			}
 		}
