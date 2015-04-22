@@ -1,6 +1,5 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import javax.ws.rs.core.Response;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
@@ -14,6 +13,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 
 /**
@@ -54,8 +54,8 @@ public class CacheResourceTest {
 		assertThat(ehcache.getSize(), is(equalTo(100)));
 
 		CacheResource instance = new CacheResource();
-		Response result = instance.clearCache();
-		assertThat(result.getStatus(), is(equalTo(200)));
+		boolean cleared = instance.clearCache();
+		assertThat(cleared, is(equalTo(true)));
 
 		assertThat(ehcache.getSize(), is(equalTo(0)));
 	}
