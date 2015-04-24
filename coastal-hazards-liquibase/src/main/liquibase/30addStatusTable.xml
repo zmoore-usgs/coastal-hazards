@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+	<changeSet author="jiwalker" id="add_status_table">
+		<comment>
+                    Creates status table for keeping track overall application
+                    including but not limited to latest update and cache refresh
+                </comment>
+
+		<createTable tableName="status">
+			<column name="id" type="INT4">
+				<constraints nullable="false" />
+			</column>
+                        <column name="status_name" type="VARCHAR(64)"/>
+                        <column name="last_update" type="TIMESTAMP"/>
+		</createTable>
+		<addPrimaryKey tableName="status" columnNames="id" constraintName="status_id_pkey" />
+	</changeSet>
+</databaseChangeLog>

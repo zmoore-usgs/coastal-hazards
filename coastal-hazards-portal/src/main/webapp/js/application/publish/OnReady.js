@@ -76,7 +76,7 @@ $(document).ready(function () {
 								attr({
 									'href': CCH.CONFIG.contextPath + '/publish/item/' + item.id
 								}).
-								html(item.summary.medium.title));
+								html(item.summary.full.title));
 						$list.append($option);
 					});
 					sortedItems = $list.find('li').toArray().sortBy(function (li) {
@@ -126,6 +126,7 @@ $(document).ready(function () {
 		}
 	});
 });
+
 var buildServiceEndpoint = function (endpoint) {
 	var updatedEndpoint = null;
 	var urlIndex = 0;
@@ -482,8 +483,6 @@ var publishButtonClickHandler = function () {
 
 var bindCheckbox = function (evt) {
 	var cb = evt.target;
-	var value = cb.value;
-	var checked = cb.checked;
 	var li = cb.parentNode;
 	var buttons = $(li).find('button');
 	buttons.toggleClass('disabled');

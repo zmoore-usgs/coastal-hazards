@@ -3,18 +3,18 @@
 /*global $*/
 /*global LOG*/
 /*global CCH*/
+/*global localStorage*/
 CCH.Objects.Session = function (args) {
 	"use strict";
 
 	CCH.LOG.trace('Session.js::constructor: Session class is initializing.');
-	
+
 	var me = (this === window) ? {} : this;
 
 	args = args || {};
 
-	me.cookieName = args.cookieName || 'cch';
-	me.version = parseInt(CCH.CONFIG.version.remove('-SNAPSHOT').remove(/\./g));
-	me.breakCompatibilityVersion = 1120;
+	me.storageName = 'cch';
+	me.hasLocalStorage = 'localStorage' in window && window['localStorage'] !== null;
 
 	me.session = {
 		items: [],
@@ -23,6 +23,34 @@ CCH.Objects.Session = function (args) {
 		bbox: [0.0, 0.0, 0.0, 0.0],
 		center: [0.0, 0.0]
 	};
+	
+	me.initSession = function () {
+		if(me.hasLocalStorage) {
+			// localStorage handling
+			if (!localStorage[me.storageName]) {
+				localStorage[me.storageName] = me.toString();
+			} else {
+				me.session = JSON.parse(localStorage[me.storageName]);
+			}
+		} else {
+			// Cookie handling
+			$.cookie.json = true;
+			
+			if ($.cookie(me.storageName) === undefined) {
+				$.cookie(me.storageName, me.session);
+			} else {
+				me.session = $.cookie(me.storageName);
+			}
+		}
+	};
+	
+	me.persistSession = function () {
+		if(me.hasLocalStorage) {
+			localStorage[me.storageName] = me.toString();
+		} else {
+			$.cookie(me.storageName, me.session);
+		}
+	};
 
 	me.toString = function () {
 		return JSON.stringify(me.session);
@@ -30,10 +58,6 @@ CCH.Objects.Session = function (args) {
 
 	me.getSession = function () {
 		return me.session;
-	};
-
-	me.getItems = function () {
-		return me.session.items;
 	};
 
 	me.update = function (args) {
@@ -45,8 +69,7 @@ CCH.Objects.Session = function (args) {
 
 			var itemid = args.itemid,
 				visible = args.visible,
-				itemIndex,
-				cookie;
+				itemIndex;
 
 			itemIndex = me.getItemIndex({
 				id: itemid
@@ -55,16 +78,10 @@ CCH.Objects.Session = function (args) {
 				me.session.items[itemIndex].visible = visible;
 			}
 
-
-			cookie = $.cookie(me.cookieName);
-			cookie.bbox = me.session.bbox;
-			cookie.items = me.session.items;
-			cookie.center = me.session.center;
-			cookie.scale = me.session.scale;
-			$.cookie(me.cookieName, cookie, { 'path' : '/' });
+			me.persistSession();
 		}
 	};
-
+	
 	me.write = function (args) {
 		CCH.LOG.debug('Session.js::write');
 		args = args || {};
@@ -110,7 +127,7 @@ CCH.Objects.Session = function (args) {
 				success: [],
 				error: []
 			},
-		context = args.context;
+			context = args.context;
 
 		if (sid) {
 			$.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint + sid, {
@@ -142,18 +159,14 @@ CCH.Objects.Session = function (args) {
 			callbacks = args.callbacks || {
 				success: [],
 				error: []
-			},
-		cookie;
+			};
 
 		callbacks.success.unshift(function (json) {
 			if (json) {
 				CCH.LOG.info("Session.js::load: Session found on server. Updating current session.");
 				$.extend(true, me.session, json);
 
-				cookie = $.cookie(me.cookieName);
-				cookie.bbox = me.session.bbox;
-				cookie.items = me.session.items;
-				$.cookie(me.cookieName, cookie, { 'path' : '/' });
+				me.persistSession();
 
 				$(window).trigger('cch.data.session.loaded.true');
 			} else {
@@ -195,8 +208,7 @@ CCH.Objects.Session = function (args) {
 
 		var item = args.item,
 			visible = args.visible || false,
-			index = me.getItemIndex(item),
-			cookie;
+			index = me.getItemIndex(item);
 
 		if (index === -1) {
 			me.session.items.push({
@@ -205,9 +217,7 @@ CCH.Objects.Session = function (args) {
 			});
 		}
 
-		cookie = $.cookie(me.cookieName);
-		cookie.items = me.session.items;
-		$.cookie(me.cookieName, cookie, { 'path' : '/' });
+		me.persistSession();
 
 		return me.session;
 	};
@@ -215,73 +225,32 @@ CCH.Objects.Session = function (args) {
 	me.removeItem = function (item) {
 		CCH.LOG.debug('Session.js::removeItem');
 
-		var index = me.getItemIndex(item),
-			cookie;
+		var index = me.getItemIndex(item);
 
 		if (index !== -1) {
 			me.session.items.removeAt(index);
 		}
 
-		cookie = $.cookie(me.cookieName);
-		cookie.items = me.session.items;
-		$.cookie(me.cookieName, cookie, { 'path' : '/' });
+		me.persistSession();
+		
 		return me.session;
-	};
-
-	me.getCookie = function () {
-		return $.cookie(me.cookieName);
 	};
 	
 	me.isReturning = function () {
 		return document.referrer.indexOf(location.pathname.split('/')[1]) !== -1;
 	};
-
-	// Cookie handling
-	$.cookie.json = true;
 	
-	if ($.cookie(me.cookieName) !== undefined) {
-		// I have a cookie. I need to check if it's an old version of the cookie.
-		// An old cookie won't have a version or it will have an old version number
-		// If it is, I need to remove it and recreate the cookie below. This is 
-		// to fix a compatibility issue
-		var cookie = $.cookie(me.cookieName);
-		if (!cookie.version || cookie.version < me.breakCompatibilityVersion) {
-			$.removeCookie('cch', {'path' : '/'});
-		}
-	}
-	
-	if ($.cookie(me.cookieName) === undefined) {
-		$.cookie(me.cookieName, {
-			'items': me.session.items,
-			'version' : me.version
-		},
-		{
-			path: '/'
-		});
-	}
-	
-	
-	$.cookie(me.cookieName).items.each(function (item) {
-		me.addItem({
-			item: {
-				id: item.itemId
-			},
-			visible: item.visible
-		});
-	});
+	me.initSession();
 
 	return $.extend(me, {
 		cookieName: me.cookieName,
-		getCookie: me.getCookie,
 		toString: me.toString,
 		getSession: me.getSession,
 		load: me.load,
-		readSession: me.read,
 		writeSession: me.write,
 		updateSession: me.update,
 		getItemById: me.getItemById,
 		getItemIndex: me.getItemIndex,
-		getItems: me.getItems,
 		addItem: me.addItem,
 		removeItem: me.removeItem,
 		isReturning : me.isReturning

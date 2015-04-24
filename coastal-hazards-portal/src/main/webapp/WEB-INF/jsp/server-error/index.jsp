@@ -20,6 +20,11 @@
 <%
 	String baseUrlJndiString = props.getProperty("coastal-hazards.public.url");
 	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
+        Object errorMessageObject = request.getAttribute("javax.servlet.error.exception");
+        String errorMessage = "";
+        if (null != errorMessageObject) {
+            errorMessage = errorMessageObject.toString().replaceAll("\n", " ").replaceAll("'", "").replaceAll("\r", " ");
+        }
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -109,7 +114,6 @@
 				<h1 id="mobile-error-type">Error Type</h1>
 				<h4>USGS Coastal Change Hazards Portal</h4>
 				<h3 id="mobile-error-message"></h3>
-				<p id="mobile-current-addr">Bad URL goes here</p>
 				<button id="mobile-back-btn">Return to Map</button>
 				<button id="mobile-contact-btn">Contact Us</button>
 			</section>
@@ -117,7 +121,7 @@
 		<script type="text/javascript">
 			var errorCode = <%=request.getAttribute("javax.servlet.error.status_code")%>;
 			var errorPath = '<%=request.getAttribute("javax.servlet.error.request_uri")%>';
-			var errorException = '<%=request.getAttribute("javax.servlet.error.exception")%>';
+			var errorException = '<%= errorMessage %>';
 			var description = '';
 			var method = '<%=request.getMethod()%>';
 			var contact = {
@@ -128,7 +132,7 @@
 			switch (errorCode) {
 					case 404 :
 					{
-						description = 'Page Not Found At...';
+						description = 'Page Not Found';
 						contact.content = 'The application could not find the path at ' + errorPath;
 						break;
 					}
@@ -141,23 +145,22 @@
 					case 500 :
 					{
 						description = 'A Server Error Occurred';
-						contact.content = 'An error occured while I attempted to access the application.\n\nError Provided By Server: ' + errorException;
+						contact.content = 'An error occured while I attempted to access the application.\n\n Error Provided By Server: ' + errorException;
 						break;
 					}
 					default : {
 						description = 'An Error Has Occurred';
-						contact.content = 'An error occured while I attempted to access the application.\n\nError Provided By Server: ' + errorException;
+						contact.content = 'An error occured while I attempted to access the application.\n\n Error Provided By Server: ' + errorException;
 						break;
 					}
 				}
 
 			var emailAttributes = '';
-			emailAttributes += contact.subject ? 'Subject=' + contact.subject : '';
-			emailAttributes += contact.content ? '&Body=' + contact.content : '';
+			emailAttributes += contact.subject ? 'Subject=' + escape(contact.subject) : '';
+			emailAttributes += contact.content ? '&Body=' + escape(contact.content) : '';
 			
 			// Mobile wireup
 			document.querySelector('#mobile-error-type').textContent = errorCode;
-			document.querySelector('#mobile-current-addr').textContent = errorPath;
 			document.querySelector('#mobile-error-message').textContent = description;
 			document.querySelector('#mobile-back-btn').addEventListener('click', function () {
 				window.location.href = '<%= baseUrl%>';
@@ -170,7 +173,7 @@
 				// SVG wireup
 				var svg = evt.target.getSVGDocument();
 				svg.updateErrorCode('<%=request.getAttribute("javax.servlet.error.status_code")%>');
-				svg.updateErrorMessage(description, errorPath);
+				svg.updateErrorMessage(description, "");
 				
 				svg.getElementById('back-to-portal-link').addEventListener('click', function () {
 					window.location.href = '<%= baseUrl%>';

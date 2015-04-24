@@ -40,8 +40,8 @@
             <param-value>300000</param-value>
         </init-param>
         <init-param>
-            <param-name>proxy-cache-name</param-name>
-            <param-value>cchGeoserverCache</param-value>
+            <param-name>proxy-cache-name-param</param-name>
+            <param-value>coastal-hazards.portal.geoserver.cache.name</param-value>
         </init-param>
         <init-param>
             <param-name>max-megabytes-on-disk</param-name>
@@ -138,8 +138,18 @@
     </servlet-mapping>
     <security-constraint>
 		<web-resource-collection>
-			<web-resource-name>Entire Application</web-resource-name>
-			<url-pattern>/*</url-pattern>
+			<web-resource-name>Secure the publishing endpoint</web-resource-name>
+			<url-pattern>/publish/*</url-pattern>
+		</web-resource-collection>
+		<web-resource-collection>
+			<web-resource-name>Secure the publishing endpoint</web-resource-name>
+			<url-pattern>/security/*</url-pattern>
+		</web-resource-collection>
+		<web-resource-collection>
+			<web-resource-name>Secure the data endpoint for everything but GET</web-resource-name>
+			<url-pattern>/data/*</url-pattern>
+			<http-method>DELETE</http-method>
+			<http-method>PUT</http-method>
 		</web-resource-collection>
 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>

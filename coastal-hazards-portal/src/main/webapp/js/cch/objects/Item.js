@@ -12,7 +12,7 @@ CCH.Objects.Item = function (args) {
 
 	var me = this === window ? {} : this;
 
-	me.UNITED_STATES_BBOX = [24.956, -124.731, 49.372, -66.97];
+	me.UNITED_STATES_BBOX = [-124.731,24.956,  -66.97, 49.372 ];
 	me.id = args.id;
 	me.parent = args.parent || null;
 	me.loaded = args.loaded || false;
@@ -164,19 +164,13 @@ CCH.Objects.Item = function (args) {
 			bbox = me.bbox,
 			itemType = me.itemType,
 			sldId = id,
-			aggregationId = args.aggregationName,
-			layer = null;
+			layer = null,
+			sld;
 
 		if (itemType !== 'aggregation') {
-			
-			// If I am a histocial year layer, I'd like to use the id of my parent for the SLD
-			// TODO- Uncomment this when we've standardized our layer date attributes
-//			if (me.type === 'historical' && me.attr.toLowerCase().indexOf('date') !== -1) {
-//				if (aggregationId) {
-//					sldId = aggregationId.replace(/_$/, "");
-//				}
-//			}
-			
+			if (me.type !== 'storms') { 
+				sld = CCH.CONFIG.publicUrl + '/data/sld/' + sldId;
+			}
 			layer = new OpenLayers.Layer.WMS(
 				id,
 				endpoint,
@@ -184,9 +178,9 @@ CCH.Objects.Item = function (args) {
 					layers: layers,
 					format: 'image/png',
 					transparent: true,
-					sld: CCH.CONFIG.publicUrl + '/data/sld/' + sldId,
 					styles: 'cch',
 					version: '1.3.0',
+					sld: CCH.CONFIG.publicUrl + '/data/sld/' + sldId,
 					exceptions: 'application/vnd.ogc.se_blank'
 				}, {
 					displayOutsideMaxExtent: false,
@@ -202,7 +196,6 @@ CCH.Objects.Item = function (args) {
 				}
 			);
 		}
-
 
 		return layer;
 	};

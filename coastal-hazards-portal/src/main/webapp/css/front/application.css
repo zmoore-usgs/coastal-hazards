@@ -26,6 +26,15 @@ html, body {
 	width: 100%;
 }
 
+.fa-times{
+    color:#003366;
+}
+
+.close{opacity:1;}
+
+.close:hover,
+.close:focus{opacity:1;}
+
 /*
 	This resets bootstrap's row margins of -15px on each side - This is useful 
 	if we'd like to see the top and bottom rows extend all the way to the edge 

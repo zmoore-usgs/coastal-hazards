@@ -3,6 +3,7 @@
 /*global $*/
 /*global CCH*/
 /*global qq*/
+/*global Handlebars*/
 window.CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
 CCH.Objects.Publish = CCH.Objects.Publish || {};
@@ -72,6 +73,8 @@ CCH.Objects.Publish.UI = function () {
 		$emphasisItemSpan = $form.find('.emphasis-item'),
 		$emphasisAggregationSpan = $form.find('.emphasis-aggregation'),
 		$resourceSortableContainers = $('.resource-list-container-sortable');
+
+	me.templates = {};
 
 	me.createHelpPopover = function ($content, $element) {
 		$element.popover('destroy');
@@ -830,51 +833,19 @@ CCH.Objects.Publish.UI = function () {
 		}
 	};
 
-	me.createPublicationRow = function (link, title, type) {
+	me.createPublicationRow = function (link, title, type, prepend) {
 		var exists = false,
 			$panel = $('#' + type + '-panel'),
-			$panelBodyListContainer = $panel.find('.panel-body > ul'),
-			$closeButtonRow = $('<div />').addClass('pull-right'),
-			$closeButton = $('<i />').addClass('fa fa-times'),
-			$smallWell = $('<div />').addClass('well well-small'),
-			$sortableWrapper = $('<li />').addClass('ui-state-default'),
-			$linkRow = $('<div />').addClass('row'),
-			$titleRow = $('<div />').addClass('row'),
-			$typeRow = $('<div />').addClass('row'),
-			$linkLabel = $('<label />').html('Link'),
-			$linkInput = $('<input />')
-			.attr({
-				type: 'text',
-				maxlength: CCH.CONFIG.limits.publication.link
-			})
-			.addClass('form-control panel-item-link')
-			.val(link),
-			$titleLabel = $('<label />').html('Title'),
-			$titleInput = $('<input />')
-				.attr({
-					type: 'text',
-					maxlength: CCH.CONFIG.limits.publication.title
-				})
-				.addClass('form-control panel-item-title')
-				.val(title),
-			$dataOption = $('<option />')
-				.attr('value', 'data')
-				.html('Data'),
-			$publicationOption = $('<option />')
-				.attr('value', 'publications')
-				.html('Publication'),
-			$resourceOption = $('<option />')
-				.attr('value', 'resources')
-				.html('Resource'),
-			$typeSelect = $('<select />')
-				.addClass('form-control')
-				.append($dataOption, $publicationOption, $resourceOption);
-
-		$sortableWrapper.append($smallWell);
-		$typeRow.append($typeSelect);
-		$typeSelect.val(type);
-		$typeSelect.on('change', me.resourceTypeChanged);
-
+			$panelBodyListContainer = $panel.find('.panel-body > ul');
+		
+		var publicationRowHtml = CCH.ui.templates.publication_row({
+			linkValue : link, 
+			titleValue : title,
+			linkInputMaxLength : CCH.CONFIG.limits.publication.link,
+			titleInputMaxLength : CCH.CONFIG.limits.publication.title
+		});
+		var $rowObject = $(publicationRowHtml);
+		
 		// Check that this item does not yet exist in the UI
 		$('.resource-panel .well').each(function (i, pubPanel) {
 			var pTitle = $(pubPanel).find('>.row:nth-child(2) input').val() || '',
@@ -889,21 +860,20 @@ CCH.Objects.Publish.UI = function () {
 		});
 
 		if (!exists) {
-			$closeButton
-				.on(CCH.CONFIG.strings.click, function () {
-					$sortableWrapper.remove();
-				});
-
-			$closeButtonRow.append($closeButton);
-
-			$linkRow.append($linkLabel, $linkInput);
-			$titleRow.append($titleLabel, $titleInput);
-
-			$smallWell.append($closeButtonRow, $titleRow, $linkRow, $typeRow);
-
-			$panelBodyListContainer.append($sortableWrapper);
+			if (!prepend) {
+				$panelBodyListContainer.append($rowObject);
+			} else {
+				$panelBodyListContainer.prepend($rowObject);
+			}
+			
+			$rowObject.find('.publicationrow-closebutton').on(CCH.CONFIG.strings.click, function (evt) {
+				$(evt.target).closest('.well').remove();
+			});
+			$rowObject.find('select').val(type);
+			$rowObject.find('select').on('change', me.resourceTypeChanged);
+			
 		}
-		return $smallWell;
+		return $rowObject;
 	};
 	
 	// When a resource type changes, I want to remove it from its current bin
@@ -1000,7 +970,7 @@ CCH.Objects.Publish.UI = function () {
 						$button.click();
 					}
 				});
-
+				
 				item.displayedChildren.each(function (child) {
 					var $button = $childrenSortableList
 						.find('li#child-item-' + child)
@@ -1009,6 +979,12 @@ CCH.Objects.Publish.UI = function () {
 					if (!$button.hasClass('active')) {
 						$button.click();
 					}
+				});
+				
+				// Bubble the displayed children to the top of the stack in proper order
+				item.displayedChildren.reverse().each(function (id) {
+					var $displayedChild = $('.form-publish-info-item-children-sortable-li#child-item-' + id);
+					$childrenSortableList.prepend($displayedChild);
 				});
 
 				$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
@@ -1215,6 +1191,7 @@ CCH.Objects.Publish.UI = function () {
 						return type === 'mixed' || item.type.toLowerCase().trim() === type.toLowerCase().trim();
 					}
 				};
+				
 		CCH.items.each(function (item) {
 			itemId = item.id;
 			if (itemId !== currentAggregationId && isOfType(item)) {
@@ -1261,7 +1238,6 @@ CCH.Objects.Publish.UI = function () {
 							processChildren = function () {
 								setTimeout(function () {
 									me.buildKeywordsFromChildren();
-									me.buildPublicationsFromChildren();
 									me.updateBoundingBox();
 								}, 100);
 							};
@@ -1308,6 +1284,7 @@ CCH.Objects.Publish.UI = function () {
 			}
 
 		});
+		
 		$childrenSortableList.sortable();
 	};
 
@@ -1328,22 +1305,6 @@ CCH.Objects.Publish.UI = function () {
 				return k.toLowerCase().trim();
 			}).each(function (keyword) {
 				me.addKeywordGroup(keyword);
-			});
-		});
-	};
-
-	me.buildPublicationsFromChildren = function () {
-		$('.form-publish-info-item-children-sortable-li button:first-child().active').each(function (i, o) {
-			var itemId = $(o).parent().parent().parent().attr('id').substring(11),
-					item = CCH.items.find(function (i) {
-						return i.id === itemId;
-					}),
-					publications = item.summary.full.publications;
-
-			['data', 'publications', 'resources'].each(function (type) {
-				publications[type].each(function (pub) {
-					me.createPublicationRow(pub.link, pub.title, type);
-				});
 			});
 		});
 	};
@@ -1456,38 +1417,40 @@ CCH.Objects.Publish.UI = function () {
 						item = CCH.items.find(function (item) {
 							return item.id === id;
 						});
-
-				if ($bboxWest.val()) {
-					if (item.bbox[0] < parseFloat($bboxWest.val())) {
+				if (item.bbox) {
+					if ($bboxWest.val()) {
+						if (item.bbox[0] < parseFloat($bboxWest.val())) {
+							$bboxWest.val(item.bbox[0]);
+						}
+					} else {
 						$bboxWest.val(item.bbox[0]);
 					}
-				} else {
-					$bboxWest.val(item.bbox[0]);
-				}
 
-				if ($bboxSouth.val()) {
-					if (item.bbox[1] < parseFloat($bboxSouth.val())) {
+					if ($bboxSouth.val()) {
+						if (item.bbox[1] < parseFloat($bboxSouth.val())) {
+							$bboxSouth.val(item.bbox[1]);
+						}
+					} else {
 						$bboxSouth.val(item.bbox[1]);
 					}
-				} else {
-					$bboxSouth.val(item.bbox[1]);
-				}
 
-				if ($bboxEast.val()) {
-					if (item.bbox[2] > parseFloat($bboxEast.val())) {
+					if ($bboxEast.val()) {
+						if (item.bbox[2] > parseFloat($bboxEast.val())) {
+							$bboxEast.val(item.bbox[2]);
+						}
+					} else {
 						$bboxEast.val(item.bbox[2]);
 					}
-				} else {
-					$bboxEast.val(item.bbox[2]);
-				}
 
-				if ($bboxNorth.val()) {
-					if (item.bbox[3] > parseFloat($bboxNorth.val())) {
+					if ($bboxNorth.val()) {
+						if (item.bbox[3] > parseFloat($bboxNorth.val())) {
+							$bboxNorth.val(item.bbox[3]);
+						}
+					} else {
 						$bboxNorth.val(item.bbox[3]);
 					}
-				} else {
-					$bboxNorth.val(item.bbox[3]);
 				}
+				
 			});
 		} else {
 			$bboxWest.val('');
@@ -1767,7 +1730,7 @@ CCH.Objects.Publish.UI = function () {
 
 	['publications', 'resources', 'data'].forEach(function(type) {
 		$('#form-publish-info-item-panel-' + type + '-button-add').on(CCH.CONFIG.strings.click, function () {
-			me.createPublicationRow('', '', type);
+			me.createPublicationRow('', '', type, true);
 		});
 	});
 	
@@ -2190,7 +2153,7 @@ CCH.Objects.Publish.UI = function () {
 	});
 
 	$buttonViewAll.on(CCH.CONFIG.strings.click, function () {
-		window.open(CCH.baseUrl + 'publish/tree/', '_blank');
+		window.open(CCH.baseUrl + '/publish/tree/', '_blank');
 	});
 
 	$imageGenButton.on(CCH.CONFIG.strings.click, function () {
@@ -2316,6 +2279,23 @@ CCH.Objects.Publish.UI = function () {
 		}
 	});
 	
+	me.loadTemplates = function () {
+		["publication_row"].each(function (templateName) {
+			$.ajax({
+				url : CCH.CONFIG.contextPath + '/resource/template/handlebars/publish/' + templateName + '.html',
+				context: {
+					templateName : templateName
+				},
+				success : function (data) {
+					CCH.ui.templates[this.templateName] = Handlebars.compile(data);
+				},
+				error : function () {
+					window.alert('Unable to load resources required for a functional publication page. Please contact CCH admin team.');
+				}
+			});
+		});
+	};
+	
 	me.initializeResourceSorting = function () {
 		$resourceSortableContainers.sortable({
 			placeholder: 'ui-state-highlight'
@@ -2323,6 +2303,7 @@ CCH.Objects.Publish.UI = function () {
 	};
 	
 	me.initializeResourceSorting();
-
+	me.loadTemplates();
+	
 	return $.extend(me, {});
 };

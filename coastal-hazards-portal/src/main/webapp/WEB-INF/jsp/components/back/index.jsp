@@ -23,6 +23,12 @@
 <%
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 	String baseUrl = props.getProperty("coastal-hazards.base.url");
+	String secureBaseUrlJndiString = props.getProperty("coastal-hazards.base.secure.url");
+	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
+	String requestUrl = request.getRequestURL().toString();
+	if (requestUrl.toLowerCase().contains("https")) {
+		baseUrl = secureBaseUrlJndiString;
+	}
 	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
 	String relPath = baseUrl + "/";
 	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
@@ -32,6 +38,7 @@
 	String marineArcServerEndpoint = props.getProperty("coastal-hazards.marine.endpoint");
 	String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");
 	String version = props.getProperty("application.version");
+	String resourceSuffix = development ? "" : "-" + version + "-min";
 	String path = "../../../../";
 	String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
 	String ga = path + "WEB-INF/jsp/components/common/google-analytics.jsp";
@@ -53,7 +60,7 @@
 		<title>USGS Coastal Change Hazards Portal</title>
 			
 		<link type="text/css" rel="stylesheet" media="all" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
-		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />
+		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= resourceSuffix %>.css" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/themes/default/style<%= development ? "" : ".min"%>.css" />
 		<script type="text/javascript">
@@ -76,9 +83,9 @@
 		<div id="info-content" class="container">
 			<div id="header-row" class="row">
 				<%-- Logo --%>
-				<span id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
-					<img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="<%=baseUrl%>/images/banner/cida-cmgp.svg" />
-				</span>
+                                    <span id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+                                            <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="<%=baseUrl%>/images/banner/cida-cmgp.svg" />
+                                    </span>
 				<%-- Application Title --%>
 				<div id="app-navbar-site-title-container" class="app-navbar-item-container">
 
@@ -109,16 +116,17 @@
 				<div id="info-row-control"  class="col-md-2">
 					<div class="row">
 						<div class='well well'>
-							<div id="label-action-center" class="hidden-md hidden-lg"><i class="fa fa-caret-down action-arrow" alt="downward facing arrow"></i> Action Center</div>
+							<div id="label-action-center" class="hidden-md hidden-lg"><i class="fa fa-chevron-down" alt="downward facing arrow"></i> Action Center</div>
 
 							<%-- Application Links --%>
 							<div id="container-control-button">
+                                                                <h4 id="action-center-title">Action Center</h4>
 								<button type="button" class="btn btn-default help-button" id="application-info-button" data-tooltip="tooltip" data-placement="right" title="Action Center Descriptions"><i class="fa fa-question-circle action-question"></i></button>
 								<button type="button" class="btn btn-default control-button" id="application-link-button" data-tooltip="tooltip" data-placement="right" title="Go back to the map view of the portal">Return To Map</button>
 								<button type="button" class="btn btn-default control-button" id="add-bucket-link-button" data-tooltip="tooltip" data-placement="right" title="Add this item to your bucket. Use the bucket to collect, view, and download lots of data and products, or share your bucket with friends and colleagues">Add to Your Bucket</button>
-								<button type="button" class="btn btn-default control-button" id="print-snapshot-button" data-tooltip="tooltip" data-placement="right" title="Create a printer-friendly view of this information to print or save">Print Snapshot</button>
+								<button type="button" class="btn btn-default control-button hidden" id="print-snapshot-button" data-tooltip="tooltip" data-placement="right" title="Create a printer-friendly view of this information to print or save">Print Snapshot</button>
 								<button type="button" class="btn btn-default control-button" id="map-services-link-button" data-tooltip="tooltip" data-toggle="modal" data-target="#modal-services-view" data-placement="right" title="Explore available services that can be added to your own or other web-based mapping applications">Map Services</button>
-								<button type="button" class="btn btn-default control-button" id="metadata-link-button"  role="button" target="portal_metadata_window" data-tooltip="tooltip" data-placement="right" title="Review detailed geographic, bibliographic and other descriptive information about this item. The data are presented in the Catalog Service Web metadata format, and are Federal Geographic Data Committee geospatial standards compliant.">Metadata</button>
+								<button type="button" class="btn btn-default control-button" id="metadata-link-button"  role="button" target="portal_metadata_window" data-tooltip="tooltip" data-placement="right" title="Review detailed geographic, bibliographic and other descriptive information about this item.">Metadata</button>
 								<button type="button" class="btn btn-default control-button" id="download-link-button" data-tooltip="tooltip" data-placement="right" title="Download this item to your computer">Download Dataset</button>
 								<button type="button" class="btn btn-default control-button hidden" id="analysis-link-button" data-tooltip="tooltip" data-placement="right" title="....">Make a Hazard Analysis</button>
 								<button type="button" class="btn btn-default control-button" data-toggle="modal" data-tooltip="tooltip" data-target="#modal-sharing-view" data-placement="right" title="Get a short URL to share this information with others">Share This Info</button>
@@ -153,7 +161,7 @@
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
-						<button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
+                                            <button class="close" aria-hidden="true" data-dismiss="modal" type="button"><i class="fa fa-times"></i></button>
 						<h4 id="modal-label">Available Services</h4>
 					</div>
 					<div class="modal-body">
@@ -174,7 +182,7 @@
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
-						<button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
+                                            <button class="close" aria-hidden="true" data-dismiss="modal" type="button"><i class="fa fa-times"></i></button>
 						<h4 id="modal-label">Share Your Coastal Change Hazards Portal View With Others</h4>
 					</div>
 					<div class="modal-body">
@@ -259,15 +267,15 @@
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/handlebars/<%=vHandlebars%>/handlebars<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/jstree<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Session<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/UI<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Legend<%= development ? "" : "-min"%>.js"></script>
-		<script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= development ? "" : "-min"%>.js'></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Session<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/FixedTileManager<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/UI<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Legend<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= resourceSuffix %>.js'></script>
 	</body>
 </html>

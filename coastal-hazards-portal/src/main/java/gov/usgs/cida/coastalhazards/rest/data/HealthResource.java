@@ -4,10 +4,14 @@ import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.jpa.JPAHelper;
+import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.util.Status;
+import gov.usgs.cida.coastalhazards.model.util.Status.StatusName;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -117,6 +121,32 @@ public class HealthResource {
 		} catch (Exception e) {
 			componentCheckMap.put("Geoserver", false);
 			overallHealth = false;
+		}
+		
+		try (StatusManager statusMan = new StatusManager()) {
+			// NOTE this does not effect the overall health
+			boolean staleCache = false;
+			Map<Status.StatusName, Status> statuses = statusMan.loadAll();
+			Status itemLastUpdate = statuses.get(StatusName.ITEM_UPDATE);
+			Status structureLastUpdate = statuses.get(StatusName.STRUCTURE_UPDATE);
+			Status cacheClearedDate = statuses.get(StatusName.CACHE_CLEAR);
+			Date itemOrStructureUpdate = null;
+			if (itemLastUpdate != null) {
+				itemOrStructureUpdate = itemLastUpdate.getLastUpdate();
+			}
+			if (structureLastUpdate != null) {
+				Date structureDate = structureLastUpdate.getLastUpdate();
+				if (structureDate != null && itemOrStructureUpdate != null && structureDate.after(itemOrStructureUpdate)) {
+					itemOrStructureUpdate = structureDate;
+				}
+			}
+			if (cacheClearedDate != null) {
+				Date cacheDate = cacheClearedDate.getLastUpdate();
+				if (cacheDate != null && itemOrStructureUpdate != null && cacheDate.before(itemOrStructureUpdate)) {
+					staleCache = true;
+				}
+			}
+			componentCheckMap.put("TileCacheStale", staleCache);
 		}
 
 		Gson gson = GsonUtil.getDefault();

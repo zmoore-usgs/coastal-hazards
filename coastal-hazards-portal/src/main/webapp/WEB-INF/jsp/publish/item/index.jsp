@@ -39,9 +39,9 @@
 	String vFontAwesome = getProp("version.fontawesome");
 	String vOpenlayers = getProp("version.openlayers");
 	String vSugarJs = getProp("version.sugarjs");
-	String baseUrl = props.getProperty("coastal-hazards.base.url");
+	String vHandlebars = getProp("version.handlebars");
+	String baseUrl = props.getProperty("coastal-hazards.base.secure.url");
 	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
-	String relPath = baseUrl + "/";
 
 	// Figure out the path based on the ID passed in, if any
 	Map<String, String> attributeMap = (Map<String, String>) pageContext.findAttribute("it");
@@ -51,7 +51,7 @@
 	String jsURI = path + "js/third-party/jsuri/jsuri.jsp";
 	String fineUploader = path + "js/fineuploader/fineuploader.jsp";
 	String log4js = path + "js/log4javascript/log4javascript.jsp";
-	String configration = path + "WEB-INF/jsp/components/common/config.jsp";
+	String configuration = path + "WEB-INF/jsp/components/common/config.jsp";
 %>
 <!DOCTYPE html>
 <html>
@@ -74,61 +74,62 @@
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
 
 		<jsp:include page="<%= jsURI%>">
-			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
+			<jsp:param name="baseUrl" value="<%=baseUrl + '/' %>" /> 
 		</jsp:include>
-		<jsp:include page="<%= log4js%>">
-			<jsp:param name="relPath" value="<%=relPath%>" /> 
+		<jsp:include page="<%= log4js %>">
+			<jsp:param name="relPath" value="<%=baseUrl + '/'%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="<%= fineUploader%>">
-			<jsp:param name="relPath" value="<%=relPath%>" /> 
+			<jsp:param name="relPath" value="<%=baseUrl + '/'%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
-		<jsp:include page="<%= configration%>"></jsp:include>
-			<script type="text/javascript">
-				CCH.itemid = '<%= id %>';
-				CCH.baseUrl = '<%= relPath %>';
-				CCH.CONFIG.limits = {
-					map: {
-						modelProjection: new OpenLayers.Projection('EPSG:4326')
+		<jsp:include page="<%= configuration%>"></jsp:include>
+		<script type="text/javascript">
+			CCH.itemid = '<%= id %>';
+			CCH.baseUrl = '<%= baseUrl %>';
+			CCH.CONFIG.contextPath = '<%= baseUrl %>';
+			CCH.CONFIG.limits = {
+				map: {
+					modelProjection: new OpenLayers.Projection('EPSG:4326')
+				},
+				item: {
+					name: <%= Item.NAME_MAX_LENGTH%>,
+					attribute: <%= Item.ATTR_MAX_LENGTH%>
+				},
+				service: {
+					endpoint: <%= Service.ENDPOINT_MAX_LENGTH%>,
+					parameter: <%= Service.PARAMETER_MAX_LENGTH%>
+				},
+				summary: {
+					full: {
+						title: <%= Full.TITLE_MAX_LENGTH%>,
+						text: <%= Full.TEXT_MAX_LENGTH%>
 					},
-					item: {
-						name: <%= Item.NAME_MAX_LENGTH%>,
-						attribute: <%= Item.ATTR_MAX_LENGTH%>
+					medium: {
+						title: <%= Medium.TITLE_MAX_LENGTH%>,
+						text: <%= Medium.TEXT_MAX_LENGTH%>
 					},
-					service: {
-						endpoint: <%= Service.ENDPOINT_MAX_LENGTH%>,
-						parameter: <%= Service.PARAMETER_MAX_LENGTH%>
-					},
-					summary: {
-						full: {
-							title: <%= Full.TITLE_MAX_LENGTH%>,
-							text: <%= Full.TEXT_MAX_LENGTH%>
-						},
-						medium: {
-							title: <%= Medium.TITLE_MAX_LENGTH%>,
-							text: <%= Medium.TEXT_MAX_LENGTH%>
-						},
-						tiny: {
-							text: <%= Tiny.MAX_LENGTH%>
-						}
-					},
-					publication: {
-						title: <%= Publication.TITLE_MAX_LENGTH%>,
-						link: <%= Publication.LINK_MAX_LENGTH%>
+					tiny: {
+						text: <%= Tiny.MAX_LENGTH%>
 					}
-				};
-			CCH.CONFIG.strings = {
-				cidaGeoserver : 'cida-geoserver',
-				disabled : 'disabled',
-				hide : 'hide',
-				show : 'show',
-				hidden : 'hidden',
-				enabled : 'enabled',
-				checked : 'checked',
-				click : 'click'
-			}
-		</script>
+				},
+				publication: {
+					title: <%= Publication.TITLE_MAX_LENGTH%>,
+					link: <%= Publication.LINK_MAX_LENGTH%>
+				}
+			};
+		CCH.CONFIG.strings = {
+			cidaGeoserver : 'cida-geoserver',
+			disabled : 'disabled',
+			hide : 'hide',
+			show : 'show',
+			hidden : 'hidden',
+			enabled : 'enabled',
+			checked : 'checked',
+			click : 'click'
+		}
+	</script>
 	</head>
 	<body>
 
@@ -508,7 +509,7 @@
 				</div>
 			</div>
 		</div>
-
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/handlebars/<%=vHandlebars%>/handlebars.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/publish/UI.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util.js"></script>

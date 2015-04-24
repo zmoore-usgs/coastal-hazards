@@ -2,10 +2,11 @@
 	Boolean development = Boolean.parseBoolean(request.getParameter("debug-qualifier"));
 	String referer = request.getParameter("original-referer");
 	String baseUrl = request.getParameter("base-url");
+	String version = request.getParameter("version");
 	Boolean isOnSiteRequest = referer.contains(baseUrl);
 	
 %>
-<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/application-overlay/application-overlay<%= development ? "" : "-min"%>.css" />
+<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/application-overlay/application-overlay<%= development ? "" :"-" + version + "-min"%>.css" />
 <div id="application-overlay">
 	<div id="application-initial-load-splash" class="<%= isOnSiteRequest ? "hidden" : ""%>">
 		<div class="application-overlay-content-wrap">
