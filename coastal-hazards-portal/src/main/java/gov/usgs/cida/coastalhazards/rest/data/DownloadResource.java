@@ -50,7 +50,7 @@ public class DownloadResource {
 
 	@HEAD
 	@Path("/item/{id}")
-	public Response checkItemAvailability(@PathParam("headItemId") String id) throws IOException {
+	public Response checkItemAvailability(@PathParam("id") String id) throws IOException {
 		Response response;
 		
 		try (ItemManager itemManager = new ItemManager(); DownloadManager downloadManager = new DownloadManager()) {
@@ -195,7 +195,7 @@ public class DownloadResource {
     @DELETE
     @Produces("application/json")
     @Path("/item/{id}")
-    public Response deleteStagedItem(@PathParam("itemId") String itemId, @Context HttpServletRequest request) {
+    public Response deleteStagedItem(@PathParam("id") String itemId, @Context HttpServletRequest request) {
         Response response = null;
         try (DownloadManager downloadManager = new DownloadManager()) {
             Download download = downloadManager.load(itemId);
