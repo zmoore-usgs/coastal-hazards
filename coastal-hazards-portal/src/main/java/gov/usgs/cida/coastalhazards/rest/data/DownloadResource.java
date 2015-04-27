@@ -19,11 +19,14 @@ import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.security.PermitAll;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -32,17 +35,39 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author Jordan Walker <jiwalker@usgs.gov>
- */
-@Path(DataURI.DOWNLOAD_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class DownloadResource {
 
+	private static final Logger logger = LoggerFactory.getLogger(DownloadResource.class);	
+	
     private static final SessionManager sessionManager = new SessionManager();
 
+	@HEAD
+	@Path("/item/{headItemId}")
+	@Produces("text/plain")
+	public Response checkItemAvailability(@PathParam("headItemId") String id) throws IOException {
+		Response response;
+		
+		try (ItemManager itemManager = new ItemManager(); DownloadManager downloadManager = new DownloadManager()) {
+			Item item = itemManager.load(id);
+			if (item == null) {
+				response = Response.status(404).build();
+			} else {
+				if (downloadManager.isPersisted(id)) {
+					response = Response.status(200).build();
+				} else {
+					ExecutorService execSvc = Executors.newSingleThreadExecutor();
+					execSvc.submit(new StagingRunner(id));
+					response = Response.status(202).build();
+				}
+			}
+		}
+				
+		return response;
+	}
+	
     /**
      * Downloads a zip file containing the contents of 
      * gov.usgs.cida.coastalhazards.model.Item
@@ -187,4 +212,25 @@ public class DownloadResource {
         }
         return response;
     }
+
+	private static class StagingRunner implements Callable<File> {
+		Thread stagingThread;
+		String itemId;
+		
+		StagingRunner(String itemId) {
+			this.itemId = itemId;
+		}
+
+		@Override
+		public File call() throws IOException {
+			File stagingDir = DownloadUtility.createDownloadStagingArea();
+			try (ItemManager itemManager = new ItemManager()) {
+				Item item = itemManager.load(itemId);
+				DownloadUtility.stageItemDownload(item, stagingDir);
+			} catch (IOException ioe) {
+				FileUtils.forceDelete(stagingDir);
+			}
+			return stagingDir;
+		}
+	}
 }
