@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -38,9 +39,11 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Path(DataURI.DOWNLOAD_PATH)
+@PermitAll
 public class DownloadResource {
 
-	private static final Logger logger = LoggerFactory.getLogger(DownloadResource.class);	
+	private static final Logger log = LoggerFactory.getLogger(DownloadResource.class);	
 	
     private static final SessionManager sessionManager = new SessionManager();
 
