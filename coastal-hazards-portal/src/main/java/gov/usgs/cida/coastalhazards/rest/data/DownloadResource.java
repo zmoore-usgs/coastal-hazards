@@ -37,22 +37,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
-*
-* @author Jordan Walker <jiwalker@usgs.gov>
-*/
+ *
+ * @author Jordan Walker <jiwalker@usgs.gov>
+ */
 @Path(DataURI.DOWNLOAD_PATH)
 @PermitAll
 public class DownloadResource {
 
-	private static final Logger log = LoggerFactory.getLogger(DownloadResource.class);	
-	
-    private static final SessionManager sessionManager = new SessionManager();
+	private static final Logger log = LoggerFactory.getLogger(DownloadResource.class);
+
+	private static final SessionManager sessionManager = new SessionManager();
 
 	@HEAD
 	@Path("/item/{id}")
 	public Response checkItemAvailability(@PathParam("id") String id) throws IOException {
 		Response response;
-		
+
 		try (ItemManager itemManager = new ItemManager(); DownloadManager downloadManager = new DownloadManager()) {
 			Item item = itemManager.load(id);
 			if (item == null) {
@@ -66,153 +66,153 @@ public class DownloadResource {
 				}
 			}
 		}
-				
+
 		return response;
 	}
-	
-    /**
-     * Downloads a zip file containing the contents of 
-     * gov.usgs.cida.coastalhazards.model.Item
-     *
-     * @param id identifier of requested item
-     * @return JSON representation of the item(s)
-     * @throws java.io.IOException
-     */
-    @GET
-    @Path("/item/{id}")
-    @Produces("application/zip")
-    public Response downloadItem(@PathParam("id") String id) throws IOException {
-        Response response = null;
-        try (ItemManager itemManager = new ItemManager(); DownloadManager downloadManager = new DownloadManager()) {
-            Item item = itemManager.load(id);
-            if (item == null) {
-                throw new NotFoundException();
-            } else {
-                File zipFile = null;
-                
-                try {
-                    if (downloadManager.isPersisted(id)) {
-                        Download persistedDownload = downloadManager.load(id);
+
+	/**
+	 * Downloads a zip file containing the contents of
+	 * gov.usgs.cida.coastalhazards.model.Item
+	 *
+	 * @param id identifier of requested item
+	 * @return JSON representation of the item(s)
+	 * @throws java.io.IOException
+	 */
+	@GET
+	@Path("/item/{id}")
+	@Produces("application/zip")
+	public Response downloadItem(@PathParam("id") String id) throws IOException {
+		Response response = null;
+		try (ItemManager itemManager = new ItemManager(); DownloadManager downloadManager = new DownloadManager()) {
+			Item item = itemManager.load(id);
+			if (item == null) {
+				throw new NotFoundException();
+			} else {
+				File zipFile = null;
+
+				try {
+					if (downloadManager.isPersisted(id)) {
+						Download persistedDownload = downloadManager.load(id);
                         // if we switch this to external file server or S3,
-                        // redirect to this uri as a url
-                        zipFile = persistedDownload.fetchZipFile();
-                        if (zipFile == null || !zipFile.exists()) {
-                            throw new FileNotFoundException();
-                        }
-                    } else {
-                        throw new FileNotFoundException();
-                    }
-                } catch (FileNotFoundException | URISyntaxException ex) {
-                    File stagingDir = DownloadUtility.createDownloadStagingArea();
-                    boolean staged = DownloadUtility.stageItemDownload(item, stagingDir);
-                    if (staged) {
-                        Download download = DownloadUtility.zipStagingAreaForDownload(stagingDir);
-                        download.setItemId(id);
-                        try {
-                            zipFile = download.fetchZipFile();
-                        } catch (URISyntaxException ex2) {
-                            throw new DownloadStagingUnsuccessfulException();
-                        }
-                        downloadManager.save(download);
-                    } else {
-                        throw new DownloadStagingUnsuccessfulException();
-                    }
-                }
-                String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
-                response = Response.ok(zipFile, "application/zip").header("Content-Disposition",  contentDisposition).build();
-            }
-        }
-        return response;
-    }
+						// redirect to this uri as a url
+						zipFile = persistedDownload.fetchZipFile();
+						if (zipFile == null || !zipFile.exists()) {
+							throw new FileNotFoundException();
+						}
+					} else {
+						throw new FileNotFoundException();
+					}
+				} catch (FileNotFoundException | URISyntaxException ex) {
+					File stagingDir = DownloadUtility.createDownloadStagingArea();
+					boolean staged = DownloadUtility.stageItemDownload(item, stagingDir);
+					if (staged) {
+						Download download = DownloadUtility.zipStagingAreaForDownload(stagingDir);
+						download.setItemId(id);
+						try {
+							zipFile = download.fetchZipFile();
+						} catch (URISyntaxException ex2) {
+							throw new DownloadStagingUnsuccessfulException();
+						}
+						downloadManager.save(download);
+					} else {
+						throw new DownloadStagingUnsuccessfulException();
+					}
+				}
+				String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
+				response = Response.ok(zipFile, "application/zip").header("Content-Disposition", contentDisposition).build();
+			}
+		}
+		return response;
+	}
 
-    /**
-     * Retrieves representation of an instance of
-     * gov.usgs.cida.coastalhazards.model.Item
-     *
-     * @param id identifier of requested item
-     * @return JSON representation of the item(s)
-     * @throws java.io.IOException
-     */
-    @GET
-    @Path("/view/{id}")
-    @Produces("application/zip")
-    public Response getSession(@PathParam("id") String id) throws IOException, NoSuchAlgorithmException {
-        Response response = null;
-        String sessionJSON = sessionManager.load(id);
-        try ( DownloadManager downloadManager = new DownloadManager()) {
-            if (sessionJSON == null) {
-                throw new NotFoundException();
-            } else {
+	/**
+	 * Retrieves representation of an instance of
+	 * gov.usgs.cida.coastalhazards.model.Item
+	 *
+	 * @param id identifier of requested item
+	 * @return JSON representation of the item(s)
+	 * @throws java.io.IOException
+	 */
+	@GET
+	@Path("/view/{id}")
+	@Produces("application/zip")
+	public Response getSession(@PathParam("id") String id) throws IOException, NoSuchAlgorithmException {
+		Response response = null;
+		String sessionJSON = sessionManager.load(id);
+		try (DownloadManager downloadManager = new DownloadManager()) {
+			if (sessionJSON == null) {
+				throw new NotFoundException();
+			} else {
 
-                File zipFile = null;
-                try {
-                    if (downloadManager.isPersisted(id)) {
-                        Download download = downloadManager.load(id);
-                        zipFile = new File(new URI(download.getPersistanceURI()));
-                        if (zipFile == null || !zipFile.exists()) {
-                            throw new FileNotFoundException();
-                        }
-                    } else {
-                        throw new FileNotFoundException();
-                    }
-                } catch (FileNotFoundException| URISyntaxException ex) {
-                    Session session = Session.fromJSON(sessionJSON);
-                    File stagingDir = DownloadUtility.createDownloadStagingArea();
-                    boolean staged = DownloadUtility.stageSessionDownload(session, stagingDir);
-                    if (staged) {
-                        Download download = DownloadUtility.zipStagingAreaForDownload(stagingDir);
-                        download.setSessionId(id);
-                        try {
-                            zipFile = download.fetchZipFile();
-                        } catch (URISyntaxException ex2) {
-                            throw new DownloadStagingUnsuccessfulException();
-                        }
-                        downloadManager.save(download);
-                    } else {
-                        throw new DownloadStagingUnsuccessfulException();
-                    }
-                }
-                String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
-                response = Response.ok(zipFile, "application/zip").header("Content-Disposition",  contentDisposition).build();
-            }
-        }
-        return response;
-    }
-    
-    @GET
-    @Produces("application/json")
-    public Response displayStagedItems() {
-        String downloadJson = null;
-        try (DownloadManager downloadManager = new DownloadManager()) {
-            List<Download> allStagedDownloads = downloadManager.getAllStagedDownloads();
-            Gson serializer = GsonUtil.getDefault();
-            downloadJson = serializer.toJson(allStagedDownloads, ArrayList.class);
-        }
-        return Response.ok(downloadJson, MediaType.APPLICATION_JSON_TYPE).build();
-    }
+				File zipFile = null;
+				try {
+					if (downloadManager.isPersisted(id)) {
+						Download download = downloadManager.load(id);
+						zipFile = new File(new URI(download.getPersistanceURI()));
+						if (zipFile == null || !zipFile.exists()) {
+							throw new FileNotFoundException();
+						}
+					} else {
+						throw new FileNotFoundException();
+					}
+				} catch (FileNotFoundException | URISyntaxException ex) {
+					Session session = Session.fromJSON(sessionJSON);
+					File stagingDir = DownloadUtility.createDownloadStagingArea();
+					boolean staged = DownloadUtility.stageSessionDownload(session, stagingDir);
+					if (staged) {
+						Download download = DownloadUtility.zipStagingAreaForDownload(stagingDir);
+						download.setSessionId(id);
+						try {
+							zipFile = download.fetchZipFile();
+						} catch (URISyntaxException ex2) {
+							throw new DownloadStagingUnsuccessfulException();
+						}
+						downloadManager.save(download);
+					} else {
+						throw new DownloadStagingUnsuccessfulException();
+					}
+				}
+				String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
+				response = Response.ok(zipFile, "application/zip").header("Content-Disposition", contentDisposition).build();
+			}
+		}
+		return response;
+	}
 
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-    @DELETE
-    @Produces("application/json")
-    @Path("/item/{id}")
-    public Response deleteStagedItem(@PathParam("id") String itemId, @Context HttpServletRequest request) {
-        Response response = null;
-        try (DownloadManager downloadManager = new DownloadManager()) {
-            Download download = downloadManager.load(itemId);
-            boolean deleted = false;
-            try {
-                if (download == null) {
-                    throw new NotFoundException();
-                }
-                File stagingFolder = download.fetchZipFile().getParentFile();
-                deleted = FileUtils.deleteQuietly(stagingFolder);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
-            downloadManager.delete(download);
-            response = Response.ok("{\"deleted\":\"" + deleted + "\"}", MediaType.APPLICATION_JSON_TYPE).build();
-        }
-        return response;
-    }
+	@GET
+	@Produces("application/json")
+	public Response displayStagedItems() {
+		String downloadJson = null;
+		try (DownloadManager downloadManager = new DownloadManager()) {
+			List<Download> allStagedDownloads = downloadManager.getAllStagedDownloads();
+			Gson serializer = GsonUtil.getDefault();
+			downloadJson = serializer.toJson(allStagedDownloads, ArrayList.class);
+		}
+		return Response.ok(downloadJson, MediaType.APPLICATION_JSON_TYPE).build();
+	}
+
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@DELETE
+	@Produces("application/json")
+	@Path("/item/{id}")
+	public Response deleteStagedItem(@PathParam("id") String itemId, @Context HttpServletRequest request) {
+		Response response = null;
+		try (DownloadManager downloadManager = new DownloadManager()) {
+			Download download = downloadManager.load(itemId);
+			boolean deleted = false;
+			try {
+				if (download == null) {
+					throw new NotFoundException();
+				}
+				File stagingFolder = download.fetchZipFile().getParentFile();
+				deleted = FileUtils.deleteQuietly(stagingFolder);
+			} catch (URISyntaxException e) {
+				throw new RuntimeException(e);
+			}
+			downloadManager.delete(download);
+			response = Response.ok("{\"deleted\":\"" + deleted + "\"}", MediaType.APPLICATION_JSON_TYPE).build();
+		}
+		return response;
+	}
 
 }
