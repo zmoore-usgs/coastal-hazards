@@ -49,7 +49,6 @@ public class DownloadResource {
 
 	@HEAD
 	@Path("/item/{headItemId}")
-	@Produces("text/plain")
 	public Response checkItemAvailability(@PathParam("headItemId") String id) throws IOException {
 		Response response;
 		
