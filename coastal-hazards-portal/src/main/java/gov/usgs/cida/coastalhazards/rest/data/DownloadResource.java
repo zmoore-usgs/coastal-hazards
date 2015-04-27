@@ -24,6 +24,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -43,6 +44,12 @@ public class DownloadResource {
 
     private static final SessionManager sessionManager = new SessionManager();
 
+	@HEAD
+	@Path("/item/{id}")
+	public Response checkDownload(@PathParam("id") String id) {
+		return Response.ok().build();
+	}
+	
     /**
      * Downloads a zip file containing the contents of 
      * gov.usgs.cida.coastalhazards.model.Item

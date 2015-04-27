@@ -30,6 +30,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
+import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -269,7 +272,7 @@ public class Item implements Serializable, Cacheable {
 	protected void timestamp() {
 		this.lastUpdate = new Date();
 	}
-
+	
 	public void setDisplayedChildren(List<String> displayedChildren) {
 		this.displayedChildren = displayedChildren;
 	}

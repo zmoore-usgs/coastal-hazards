@@ -17,48 +17,58 @@ import javax.persistence.TemporalType;
  */
 @Entity
 public class Thumbnail implements Serializable, Cacheable {
-    
-    private static final long serialVersionUID = -4887617958825512425L;
-    
-    public static final String MIME_TYPE = "image/png";
 
-    private String itemId;
-    private String image;
-    private Date lastModified;
+	private static final long serialVersionUID = -4887617958825512425L;
 
-    @Id
-    @Column(name = "item_id")
-    public String getItemId() {
-        return itemId;
-    }
+	public static final String MIME_TYPE = "image/png";
 
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
-    }
+	private String itemId;
+	private String image;
+	private Date lastModified;
+	private Boolean dirty;
 
-    public String getImage() {
-        return image;
-    }
+	@Id
+	@Column(name = "item_id")
+	public String getItemId() {
+		return itemId;
+	}
 
-    public void setImage(String image) {
-        this.image = image;
-    }
+	public void setItemId(String itemId) {
+		this.itemId = itemId;
+	}
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_modified")
-    @Override
-    public Date getLastModified() {
-        return lastModified;
-    }
+	public String getImage() {
+		return image;
+	}
 
-    public void setLastModified(Date lastModified) {
-        this.lastModified = lastModified;
-    }
+	public void setImage(String image) {
+		this.image = image;
+	}
 
-    @PrePersist
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "last_modified")
+	@Override
+	public Date getLastModified() {
+		return lastModified;
+	}
+
+	public void setLastModified(Date lastModified) {
+		this.lastModified = lastModified;
+	}
+
+	@PrePersist
 	@PreUpdate
-    protected void timestamp() {
-        this.lastModified = new Date();
-    }
-    
+	protected void timestamp() {
+		this.lastModified = new Date();
+	}
+
+	public Boolean isDirty() {
+		return dirty;
+	}
+
+	public void setIsDirty(Boolean dirty) {
+		this.dirty = dirty;
+	}
+
+	
 }
