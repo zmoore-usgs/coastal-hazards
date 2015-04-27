@@ -29,6 +29,10 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
@@ -84,6 +88,17 @@ public class DownloadUtility {
         return tmpDir;
     }
 
+	/**
+	 * Creates a new thread to asynchronously stage the cache for an item's download cache
+	 * 
+	 * @param itemId
+	 * @return java.util.concurrent.Future<java.io.File> the download staging area
+	 */
+	public static Future<File> stageAsyncItemDownload(String itemId) {
+		ExecutorService execSvc = Executors.newSingleThreadExecutor();
+		return execSvc.submit(new DownloadStagingRunner(itemId));
+	}
+	
     /**
      * This will need some refactoring because it is real messy
      *
@@ -301,4 +316,28 @@ public class DownloadUtility {
         return sourceWfs;
     }
 
+	/**
+	 * Creates a new thread to asynchronously kick off the caching for an item download data
+	 */
+	private static class DownloadStagingRunner implements Callable<File> {
+		Thread stagingThread;
+		String itemId;
+		
+		DownloadStagingRunner(String itemId) {
+			this.itemId = itemId;
+		}
+
+		@Override
+		public File call() throws IOException {
+			File stagingDir = DownloadUtility.createDownloadStagingArea();
+			try (ItemManager itemManager = new ItemManager()) {
+				Item item = itemManager.load(itemId);
+				DownloadUtility.stageItemDownload(item, stagingDir);
+			} catch (IOException ioe) {
+				FileUtils.forceDelete(stagingDir);
+			}
+			return stagingDir;
+		}
+	}
+	
 }

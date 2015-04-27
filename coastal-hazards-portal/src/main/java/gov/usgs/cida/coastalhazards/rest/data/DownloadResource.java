@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -48,7 +49,7 @@ public class DownloadResource {
     private static final SessionManager sessionManager = new SessionManager();
 
 	@HEAD
-	@Path("/item/{headItemId}")
+	@Path("/item/{id}")
 	public Response checkItemAvailability(@PathParam("headItemId") String id) throws IOException {
 		Response response;
 		
@@ -60,8 +61,7 @@ public class DownloadResource {
 				if (downloadManager.isPersisted(id)) {
 					response = Response.status(200).build();
 				} else {
-					ExecutorService execSvc = Executors.newSingleThreadExecutor();
-					execSvc.submit(new StagingRunner(id));
+					DownloadUtility.stageAsyncItemDownload(id);
 					response = Response.status(202).build();
 				}
 			}
@@ -194,7 +194,7 @@ public class DownloadResource {
     @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @DELETE
     @Produces("application/json")
-    @Path("/item/{itemId}")
+    @Path("/item/{id}")
     public Response deleteStagedItem(@PathParam("itemId") String itemId, @Context HttpServletRequest request) {
         Response response = null;
         try (DownloadManager downloadManager = new DownloadManager()) {
@@ -215,24 +215,4 @@ public class DownloadResource {
         return response;
     }
 
-	private static class StagingRunner implements Callable<File> {
-		Thread stagingThread;
-		String itemId;
-		
-		StagingRunner(String itemId) {
-			this.itemId = itemId;
-		}
-
-		@Override
-		public File call() throws IOException {
-			File stagingDir = DownloadUtility.createDownloadStagingArea();
-			try (ItemManager itemManager = new ItemManager()) {
-				Item item = itemManager.load(itemId);
-				DownloadUtility.stageItemDownload(item, stagingDir);
-			} catch (IOException ioe) {
-				FileUtils.forceDelete(stagingDir);
-			}
-			return stagingDir;
-		}
-	}
 }
