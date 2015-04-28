@@ -1,10 +1,13 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
+import com.google.gson.Gson;
+import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Thumbnail;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.io.InputStream;
+import java.util.List;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +18,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -29,6 +33,19 @@ import javax.ws.rs.core.Response;
 public class ThumbnailResource {
 
 	@GET
+	@Path("/")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getList(@QueryParam("dirty") Boolean dirty) {
+		Response response = null;
+		try (ThumbnailManager manager = new ThumbnailManager()) {
+			List<Thumbnail> thumbnails = manager.loadAll(dirty);
+			Gson gson = GsonUtil.getDefault();
+			response.ok(gson.toJson(thumbnails, List.class), MediaType.APPLICATION_JSON_TYPE).build();
+		}
+		return response;
+	}
+
+	@GET
 	@Path("/item/{id}")
 	@Produces(Thumbnail.MIME_TYPE)
 	public Response getImage(@PathParam("id") String id, @Context Request request) {
@@ -39,18 +56,15 @@ public class ThumbnailResource {
 				Response modified = HTTPCachingUtil.checkModified(request, thumb);
 				if (modified != null) {
 					response = modified;
-				}
-				else {
+				} else {
 					InputStream image = manager.loadStream(thumb);
 					if (image != null) {
 						response = Response.ok(image, Thumbnail.MIME_TYPE).lastModified(thumb.getLastModified()).build();
-					}
-					else {
+					} else {
 						throw new NotFoundException();
 					}
 				}
-			}
-			else {
+			} else {
 				throw new NotFoundException();
 			}
 		}
