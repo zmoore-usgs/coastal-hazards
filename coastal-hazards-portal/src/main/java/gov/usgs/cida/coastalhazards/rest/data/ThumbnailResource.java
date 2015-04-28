@@ -28,45 +28,49 @@ import javax.ws.rs.core.Response;
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ThumbnailResource {
 
-    @GET
-    @Path("/item/{id}")
-    @Produces(Thumbnail.MIME_TYPE)
-    public Response getImage(@PathParam("id") String id, @Context Request request) {
-        Response response = null;
-        try (ThumbnailManager manager = new ThumbnailManager()) {
-            Thumbnail thumb = manager.load(id);
-            if (thumb != null) {
-                Response modified = HTTPCachingUtil.checkModified(request, thumb);
-                if (modified != null) {
-                    response = modified;
-                } else {
-                    InputStream image = manager.loadStream(thumb);
-                    if (image != null) {
-                        response = Response.ok(image, Thumbnail.MIME_TYPE).lastModified(thumb.getLastModified()).build();
-                    } else {
-                        throw new NotFoundException();
-                    }
-                }
-            } else {
-                throw new NotFoundException();
-            }
-        }
-        return response;
-    }
+	@GET
+	@Path("/item/{id}")
+	@Produces(Thumbnail.MIME_TYPE)
+	public Response getImage(@PathParam("id") String id, @Context Request request) {
+		Response response = null;
+		try (ThumbnailManager manager = new ThumbnailManager()) {
+			Thumbnail thumb = manager.load(id);
+			if (thumb != null) {
+				Response modified = HTTPCachingUtil.checkModified(request, thumb);
+				if (modified != null) {
+					response = modified;
+				}
+				else {
+					InputStream image = manager.loadStream(thumb);
+					if (image != null) {
+						response = Response.ok(image, Thumbnail.MIME_TYPE).lastModified(thumb.getLastModified()).build();
+					}
+					else {
+						throw new NotFoundException();
+					}
+				}
+			}
+			else {
+				throw new NotFoundException();
+			}
+		}
+		return response;
+	}
 
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-    @PUT
-    @Path("/item/{id}")
-    @Consumes(MediaType.TEXT_PLAIN)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response putImage(@PathParam("id") String id, String content, @Context HttpServletRequest request) {
-        Response response = null;
-        Thumbnail thumb = new Thumbnail();
-        thumb.setItemId(id);
-        thumb.setImage(content);
-        try (ThumbnailManager manager = new ThumbnailManager()) {
-            response = Response.ok(manager.save(thumb), MediaType.APPLICATION_JSON_TYPE).build();
-        }
-        return response;
-    }
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@PUT
+	@Path("/item/{id}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response putImage(@PathParam("id") String id, String content, @Context HttpServletRequest request) {
+		Response response = null;
+		Thumbnail thumb = new Thumbnail();
+		thumb.setItemId(id);
+		thumb.setImage(content);
+		try (ThumbnailManager manager = new ThumbnailManager()) {
+			response = Response.ok(manager.save(thumb), MediaType.APPLICATION_JSON_TYPE).build();
+			manager.updateDirtyBits(id);
+		}
+		return response;
+	}
 }
