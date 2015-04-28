@@ -89,6 +89,9 @@
 			CCH.itemid = '<%= id %>';
 			CCH.baseUrl = '<%= baseUrl %>';
 			CCH.CONFIG.contextPath = '<%= baseUrl %>';
+			CCH.CONFIG.ui = {
+				'enableBoundingBoxInput' : false
+			}
 			CCH.CONFIG.limits = {
 				map: {
 					modelProjection: new OpenLayers.Projection('EPSG:4326')

@@ -1153,10 +1153,12 @@ CCH.Objects.Publish.UI = function () {
 			});
 
 			// Fill out bbox
-			$bboxWest.val(item.bbox[0]).removeAttr(CCH.CONFIG.strings.disabled);
-			$bboxSouth.val(item.bbox[1]).removeAttr(CCH.CONFIG.strings.disabled);
-			$bboxEast.val(item.bbox[2]).removeAttr(CCH.CONFIG.strings.disabled);
-			$bboxNorth.val(item.bbox[3]).removeAttr(CCH.CONFIG.strings.disabled);
+			if (CCH.CONFIG.ui.enableBoundingBoxInput) {
+				$bboxWest.val(item.bbox[0]).removeAttr(CCH.CONFIG.strings.disabled);
+				$bboxSouth.val(item.bbox[1]).removeAttr(CCH.CONFIG.strings.disabled);
+				$bboxEast.val(item.bbox[2]).removeAttr(CCH.CONFIG.strings.disabled);
+				$bboxNorth.val(item.bbox[3]).removeAttr(CCH.CONFIG.strings.disabled);
+			}
 
 
 			// Ribbonable
