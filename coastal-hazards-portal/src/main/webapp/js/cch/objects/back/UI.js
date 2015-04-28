@@ -60,7 +60,7 @@ CCH.Objects.Back.UI = function (args) {
 				} else if (status === 202) {
 					alertify.log(CCH.CONFIG.data.messages.cachePriming);
 				} else {
-					// I don't expect 
+					// I don't expect any other codes, so default to an error message
 					alertify.error(CCH.CONFIG.data.messages.cacheInterrogationError);
 				}
 			};
