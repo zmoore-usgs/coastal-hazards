@@ -203,7 +203,6 @@
 		</div>
 		<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/<%=vOpenlayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
 		<script type="text/javascript">
 			var CCH = {
@@ -213,16 +212,20 @@
 					itemId: '${it.id}',
 					contextPath: '<%=baseUrl%>',
 					development: <%=development%>,
-					map: null,
-					projection: "EPSG:3857",
-					initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
 					item: null,
 					emailLink: 'CCH_Help@usgs.gov',
 					publicUrl: '<%=publicUrl%>',
 					data: {
+						messages: {
+							'cacheInterrogationError' : 'An error occurred when requesting a download.',
+							'cachePriming' : 'The download for this item is being prepared. Please try again soon.'
+						},
 						sources: {
 							'item': {
 								'endpoint': '/data/item'
+							},
+							'download' : {
+								'endpoint': '/data/download/item/'
 							},
 							'geocoding': {
 								'endpoint': '<%=geocodeEndpoint%>'

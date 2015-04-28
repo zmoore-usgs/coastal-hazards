@@ -48,7 +48,24 @@ CCH.Objects.Back.UI = function (args) {
 		});
 
 		$downloadDataButton.on('click', function () {
-			window.location.href = CCH.CONFIG.contextPath + '/data/download/item/' + CCH.CONFIG.itemId;
+			var cacheError = function () {
+				alertify.error(CCH.CONFIG.data.messages.cacheInterrogationError);
+			};
+			
+			var cacheHit = function () {
+				var status = arguments[2].status;
+				
+				if (status === 200) {
+					window.location.href = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.download.endpoint + CCH.CONFIG.itemId;
+				} else if (status === 202) {
+					alertify.log(CCH.CONFIG.data.messages.cachePriming);
+				} else {
+					// I don't expect any other codes, so default to an error message
+					alertify.error(CCH.CONFIG.data.messages.cacheInterrogationError);
+				}
+			};
+			
+			CCH.Util.Util.interrogateDownloadCache(cacheError, cacheHit, CCH.CONFIG.itemId);
 		});
 		
 		$addToBucketButton.on('click', function () {
