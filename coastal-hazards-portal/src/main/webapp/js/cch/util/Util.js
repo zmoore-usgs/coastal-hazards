@@ -5,6 +5,32 @@ CCH.Util = CCH.Util || {};
 CCH.Util.Util = {
 	
 	/**
+	 * Creates a HEAD request to the item download cache. This will do one of three things:
+	 * - Return 200 if the download already exists in the cache
+	 * - Return 202 is the item exists but the cache does not yet exist. This 
+	 *   effectively primes the cache and a saturated cache may be expected 'soon'
+	 * - Return 404 if the item does not exist
+	 * @param {type} err Error callback
+	 * @param {type} callback Success callback
+	 * @param {type} itemId The item id 
+	 * @returns {undefined}
+	 */
+	interrogateDownloadCache: function (err, callback, itemId) {
+		"use strict";
+		
+		if (!itemId) {
+			throw new TypeError('Item ID is mandatory');
+		}
+		
+		$.ajax({
+			'url' : CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.download.endpoint + itemId,
+			'type' : 'HEAD',
+			'success' : callback,
+			'err' : err
+		});
+	},
+	
+	/**
 	 * http://guid.us/GUID/JavaScript
 	 * 
 	 * @returns {Number}
@@ -12,7 +38,7 @@ CCH.Util.Util = {
 	generateUUID: function () {
 		"use strict";
 		var rnd = function () {
-			return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+			return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 		};
 		return rnd() + "_" + rnd() + "_" + rnd();
 	},
@@ -103,6 +129,8 @@ CCH.Util.Util = {
 		}
 	}
 };
+
+
 
 // http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
 String.prototype.hashCode = function () {

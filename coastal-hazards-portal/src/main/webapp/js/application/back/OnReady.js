@@ -36,6 +36,9 @@ $(document).ready(function () {
 			$('#application-overlay').fadeOut(2000, function () {
 				$('#application-overlay').remove();
 			});
+			
+			// Kick off a request to the server-side cache to prime the download data for this item
+			CCH.Util.Util.interrogateDownloadCache(null, null, CCH.CONFIG.itemId);
 		}
 	});
 
