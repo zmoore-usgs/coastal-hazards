@@ -1827,6 +1827,7 @@ CCH.Objects.Publish.UI = function () {
 							if (!id) {
 								id = $itemIdInput.val();
 							}
+							CCH.ui.generateImage(id);
 							window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
 						}
 					],
