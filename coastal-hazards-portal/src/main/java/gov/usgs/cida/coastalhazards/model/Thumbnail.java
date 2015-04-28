@@ -66,7 +66,7 @@ public class Thumbnail implements Serializable, Cacheable {
 		return dirty;
 	}
 
-	public void setIsDirty(Boolean dirty) {
+	public void setDirty(Boolean dirty) {
 		this.dirty = dirty;
 	}
 
