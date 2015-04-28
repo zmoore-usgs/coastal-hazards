@@ -23,7 +23,7 @@ public class Thumbnail implements Serializable, Cacheable {
 	public static final String MIME_TYPE = "image/png";
 
 	private String itemId;
-	private String image;
+	private transient String image;
 	private Date lastModified;
 	private Boolean dirty;
 

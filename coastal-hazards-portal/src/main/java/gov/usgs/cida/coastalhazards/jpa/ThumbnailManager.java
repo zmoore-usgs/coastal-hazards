@@ -4,6 +4,7 @@ import gov.usgs.cida.coastalhazards.model.Thumbnail;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -20,7 +21,7 @@ import org.slf4j.LoggerFactory;
 public class ThumbnailManager implements AutoCloseable {
 
 	private static final Logger log = LoggerFactory.getLogger(ThumbnailManager.class);
-
+	
 	private EntityManager em;
 
 	public ThumbnailManager() {
@@ -38,6 +39,16 @@ public class ThumbnailManager implements AutoCloseable {
 	public Thumbnail load(String itemId) {
 		Thumbnail thumb = em.find(Thumbnail.class, itemId);
 		return thumb;
+	}
+	
+	public List<Thumbnail> loadAll(Boolean dirtyOnly) {
+		String sql =  "select t from Thumbnail t";
+		if (dirtyOnly) {
+			sql += " where t.dirty = :dirty";
+		}
+		Query query = em.createQuery(sql);
+		List<Thumbnail> resultList = query.getResultList();
+		return resultList;
 	}
 
 	public synchronized String save(Thumbnail thumbnail) {
