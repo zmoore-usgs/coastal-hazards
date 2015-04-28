@@ -169,6 +169,7 @@ public class ItemManager implements AutoCloseable {
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			transaction.begin();
+			mergeAll(findAncestors(item));
 			id = mergeItem(item);
 			transaction.commit();
 			fixEnabledStatus();
@@ -189,6 +190,7 @@ public class ItemManager implements AutoCloseable {
 		try {
 			transaction.begin();
 			Item item = em.find(Item.class, itemId);
+			mergeAll(findAncestors(item));
 			em.remove(item);
 			transaction.commit();
 			fixEnabledStatus();
@@ -411,6 +413,21 @@ public class ItemManager implements AutoCloseable {
 			}
 		}
 		return result;
+	}
+	
+	private List<Item> findAncestors(Item item) {
+		List<Item> items = new ArrayList<>();
+		Query ancestors = em.createNativeQuery("SELECT id FROM cch_get_ancestors(:childId)");
+		ancestors.setParameter("childId", item.getId());
+		List<String> resultList = ancestors.getResultList();
+		
+		for (String result : resultList) {
+			Item ancestor = load(result);
+			if (ancestor != null) {
+				items.add(ancestor);
+			}
+		}
+		return items;
 	}
 
 	@Override

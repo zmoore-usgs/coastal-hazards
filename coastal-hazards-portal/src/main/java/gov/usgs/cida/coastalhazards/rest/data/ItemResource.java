@@ -4,6 +4,7 @@ import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.jpa.StatusManager;
+import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
@@ -118,7 +119,7 @@ public class ItemResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response postItem(String content, @Context HttpServletRequest request) {
 		Response response;
-		try (ItemManager itemManager = new ItemManager(); StatusManager statusMan = new StatusManager()) {
+		try (ItemManager itemManager = new ItemManager()) {
 			Item item = Item.fromJSON(content);
 			final String id = itemManager.persist(item);
 			if (null == id) {
@@ -135,11 +136,17 @@ public class ItemResource {
 
 				response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
 				
+				
+			}
+			try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
 				Status status = new Status();
 				status.setStatusName(Status.StatusName.ITEM_UPDATE);
 				statusMan.save(status);
+
+				thumbMan.updateDirtyBits(id);
 			}
 		}
+		
 		return response;
 	}
 
@@ -155,20 +162,23 @@ public class ItemResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response = null;
-		try (ItemManager itemManager = new ItemManager(); StatusManager statusMan = new StatusManager()) {
+		try (ItemManager itemManager = new ItemManager()) {
 			Item dbItem = itemManager.load(id);
 			Item updatedItem = Item.fromJSON(content);
 			Item mergedItem = Item.copyValues(updatedItem, dbItem);
 			final String mergedId = itemManager.merge(mergedItem);
 			if (null != mergedId) {
 				response = Response.ok().build();
-				
-				Status status = new Status();
-				status.setStatusName(Status.StatusName.ITEM_UPDATE);
-				statusMan.save(status);
 			}
 			else {
 				throw new BadRequestException();
+			}
+			try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
+				Status status = new Status();
+				status.setStatusName(Status.StatusName.ITEM_UPDATE);
+				statusMan.save(status);
+
+				thumbMan.updateDirtyBits(id);
 			}
 		}
 		return response;
@@ -179,16 +189,19 @@ public class ItemResource {
 	@Path("/{id}")
 	public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id) {
 		Response response = null;
-		try (ItemManager itemManager = new ItemManager(); StatusManager statusMan = new StatusManager()) {
+		try (ItemManager itemManager = new ItemManager()) {
 			if (itemManager.delete(id)) {
 				response = Response.ok().build();
-				
-				Status status = new Status();
-				status.setStatusName(Status.StatusName.ITEM_UPDATE);
-				statusMan.save(status);
 			}
 			else {
 				throw new Error();
+			}
+			try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
+				Status status = new Status();
+				status.setStatusName(Status.StatusName.ITEM_UPDATE);
+				statusMan.save(status);
+
+				thumbMan.updateDirtyBits(id);
 			}
 		}
 		return response;

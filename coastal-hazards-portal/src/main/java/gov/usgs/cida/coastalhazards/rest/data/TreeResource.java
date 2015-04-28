@@ -10,6 +10,7 @@ import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.adapter.ItemTreeAdapter;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.jpa.StatusManager;
+import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
@@ -115,7 +116,7 @@ public class TreeResource {
 			if (jsonObj.has("children")) {
 				JsonArray childrenArray = (JsonArray) jsonObj.get("children");
 
-				try (ItemManager manager = new ItemManager(); StatusManager statusMan = new StatusManager()) {
+				try (ItemManager manager = new ItemManager()) {
 					Item item = manager.load(id);
 					List<Item> children = new LinkedList<>();
 					Iterator<JsonElement> iterator = childrenArray.iterator();
@@ -127,9 +128,13 @@ public class TreeResource {
 					item.setChildren(children);
 					manager.merge(item);
 					
-					Status status = new Status();
-					status.setStatusName(Status.StatusName.STRUCTURE_UPDATE);
-					statusMan.save(status);
+					try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
+						Status status = new Status();
+						status.setStatusName(Status.StatusName.STRUCTURE_UPDATE);
+						statusMan.save(status);
+						
+						thumbMan.updateDirtyBits(id);
+					}
 				}
 				response = Response.ok().build();
 				
@@ -155,7 +160,7 @@ public class TreeResource {
 		if (parsed instanceof JsonObject) {
 			JsonObject jsonObj = (JsonObject) parsed;
 
-			try (ItemManager manager = new ItemManager(); StatusManager statusMan = new StatusManager()) {
+			try (ItemManager manager = new ItemManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
 				List<Item> itemList = new LinkedList<>();
 				for (Entry<String, JsonElement> entry : jsonObj.entrySet()) {
 					Item parentItem = manager.load(entry.getKey());
@@ -168,12 +173,16 @@ public class TreeResource {
 					}
 					parentItem.setChildren(children);
 					itemList.add(parentItem);
+					
+					thumbMan.updateDirtyBits(parentItem.getId());
 				}
 				manager.mergeAll(itemList);
 				
-				Status status = new Status();
-				status.setStatusName(Status.StatusName.STRUCTURE_UPDATE);
-				statusMan.save(status);
+				try (StatusManager statusMan = new StatusManager()) {
+					Status status = new Status();
+					status.setStatusName(Status.StatusName.STRUCTURE_UPDATE);
+					statusMan.save(status);
+				}
 			}
 			response = Response.ok().build();
 		}

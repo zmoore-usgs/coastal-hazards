@@ -29,4 +29,5 @@
 	<include file="10reverseServiceRef.xml" relativeToChangelogFile="true" />
 	<include file="20addLayer.xml" relativeToChangelogFile="true" />
 	<include file="30addStatusTable.xml" relativeToChangelogFile="true" />
+	<include file="40thumbnailDirtyBit.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
