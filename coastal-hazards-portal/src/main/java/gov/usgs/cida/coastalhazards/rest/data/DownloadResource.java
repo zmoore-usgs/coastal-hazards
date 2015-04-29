@@ -19,6 +19,8 @@ import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -58,7 +60,8 @@ public class DownloadResource {
 			if (item == null) {
 				response = Response.status(404).build();
 			} else {
-				if (downloadManager.isPersisted(id)) {
+				Download download = downloadManager.load(id);
+				if (download != null && download.getPersistanceURI() != null) {
 					response = Response.status(200).build();
 				} else {
 					DownloadUtility.stageAsyncItemDownload(id);
@@ -77,11 +80,13 @@ public class DownloadResource {
 	 * @param id identifier of requested item
 	 * @return JSON representation of the item(s)
 	 * @throws java.io.IOException
+	 * @throws java.lang.InterruptedException
+	 * @throws java.util.concurrent.ExecutionException
 	 */
 	@GET
 	@Path("/item/{id}")
 	@Produces("application/zip")
-	public Response downloadItem(@PathParam("id") String id) throws IOException {
+	public Response downloadItem(@PathParam("id") String id) throws IOException, InterruptedException, ExecutionException {
 		Response response = null;
 		try (ItemManager itemManager = new ItemManager(); DownloadManager downloadManager = new DownloadManager()) {
 			Item item = itemManager.load(id);
@@ -91,41 +96,38 @@ public class DownloadResource {
 				File zipFile = null;
 
 				try {
-					if (downloadManager.isPersisted(id)) {
-						Download persistedDownload = downloadManager.load(id);
-                        // if we switch this to external file server or S3,
+					Download download = downloadManager.load(id);
+					if (download != null && download.getPersistanceURI() != null) {
+						// if we switch this to external file server or S3,
 						// redirect to this uri as a url
-						zipFile = persistedDownload.fetchZipFile();
+						zipFile = download.fetchZipFile();
 						if (zipFile == null || !zipFile.exists()) {
 							throw new FileNotFoundException();
 						}
+					} else if (download != null) {
+						response = Response.status(Response.Status.ACCEPTED).build();
 					} else {
-						throw new FileNotFoundException();
-					}
-				} catch (FileNotFoundException | URISyntaxException ex) {
-					File stagingDir = DownloadUtility.createDownloadStagingArea();
-					boolean staged = DownloadUtility.stageItemDownload(item, stagingDir);
-					if (staged) {
-						Download download = DownloadUtility.zipStagingAreaForDownload(stagingDir);
-						download.setItemId(id);
-						try {
-							zipFile = download.fetchZipFile();
-						} catch (URISyntaxException ex2) {
+						Future<Download> future = DownloadUtility.stageAsyncItemDownload(id);
+						download = future.get();
+						if (download.isProblem()) {
 							throw new DownloadStagingUnsuccessfulException();
 						}
-						downloadManager.save(download);
-					} else {
-						throw new DownloadStagingUnsuccessfulException();
+						zipFile = download.fetchZipFile();
 					}
+					if (zipFile != null) {
+						String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
+						response = Response.ok(zipFile, "application/zip").header("Content-Disposition", contentDisposition).build();
+					}
+				} catch (URISyntaxException ex) {
+					log.error("Problem getting persisted download", ex);
 				}
-				String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
-				response = Response.ok(zipFile, "application/zip").header("Content-Disposition", contentDisposition).build();
 			}
 		}
 		return response;
 	}
 
 	/**
+	 * TODO this is in need of refactor to get it in line with item download
 	 * Retrieves representation of an instance of
 	 * gov.usgs.cida.coastalhazards.model.Item
 	 *
@@ -145,9 +147,10 @@ public class DownloadResource {
 			} else {
 
 				File zipFile = null;
+				Download download = null;
 				try {
-					if (downloadManager.isPersisted(id)) {
-						Download download = downloadManager.load(id);
+					download = downloadManager.load(id);
+					if (download != null && download.getPersistanceURI() != null) {
 						zipFile = new File(new URI(download.getPersistanceURI()));
 						if (zipFile == null || !zipFile.exists()) {
 							throw new FileNotFoundException();
@@ -160,7 +163,8 @@ public class DownloadResource {
 					File stagingDir = DownloadUtility.createDownloadStagingArea();
 					boolean staged = DownloadUtility.stageSessionDownload(session, stagingDir);
 					if (staged) {
-						Download download = DownloadUtility.zipStagingAreaForDownload(stagingDir);
+						download = new Download();
+						download = DownloadUtility.zipStagingAreaForDownload(stagingDir, download);
 						download.setSessionId(id);
 						try {
 							zipFile = download.fetchZipFile();
