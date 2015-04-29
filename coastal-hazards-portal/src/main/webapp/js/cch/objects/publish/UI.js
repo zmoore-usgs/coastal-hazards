@@ -989,6 +989,13 @@ CCH.Objects.Publish.UI = function () {
 
 				$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
 				$metadataDropdownGroup.addClass(CCH.CONFIG.strings.hidden);
+				
+				if (CCH.CONFIG.ui.disableBoundingBoxInputForAggregations === false) {
+					$bboxWest.removeAttr(CCH.CONFIG.strings.disabled);
+					$bboxSouth.removeAttr(CCH.CONFIG.strings.disabled);
+					$bboxEast.removeAttr(CCH.CONFIG.strings.disabled);
+					$bboxNorth.removeAttr(CCH.CONFIG.strings.disabled);
+				}
 			} else {
 				$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 				$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
@@ -1113,6 +1120,11 @@ CCH.Objects.Publish.UI = function () {
 						]
 					}
 				});
+				
+				$bboxWest.removeAttr(CCH.CONFIG.strings.disabled);
+				$bboxSouth.removeAttr(CCH.CONFIG.strings.disabled);
+				$bboxEast.removeAttr(CCH.CONFIG.strings.disabled);
+				$bboxNorth.removeAttr(CCH.CONFIG.strings.disabled);
 			}
 
 			// Item Name
@@ -1153,12 +1165,10 @@ CCH.Objects.Publish.UI = function () {
 			});
 
 			// Fill out bbox
-			if (CCH.CONFIG.ui.enableBoundingBoxInput) {
-				$bboxWest.val(item.bbox[0]).removeAttr(CCH.CONFIG.strings.disabled);
-				$bboxSouth.val(item.bbox[1]).removeAttr(CCH.CONFIG.strings.disabled);
-				$bboxEast.val(item.bbox[2]).removeAttr(CCH.CONFIG.strings.disabled);
-				$bboxNorth.val(item.bbox[3]).removeAttr(CCH.CONFIG.strings.disabled);
-			}
+			$bboxWest.val(item.bbox[0]);
+			$bboxSouth.val(item.bbox[1]);
+			$bboxEast.val(item.bbox[2]);
+			$bboxNorth.val(item.bbox[3]);
 
 
 			// Ribbonable
@@ -1986,10 +1996,11 @@ CCH.Objects.Publish.UI = function () {
 				}
 			} else if (srcWfsVal.indexOf(CCH.CONFIG.data.sources['marine-arcserver'].endpoint) !== -1) {
 				var serverName = 'marine-arcserver',
-						serverData = CCH.CONFIG.data.sources[serverName],
-						namespace = srcWfsVal.substring(serverData.endpoint.length + 1),
-						url = $srcWfsServiceInput.val(),
-						nsSvc = url.substring(url.indexOf('cmgp') + 5);
+					serverData = CCH.CONFIG.data.sources[serverName],
+					namespace = srcWfsVal.substring(serverData.endpoint.length + 1),
+					url = $srcWfsServiceInput.val(),
+					nsSvc = url.substring(url.indexOf('cmgp') + 5);
+					
 				CCH.ows.getWFSCapabilities({
 					'server': serverName,
 					'namespace': nsSvc,

@@ -90,7 +90,7 @@
 			CCH.baseUrl = '<%= baseUrl %>';
 			CCH.CONFIG.contextPath = '<%= baseUrl %>';
 			CCH.CONFIG.ui = {
-				'enableBoundingBoxInput' : false
+				'disableBoundingBoxInputForAggregations' : true
 			}
 			CCH.CONFIG.limits = {
 				map: {
