@@ -16,6 +16,9 @@ CCH.Objects.Front.Map = function (args) {
 	me.$MAP_DIV = $('#' + me.mapDivId);
 	me.bboxFadeoutDuration = 2000;
 	me.mapProjection = "EPSG:900913";
+	me.markerLayerName = 'LocationMarkerLayer';
+	me.locationResultIcon = 'http://dev.openlayers.org/releases/OpenLayers-2.6/img/marker.png';
+	me.locationResultIconHighlighted = 'http://dev.openlayers.org/releases/OpenLayers-2.6/img/marker-gold.png';
 	me.displayProjection = new OpenLayers.Projection(me.mapProjection);
 	me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
 
@@ -67,6 +70,73 @@ CCH.Objects.Front.Map = function (args) {
 		me.legendControl.maximizeControl();
 		
 		return layer;
+	};
+	
+	me.getMarkerLayer = function () {
+		var markerLayers = me.getMap().getLayersByName(me.markerLayerName);
+		if (markerLayers.length > 0) {
+			return markerLayers[0];
+		}
+		return null;
+	};
+	
+	me.createMarkerLayer = function () {
+		var markerLayer = me.getMarkerLayer();
+		if (!markerLayer) {
+			markerLayer = new OpenLayers.Layer.Markers(me.markerLayerName);
+			me.getMap().addLayer(markerLayer);
+			
+			while (markerLayer !== me.getMap().layers.last()) {
+				me.getMap().raiseLayer(markerLayer, 1);
+			}
+		}
+		return markerLayer;
+	};
+	
+	me.removeMarkerLayer = function () {
+		var markerLayer = me.getMarkerLayer();
+		if (markerLayer) {
+			me.getMap().removeLayer(markerLayer, false);
+		}
+	};
+	
+	me.addLocationMarkers = function (locations) {
+		var markerLayer = me.getMarkerLayer();
+		if (!markerLayer) {
+			markerLayer = me.createMarkerLayer();
+		}
+		locations.forEach(function (location) {
+			var locationMeterGeometry = location.feature.geometry,
+				size = new OpenLayers.Size(21, 25),
+				offset = new OpenLayers.Pixel(-(size.w / 2), -size.h),
+				icon = new OpenLayers.Icon(me.locationResultIcon, size, offset),
+				marker = new OpenLayers.Marker(new OpenLayers.LonLat(locationMeterGeometry.x, locationMeterGeometry.y), icon),
+				$markerDiv = $(marker.icon.imageDiv);
+				
+			marker.location = location;
+			marker.events.fallThrough = false;
+			$markerDiv.popover({
+				'container' : 'body',
+				'content' : location.feature.attributes.Place_addr,
+				'html' : true,
+				'title' : location.name,
+				'placement' : 'auto',
+				'trigger' : 'hover'
+			});
+			
+			marker.events.register('click', null, function () {
+				me.getMap().zoomToExtent(new OpenLayers.Bounds(this.location.extent.xmin, this.location.extent.ymin, this.location.extent.xmax, this.location.extent.ymax));
+			});
+			marker.events.register('mouseover', null, function () {
+				var $iconDiv = $(this.icon.imageDiv);
+				$iconDiv.find('img').attr('src', me.locationResultIconHighlighted);
+			});
+			marker.events.register('mouseout', null, function () {
+				var $iconDiv = $(this.icon.imageDiv);
+				$iconDiv.find('img').attr('src', me.locationResultIcon);
+			});
+			markerLayer.addMarker(marker);
+		});
 	};
 
 	me.hideLayer = function (layer) {
@@ -176,7 +246,14 @@ CCH.Objects.Front.Map = function (args) {
 			// Bind application event handlers
 			$(window).on({
 				'cch.data.session.loaded.true': me.onSessionLoaded,
-				'cch.ui.resized': me.onUIResized
+				'cch.ui.resized': me.onUIResized,
+				'cch.slide.search.closed': me.removeMarkerLayer,
+				'cch.data.locations.searched': function (evt, locations) {
+					if (locations && locations.items && locations.items.length > 0) {
+						me.createMarkerLayer();
+						me.addLocationMarkers(locations.items);
+					}
+				}
 			});
 
 			me.map.events.register("click", me.map, function (e) {
@@ -259,8 +336,7 @@ CCH.Objects.Front.Map = function (args) {
 		updateFromCookie: function () {
 			CCH.LOG.info('Map.js::updateFromSession():Map being recreated from cookie');
 			var session = CCH.session.getSession(),
-				center = new OpenLayers.LonLat(session.center[0], session.center[1]).
-				transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection),
+				center = new OpenLayers.LonLat(session.center[0], session.center[1]).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection),
 				scale = session.scale;
 
 			// Becaue we don't want these events to write back to the session, 
