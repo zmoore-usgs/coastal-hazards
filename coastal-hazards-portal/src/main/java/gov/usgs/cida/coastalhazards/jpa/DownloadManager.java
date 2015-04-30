@@ -18,6 +18,7 @@ public class DownloadManager implements AutoCloseable {
 
 	private static final String HQL_SELECT_BY_ID = "select d from Download d where d.itemId = :id or d.sessionId = :id";
 	private static final String HQL_SELECT_ALL = "select d from Download d";
+	private static final String HQL_DELETE_MISSING = "delete from Download d where d.persistanceURI IS NULL";
 
 	private EntityManager em;
 
@@ -75,6 +76,22 @@ public class DownloadManager implements AutoCloseable {
 				transaction.rollback();
 			}
 		}
+	}
+	
+	public void deleteAllMissing() {
+		Query deleteQuery = em.createQuery(HQL_DELETE_MISSING);
+		EntityTransaction transaction = em.getTransaction();
+		try {
+			transaction.begin();
+			int deleted = deleteQuery.executeUpdate();
+			transaction.commit();
+		} catch (Exception ex) {
+			log.error("Error deleting downloads", ex);
+			if (transaction.isActive()) {
+				transaction.rollback();
+			}
+		}
+		
 	}
 
 	public List<Download> getAllStagedDownloads() {
