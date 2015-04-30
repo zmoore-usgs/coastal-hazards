@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.download;
 
+import gov.usgs.cida.coastalhazards.jpa.DownloadManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Service;
@@ -11,7 +12,6 @@ import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -94,7 +94,7 @@ public class DownloadUtility {
 	 * @return java.util.concurrent.Future<java.io.File> the download staging
 	 * area
 	 */
-	public static Future<File> stageAsyncItemDownload(String itemId) {
+	public static Future<Download> stageAsyncItemDownload(String itemId) {
 		ExecutorService execSvc = Executors.newSingleThreadExecutor();
 		return execSvc.submit(new DownloadStagingRunner(itemId));
 	}
@@ -181,12 +181,12 @@ public class DownloadUtility {
 	/**
 	 *
 	 * @param stagingDir
+	 * @param download
 	 * @return Download populates the download item with everything but itemId
 	 * @throws java.io.IOException
 	 */
-	public static Download zipStagingAreaForDownload(File stagingDir) throws ConcurrentModificationException, IOException {
+	public static Download zipStagingAreaForDownload(File stagingDir, Download download) throws ConcurrentModificationException, IOException {
 		lock(stagingDir);
-		Download download = new Download();
 		File zipFile = null;
 		ZipOutputStream zipOutputStream = null;
 		try {
@@ -217,21 +217,12 @@ public class DownloadUtility {
 		return download;
 	}
 
-	public static File getPersistedZipFile(String stagingUUID) throws FileNotFoundException {
-		File stagingParentDir = getStagingParentDir();
-		File zipFile = new File(new File(stagingParentDir, stagingUUID), ZIP_FILE);
-		if (!zipFile.exists()) {
-			throw new FileNotFoundException();
-		}
-		return zipFile;
-	}
-
 	private static void populateDownloadMap(Map<WFSService, SingleDownload> downloadMap, Item item) {
 		SingleDownload download = null;
 
 		Queue<Item> itemQueue = new LinkedList<>();
 		itemQueue.add(item);
-        // Important that there are no cycles in the data model, this could go on forever
+		// Important that there are no cycles in the data model, this could go on forever
 		// TODO enforce acyclic model somewhere in the Items themselves
 		// (i.e. an item that sees itself in the subtree throws an exception)
 		while (itemQueue.peek() != null) {
@@ -315,7 +306,7 @@ public class DownloadUtility {
 	 * Creates a new thread to asynchronously kick off the caching for an item
 	 * download data
 	 */
-	private static class DownloadStagingRunner implements Callable<File> {
+	private static class DownloadStagingRunner implements Callable<Download> {
 
 		Thread stagingThread;
 		String itemId;
@@ -325,15 +316,26 @@ public class DownloadUtility {
 		}
 
 		@Override
-		public File call() throws IOException {
+		public Download call() throws IOException {
+			Download download = null;
 			File stagingDir = DownloadUtility.createDownloadStagingArea();
-			try (ItemManager itemManager = new ItemManager()) {
+			try (ItemManager itemManager = new ItemManager(); DownloadManager downloadManager = new DownloadManager()) {
 				Item item = itemManager.load(itemId);
-				DownloadUtility.stageItemDownload(item, stagingDir);
+				download = downloadManager.load(itemId);
+				if (download == null) {
+					download = new Download();
+					download.setItemId(itemId);
+					downloadManager.save(download);
+				}
+				boolean staged = DownloadUtility.stageItemDownload(item, stagingDir);
+				if (staged) {
+					download = DownloadUtility.zipStagingAreaForDownload(stagingDir, download);
+					downloadManager.update(download);
+				}
 			} catch (IOException ioe) {
 				FileUtils.forceDelete(stagingDir);
 			}
-			return stagingDir;
+			return download;
 		}
 	}
 
