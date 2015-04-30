@@ -125,7 +125,11 @@ CCH.Objects.Front.Map = function (args) {
 			});
 			
 			marker.events.register('click', null, function () {
-				me.getMap().zoomToExtent(new OpenLayers.Bounds(this.location.extent.xmin, this.location.extent.ymin, this.location.extent.xmax, this.location.extent.ymax));
+				var extent = this.location.extent;
+				// I don't want this popover to still be around when I zoom in
+				$(this.icon.imageDiv).popover('hide');
+				// Zoom to where the pointer is based on the original location search's extent
+				me.getMap().zoomToExtent(new OpenLayers.Bounds(extent.xmin, extent.ymin, extent.xmax, extent.ymax));
 			});
 			marker.events.register('mouseover', null, function () {
 				var $iconDiv = $(this.icon.imageDiv);
@@ -250,6 +254,7 @@ CCH.Objects.Front.Map = function (args) {
 				'cch.slide.search.closed': me.removeMarkerLayer,
 				'cch.data.locations.searched': function (evt, locations) {
 					if (locations && locations.items && locations.items.length > 0) {
+						me.removeMarkerLayer();
 						me.createMarkerLayer();
 						me.addLocationMarkers(locations.items);
 					}
