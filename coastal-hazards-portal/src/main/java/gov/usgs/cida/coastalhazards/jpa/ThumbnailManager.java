@@ -77,7 +77,7 @@ public class ThumbnailManager implements AutoCloseable {
 			Query setDirty = em.createNativeQuery("UPDATE thumbnail SET dirty=TRUE WHERE item_id IN\n"
 					+ "(SELECT t.item_id FROM thumbnail as t, \n"
 					+ "(SELECT id, last_update FROM item WHERE id IN (SELECT id FROM cch_get_ancestors(:id))) as changed\n"
-					+ "WHERE t.item_id = changed.id AND t.last_modified < changed.last_update");
+					+ "WHERE t.item_id = changed.id AND t.last_modified < changed.last_update)");
 			setDirty.setParameter("id", id);
 			transaction.begin();
 			status = setDirty.executeUpdate();

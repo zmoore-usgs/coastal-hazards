@@ -5,6 +5,7 @@ import gov.usgs.cida.coastalhazards.exception.CycleIntroductionException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Item;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -168,11 +169,12 @@ public class ItemManager implements AutoCloseable {
 		String id = null;
 		EntityTransaction transaction = em.getTransaction();
 		try {
+			mergeAll(findAncestors(item)); // Update old ancestor chain
 			transaction.begin();
-			mergeAll(findAncestors(item));
 			id = mergeItem(item);
 			transaction.commit();
 			fixEnabledStatus();
+			mergeAll(findAncestors(item)); // update new ancestor chain
 		}
 		catch (Exception ex) {
 			log.debug("Transaction failed on merge", ex);
@@ -188,9 +190,10 @@ public class ItemManager implements AutoCloseable {
 		boolean deleted = false;
 		EntityTransaction transaction = em.getTransaction();
 		try {
-			transaction.begin();
 			Item item = em.find(Item.class, itemId);
 			mergeAll(findAncestors(item));
+			
+			transaction.begin();
 			em.remove(item);
 			transaction.commit();
 			fixEnabledStatus();
@@ -424,6 +427,7 @@ public class ItemManager implements AutoCloseable {
 		for (String result : resultList) {
 			Item ancestor = load(result);
 			if (ancestor != null) {
+				ancestor.setLastModified(new Date());
 				items.add(ancestor);
 			}
 		}
