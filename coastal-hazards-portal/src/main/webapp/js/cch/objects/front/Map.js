@@ -17,8 +17,8 @@ CCH.Objects.Front.Map = function (args) {
 	me.bboxFadeoutDuration = 2000;
 	me.mapProjection = "EPSG:900913";
 	me.markerLayerName = 'LocationMarkerLayer';
-	me.locationResultIcon = 'http://dev.openlayers.org/releases/OpenLayers-2.6/img/marker.png';
-	me.locationResultIconHighlighted = 'http://dev.openlayers.org/releases/OpenLayers-2.6/img/marker-gold.png';
+	me.locationResultIcon = CCH.CONFIG.contextPath + '/images/map/markers/redmarker.png';
+	me.locationResultIconHighlighted = CCH.CONFIG.contextPath + '/images/map/markers/yellowmarker.png';
 	me.displayProjection = new OpenLayers.Projection(me.mapProjection);
 	me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
 
