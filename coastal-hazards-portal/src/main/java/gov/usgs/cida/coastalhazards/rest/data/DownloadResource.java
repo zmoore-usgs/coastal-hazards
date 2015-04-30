@@ -38,6 +38,8 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static javax.ws.rs.core.Response.Status.*;
+
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
@@ -58,14 +60,18 @@ public class DownloadResource {
 		try (ItemManager itemManager = new ItemManager(); DownloadManager downloadManager = new DownloadManager()) {
 			Item item = itemManager.load(id);
 			if (item == null) {
-				response = Response.status(404).build();
+				response = Response.status(NOT_FOUND).build();
 			} else {
 				Download download = downloadManager.load(id);
-				if (download != null && download.getPersistanceURI() != null) {
-					response = Response.status(200).build();
+				if (download != null) {
+					if (download.getPersistanceURI() != null) {
+						response = Response.status(OK).build();
+					} else {
+						response = Response.status(ACCEPTED).build();
+					}
 				} else {
 					DownloadUtility.stageAsyncItemDownload(id);
-					response = Response.status(202).build();
+					response = Response.status(ACCEPTED).build();
 				}
 			}
 		}
@@ -105,7 +111,7 @@ public class DownloadResource {
 							throw new FileNotFoundException();
 						}
 					} else if (download != null) {
-						response = Response.status(Response.Status.ACCEPTED).build();
+						response = Response.status(ACCEPTED).build();
 					} else {
 						Future<Download> future = DownloadUtility.stageAsyncItemDownload(id);
 						download = future.get();
@@ -116,7 +122,7 @@ public class DownloadResource {
 					}
 					if (zipFile != null) {
 						String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
-						response = Response.ok(zipFile, "application/zip").header("Content-Disposition", contentDisposition).build();
+						response = Response.status(OK).entity(zipFile).type("application/zip").header("Content-Disposition", contentDisposition).build();
 					}
 				} catch (URISyntaxException ex) {
 					log.error("Problem getting persisted download", ex);

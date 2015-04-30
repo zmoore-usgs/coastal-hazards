@@ -113,11 +113,7 @@ public class DownloadUtility {
 
 		List<String> missing = new LinkedList<>();
 
-		try (DownloadManager manager = new DownloadManager()) {
-			Download dbDownload = new Download();
-			dbDownload.setItemId(stageThis.getId());
-			manager.save(dbDownload);
-			
+		try {
 			Map<WFSService, SingleDownload> downloadMap = new HashMap<>();
 			populateDownloadMap(downloadMap, stageThis);
 			List<String> namesUsed = new ArrayList<>();
@@ -185,6 +181,7 @@ public class DownloadUtility {
 	/**
 	 *
 	 * @param stagingDir
+	 * @param download
 	 * @return Download populates the download item with everything but itemId
 	 * @throws java.io.IOException
 	 */
