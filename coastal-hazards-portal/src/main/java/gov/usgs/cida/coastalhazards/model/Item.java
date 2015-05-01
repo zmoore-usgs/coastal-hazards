@@ -120,7 +120,7 @@ public class Item implements Serializable, Cacheable {
 		this.itemType = itemType;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(columnDefinition = "bbox_id")
 	public Bbox getBbox() {
 		return bbox;
