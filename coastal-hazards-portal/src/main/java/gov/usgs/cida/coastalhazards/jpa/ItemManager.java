@@ -169,12 +169,13 @@ public class ItemManager implements AutoCloseable {
 		String id = null;
 		EntityTransaction transaction = em.getTransaction();
 		try {
-			mergeAll(findAncestors(item)); // Update old ancestor chain
+			
+			mergeAll(updateAncestors(item)); // Update old ancestor chain
 			transaction.begin();
 			id = mergeItem(item);
 			transaction.commit();
 			fixEnabledStatus();
-			mergeAll(findAncestors(item)); // update new ancestor chain
+			mergeAll(updateAncestors(item)); // update new ancestor chain
 		}
 		catch (Exception ex) {
 			log.debug("Transaction failed on merge", ex);
@@ -191,7 +192,7 @@ public class ItemManager implements AutoCloseable {
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			Item item = em.find(Item.class, itemId);
-			mergeAll(findAncestors(item));
+			mergeAll(updateAncestors(item));
 			
 			transaction.begin();
 			em.remove(item);
@@ -427,11 +428,18 @@ public class ItemManager implements AutoCloseable {
 		for (String result : resultList) {
 			Item ancestor = load(result);
 			if (ancestor != null) {
-				ancestor.setLastModified(new Date());
 				items.add(ancestor);
 			}
 		}
 		return items;
+	}
+	
+	private List<Item> updateAncestors(Item item) {
+		List<Item> ancestors = findAncestors(item);
+		for (Item ancestor : ancestors) {
+			ancestor.setLastModified(new Date());
+		}
+		return ancestors;
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.PUT;
@@ -35,12 +36,12 @@ public class ThumbnailResource {
 	@GET
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getList(@QueryParam("dirty") Boolean dirty) {
+	public Response getList(@QueryParam("dirty") @DefaultValue("false") boolean dirty) {
 		Response response = null;
 		try (ThumbnailManager manager = new ThumbnailManager()) {
 			List<Thumbnail> thumbnails = manager.loadAll(dirty);
 			Gson gson = GsonUtil.getDefault();
-			response.ok(gson.toJson(thumbnails, List.class), MediaType.APPLICATION_JSON_TYPE).build();
+			response = Response.ok(gson.toJson(thumbnails, List.class), MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;
 	}
