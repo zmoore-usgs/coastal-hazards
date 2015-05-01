@@ -1200,7 +1200,14 @@ CCH.Objects.Publish.UI = function () {
 					if (!type) {
 						return true;
 					} else {
-						return type === 'mixed' || item.type.toLowerCase().trim() === type.toLowerCase().trim();
+						if (type === 'mixed') {
+							return true;
+						} else {
+							if (item.type) {
+								return item.type.toLowerCase().trim() === type.toLowerCase().trim();
+							}
+							return false;
+						}
 					}
 				};
 				
