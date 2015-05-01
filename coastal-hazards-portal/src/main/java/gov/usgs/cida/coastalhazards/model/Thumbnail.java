@@ -25,7 +25,7 @@ public class Thumbnail implements Serializable, Cacheable {
 	private String itemId;
 	private transient String image;
 	private Date lastModified;
-	private Boolean dirty;
+	private boolean dirty = false;
 
 	@Id
 	@Column(name = "item_id")
@@ -62,11 +62,11 @@ public class Thumbnail implements Serializable, Cacheable {
 		this.lastModified = new Date();
 	}
 
-	public Boolean isDirty() {
+	public boolean isDirty() {
 		return dirty;
 	}
 
-	public void setDirty(Boolean dirty) {
+	public void setDirty(boolean dirty) {
 		this.dirty = dirty;
 	}
 
