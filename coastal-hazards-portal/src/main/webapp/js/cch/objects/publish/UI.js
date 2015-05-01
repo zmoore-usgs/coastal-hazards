@@ -1515,6 +1515,7 @@ CCH.Objects.Publish.UI = function () {
 
 	me.generateImage = function (id) {
 		var imageEndpoint = CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id;
+		
 		CCH.ows.generateThumbnail({
 			id: id,
 			callbacks: {
@@ -1527,9 +1528,11 @@ CCH.Objects.Publish.UI = function () {
 							contentType: 'text/plain',
 							success: function () {
 								me.loadItemImage(id);
+								$(window).trigger('generate.image.complete', [id]);
 							},
 							error: function () {
 								$itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+								$(window).trigger('generate.image.complete', [id]);
 							}
 						});
 					}
@@ -1837,8 +1840,12 @@ CCH.Objects.Publish.UI = function () {
 							if (!id) {
 								id = $itemIdInput.val();
 							}
+							
+							$(window).on('generate.image.complete', function (evt, id) {
+								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
+							});
+							
 							CCH.ui.generateImage(id);
-							window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
 						}
 					],
 					error: [
