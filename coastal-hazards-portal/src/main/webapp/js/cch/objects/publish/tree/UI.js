@@ -1,3 +1,6 @@
+/*jslint browser: true*/
+/*global $*/
+/*global CCH*/
 CCH.Objects = CCH.Objects || {};
 CCH.Objects.Publish = CCH.Objects.Publish || {};
 CCH.Objects.Publish.Tree = CCH.Objects.Publish.Tree || {};
@@ -14,15 +17,15 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	// The individual tree node.
 	me.createTreeNode = function (item) {
 		var id = item.id,
-				text = item.title,
-				itemType = item.itemType,
-				title = item.title,
-				state = {
-					'opened': false,
-					'itemType': itemType,
-					'title': title,
-					'original-id': id
-				};
+			text = item.title,
+			itemType = item.itemType,
+			title = item.title,
+			state = {
+				'opened': false,
+				'itemType': itemType,
+				'title': title,
+				'original-id': id
+			};
 
 		return {
 			id: id === 'uber' || id === 'orphans' ? id : CCH.Util.Util.generateUUID(),
@@ -185,8 +188,11 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			dataClone[k] = v.map(function (id) {
 				return CCH.ui.getTree().get_node(id).state['original-id'];
 			});
-			dataClone[CCH.ui.getTree().get_node(k).state['original-id']] = dataClone[k];
-			delete dataClone[k];
+			if (k !== 'uber') {
+				dataClone[CCH.ui.getTree().get_node(k).state['original-id']] = dataClone[k];
+				delete dataClone[k];
+			}
+			
 		});
 		return dataClone;
 	};
