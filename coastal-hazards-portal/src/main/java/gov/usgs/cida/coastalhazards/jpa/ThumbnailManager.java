@@ -41,10 +41,10 @@ public class ThumbnailManager implements AutoCloseable {
 		return thumb;
 	}
 	
-	public List<Thumbnail> loadAll(Boolean dirtyOnly) {
+	public List<Thumbnail> loadAll(boolean dirtyOnly) {
 		String sql =  "select t from Thumbnail t";
 		if (dirtyOnly) {
-			sql += " where t.dirty = :dirty";
+			sql += " where t.dirty = TRUE";
 		}
 		Query query = em.createQuery(sql);
 		List<Thumbnail> resultList = query.getResultList();
