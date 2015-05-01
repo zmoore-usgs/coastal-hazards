@@ -82,6 +82,7 @@ public class ThumbnailResource {
 		Thumbnail thumb = new Thumbnail();
 		thumb.setItemId(id);
 		thumb.setImage(content);
+		thumb.setDirty(false);
 		try (ThumbnailManager manager = new ThumbnailManager()) {
 			response = Response.ok(manager.save(thumb), MediaType.APPLICATION_JSON_TYPE).build();
 			manager.updateDirtyBits(id);
