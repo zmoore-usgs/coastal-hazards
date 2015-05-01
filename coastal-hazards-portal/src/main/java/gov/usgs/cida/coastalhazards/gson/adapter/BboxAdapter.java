@@ -24,7 +24,7 @@ public class BboxAdapter implements JsonSerializer<Bbox>, JsonDeserializer<Bbox>
     public JsonElement serialize(Bbox src, Type typeOfSrc, JsonSerializationContext context) {
         JsonArray bboxArray = new JsonArray();
 
-        Envelope envelope = parseBOX(src.getBbox());
+        Envelope envelope = src.makeEnvelope();
         JsonPrimitive minx = new JsonPrimitive(envelope.getMinX());
         JsonPrimitive miny = new JsonPrimitive(envelope.getMinY());
         JsonPrimitive maxx = new JsonPrimitive(envelope.getMaxX());
@@ -35,20 +35,6 @@ public class BboxAdapter implements JsonSerializer<Bbox>, JsonDeserializer<Bbox>
         bboxArray.add(maxy);
 
         return bboxArray;
-    }
-    
-    public static Envelope parseBOX(String box) {
-        Envelope envelope = null;
-        Pattern pattern = Pattern.compile("BOX\\(\\s*([-\\d\\.]+)\\s+([-\\d\\.]+)\\s*,\\s*([-\\d\\.]+)\\s+([-\\d\\.]+)\\s*\\)");
-        Matcher matcher = pattern.matcher(box);
-        if (matcher.matches()) {
-            double minX = Double.parseDouble(matcher.group(1));
-            double minY = Double.parseDouble(matcher.group(2));
-            double maxX = Double.parseDouble(matcher.group(3));
-            double maxY = Double.parseDouble(matcher.group(4));
-            envelope = new Envelope(minX, maxX, minY, maxY);
-        }
-        return envelope;
     }
 
     @Override
