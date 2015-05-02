@@ -1,3 +1,8 @@
+<%@page import="gov.usgs.cida.coastalhazards.rest.ui.Identifier"%>
+<%@page import="java.util.Map"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.Item"%>
+<%@page import="gov.usgs.cida.coastalhazards.jpa.ItemManager"%>
+<%@page import="gov.usgs.cida.coastalhazards.rest.data.ItemResource"%>
 <%@page import="java.io.File"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
@@ -21,6 +26,10 @@
 
 %>
 <%
+	Item item = (Item) request.getAttribute("it");
+	if (item == null) {
+		// What to do here?
+	}
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 	String baseUrl = props.getProperty("coastal-hazards.base.url");
 	String secureBaseUrlJndiString = props.getProperty("coastal-hazards.base.secure.url");
@@ -46,7 +55,6 @@
 	String overlay = path + "WEB-INF/jsp/components/common/application-overlay.jsp";
 	String vJquery = getProp("version.jquery");
 	String vBootstrap = getProp("version.bootstrap");
-	String vOpenlayers = getProp("version.openlayers");
 	String vSugarJs = getProp("version.sugarjs");
 	String vJsTree = getProp("version.jstree");
 	String vHandlebars = getProp("version.handlebars");
@@ -56,8 +64,10 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<jsp:include page="<%=metaTags%>"></jsp:include>
-		<title>USGS Coastal Change Hazards Portal</title>
+		<jsp:include page="<%=metaTags%>">
+			<jsp:param name="description" value="<%= item.getSummary().getFull().getText() %>" />
+		</jsp:include>
+		<title>USGS Coastal Change Hazards Portal - <%= item.getSummary().getMedium().getTitle() %></title>
 			
 		<link type="text/css" rel="stylesheet" media="all" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= resourceSuffix %>.css" />
@@ -212,7 +222,7 @@
 					itemId: '${it.id}',
 					contextPath: '<%=baseUrl%>',
 					development: <%=development%>,
-					item: null,
+					item: <%= item.toJSON(true) %>,
 					emailLink: 'CCH_Help@usgs.gov',
 					publicUrl: '<%=publicUrl%>',
 					data: {
@@ -273,12 +283,15 @@
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Session<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS<%= resourceSuffix %>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/FixedTileManager<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/UI<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Legend<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= resourceSuffix %>.js'></script>
+		
+		<script type="text/javascript">
+			CCH.CONFIG.stuff = <%= item.toJSON(true) %>;
+		</script>
 	</body>
 </html>
