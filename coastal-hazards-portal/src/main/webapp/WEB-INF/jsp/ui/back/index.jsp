@@ -48,8 +48,6 @@
 	String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");
 	String version = props.getProperty("application.version");
 	String resourceSuffix = development ? "" : "-" + version + "-min";
-	String path = "../../../../";
-	String log4js = path + "js/log4javascript/log4javascript.jsp";
 	String vJquery = getProp("version.jquery");
 	String vBootstrap = getProp("version.bootstrap");
 	String vSugarJs = getProp("version.sugarjs");
@@ -266,11 +264,11 @@
 				window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
 			}
 		</script>
-		<jsp:include page="<%= log4js%>">
+		<jsp:include page="/js/log4javascript/log4javascript.jsp">
 			<jsp:param name="relPath" value="<%=relPath%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
-		<jsp:include page="../../../../js/third-party/alertify/alertify.jsp">
+		<jsp:include page="/js/third-party/alertify/alertify.jsp">
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
