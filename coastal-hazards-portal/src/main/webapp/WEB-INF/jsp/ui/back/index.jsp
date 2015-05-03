@@ -61,6 +61,7 @@
 	<head>
 		<jsp:include page="../common/meta-tags.jsp">
 			<jsp:param name="description" value="<%= item.getSummary().getFull().getText() %>" />
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
 		</jsp:include>
 		<title>USGS Coastal Change Hazards Portal - <%= item.getSummary().getMedium().getTitle() %></title>
 			

@@ -45,7 +45,9 @@
 %>
 <html lang="en"> 
 	<head>
-		<jsp:include page="../common/meta-tags.jsp" />
+		<jsp:include page="../common/meta-tags.jsp">
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
+		</jsp:include>
 		<title>USGS Coastal Change Hazards Portal</title>
 
 		<%-- https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html --%>
