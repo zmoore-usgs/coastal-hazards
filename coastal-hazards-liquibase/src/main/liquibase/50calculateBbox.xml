@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+	<changeSet author="jiwalker" id="add_bbox_function">
+		<createProcedure>
+			CREATE FUNCTION cch_calc_bbox(item_id VARCHAR(10)) RETURNS box2d AS $BODY$
+				SELECT ST_Extent(bbox) as bbox FROM (
+					SELECT b.bbox FROM bbox b, item i WHERE i.id IN 
+						(SELECT id FROM get_subtree($1) WHERE level > 0) 
+						AND i.bbox_id=b.id
+					) AS bboxen
+			$BODY$ LANGUAGE sql;
+		</createProcedure>
+		<rollback>DROP FUNCTION cch_calc_bbox(item_id VARCHAR(10));</rollback>
+	</changeSet>
+</databaseChangeLog>

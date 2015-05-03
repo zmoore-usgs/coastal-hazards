@@ -3,6 +3,7 @@ package gov.usgs.cida.coastalhazards.jpa;
 import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.exception.CycleIntroductionException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
+import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Item;
 import java.util.ArrayList;
 import java.util.Date;
@@ -438,8 +439,25 @@ public class ItemManager implements AutoCloseable {
 		List<Item> ancestors = findAncestors(item);
 		for (Item ancestor : ancestors) {
 			ancestor.setLastModified(new Date());
+			ancestor.setBbox(calculateBbox(ancestor));
 		}
 		return ancestors;
+	}
+	
+	public Bbox calculateBbox(Item item) {
+		Bbox bbox = null;
+		if (item != null) {
+			if (item.getItemType() == Item.ItemType.data) {
+				bbox = item.getBbox();
+			} else {
+				Query query = em.createNativeQuery("SELECT cast(bbox as varchar) FROM cch_calc_bbox(:id) as bbox");
+				query.setParameter("id", item.getId());
+				String singleResult = (String)query.getSingleResult();
+				bbox = new Bbox();
+				bbox.setBbox(singleResult);
+			}
+		}
+		return bbox;
 	}
 
 	@Override
