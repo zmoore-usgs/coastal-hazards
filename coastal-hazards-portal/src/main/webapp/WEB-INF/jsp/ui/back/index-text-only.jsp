@@ -96,7 +96,7 @@
 		<ul>
 			<li><a href="<%=baseUrl%>/info/" title="Information">Info</a></li>
 			<li><a href="<%=baseUrl%>" title="Return To Map">Return To Map</a></li>
-			<li><a href="<%=baseUrl%>/data/download/<%=item.getId()%>" title="Download Data Services">Download Data</a></li>
+			<li><a href="<%=baseUrl%>/data/download/item/<%=item.getId()%>" title="Download Data Services">Download Data</a></li>
 		</ul>
 	</nav>
 </aside>
