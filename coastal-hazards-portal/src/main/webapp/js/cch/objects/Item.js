@@ -40,16 +40,20 @@ CCH.Objects.Item = function (args) {
 
 		callbacks.success.unshift(me.loadFromData);
 
-		CCH.items.search({
-			item: me.id,
-			displayNotification: false,
-			context: context,
-			subtree: subtree,
-			callbacks: {
-				success: callbacks.success,
-				error: callbacks.error
-			}
-		});
+		if (args.data) {
+			callbacks.success[0](args.data);
+		} else {
+			CCH.items.search({
+				item: me.id,
+				displayNotification: false,
+				context: context,
+				subtree: subtree,
+				callbacks: {
+					success: callbacks.success,
+					error: callbacks.error
+				}
+			});
+		}
 	};
 
 	me.loadFromData = function (data) {

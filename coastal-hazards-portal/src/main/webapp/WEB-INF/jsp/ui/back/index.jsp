@@ -27,9 +27,6 @@
 %>
 <%
 	Item item = (Item) request.getAttribute("it");
-	if (item == null) {
-		// What to do here?
-	}
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 	String baseUrl = props.getProperty("coastal-hazards.base.url");
 	String secureBaseUrlJndiString = props.getProperty("coastal-hazards.base.secure.url");
@@ -215,7 +212,8 @@
 				Objects: {},
 				CONFIG: {
 					version: '<%=version%>',
-					itemId: '${it.id}',
+					itemData: <%= item.toJSON(true) %>,
+					itemId: '<%= item.getId() %>',
 					contextPath: '<%=baseUrl%>',
 					development: <%=development%>,
 					item: <%= item.toJSON(true) %>,
@@ -285,9 +283,5 @@
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Legend<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= resourceSuffix %>.js'></script>
-		
-		<script type="text/javascript">
-			CCH.CONFIG.stuff = <%= item.toJSON(true) %>;
-		</script>
 	</body>
 </html>

@@ -3,8 +3,6 @@
 /*global CCH*/
 /*global initializeLogging*/
 /*global LOG*/
-/*global OpenLayers*/
-/*global splashUpdate*/
 $(document).ready(function () {
 	initializeLogging({
 		LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
@@ -18,9 +16,9 @@ $(document).ready(function () {
 	
 	CCH.session = new CCH.Objects.Session();
         
-        $('#app-navbar-coop-logo-img').on('click', function () {
-            window.location.href = CCH.CONFIG.contextPath;
-        });
+	$('#app-navbar-coop-logo-img').on('click', function () {
+		window.location.href = CCH.CONFIG.contextPath;
+	});
 		
 	// I am loading an item with the full subtree so once that item is loaded, start loading the rest of the application
 	$(window).on('cch.item.loaded', function (evt, args) {
@@ -44,38 +42,16 @@ $(document).ready(function () {
 
 	new CCH.Objects.Item({
 		id: CCH.CONFIG.itemId
-	}).load({
-		subtree: true,
-		callbacks: {
-			error: [
-				function (jqXHR, textStatus, errorThrown) {
-					var continueLink = $('<a />').attr({
-						'href': CCH.CONFIG.contextPath,
-						'role': 'button'
-					}).addClass('btn btn-lg').html('<i class="fa fa-refresh"></i> Click to continue'),
-						emailLink = $('<a />').attr({
-						'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')',
-						'role': 'button'
-					}).addClass('btn btn-lg').html('<i class="fa fa-envelope"></i> Contact Us');
-
-					if (404 === jqXHR.status) {
-						splashUpdate("<b>Item Not Found</b><br /><br />We couldn't find the item you are looking for<br /><br />");
-					} else {
-						splashUpdate("<b>There was an error attempting to load an item.</b><br />Either try to reload the application or contact the system administrator.<br /><br />");
-					}
-					splashAppend(continueLink);
-					splashAppend(emailLink);
-					$('.splash-spinner').fadeOut(2000);
-				}
-			]
-		}
+	}).load({ 
+		data : CCH.CONFIG.itemData
 	});
 
 	// http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
 	String.prototype.hashCode = function () {
 		var hash = 0, i, chr, len;
-		if (this.length === 0)
+		if (this.length === 0) {
 			return hash;
+		}
 		for (i = 0, len = this.length; i < len; i++) {
 			chr = this.charCodeAt(i);
 			hash = ((hash << 5) - hash) + chr;
