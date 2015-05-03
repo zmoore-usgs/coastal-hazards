@@ -140,7 +140,7 @@
 						<div id="info-row-control"  class="col-md-2">
 							<div class="row">
 								<div class='well well'>
-									<div id="label-action-center" class="hidden-md hidden-lg"><i class="fa fa-chevron-down" alt="downward facing arrow"></i> Action Center</div>
+									<div id="label-action-center" class="hidden-md hidden-lg"><i class="fa fa-chevron-down"></i> Action Center</div>
 
 									<%-- Application Links --%>
 									<div id="container-control-button">

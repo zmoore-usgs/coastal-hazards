@@ -18,23 +18,18 @@
 <%
 	String baseUrl = props.getProperty("coastal-hazards.base.url");
 	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
-
-	// Figure out the path based on the ID passed in, if any
-	Map<String, String> attributeMap = (Map<String, String>) pageContext.findAttribute("it");
-	String metaTags = "../WEB-INF/jsp/ui/common/meta-tags.jsp";
-	String ga = "..//WEB-INF/jsp/ui/common/google-analytics.jsp";
 %>
 <!DOCTYPE html>
 <html>
 	<head>
-		<jsp:include page="<%=metaTags%>">
+		<jsp:include page="../WEB-INF/jsp/ui/common/meta-tags.jsp">
 			<jsp:param name="base-url" value="<%=baseUrl%>" />
 		</jsp:include>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
 		<title>Coastal Change Hazards Information</title>
 		<%-- Google Analytics for CCH --%>
 		<script type="text/javascript">
-		<jsp:include page="<%=ga%>" />
+		<jsp:include page="../WEB-INF/jsp/ui/common/google-analytics.jsp" />
 		</script>
 	</head>
 	<body>

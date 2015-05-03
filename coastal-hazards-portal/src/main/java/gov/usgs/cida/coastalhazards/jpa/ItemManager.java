@@ -227,6 +227,23 @@ public class ItemManager implements AutoCloseable {
 		Query query = em.createNativeQuery(searchString);
 		return (List<String>) query.getResultList();
 	}
+	
+		/**
+	 * Fast query to get list of all item IDs
+	 * 
+	 * @param showDisabled include disabled items
+	 * @return List of Items matching result. Items only have id attribute filled out
+	 */
+	public List<String> getActiveItemIdsNamesAndDescription(boolean showDisabled) {
+		String searchString = "select i.id, s.medium_title, s.medium_text from Item i join summary s on i.summary_id = s.id";
+		
+		if (!showDisabled) {
+			searchString += " and i.enabled is true";
+		}
+		
+		Query query = em.createNativeQuery(searchString);
+		return (List<String>) query.getResultList();
+	}
 
 	/**
 	 * Query the database for items and return it as a json string

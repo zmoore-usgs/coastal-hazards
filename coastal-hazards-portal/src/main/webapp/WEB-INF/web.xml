@@ -146,6 +146,14 @@
 		<servlet-name>SiteMapXml</servlet-name>
 		<url-pattern>/sitemap.xml</url-pattern>  
 	</servlet-mapping>
+		<servlet>
+		<servlet-name>SiteMapHtml</servlet-name>
+		<jsp-file>/WEB-INF/jsp/sitemap/sitemap.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SiteMapHtml</servlet-name>
+		<url-pattern>/sitemap</url-pattern>  
+	</servlet-mapping>
 	
 	<!-- Help Page -->
 	<servlet>
