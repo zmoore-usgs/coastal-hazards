@@ -117,7 +117,7 @@
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/handlebars/<%=vHandlebars%>/handlebars<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
-		<jsp:include page="../common/config.jsp">
+		<jsp:include page="config.jsp">
 			<jsp:param name="id" value="${it.id}" /> 
 			<jsp:param name="idType" value="${it.type}" /> 
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
