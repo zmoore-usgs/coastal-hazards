@@ -26,7 +26,7 @@ public class InfoRouter {
 		if (item == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
-		return Response.ok(new Viewable("/WEB-INF/jsp/components/back/index.jsp", item)).build();
+		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index.jsp", item)).build();
 	}
 
 	@GET

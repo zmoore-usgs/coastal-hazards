@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.ui;
 
 import javax.ws.rs.ApplicationPath;
-
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 

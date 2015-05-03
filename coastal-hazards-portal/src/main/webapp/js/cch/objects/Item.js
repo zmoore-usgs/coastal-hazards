@@ -157,6 +157,7 @@ CCH.Objects.Item = function (args) {
 
 	me.createWmsLayer = function (args) {
 		args = args || {};
+		
 		var id = me.id,
 			service = me.getService('proxy_wms'),
 			endpoint = service.endpoint,

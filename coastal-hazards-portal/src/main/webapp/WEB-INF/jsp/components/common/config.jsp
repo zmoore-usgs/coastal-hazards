@@ -134,7 +134,7 @@
 				sources: {
 					'cida-geoserver': {
 						'endpoint': '<%=portalGeoserverEndpoint%>',
-						'proxy': '/geoserver/'
+						'proxy': 'geoserver/'
 					},
                     'dsas-geoserver': {
 						'endpoint': '<%=dsasGeoserverEndpoint%>',
