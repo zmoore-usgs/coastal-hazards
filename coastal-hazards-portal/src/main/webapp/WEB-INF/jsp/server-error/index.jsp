@@ -29,10 +29,10 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<jsp:include page="../components/common/meta-tags.jsp"></jsp:include>
+		<jsp:include page="../ui/common/meta-tags.jsp"></jsp:include>
 			<title>USGS Coastal Change Hazards Portal - Error Encountered</title>
 			<script type="text/javascript">
-				<jsp:include page="../components/common/google-analytics.jsp" />
+				<jsp:include page="../ui/common/google-analytics.jsp" />
 			</script>
 		<style>
 			@media (min-width: 992px) {
@@ -182,7 +182,6 @@
 				svg.getElementById('contact-link').addEventListener('click', function () {
 					window.location.href = 'mailto:CCH_Help@usgs.gov?' + emailAttributes;
 				});
-
 			};
 		</script>
 	</body>
