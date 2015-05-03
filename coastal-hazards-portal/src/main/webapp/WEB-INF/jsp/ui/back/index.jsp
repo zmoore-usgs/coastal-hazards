@@ -22,7 +22,7 @@
 	}
 
 	private boolean isTextOnlyClient(String userAgent) {
-		String[] textOnlyClients = new String[]{"lynx", "elinks"};
+		String[] textOnlyClients = new String[]{"lynx", "elinks","curl", "googlebot"};
 		String userAgentLc = userAgent.toLowerCase();
 		for (int cIdx = 0; cIdx < textOnlyClients.length; cIdx++) {
 			if (userAgentLc.contains(textOnlyClients[cIdx])) {
