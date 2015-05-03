@@ -48,7 +48,7 @@
 	<url>
 		<loc><%= baseUrlJndiString%>/data/item/${i}</loc>
 		<changefreq>weekly</changefreq>
-		<priority>0.8</priority>
+		<priority>0.7</priority>
 	</url>
 	</c:forEach>
 </urlset>
