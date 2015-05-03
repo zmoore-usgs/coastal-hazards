@@ -49,10 +49,7 @@
 	String version = props.getProperty("application.version");
 	String resourceSuffix = development ? "" : "-" + version + "-min";
 	String path = "../../../../";
-	String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
-	String ga = path + "WEB-INF/jsp/components/common/google-analytics.jsp";
 	String log4js = path + "js/log4javascript/log4javascript.jsp";
-	String overlay = path + "WEB-INF/jsp/components/common/application-overlay.jsp";
 	String vJquery = getProp("version.jquery");
 	String vBootstrap = getProp("version.bootstrap");
 	String vSugarJs = getProp("version.sugarjs");
@@ -64,7 +61,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<jsp:include page="<%=metaTags%>">
+		<jsp:include page="../common/meta-tags.jsp">
 			<jsp:param name="description" value="<%= item.getSummary().getFull().getText() %>" />
 		</jsp:include>
 		<title>USGS Coastal Change Hazards Portal - <%= item.getSummary().getMedium().getTitle() %></title>
@@ -74,12 +71,12 @@
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/themes/default/style<%= development ? "" : ".min"%>.css" />
 		<script type="text/javascript">
-			<jsp:include page="<%=ga%>" />
+			<jsp:include page="../common/google-analytics.jsp" />
 		</script>
 	</head>
 	<body>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
-		<jsp:include page="<%=overlay%>">
+		<jsp:include page="../common/application-overlay.jsp">
 			<jsp:param name="application-overlay-description" value="USGS coastal change hazards research produces data, 
 					   knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
 					   here. They can be used to increase awareness and provide a basis for decision making." />
