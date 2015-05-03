@@ -147,6 +147,16 @@
 		<url-pattern>/sitemap.xml</url-pattern>  
 	</servlet-mapping>
 	
+	<!-- Help Page -->
+	<servlet>
+		<servlet-name>InfoPage</servlet-name>
+		<jsp-file>/WEB-INF/jsp/ui/info/index.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>InfoPage</servlet-name>
+		<url-pattern>/info/</url-pattern>  
+	</servlet-mapping>
+	
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Secure the publishing endpoint</web-resource-name>

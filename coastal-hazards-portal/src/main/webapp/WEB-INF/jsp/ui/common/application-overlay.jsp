@@ -11,7 +11,7 @@
 	<div id="application-initial-load-splash" class="<%= isOnSiteRequest ? "hidden" : ""%>">
 		<div class="application-overlay-content-wrap">
 			<div id="application-overlay-image-container">
-				<img src="<%=request.getParameter("base-url")%>/images/splash/usgs.svg" alt="USGS Logo"/>
+				<img src="<%=request.getParameter("base-url")%>/images/splash/usgs.svg" alt="United States Geological Survey"/>
 			</div>
 			<div id="application-overlay-description-container">
 				<div id="application-overlay-description-container-title">Coastal Change Hazards Portal</div>

@@ -21,9 +21,8 @@
 
 	// Figure out the path based on the ID passed in, if any
 	Map<String, String> attributeMap = (Map<String, String>) pageContext.findAttribute("it");
-	String path = "../";
-	String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
-	String ga = path +  "WEB-INF/jsp/components/common/google-analytics.jsp";
+	String metaTags = "../WEB-INF/jsp/ui/common/meta-tags.jsp";
+	String ga = "..//WEB-INF/jsp/ui/common/google-analytics.jsp";
 %>
 <!DOCTYPE html>
 <html>
