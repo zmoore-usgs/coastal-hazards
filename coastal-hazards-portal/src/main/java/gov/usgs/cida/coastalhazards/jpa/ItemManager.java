@@ -14,6 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -207,6 +208,23 @@ public class ItemManager implements AutoCloseable {
 			}
 		}
 		return deleted;
+	}
+	
+	/**
+	 * Fast query to get list of all item IDs
+	 * 
+	 * @param showDisabled include disabled items
+	 * @return List of Items matching result. Items only have id attribute filled out
+	 */
+	public List<String> getActiveItemIds(boolean showDisabled) {
+		String searchString = "select id from Item";
+		
+		if (!showDisabled) {
+			searchString += " where enabled is true";
+		}
+		
+		Query query = em.createNativeQuery(searchString);
+		return (List<String>) query.getResultList();
 	}
 
 	/**
