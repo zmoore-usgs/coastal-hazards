@@ -38,7 +38,7 @@
 %>
 <html lang="en"> 
 	<head>
-		<jsp:include page="/WEB-INF/jsp/components/common/meta-tags.jsp" />
+		<jsp:include page="/WEB-INF/jsp/ui/common/meta-tags.jsp" />
 		<title>USGS Coastal Change Hazards Portal Login Page</title>
 
 		<%-- https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html --%>
@@ -63,7 +63,7 @@
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
 
 		<script  type="text/javascript">
-			<jsp:include page="/WEB-INF/jsp/components/common/google-analytics.jsp" />
+			<jsp:include page="/WEB-INF/jsp/ui/common/google-analytics.jsp" />
 		</script>
 
 	</head>
@@ -72,7 +72,7 @@
 		<div id="application-container" class="container">
 			<div id="header-row" class="row">
 				<a id="app-navbar-coop-logo-img-container" class="app-navbar-item-container" href="null/">
-					<img id="app-navbar-coop-logo-img" src="http://localhost:8080/coastal-hazards-portal/images/banner/cida-cmgp.svg" alt="Navigation Bar Cooperator Logo">
+					<img id="app-navbar-coop-logo-img" src="<%= baseUrl %>/images/banner/cida-cmgp.svg" alt="Navigation Bar Cooperator Logo">
 				</a>
 				<div id="app-navbar-site-title-container" class="app-navbar-item-container">
 					<div class="app-navbar-title visible-lg hidden-md hidden-sm hidden-xs">USGS Coastal Change Hazards Portal</div>
