@@ -2,8 +2,8 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
 	<changeSet author="jiwalker" id="add_bbox_function">
 		<createProcedure>
-			CREATE FUNCTION cch_calc_bbox(item_id VARCHAR(10)) RETURNS box2d AS $BODY$
-				SELECT ST_Extent(bbox) as bbox FROM (
+			CREATE FUNCTION cch_calc_bbox(item_id VARCHAR(10)) RETURNS varchar AS $BODY$
+				SELECT cast(ST_Extent(bbox) as varchar) as bbox FROM (
 					SELECT b.bbox FROM bbox b, item i WHERE i.id IN 
 						(SELECT id FROM get_subtree($1) WHERE level > 0) 
 						AND i.bbox_id=b.id
