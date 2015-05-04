@@ -22,14 +22,14 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<jsp:include page="../WEB-INF/jsp/ui/common/meta-tags.jsp">
+		<jsp:include page="/WEB-INF/jsp/ui/common/meta-tags.jsp">
 			<jsp:param name="base-url" value="<%=baseUrl%>" />
 		</jsp:include>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
 		<title>Coastal Change Hazards Information</title>
 		<%-- Google Analytics for CCH --%>
 		<script type="text/javascript">
-		<jsp:include page="../WEB-INF/jsp/ui/common/google-analytics.jsp" />
+			<jsp:include page="/WEB-INF/jsp/ui/common/google-analytics.jsp" />
 		</script>
 	</head>
 	<body>
@@ -37,7 +37,7 @@
 		<div id=“wrapper”>
 			<%-- Title Bar --%>
 			<header>
-				<a id="cch-back-to-portal-link" href="../"><img src="../images/info/collaborative_logo.png" alt="collaborative logo" /></a>
+				<a id="cch-back-to-portal-link" href="../"><img src="<%=baseUrl%>/images/info/collaborative_logo.png" alt="collaborative logo" /></a>
 				<h1>USGS Coastal Change Hazards Portal</h1>
 				<h1 class="mobile">USGS CCH</h1>
 				<h1 class="mobile_portrait">CCH</h1>
@@ -68,7 +68,7 @@
 						or have ideas for improving the access and use of this USGS data and information, 
 						please email <a href="mailto:cch_help@usgs.gov">cch_help@usgs.gov.</a>
 					</p>
-					
+
 					<span class="header">
 						Portal Functionality
 					</span>
@@ -78,33 +78,33 @@
 						change, and 3) sea-level rise. Each data item represents an individual research 
 						product. Items with a common topic area are grouped into aggregations within a 
 						theme, to show the breadth of that topic and make it easy to explore related 
-                                                information. Items and aggregations can be added to a bucket that saves this 
+						information. Items and aggregations can be added to a bucket that saves this 
 						information for download or sharing. See video below to view a short tutorial on
-                                                how to find and share data.
+						how to find and share data.
 					</p>
-                                        <div class="tubewrapper">
-                                        <iframe src="https://www.youtube-nocookie.com/embed/ZvlITDs9PII?rel=0" 
-                                                frameborder="0" title="YouTube video: Coastal Change Hazards Rodanthe Tutorial" name="YouTube video frame" allowfullscreen>
-                                        [Link to video can be found at <a href="https://www.youtube-nocookie.com/embed/ZvlITDs9PII">https://www.youtube-nocookie.com/embed/ZvlITDs9PII</a>]</iframe>
-                                        </div>
+					<div class="tubewrapper">
+						<iframe src="https://www.youtube-nocookie.com/embed/ZvlITDs9PII?rel=0" 
+								frameborder="0" title="YouTube video: Coastal Change Hazards Rodanthe Tutorial" name="YouTube video frame" allowfullscreen>
+						[Link to video can be found at <a href="https://www.youtube-nocookie.com/embed/ZvlITDs9PII">https://www.youtube-nocookie.com/embed/ZvlITDs9PII</a>]</iframe>
+					</div>
 					<%-- Icon Description Table --%>
 					<table id="application-icon-table">
 						<thead>
-                                                <p>
-                                                    
-                                                </p>
-							<tr>
-								<th>Icon</th>
-								<th>Description</th>
-							</tr>
+						<p>
+
+						</p>
+						<tr>
+							<th>Icon</th>
+							<th>Description</th>
+						</tr>
 						</thead>
 						<tbody>
 							<tr>
-								<td><img src="../images/info/info-page-icon.png" alt="Info Page Icon"/></td>
+								<td><img src="<%=baseUrl%>/images/info/info-page-icon.png" alt="Info Page Icon"/></td>
 								<td>Learn about the portal, its background and basic functions.</td>
 							</tr>
 							<tr>
-								<td><img src="../images/info/info-page-bucket.png" alt="Bucket Icon"/></td>
+								<td><img src="<%=baseUrl%>/images/info/info-page-bucket.png" alt="Bucket Icon"/></td>
 								<td>
 									Put items of interest into the bucket. From here, download data 
 									and products or share contents with friends and colleagues.
@@ -112,64 +112,64 @@
 							</tr>
 							<tr>
 								<td>
-									<img src="../images/info/info-page-more-info-link.png" alt="More Info Link Icon"/>
+									<img src="<%=baseUrl%>/images/info/info-page-more-info-link.png" alt="More Info Link Icon"/>
 								</td>
 								<td>Find out more information about the item.</td>
 							</tr>
 							<tr>
 								<td>
-									<img src="../images/info/info-page-zoomto-link.png" alt="Zoom To Link Icon"/>
+									<img src="<%=baseUrl%>/images/info/info-page-zoomto-link.png" alt="Zoom To Link Icon"/>
 								</td>
 								<td>Zoom to the spatial extent of the item being viewed.</td>
 							</tr>
 							<tr>
 								<td>
-									<img src="../images/info/info-page-explore-contents.png" alt="Explore Contents Link Icon"/>
+									<img src="<%=baseUrl%>/images/info/info-page-explore-contents.png" alt="Explore Contents Link Icon"/>
 								</td>
 								<td>Explore additional data sets and products within this item.</td>
 							</tr>
 							<tr>
 								<td>
-									<img src="../images/info/info-page-add-to-bucket.png" alt="Add To Bucket Link Icon"/>
+									<img src="<%=baseUrl%>/images/info/info-page-add-to-bucket.png" alt="Add To Bucket Link Icon"/>
 								</td>
 								<td>Add items to the bucket.</td>
 							</tr>
 							<tr>
 								<td>
-									<img src="../images/info/info-page-bucket-icon-row.png" alt="Bucket Links"/>
+									<img src="<%=baseUrl%>/images/info/info-page-bucket-icon-row.png" alt="Bucket Links"/>
 								</td>
 								<td>Change item visibility, download data, learn more or share an item.</td>
 							</tr>
-                            
+
                             <tr>
 								<td>
-									<img src="../images/info/base_layer.png" alt="Base Layer"/>
+									<img src="<%=baseUrl%>/images/info/base_layer.png" alt="Base Layer"/>
 								</td>
 								<td>Change maps base layer: World Imagery, Street, Topo, and Ocean</td>
 							</tr>
-                            
+
                             <tr>
 								<td>
-									<img src="../images/info/legend.png" alt="Base Layer"/>
+									<img src="<%=baseUrl%>/images/info/legend.png" alt="Base Layer"/>
 								</td>
 								<td>Click to view the maps legend</td>
 							</tr>
-                            
+
 						</tbody>
 					</table>
-					 <span class="header">
+					<span class="header">
 						<a name="helpModal">More Info Action Center Descriptions</a>
 					</span>
-							<table id="application-icon-table">
-								<thead>
-                                                <p>
-                                                    
-                                                </p>
-								<tr>
-									<th>Name</th>
-									<th>Description</th>
-								</tr>
-								</thead>
+					<table id="application-icon-table">
+						<thead>
+						<p>
+
+						</p>
+						<tr>
+							<th>Name</th>
+							<th>Description</th>
+						</tr>
+						</thead>
 						<tbody>
 							<tr>
 								<td>Return to Map: </td>
@@ -250,14 +250,14 @@
 					<div id="holder">
 						<div class="icon">
 							<div class="icon_holder">
-								<a class="cch-portal-link-storms" href="<%=baseUrl%>/ui/item/CAckxGz"><img src="../images/info/extreme_storms.jpg" alt="extreme storms pic"/></a>
+								<a class="cch-portal-link-storms" href="<%=baseUrl%>/ui/item/CAckxGz"><img src="<%=baseUrl%>/images/info/extreme_storms.jpg" alt="extreme storms pic"/></a>
 							</div><!--icon_holder-->
 							<h3><a class="cch-portal-link-storms"  href="<%=baseUrl%>/ui/item/CAckxGz">Explore Extreme Storms</a></h3>
 							<p>Coastal erosion hazards</p>
 						</div><!--icon-->
 						<div class="icon">
 							<div class="icon_holder">
-								<a class="cch-portal-link-shoreline" href="<%=baseUrl%>/ui/item/CAkR645"><img src="../images/info/shoreline_change.jpg" alt="shoreline change pic"/></a>
+								<a class="cch-portal-link-shoreline" href="<%=baseUrl%>/ui/item/CAkR645"><img src="<%=baseUrl%>/images/info/shoreline_change.jpg" alt="shoreline change pic"/></a>
 							</div><!--icon_holder-->
 							<h3><a class="cch-portal-link-shoreline" href="<%=baseUrl%>/ui/item/CAkR645">Explore Shoreline Change</a></h3>
 							<p>Historical positions and</p>
@@ -265,7 +265,7 @@
 						</div><!--icon-->
 						<div class="icon">
 							<div class="icon_holder">
-								<a class="cch-portal-link-sealevel" href="<%=baseUrl%>/ui/item/CARv9Z5"><img src="../images/info/sea-leve_rise.jpg" alt="sea-level_rise pic"/></a>
+								<a class="cch-portal-link-sealevel" href="<%=baseUrl%>/ui/item/CARv9Z5"><img src="<%=baseUrl%>/images/info/sea-leve_rise.jpg" alt="sea-level_rise pic"/></a>
 							</div><!--icon_holder-->
 							<h3><a class="cch-portal-link-sealevel" href="<%=baseUrl%>/ui/item/CARv9Z5">Explore Sea-Level Rise</a></h3>
 							<p>Vulnerability</p>
@@ -283,18 +283,18 @@
 				<a href="http://www.usgs.gov/laws/privacy.html" title="Privacy policies of the U.S. Geological Survey.">Privacy</a>
 				<a href="http://www.usgs.gov/laws/policies_notices.html" title="Policies and notices that govern information posted on USGS Web sites.">Policies and Notices</a>
 			</p>
-			<a href="#"><img src="../images/info/usgs_logo.png" alt="usgs logo"/></a>
+			<a href="#"><img src="<%=baseUrl%>/images/info/usgs_logo.png" alt="usgs logo"/></a>
 		</footer>
 		<script type="text/javascript">
 			var resizeHandler = function () {
 				document.getElementById("content").style.height = '';
 				var footer = document.getElementsByTagName('footer')[0],
-					header = document.getElementsByTagName('header')[0],
-					content = document.getElementById("content"),
-					headerHeight = header.clientHeight,
-					footerHeight = footer.clientHeight,
-					windowHeight = window.innerHeight,
-					contentHeight = content.clientHeight;
+						header = document.getElementsByTagName('header')[0],
+						content = document.getElementById("content"),
+						headerHeight = header.clientHeight,
+						footerHeight = footer.clientHeight,
+						windowHeight = window.innerHeight,
+						contentHeight = content.clientHeight;
 
 				if (headerHeight + contentHeight + footerHeight > windowHeight) {
 					footer.style.top = headerHeight + contentHeight + 28 + 'px';
@@ -302,19 +302,19 @@
 					content.style.height = windowHeight - headerHeight - footerHeight - 2 + 'px';
 				}
 			},
-				linkbackClassElements,
-				linkbackClickHandler = function (label) {
-					ga('send', 'event', {
-						'eventCategory': 'click',
-						'eventAction': label
-					});
-					console.info(label);
-				},
-				linkbackClassEventLabels = {
-					'cch-portal-link-storms': 'extremeStormsLinkClicked',
-					'cch-portal-link-shoreline': 'shorelineChangeLinkClicked',
-					'cch-portal-link-sealevel': 'seaLevelRiseLinkClicked'
-				};
+					linkbackClassElements,
+					linkbackClickHandler = function (label) {
+						ga('send', 'event', {
+							'eventCategory': 'click',
+							'eventAction': label
+						});
+						console.info(label);
+					},
+					linkbackClassEventLabels = {
+						'cch-portal-link-storms': 'extremeStormsLinkClicked',
+						'cch-portal-link-shoreline': 'shorelineChangeLinkClicked',
+						'cch-portal-link-sealevel': 'seaLevelRiseLinkClicked'
+					};
 
 			// Back To Portal Button
 			document.getElementById('cch-back-to-portal-button').onclick = function () {
@@ -331,7 +331,7 @@
 					'eventAction': 'backToPortalLinkClicked'
 				});
 			};
-			
+
 			// Item-specific back to portal links
 			// TODO- I tried doing this in a for-in loop using the linkbackClassEventLabels object
 			// but all elements had their event handlers 
@@ -341,14 +341,14 @@
 					linkbackClickHandler(linkbackClassEventLabels['cch-portal-link-storms']);
 				};
 			}
-			
+
 			linkbackClassElements = document.getElementsByClassName('cch-portal-link-shoreline');
 			for (var ceIdx = 0; ceIdx < linkbackClassElements.length; ceIdx++) {
 				linkbackClassElements[ceIdx].onclick = function () {
 					linkbackClickHandler(linkbackClassEventLabels['cch-portal-link-shoreline']);
 				};
 			}
-			
+
 			linkbackClassElements = document.getElementsByClassName('cch-portal-link-sealevel');
 			for (var ceIdx = 0; ceIdx < linkbackClassElements.length; ceIdx++) {
 				linkbackClassElements[ceIdx].onclick = function () {
