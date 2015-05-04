@@ -450,7 +450,7 @@ public class ItemManager implements AutoCloseable {
 			if (item.getItemType() == Item.ItemType.data) {
 				bbox = item.getBbox();
 			} else {
-				Query query = em.createNativeQuery("SELECT cast(bbox as varchar) FROM cch_calc_bbox(:id) as bbox");
+				Query query = em.createNativeQuery("SELECT bbox FROM cch_calc_bbox(:id) as bbox");
 				query.setParameter("id", item.getId());
 				String singleResult = (String)query.getSingleResult();
 				bbox = new Bbox();
