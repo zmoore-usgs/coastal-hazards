@@ -46,12 +46,6 @@
 	// Figure out the path based on the ID passed in, if any
 	Map<String, String> attributeMap = (Map<String, String>) pageContext.findAttribute("it");
 	String id = attributeMap.get("id") == null ? "" : attributeMap.get("id");
-	String path = "../../../../";
-	String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
-	String jsURI = path + "js/third-party/jsuri/jsuri.jsp";
-	String fineUploader = path + "js/fineuploader/fineuploader.jsp";
-	String log4js = path + "js/log4javascript/log4javascript.jsp";
-	String configuration = path + "WEB-INF/jsp/components/common/config.jsp";
 %>
 <!DOCTYPE html>
 <html>
@@ -61,7 +55,7 @@
 				window.location = window.location.href + "/";
 			}
 		</script>
-		<jsp:include page="<%=metaTags%>"></jsp:include>
+		<jsp:include page="/WEB-INF/jsp/ui/common/meta-tags.jsp"></jsp:include>
 			<title>USGS Coastal Change Hazards Portal - Publish</title>
 			<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
@@ -73,18 +67,18 @@
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/<%=vOpenlayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
 
-		<jsp:include page="<%= jsURI%>">
+		<jsp:include page="../../../../js/third-party/jsuri/jsuri.jsp">
 			<jsp:param name="baseUrl" value="<%=baseUrl + '/' %>" /> 
 		</jsp:include>
-		<jsp:include page="<%= log4js %>">
+		<jsp:include page="../../../../js/log4javascript/log4javascript.jsp">
 			<jsp:param name="relPath" value="<%=baseUrl + '/'%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
-		<jsp:include page="<%= fineUploader%>">
+		<jsp:include page="../../../../js/fineuploader/fineuploader.jsp">
 			<jsp:param name="relPath" value="<%=baseUrl + '/'%>" /> 
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
-		<jsp:include page="<%= configuration%>"></jsp:include>
+		<jsp:include page="/WEB-INF/jsp/ui/front/config.jsp"></jsp:include>
 		<script type="text/javascript">
 			CCH.itemid = '<%= id %>';
 			CCH.baseUrl = '<%= baseUrl %>';

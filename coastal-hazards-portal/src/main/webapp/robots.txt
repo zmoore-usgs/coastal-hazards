@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: 
+Crawl-delay: 20
+Disallow: /images/
+Disallow: /css/
+Disallow: /authentication/
+Disallow: /publish/
+Disallow: /data/qr/
+Disallow: /data/sld/
+Disallow: /data/thumbnail/
+Disallow: /data/minifier/
+Disallow: /data/download/
+Sitemap: http://marine.usgs.gov/coastalchangehazardsportal

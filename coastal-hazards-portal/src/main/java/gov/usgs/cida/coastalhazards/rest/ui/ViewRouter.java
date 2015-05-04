@@ -19,7 +19,7 @@ public class ViewRouter {
 	@Path("/view/{id}")
 	public Response useJsp(@PathParam("id") String id) {
         Identifier identifier = new Identifier(id, Identifier.IdentifierType.VIEW);
-		return Response.ok(new Viewable("/index.jsp", identifier)).build();
+		return Response.ok(new Viewable("//WEB-INF/jsp/ui/front/index.jsp", identifier)).build();
 	}
 
 	@GET

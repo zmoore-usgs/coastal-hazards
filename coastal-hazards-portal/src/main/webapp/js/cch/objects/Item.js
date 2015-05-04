@@ -40,16 +40,20 @@ CCH.Objects.Item = function (args) {
 
 		callbacks.success.unshift(me.loadFromData);
 
-		CCH.items.search({
-			item: me.id,
-			displayNotification: false,
-			context: context,
-			subtree: subtree,
-			callbacks: {
-				success: callbacks.success,
-				error: callbacks.error
-			}
-		});
+		if (args.data) {
+			callbacks.success[0](args.data);
+		} else {
+			CCH.items.search({
+				item: me.id,
+				displayNotification: false,
+				context: context,
+				subtree: subtree,
+				callbacks: {
+					success: callbacks.success,
+					error: callbacks.error
+				}
+			});
+		}
 	};
 
 	me.loadFromData = function (data) {
@@ -157,6 +161,7 @@ CCH.Objects.Item = function (args) {
 
 	me.createWmsLayer = function (args) {
 		args = args || {};
+		
 		var id = me.id,
 			service = me.getService('proxy_wms'),
 			endpoint = service.endpoint,

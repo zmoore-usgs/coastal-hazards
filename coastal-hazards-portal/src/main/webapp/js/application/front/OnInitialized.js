@@ -1,7 +1,7 @@
 /*global CCH*/
 /*global splashUpdate*/
-/*global OpenLayers*/
 /*global alertify*/
+/*global ga*/
 window.CCH = CCH || {};
 CCH.CONFIG = CCH.CONFIG || {};
 
