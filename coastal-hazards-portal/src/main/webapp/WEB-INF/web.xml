@@ -162,6 +162,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>InfoPage</servlet-name>
+		<url-pattern>/info</url-pattern>  
 		<url-pattern>/info/</url-pattern>  
 	</servlet-mapping>
 	
