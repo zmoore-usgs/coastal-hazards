@@ -11,6 +11,7 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.coastalhazards.model.util.Download;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
+import gov.usgs.cida.coastalhazards.service.data.DownloadService;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,7 +35,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,19 +207,8 @@ public class DownloadResource {
 	@Path("/item/{id}")
 	public Response deleteStagedItem(@PathParam("id") String itemId, @Context HttpServletRequest request) {
 		Response response = null;
-		try (DownloadManager downloadManager = new DownloadManager()) {
-			Download download = downloadManager.load(itemId);
-			boolean deleted = false;
-			try {
-				if (download == null) {
-					throw new NotFoundException();
-				}
-				File stagingFolder = download.fetchZipFile().getParentFile();
-				deleted = FileUtils.deleteQuietly(stagingFolder);
-			} catch (URISyntaxException e) {
-				throw new RuntimeException(e);
-			}
-			downloadManager.delete(download);
+		try (DownloadService downloadService = new DownloadService()) {
+			boolean deleted = downloadService.delete(itemId);
 			response = Response.ok("{\"deleted\":\"" + deleted + "\"}", MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;

@@ -34,6 +34,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -43,6 +45,8 @@ import javax.ws.rs.core.UriBuilder;
 @Path(DataURI.ITEM_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ItemResource {
+	
+	private static final Logger log = LoggerFactory.getLogger(ItemResource.class);
 
 	public static final String PUBLIC_URL = JNDISingleton.getInstance()
 			.getProperty("coastal-hazards.public.url", "http://localhost:8080/coastal-hazards-portal");
