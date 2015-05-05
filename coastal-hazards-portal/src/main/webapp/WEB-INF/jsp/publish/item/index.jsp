@@ -55,7 +55,9 @@
 				window.location = window.location.href + "/";
 			}
 		</script>
-		<jsp:include page="/WEB-INF/jsp/ui/common/meta-tags.jsp"></jsp:include>
+		<jsp:include page="../../ui/common/meta-tags.jsp">
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
+		</jsp:include>
 			<title>USGS Coastal Change Hazards Portal - Publish</title>
 			<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
