@@ -16,8 +16,12 @@
 	}
 %>
 <%
+	String secureBaseUrlJndiString = props.getProperty("coastal-hazards.base.secure.url");
+	String requestUrl = request.getRequestURL().toString();
 	String baseUrl = props.getProperty("coastal-hazards.base.url");
-	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
+	if (requestUrl.toLowerCase().contains("https")) {
+		baseUrl = secureBaseUrlJndiString;
+	}
 %>
 <!DOCTYPE html>
 <html>
