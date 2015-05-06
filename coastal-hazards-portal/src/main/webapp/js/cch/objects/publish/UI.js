@@ -72,6 +72,8 @@ CCH.Objects.Publish.UI = function () {
 		$getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button'),
 		$emphasisItemSpan = $form.find('.emphasis-item'),
 		$emphasisAggregationSpan = $form.find('.emphasis-aggregation'),
+		$isActiveStormRow = $form.find('#form-publish-info-item-active-storm'),
+		$isActiveStormChecbox = $form.find('#checkbox-isactive'),
 		$resourceSortableContainers = $('.resource-list-container-sortable');
 
 	me.templates = {};
@@ -165,6 +167,8 @@ CCH.Objects.Publish.UI = function () {
 		$itemImage.attr('src', '');
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
+		$isActiveStormRow.addClass('hidden');
+		$isActiveStormChecbox.prop('checked', false);
 	};
 
 	me.enableNewItemForm = function () {
@@ -213,6 +217,8 @@ CCH.Objects.Publish.UI = function () {
 		$childrenSortableList.empty();
 		$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
+		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
+		$isActiveStormRow.addClass('hidden');
 	};
 
 	me.enableNewAggregationForm = function () {
@@ -247,6 +253,8 @@ CCH.Objects.Publish.UI = function () {
 		me.createSortableChildren();
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
+		$isActiveStormRow.addClass('hidden');
+		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
 	};
 
 	me.isBlank = function ($ele) {
@@ -447,6 +455,7 @@ CCH.Objects.Publish.UI = function () {
 			ribbonable = $ribbonableCb.prop(CCH.CONFIG.strings.checked),
 			showChildren = $showChildrenCb.prop(CCH.CONFIG.strings.checked),
 			enabled = $itemEnabledField.val() === 'true' ? true : false,
+			activeStorm = $isActiveStormChecbox.prop('checked'),
 			services = [],
 			children = [],
 			displayedChildren = [],
@@ -469,7 +478,8 @@ CCH.Objects.Publish.UI = function () {
 				enabled: enabled,
 				services: services,
 				children: children,
-				displayedChildren: displayedChildren
+				displayedChildren: displayedChildren,
+				activeStorm: activeStorm
 			};
 
 		summary.version = 'manual';
@@ -931,6 +941,13 @@ CCH.Objects.Publish.UI = function () {
 
 			$imageGenButton.removeAttr(CCH.CONFIG.strings.disabled);
 
+			// If this item type is a storm, show the checkbox so that user can decide
+			// whether or not storm is active
+			$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, item.activeStorm);
+			if (item.type === 'storms') {
+				$isActiveStormRow.removeClass('hidden');
+			}
+
 			if (type === 'aggregation' || type === 'uber') {
 				$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
 				$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
@@ -1000,12 +1017,12 @@ CCH.Objects.Publish.UI = function () {
 				$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 				$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
 				$childrenSortableList.empty();
-
+				
 				// Fill out item type
 				$typeSb
 					.val(item.type)
 					.removeAttr(CCH.CONFIG.strings.disabled);
-
+			
 				// Show Children
 				$showChildrenCb
 					.prop(CCH.CONFIG.strings.checked, false)

@@ -361,7 +361,17 @@
 									</select>
 								</div>
 							</div>
-
+							
+							<%-- Is Active Storm --%>
+							<div id="form-publish-info-item-active-storm" class="row hidden">
+								<div class="form-group">
+									<label>
+										<input type="checkbox" id="checkbox-isactive"> Is Active?
+									</label>
+									
+								</div>
+							</div>
+							
 							<%-- Attribute --%>
 							<div class="row row-attribute">
 								<div class="form-group">

@@ -55,7 +55,6 @@ public class Item implements Serializable, Cacheable {
 	public static final int ATTR_MAX_LENGTH = 255;
 
 	public enum ItemType {
-
 		aggregation,
 		template,
 		data,
@@ -100,6 +99,8 @@ public class Item implements Serializable, Cacheable {
 	/* Show only a subset of children */
 	private List<String> displayedChildren;
 	private Date lastUpdate;
+	// Is this a storm that's currently active?
+	private boolean activeStorm;
 
 	@Id
 	public String getId() {
@@ -263,6 +264,23 @@ public class Item implements Serializable, Cacheable {
 	public void setLastModified(Date timestamp) {
 		this.lastUpdate = timestamp;
 	}
+	
+	/**
+	 * Defines whether a storm is currently active
+	 * @return 
+	 */
+	@Column(name="active_storm")
+	public boolean isActiveStorm() {
+		return activeStorm;
+	}
+
+	/**
+	 * Set whether or not a storm is currently active
+	 * @param isActiveStorm 
+	 */
+	public void setActiveStorm(boolean isActiveStorm) {
+		this.activeStorm = isActiveStorm;
+	}
 
 	@PrePersist
 	@PreUpdate
@@ -323,6 +341,7 @@ public class Item implements Serializable, Cacheable {
 		item.setServices(from.getServices());
 		item.setChildren(from.getChildren());
 		item.setDisplayedChildren(from.getDisplayedChildren());
+		item.setActiveStorm(from.isActiveStorm());
 
 		return item;
 	}
