@@ -258,11 +258,11 @@ public class Item implements Serializable, Cacheable {
 	@Column(name = "last_update")
 	@Override
 	public Date getLastModified() {
-		return new Date(lastUpdate.getTime());
+		return lastUpdate;
 	}
 
 	public void setLastModified(Date timestamp) {
-		this.lastUpdate = new Date(timestamp.getTime());
+		this.lastUpdate = timestamp;
 	}
 	
 	/**
