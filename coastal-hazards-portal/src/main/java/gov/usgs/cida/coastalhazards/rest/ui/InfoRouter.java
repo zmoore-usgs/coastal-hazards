@@ -28,6 +28,17 @@ public class InfoRouter {
 		}
 		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index.jsp", item)).build();
 	}
+	
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	@Path("/print/{id}")
+	public Response useInfoPrintViewJsp(@PathParam("id") String id) {
+		Item item = new ItemManager().load(id);
+		if (item == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", item)).build();
+	}
 
 	@GET
 	@Produces("text/html")
