@@ -62,14 +62,16 @@ public class Bbox implements Serializable {
 
 	public Envelope makeEnvelope() {
 		Envelope envelope = null;
-		Pattern pattern = Pattern.compile("BOX\\(\\s*([-\\d\\.]+)\\s+([-\\d\\.]+)\\s*,\\s*([-\\d\\.]+)\\s+([-\\d\\.]+)\\s*\\)");
-		Matcher matcher = pattern.matcher(bbox);
-		if (matcher.matches()) {
-			double minX = Double.parseDouble(matcher.group(1));
-			double minY = Double.parseDouble(matcher.group(2));
-			double maxX = Double.parseDouble(matcher.group(3));
-			double maxY = Double.parseDouble(matcher.group(4));
-			envelope = new Envelope(minX, maxX, minY, maxY);
+		if (bbox != null) {
+			Pattern pattern = Pattern.compile("BOX\\(\\s*([-\\d\\.]+)\\s+([-\\d\\.]+)\\s*,\\s*([-\\d\\.]+)\\s+([-\\d\\.]+)\\s*\\)");
+			Matcher matcher = pattern.matcher(bbox);
+			if (matcher.matches()) {
+				double minX = Double.parseDouble(matcher.group(1));
+				double minY = Double.parseDouble(matcher.group(2));
+				double maxX = Double.parseDouble(matcher.group(3));
+				double maxY = Double.parseDouble(matcher.group(4));
+				envelope = new Envelope(minX, maxX, minY, maxY);
+			}
 		}
 		return envelope;
 	}
