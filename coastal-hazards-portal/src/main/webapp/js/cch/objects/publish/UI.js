@@ -366,7 +366,7 @@ CCH.Objects.Publish.UI = function () {
 						errors.push('Publication link is longer than ' + CCH.CONFIG.limits.publication.link + ' characters for publication ' + (ind + 1));
 					}
 				});
-			} else if ('aggregation' === type || 'uber' === type) {
+			} else if ('aggregation' === type || 'uber' === type || 'template' === type) {
 				if ($childrenSortableList.find('li > span > div > button:first-child.active').length === 0) {
 					errors.push('Aggregations require at least one child');
 				}
@@ -948,7 +948,7 @@ CCH.Objects.Publish.UI = function () {
 				$isActiveStormRow.removeClass('hidden');
 			}
 
-			if (type === 'aggregation' || type === 'uber') {
+			if (type === 'aggregation' || type === 'uber' || type === 'template') {
 				$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
 				$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 				// Populate children
