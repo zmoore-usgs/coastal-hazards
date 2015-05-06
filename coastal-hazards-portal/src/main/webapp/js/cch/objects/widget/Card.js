@@ -260,13 +260,14 @@ CCH.Objects.Widget.Card = function (args) {
 			}),
 			initHide: true,
 			parent: me
-		});
+		}),
+			container = card.getContainer();
 
 		// This is now my child card 
 		me.child = card;
 
 		// Append this new card to myself
-		me.container.after(card.getContainer());
+		me.container.after(container);
 
 		// Show this new card after we hide the current one
 		me.hide({complete: function () {
@@ -422,7 +423,7 @@ CCH.Objects.Widget.Card = function (args) {
 
 			// My container starts out open so I immediately add that class to it
 			container.addClass('open');
-
+			
 			me.renderBreadCrumbs(container);
 			
 			// Create Title

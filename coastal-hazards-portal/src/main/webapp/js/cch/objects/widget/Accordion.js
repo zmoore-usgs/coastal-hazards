@@ -80,7 +80,11 @@ CCH.Objects.Widget.Accordion = function (args) {
 			bellow = me.createBellow({
 				card: card
 			});
-
+			
+			if (item.activeStorm) {
+				bellow.addClass('active-storm');
+			}
+			
 			// I want to insert the card into the accordion at a specified index if 
 			// one was specified. This fixes a race condition in the pulling of the 
 			// data for these cards 
