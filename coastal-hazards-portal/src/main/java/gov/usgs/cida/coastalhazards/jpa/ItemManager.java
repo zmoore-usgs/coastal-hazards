@@ -15,7 +15,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -69,7 +68,7 @@ public class ItemManager implements AutoCloseable {
 	}
 	
 	private synchronized String persistItem(Item item) throws CycleIntroductionException {
-		String id = null;
+		String id;
 		
 		if (anyCycles(item)) {
 			throw new CycleIntroductionException();
@@ -81,7 +80,7 @@ public class ItemManager implements AutoCloseable {
 	}
 	
 	public synchronized String persist(Item item) throws CycleIntroductionException {
-		String id = null;
+		String id;
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			transaction.begin();
@@ -150,7 +149,7 @@ public class ItemManager implements AutoCloseable {
 	}
 	
 	private synchronized String mergeItem(Item item) {
-		String id = null;
+		String id;
 		if (anyCycles(item)) {
 			throw new CycleIntroductionException();
 		}
@@ -168,7 +167,7 @@ public class ItemManager implements AutoCloseable {
 	}
 
 	public synchronized String merge(Item item) throws CycleIntroductionException {
-		String id = null;
+		String id;
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			
@@ -338,7 +337,7 @@ public class ItemManager implements AutoCloseable {
 			builder.append(" and i.id in(:bboxIds)");
 		}
 
-		String jsonResult = "";
+		String jsonResult;
 
 		Query query = em.createQuery(builder.toString(), Item.class);
 		for (int i = 0; i < queryParams.size(); i++) {
@@ -377,7 +376,7 @@ public class ItemManager implements AutoCloseable {
 	/**
 	 * Run this after inserting, updating or deleting
 	 *
-	 * @param @return number of items updated from query
+	 * @return number of items updated from query
 	 */
 	public int fixEnabledStatus() {
 		int status = -1;
