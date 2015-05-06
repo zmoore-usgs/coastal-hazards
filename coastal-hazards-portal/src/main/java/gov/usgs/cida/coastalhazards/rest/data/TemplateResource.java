@@ -8,6 +8,7 @@ import com.google.gson.JsonParser;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.jpa.LayerManager;
+import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Layer;
 import gov.usgs.cida.coastalhazards.model.Service;
@@ -110,6 +111,7 @@ public class TemplateResource {
 				Item newItem = new Item();
 				newItem.setAttr(attr);
 				List<Service> services = layer.getServices();
+				Bbox bbox = layer.getBbox();
 				List<Service> serviceCopies = new LinkedList<>();
 				for (Service service : services) {
 					serviceCopies.add(Service.copyValues(service, null));
@@ -118,6 +120,7 @@ public class TemplateResource {
 				newItem.setItemType(Item.ItemType.data);
 				newItem.setSummary(summary);
 				newItem.setId(newId);
+				newItem.setBbox(Bbox.copyValues(bbox, new Bbox()));
 				newItemList.add(newItem);
 			}
 
