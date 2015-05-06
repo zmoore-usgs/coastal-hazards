@@ -3,13 +3,16 @@ package gov.usgs.cida.coastalhazards.rest.data;
 import gov.usgs.cida.coastalhazards.exception.PreconditionFailedException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.LayerManager;
+import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Layer;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.util.GeoserverUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
+import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.IdGenerator;
+import gov.usgs.cida.utilities.WFSIntrospector;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import java.io.ByteArrayInputStream;
@@ -106,9 +109,19 @@ public class LayerResource {
 			log.error("Problem creating services from input", e);
 		} 
 		if (added != null && !added.isEmpty()) {
+			WFSService wfs = (WFSService)Service.ogcHelper(Service.ServiceType.proxy_wfs, added);
+			Bbox bbox = null;
+			try {
+				bbox = WFSIntrospector.getBbox(wfs);
+			} catch (IOException ex) {
+				log.debug("Error determining bounding box", ex);
+			}
+			
 			Layer layer = new Layer();
 			layer.setId(newId);
 			layer.setServices(added);
+			layer.setBbox(bbox);
+			
 			try (LayerManager manager = new LayerManager()) {
 				manager.save(layer);
 			}
