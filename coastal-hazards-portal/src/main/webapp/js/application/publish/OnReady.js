@@ -5,6 +5,10 @@
 /*global CCH*/
 /*global initializeLogging*/
 /*global qq*/
+/*global contextPath*/
+/*global vulnAttributes*/
+/*global stormAttributes*/
+/*global historicAttributes*/
 $(document).ready(function () {
 	"use strict";
 	initializeLogging({
@@ -189,6 +193,7 @@ var serviceTypesDropdownChangeHandler = function (evt) {
 		}
 	});
 };
+
 var deriveTypeFromAttribute = function (name) {
 	if (historicAttributes.indexOf(name.toLowerCase()) !== -1) {
 		return 'historical';
@@ -200,6 +205,7 @@ var deriveTypeFromAttribute = function (name) {
 		return '';
 	}
 };
+
 var wmsLayersDropdownChangeHandler = function (evt) {
 	var wmsLayer = CCH.config.endpoint.wmsCaps.capability.layers.find(function (l) {
 		return l.name === evt.target.value;
