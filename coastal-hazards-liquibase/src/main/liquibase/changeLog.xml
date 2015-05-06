@@ -31,4 +31,5 @@
 	<include file="30addStatusTable.xml" relativeToChangelogFile="true" />
 	<include file="40thumbnailDirtyBit.xml" relativeToChangelogFile="true" />
 	<include file="50calculateBbox.xml" relativeToChangelogFile="true" />
+	<include file="60createActivestormColumn.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
