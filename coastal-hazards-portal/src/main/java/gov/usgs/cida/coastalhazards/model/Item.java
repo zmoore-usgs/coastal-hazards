@@ -266,7 +266,8 @@ public class Item implements Serializable, Cacheable {
 	}
 	
 	/**
-	 * @return the activeStorm
+	 * Defines whether a storm is currently active
+	 * @return 
 	 */
 	@Column(name="active_storm")
 	public boolean isActiveStorm() {
@@ -274,10 +275,11 @@ public class Item implements Serializable, Cacheable {
 	}
 
 	/**
-	 * @param activeStorm the activeStorm to set
+	 * Set whether or not a storm is currently active
+	 * @param isActiveStorm 
 	 */
-	public void setActiveStorm(boolean activeStorm) {
-		this.activeStorm = activeStorm;
+	public void setActiveStorm(boolean isActiveStorm) {
+		this.activeStorm = isActiveStorm;
 	}
 
 	@PrePersist
