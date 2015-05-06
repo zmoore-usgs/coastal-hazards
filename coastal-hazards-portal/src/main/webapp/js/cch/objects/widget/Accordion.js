@@ -81,10 +81,6 @@ CCH.Objects.Widget.Accordion = function (args) {
 				card: card
 			});
 			
-			if (item.activeStorm) {
-				bellow.addClass('active-storm');
-			}
-			
 			// I want to insert the card into the accordion at a specified index if 
 			// one was specified. This fixes a race condition in the pulling of the 
 			// data for these cards 
@@ -155,10 +151,23 @@ CCH.Objects.Widget.Accordion = function (args) {
 		group.data('id', id);
 		group.append(heading, accordionBody);
 		titleContainer.append(toggleTarget);
-		heading.append(titleContainer);
+		
 		accordionBody.append(bodyInner);
 
 		heading.on('click', headingClickHandler);
+		
+		// If this is an active storm, wrap the title container inside a ribbon container
+		if (card.item.activeStorm) {
+			var ribbonWrapper = $('<div />').addClass('corner-ribbon-wrapper');
+			var ribbonContainer = $('<div />').addClass('corner-ribbon');
+			heading.addClass('active-storm');
+			ribbonWrapper.append(ribbonContainer);
+			heading.append(ribbonWrapper);
+			ribbonContainer.append(titleContainer);
+		} else {
+			heading.append(titleContainer);
+		}
+		
 
 		accordionBody.on({
 			'show.bs.collapse': function (evt) {
