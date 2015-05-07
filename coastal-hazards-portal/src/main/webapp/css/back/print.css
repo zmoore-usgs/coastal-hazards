@@ -33,9 +33,6 @@ header {
 header h1,
 header h2 {
   margin: 0;
-}
-header h1,
-header h2 {
   display: none;
 }
 header img {
