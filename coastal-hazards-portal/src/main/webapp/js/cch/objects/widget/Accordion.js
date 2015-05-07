@@ -163,12 +163,9 @@ CCH.Objects.Widget.Accordion = function (args) {
 			heading.addClass('active-storm');
 			ribbonWrapper.append(ribbonContainer);
 			heading.append(ribbonWrapper);
-			ribbonContainer.append(titleContainer);
-		} else {
-			heading.append(titleContainer);
 		}
+		heading.append(titleContainer);
 		
-
 		accordionBody.on({
 			'show.bs.collapse': function (evt) {
 				card.show({
