@@ -78,8 +78,8 @@
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
 		</jsp:include>
 		<title>USGS Coastal Change Hazards Portal - <%= item.getSummary().getMedium().getTitle()%></title>
-
-		<link type="text/css" rel="stylesheet" media="all" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
+                
+                <link rel="stylesheet" media="all" href="<%=baseUrl%>/css/back/print<%= development ? "" : ".min"%>.css" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
 		<script type="text/javascript">
 			<jsp:include page="../common/google-analytics.jsp" />
@@ -88,13 +88,78 @@
 	<body>
 		
 		<%-- Content Here --%>
-		<div id="print-content" class="container">
-			Content here
+		<div id="print-content" class="container-fluid">
+                    <div id="print-options">
+                        <h3>Print Snapshot Options</h3>
+                        <input type="checkbox" name="title" value="titel" checked> Title<br>
+                        <input type="checkbox" name="brief" value="brief_description"> Brief Description<br>
+                        <input type="checkbox" name="exteneded" value="extended_description" checked> Extended Description<br>
+                        <input type="checkbox" name="publications" value="publications" checked> Publications<br>
+                        <input type="checkbox" name="resources" value="resources" checked> Resources<br>
+                        <input type="checkbox" name="thumbnail" value="map_thumbnail" checked> Map Thumbnail<br>
+                        <input type="checkbox" name="short" value="short_url" checked> Short URL<br>
+                        <input type="checkbox" name="link" value="link" checked> More Information Link<br>
+                    </div>
+                    <header id="header">
+                            <img id="app-navbar-coop-logo-img" alt="CIDA/CMGP" src="<%=baseUrl%>/images/banner/cida-cmgp.svg" />
+                            
+                            <h1>USGS Coastal Change Hazards Portal</h1>
+                            
+                            <h2>Coastal Change Hazards</h2>
+                            
+                    </header> 
+                    <main>
+                        <h2 id="title">Extreme Storms and Hurricanes</h2>
+                        <div id="map-pic-container"></div>
+                        <div id="description-container" class="info-container">
+                            <h3>Description</h3>
+                            <p>
+                                Hurricanes, nor'easters, and Pacific winter storms are powerful events 
+                                that generate dangerous waves and surge capable of moving large amounts 
+                                of sand, destroying buildings and infrastructure, and even taking lives. 
+                                Through processes like dune erosion, overwash, and inundation, storms reshape 
+                                our nation's coastline. The storm impacts component of National Assessment of 
+                                Coastal Change Hazards (NACCH) focuses on understanding the magnitude and variability 
+                                of extreme storm impacts on sandy beaches. Real-time and scenario-based predictions of 
+                                storm-induced coastal change, as well as the supporting data, are provided to support 
+                                management of coastal infrastructure, resources, and safety.
+                            </p>
+                        </div>
+                        <div id="publications-container" class="info-container">
+                            <h3>Publications</h3>
+                            <ul>
+                                <li><a href="#" target="_blank">National Assessment Of Hurricane-Induced Coastal Erosion Hazards: Southeast Atlantic</a></li>
+                                <li><a href="#" target="_blank">National Assessment Of Hurricane-Induced Coastal Erosion Hazards: Mid-Atlantic Coast</a></li>
+                                <li><a href="#" target="_blank">National Assessment Of Hurricane-Induced Coastal Erosion Hazards: Gulf Of Mexico</a></li>
+                                <li><a href="#" target="_blank">Coastal Topography--Northeast Atlantic Coast, Post-Hurricane Sandy, 2012</a></li>
+                                <li><a href="#" target="_blank">Coastal Topography–Northeast Atlantic Coast, Post-Hurricane Sandy, 2012</a></li>
+                            </ul>
+                            <p>More available on site...</p>
+                        </div>
+                        <div id="resources-container" class="info-container">
+                            <h3>Resources</h3>
+                            <ul>
+                                <li><a href="#" target="_blank">Coastal Change Hazards: Hurricanes And Extreme Storms</a></li>
+                                <li><a href="#" target="_blank">National Assessment Of Hurricane-Induced Coastal Erosion Hazards</a></li>
+                                <li><a href="#" target="_blank">Tropical Cyclone Storm Surge Exceedance</a></li>
+                                <li><a href="#" target="_blank">NOAA Wavewatch III</a></li>
+                                <li><a href="#" target="_blank">EAARL Coastal Topography-Virginia, Post-Nor'Ida, 2009</a></li>
+                            </ul>
+                            <p>More available on site...</p>
+                        </div>
+                        <div id="url-container" class="info-container">
+                            <h3>More information, downloads, metadata, and map services</h3>
+                            <a href="#">http://go.usa.gov/3WTuP</a>
+                        </div>
+                        
+                    </main>
+                    <div id="site-url">
+                        <p>marine.usgs.gov/coastalchangehazardsportal</p>
+                    </div>
 		</div>
 		<%-- Marty, feed me! --%>
 		
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript">
 			var CCH = {
 				Objects: {},
@@ -107,7 +172,7 @@
 					emailLink: 'CCH_Help@usgs.gov',
 					publicUrl: '<%=publicUrl%>',
 					data: {
-						sources: {
+		 				sources: {
 							'item': {
 								'endpoint': '/data/item'
 							},
