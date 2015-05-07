@@ -1,277 +1,233 @@
-html, body {
-	/* While I designed the app to work with both overflows set to auto,
-	   for some reason, IE9 still gives me scroll bars which messes everything
-	   up :( so these need to be set to hidden */
-	overflow-y: auto;
-	overflow-x: auto;
-	/* 
-	320 pixels is the minimum width and 600px is
-	the minimum height that this application will support.
-	Anything smaller, scroll the app
+html,
+body {
+  overflow-y: auto;
+  overflow-x: auto;
+  /*
+		320 pixels is the minimum width and 600px is
+		the minimum height that this application will support.
+		Anything smaller, scroll the app
 	*/
-	min-width: 320px;
-	min-height: 480px;
-	padding-left: 10px !important;
-	padding-right:  10px !important;
-	height: 100%;
-	font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: inherit;
-	color: #777;
+  min-width: 320px;
+  min-height: 480px;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  height: 100%;
+  font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: inherit;
+  color: #777;
 }
-
-.fa-times{color:#003366;}
-
-.close{opacity:1;}
-
+.fa-times {
+  color: #003366;
+}
+.close {
+  opacity: 1;
+}
 .close:hover,
-.close:focus{opacity:1;}
-
+.close :focus {
+  opacity: 1;
+}
 /* Container holding the main view */
 .container {
-	width: 100%;
+  width: 100%;
 }
-
-/* Header Row */
 .container > div.row:first-child {
-	background-color: #003366 !important;
-	z-index: 1005;
-	margin-bottom: 4px;
-	height: 55px;
+  background-color: #003366 !important;
+  z-index: 1005;
+  margin-bottom: 4px;
+  height: 55px;
 }
-
-/* Item Title Row */
-.container > div.row:nth-child(2) {
-	text-align: center;
-	font-size: 24px;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	font-weight: 600;
-	letter-spacing: 3px;
-	color: #666;
-	line-height: 1em;
-}
-
-/* Every item in the header */
 .container > div.row:first-child > .app-navbar-item-container {
-	float: left;
-	max-height: 55px;
-	display: table;
+  float: left;
+  max-height: 55px;
+  display: table;
 }
-/* Logo */
 .container > div.row:first-child > .app-navbar-item-container:first-child {
-	margin-right: 15px;
-	height: 55px;
-	width: 126px;
+  margin-right: 15px;
+  height: 55px;
+  width: 126px;
 }
-.container > div.row:first-child > .app-navbar-item-container:first-child > img {
-	height: 56px;
+.container > div.row:first-child > .app-navbar-item-container:first-child img {
+  height: 56px;
 }
-/* Title */
 .container > div.row:first-child > .app-navbar-item-container:nth-child(2) {
-	vertical-align: middle;
-	margin-top: 5px;
-	padding-right: 15px;
+  vertical-align: middle;
+  margin-top: 5px;
+  padding-right: 15px;
 }
 .container > div.row:first-child > .app-navbar-item-container:nth-child(2) div {
-	color: #FFFFFF;
-	font-size: 2em;
+  color: #FFFFFF;
+  font-size: 2em;
 }
-
-.container >#header-row:hover {
-	cursor: pointer;
+.container > div.row:first-child > .app-navbar-item-container:nth-child(3) > div:nth-child(2) > div > div {
+  font-size: 1em;
+  line-height: 1.5em;
 }
-
-.container >#header-row  #app-navbar-site-title-container > #app-navbar-title-print {
-	display: none !important;
+.container > div.row:nth-child(2) {
+  text-align: center;
+  font-size: 24px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #666;
+  line-height: 1em;
 }
-
+@media (max-width: 440px) {
+  .container > div.row:nth-child(2) {
+    font-size: 0.65em;
+  }
+}
+@media (max-width: 440px) {
+  .container > div.row:nth-child(3) > div:first-child > div > div.olMap {
+    height: 300px;
+  }
+  .container > div.row:nth-child(3) > div:first-child > div > div.olMap .olControlZoom {
+    display: none;
+  }
+}
+.container > #header-row:hover {
+  cursor: pointer;
+}
+.container > #header-row #app-navbar-site-title-container > #app-navbar-title-print {
+  display: none !important;
+}
 .control-button {
-	width: 100%;
-        margin-bottom:15px;
-        color:#003366;
-        font-size:.9em;
+  width: 100%;
+  margin-bottom: 15px;
+  color: #003366;
+  font-size: .9em;
 }
-        
-#info-container-publications-list{
-        list-style:none;    
-        }
-#info-container-publications-list li ul{
-        list-style:circle;    
-        }
-        
-#label-action-center{
-	margin-bottom:8px;
-	font-size:1.3em;
+#info-container-publications-list {
+  list-style: none;
 }
-
-#label-action-center:hover{
-	cursor: pointer;
+#info-container-publications-list li ul {
+  list-style: circle;
 }
-        
-.action-arrow{
-        -ms-transform: rotate(0); /* IE 9 */
-        -webkit-transform: rotate(0); /* Chrome, Safari, Opera */
-        transform: rotate(0) !important;  
-        }
-        
-.action-arrow-right{
-        -ms-transform: rotate(-90deg); /* IE 9 */
-        -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
-        transform: rotate(-90deg) !important;
-        }
-        
-.well{padding:19px 19px 10px 19px;}
-        
-.help-button{
-        float:right;
-        height:30px;
-        width:30px;
-        margin-bottom:10px;
-        text-align:center;
-        padding:0;
-        }
-
-.action-question{
-        font-size:1.5em !important;
-        color:#003366;
-        }
-#info-summary{
-            padding-bottom:5px;
-        }
-
+#label-action-center {
+  margin-bottom: 8px;
+  font-size: 1.3em;
+}
+#label-action-center:hover {
+  cursor: pointer;
+}
+.action-arrow {
+  -ms-transform: rotate(0);
+  /* IE 9 */
+  -webkit-transform: rotate(0);
+  /* Chrome, Safari, Opera */
+  transform: rotate(0) !important;
+}
+.action-arrow-right {
+  -ms-transform: rotate(-90deg);
+  /* IE 9 */
+  -webkit-transform: rotate(-90deg);
+  /* Chrome, Safari, Opera */
+  transform: rotate(-90deg) !important;
+}
+.well {
+  padding: 19px 19px 10px 19px;
+}
+.help-button {
+  float: right;
+  height: 30px;
+  width: 30px;
+  margin-bottom: 10px;
+  text-align: center;
+  padding: 0;
+}
+.action-question {
+  font-size: 1.5em !important;
+  color: #003366;
+}
+#info-summary {
+  padding-bottom: 5px;
+}
 .tooltip {
-	font-size: 1em;
+  font-size: 1em;
 }
-
 .tooltip-arrow {
-	color: #003366;
+  color: #003366;
 }
-
 .tooltip-inner {
-	background-color: #003366;
-	font-size: 1em;
-	color: #FFFFFF;
-        text-align:left;
+  background-color: #003366;
+  font-size: 1em;
+  color: #FFFFFF;
+  text-align: left;
 }
-		
-/* Summary container */
-.container > div.row:nth-child(3) > div:nth-child(2) > div > div {
-	font-size: 1em;
-	line-height: 1.5em;
-}
-
 #modal-services-view .modal-dialog {
-	width: auto;
+  width: auto;
 }
-
 #modal-services-view .modal-body .row {
-	margin-bottom: 10px;
-	font-size: 1.2em;
+  margin-bottom: 10px;
+  font-size: 1.2em;
 }
-
-#modal-services-view .modal-body .row > input{
-	width: 100%;
+#modal-services-view .modal-body .row > input {
+  width: 100%;
 }
-
-/* Publications List */
-#info-container-publications-list-span > ul > li {
-	text-transform: capitalize;
-}
-
 /* Override the 40px padding bootstrap puts on lists */
 #info-container-publications-list-span > ul {
-	padding-left: 5px;
-	-webkit-padding-start: 5px;
-	-moz-padding-start: 5px;
+  padding-left: 5px;
+  -webkit-padding-start: 5px;
+  -moz-padding-start: 5px;
 }
-
-/* Hide QR code for screen media */
-#qr-code {
-	display: none;
+#info-container-publications-list-span > ul > li {
+  text-transform: capitalize;
 }
-
 /* Social media sharing modal */
 #modal-share-summary-url-inputbox {
-	width: 100%;
-	font-size: 2em;
+  width: 100%;
+  font-size: 2em;
 }
-
 /* Section headers */
 .section-header {
-	font-weight: 600;
-	font-size: 1.3em !important;
-        margin-bottom:8px;
+  font-weight: 600;
+  font-size: 1.3em !important;
+  margin-bottom: 8px;
 }
-
-@media (max-width: 440px) {
-	/* Item Title Row*/
-	.container > div.row:nth-child(2) {
-		font-size: 0.65em;
-	}
-
-	.container > div.row:nth-child(3) > div:first-child > div > div.olMap {
-		height : 300px;
-	}
-
-	.container > div.row:nth-child(3) > div:first-child > div div.olMap .olControlZoom {
-		display: none;
-	}
-}
-
 @media (min-width: 992px) {
-	.container > div.row:nth-child(3) > div:nth-child(2) div.row {
-		margin-left: 15px;
-	}
-        
-        #info-row-control{
-                width:25%;
-        }
-        
-        #summary-and-publications-row{
-                width:75%;
-                padding-left:0;
-        }
-
-        .well{
-                padding:10px 10px 0 10px;
-                margin-bottom:15px;
-        }
-        
-        #action-center-title{
-            float:left;
-            margin-top:5px;
-            font-size:1.3em;
-        }
+  .container > div.row:nth-child(3) > div:nth-child(2) div.row {
+    margin-left: 15px;
+  }
+  #info-row-control {
+    width: 25%;
+  }
+  #summary-and-publications-row {
+    width: 75%;
+    padding-left: 0;
+  }
+  .well {
+    padding: 10px 10px 0 10px;
+    margin-bottom: 15px;
+  }
+  #action-center-title {
+    float: left;
+    margin-top: 5px;
+    font-size: 1.3em;
+  }
 }
-
 @media (max-width: 991px) {
-	/* Social Media Icon */
-	.container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
-		margin-top: 5px;
-		margin-left: 5px;
-	}
-
-	/* Info Graph */
-	.container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
-		height: 100px;
-	}
-        
-        #action-center-title{
-            display:none;
-        }
+  /* Social Media Icon */
+  .container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
+    margin-top: 5px;
+    margin-left: 5px;
+  }
+  /* Info Graph */
+  .container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
+    height: 100px;
+  }
+  #action-center-title {
+    display: none;
+  }
+}
+@media (min-width: 1300px) {
+  .control-button {
+    font-size: 1em;
+  }
+  #info-row-control {
+    width: 20%;
+  }
+  #summary-and-publications-row {
+    width: 80%;
+  }
 }
 
-
-@media (min-width:1300px){
-    .control-button{
-        font-size:1em;
-    }
-    #info-row-control{
-                width:20%;
-        }
-        
-        #summary-and-publications-row{
-                width:80%;
-        }
-    
-}
