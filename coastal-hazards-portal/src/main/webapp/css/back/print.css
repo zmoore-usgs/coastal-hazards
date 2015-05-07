@@ -2,8 +2,15 @@
   padding: 0;
   margin: 0;
 }
+html,
 body {
   font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+@media print {
+  html,
+  body {
+    -webkit-print-color-adjust: exact;
+  }
 }
 #print-options {
   background: #f5f5f5;
@@ -21,14 +28,30 @@ body {
   width: 15px;
   height: 15px;
 }
+@media print {
+  #print-options {
+    display: none;
+  }
+}
 #print-content {
   min-height: 400px;
   padding: 0px;
+}
+@media screen and (min-width: 612px) {
+  #print-content {
+    width: 612px;
+    margin: 0 auto;
+  }
 }
 header {
   height: 56px;
   background: #003366;
   color: #fff;
+}
+@media print {
+  header {
+    background: #003366;
+  }
 }
 header h1,
 header h2 {
@@ -39,6 +62,35 @@ header img {
   height: 56px;
   float: left;
   margin-right: 15px;
+}
+@media print {
+  header img {
+    height: 56px;
+  }
+}
+@media screen and (min-width: 612px) {
+  header h1 {
+    display: block;
+    padding-top: 14px;
+    font-size: 1.5em;
+  }
+}
+@media print {
+  header h1 {
+    display: block;
+    padding-top: 10px;
+  }
+}
+@media screen and (min-width: 493px) {
+  header h2 {
+    display: block;
+    padding-top: 13px;
+  }
+}
+@media screen and (min-width: 612px) {
+  header h2 {
+    display: none;
+  }
 }
 main {
   min-height: 400px;
@@ -78,51 +130,10 @@ main {
   padding: 5px;
   font-size: .9em;
 }
-@media screen and (min-width: 493px) {
-  header h2 {
-    display: block;
-    padding-top: 10px;
-  }
-}
-@media screen and (min-width: 612px) {
-  #print-content {
-    width: 612px;
-    margin: 0 auto;
-  }
-  header h1 {
-    display: block;
-    padding-top: 14px;
-    font-size: 1.5em;
-  }
-  header h2 {
-    display: none;
-  }
-}
 @media print {
   @page {
     size: letter;
     margin: .5cm;
-  }
-  html,
-  body {
-    -webkit-print-color-adjust: exact;
-  }
-  #print-options {
-    display: none;
-  }
-  #print-content > #header {
-    background: #003366;
-  }
-  #print-content > #header h1 {
-    display: block;
-    padding-top: 10px;
-  }
-  #print-content > #header > a {
-    height: 3em;
-  }
-  #print-content > #header > img {
-    height: 56px;
-    /* Header Image */
   }
 }
 /*# sourceMappingURL=print.css.map */
