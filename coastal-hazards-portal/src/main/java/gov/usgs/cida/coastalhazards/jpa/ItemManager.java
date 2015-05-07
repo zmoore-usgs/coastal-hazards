@@ -5,6 +5,7 @@ import gov.usgs.cida.coastalhazards.exception.CycleIntroductionException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.service.data.DownloadService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,7 +41,9 @@ public class ItemManager implements AutoCloseable {
 				List<Item> replaceList = new LinkedList<>();
 				if (children != null) {
 					for (Item child : children) {
-						replaceList.add(load(child.getId()));
+						if (child != null) {
+							replaceList.add(load(child.getId()));
+						}
 					}
 					item.setChildren(replaceList);
 				}
@@ -170,7 +173,6 @@ public class ItemManager implements AutoCloseable {
 		String id;
 		EntityTransaction transaction = em.getTransaction();
 		try {
-			
 			mergeAll(updateAncestors(item)); // Update old ancestor chain
 			transaction.begin();
 			id = mergeItem(item);
@@ -471,9 +473,14 @@ public class ItemManager implements AutoCloseable {
 	
 	private List<Item> updateAncestors(Item item) {
 		List<Item> ancestors = findAncestors(item);
-		for (Item ancestor : ancestors) {
-			ancestor.setLastModified(new Date());
-			ancestor.setBbox(calculateBbox(ancestor));
+		try (DownloadService downloadService = new DownloadService()) {
+			List<String> itemIds = new LinkedList<>();
+			for (Item ancestor : ancestors) {
+				itemIds.add(ancestor.getId());
+				ancestor.setLastModified(new Date());
+				ancestor.setBbox(calculateBbox(ancestor));
+			}
+			downloadService.deleteAll(itemIds);
 		}
 		return ancestors;
 	}

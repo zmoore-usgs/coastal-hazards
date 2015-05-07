@@ -65,17 +65,12 @@ public class DownloadManager implements AutoCloseable {
 		}
 	}
 
+	/**
+	 * This needs to be wrapped in transaction or it will fail
+	 * @param download 
+	 */
 	public void delete(Download download) {
-		EntityTransaction transaction = em.getTransaction();
-		try {
-			transaction.begin();
-			em.remove(download);
-			transaction.commit();
-		} catch (Exception ex) {
-			if (transaction.isActive()) {
-				transaction.rollback();
-			}
-		}
+		em.remove(download);
 	}
 	
 	public void deleteAllMissing() {
@@ -99,6 +94,10 @@ public class DownloadManager implements AutoCloseable {
 		Query selectQuery = em.createQuery(HQL_SELECT_ALL);
 		resultList = selectQuery.getResultList();
 		return resultList;
+	}
+	
+	public EntityTransaction getTransaction() {
+		return em.getTransaction();
 	}
 
 	@Override
