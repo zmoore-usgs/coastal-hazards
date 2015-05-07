@@ -1,0 +1,139 @@
+@image-container: application-overlay-image-container;
+@description-title: application-overlay-description-container-title;
+@spinner: splash-spinner;
+@status-update: splash-status-update;
+@container-version: application-overlay-description-container-version;
+
+/* Main container */
+#application-overlay {
+    height : 100%;
+    width : 100%;
+    position : fixed;
+    top : 0;left : 0;
+    color: #000000;
+    background-color: #FFFFFF;
+    background-attachment: fixed;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    z-index: 9999;
+    font-size: 10%;
+}
+
+/* wrapper */
+.application-overlay-content-wrap {
+    width: 100%;
+    text-align: center;
+    top: calc(30%);
+    position: fixed;
+}
+
+// Image Wrapper
+#@{image-container} {
+    padding-bottom: 25px;
+	// USGS Logo
+	& > img{
+		width: 50%;
+	}
+}
+
+/* Content Wrap -> Title*/
+#@{description-title} {
+    font-size: 24px;
+    font-size: 2.4rem;
+}
+
+/* Content Wrap -> Version*/
+#@{container-version} {
+    font-size: 18px;
+    font-size: 1.8rem;
+}
+
+/* Content Wrap -> Spinner/Status -> Spinner */
+.@{spinner} {
+    display: inline;
+    padding-right: 10px;
+    vertical-align:inherit;
+    height: 16px;
+    height: 1.6rem;
+}
+
+/* Content Wrap -> Spinner/Status -> Status */
+.@{status-update} {
+    font-size: 16px;
+    font-size: 1.6rem;
+}
+
+@media screen {
+	@media (max-width: 900px) {
+		/* Content Wrap -> Title*/
+		#@{description-title} {
+			font-size: 18px;
+			font-size: 1.8rem;
+		}
+		/* Content Wrap -> Version*/
+		#@{container-version} {
+			font-size: 14px;
+			font-size: 1.4rem;
+		}
+		/* Content Wrap -> Spinner/Status -> Spinner */
+		.@{spinner} {
+			height: 1px;
+			height: 1.2rem;
+		}
+
+		/* Content Wrap -> Spinner/Status -> Status */
+		.@{status-update} {
+			font-size: 12px;
+			font-size: 1.2rem;
+		}
+	}
+
+	@media (max-width: 600px){
+		/* Content Wrap -> Title*/
+		#@{description-title} {
+			font-size: 16px;
+			font-size: 1.6rem;
+		}
+		/* Content Wrap -> Version*/
+		#@{container-version} {
+			font-size: 12px;
+			font-size: 1.2rem;
+		}
+		/* Content Wrap -> Spinner/Status -> Spinner */
+		.@{spinner} {
+			height: 10px;
+			height: 1rem;
+		}
+
+		/* Content Wrap -> Spinner/Status -> Status */
+		.@{status-update} {
+			font-size: 10px;
+			font-size: 1.0rem;
+		}
+	}
+
+	@media (max-width: 480px){
+		/* Content Wrap -> Title*/
+		#@{description-title} {
+			font-size: 12px;
+			font-size: 1.2rem;
+		}
+		/* Content Wrap -> Version*/
+		#@{container-version} {
+			font-size: 8px;
+			font-size: 0.8rem;
+		}
+		/* Content Wrap -> Spinner/Status -> Spinner */
+		.@{spinner} {
+			height: 8px;
+			height: 0.8rem;
+		}
+
+		/* Content Wrap -> Spinner/Status -> Status */
+		.@{status-update} {
+			font-size: 6px;
+			font-size: 0.6rem;
+		}
+	}
+}
