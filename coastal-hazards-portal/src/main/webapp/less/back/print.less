@@ -1,7 +1,4 @@
-@primaryColor:#003366;
-@fontFamily:Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
-@cchGray:#f5f5f5;
-@cchBorder:1px solid #dddddd;
+@import "../cch.less";
 
 *{
     padding:0; margin:0;
@@ -9,7 +6,7 @@
 
 html,
 body{
-    font-family:@fontFamily; 
+    font-family:@cch-fontFamily; 
     
     @media print{
         -webkit-print-color-adjust:exact;
@@ -17,8 +14,8 @@ body{
 }
 
 #print-options{
-    background:@cchGray;
-    border:@cchBorder;
+    background:@cch-gray;
+    border:@cch-border;
     min-height:50px;
     margin:10px 0;
     border-radius:5px;
@@ -51,11 +48,11 @@ body{
 
 header{
    height:56px;
-   background:@primaryColor;
+   background:@cch-primaryColor;
    color:#fff;
    
    @media print{
-        background: @primaryColor;
+        background: @cch-primaryColor;
    }
    
    & h1, h2{
@@ -129,14 +126,14 @@ main{
     }
     
     & a{
-        color:@primaryColor;
+        color:@cch-primaryColor;
         text-decoration:none;
         font-weight:bold;
     }
 }
 
 #site-url{
-    background:@primaryColor;
+    background:@cch-primaryColor;
     color:#fff;
     padding:5px;
     font-size:.9em;
