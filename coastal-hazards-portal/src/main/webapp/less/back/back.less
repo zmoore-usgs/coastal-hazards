@@ -1,0 +1,291 @@
+// While I designed the app to work with both overflows set to auto,
+// for some reason, IE9 still gives me scroll bars which messes everything
+// up :( so these need to be set to hidden
+html, body {
+	overflow-y: auto;
+	overflow-x: auto;
+	/*
+		320 pixels is the minimum width and 600px is
+		the minimum height that this application will support.
+		Anything smaller, scroll the app
+	*/
+	min-width: 320px;
+	min-height: 480px;
+	padding-left: 10px !important;
+	padding-right:  10px !important;
+	height: 100%;
+	font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: inherit;
+	color: #777;
+}
+
+.fa-times{
+	color:#003366;
+}
+
+.close {
+	opacity:1;
+
+	&:hover,:focus{
+		opacity:1;
+	}
+}
+
+/* Container holding the main view */
+.container {
+	width: 100%;
+
+	& > div.row {
+		&:first-child {
+			background-color: #003366 !important;
+			z-index: 1005;
+			margin-bottom: 4px;
+			height: 55px;
+
+			& > .app-navbar-item-container {
+				float: left;
+				max-height: 55px;
+				display: table;
+
+				&:first-child {
+					margin-right: 15px;
+					height: 55px;
+					width: 126px;
+
+					& img {
+						height: 56px;
+					}
+				}
+
+				&:nth-child(2) {
+					vertical-align: middle;
+					margin-top: 5px;
+					padding-right: 15px;
+
+					& div {
+						color: #FFFFFF;
+						font-size: 2em;
+					}
+				}
+
+				&:nth-child(3) > div:nth-child(2) > div > div {
+					font-size: 1em;
+					line-height: 1.5em;
+				}
+			}
+
+		}
+
+		&:nth-child(2) {
+			text-align: center;
+			font-size: 24px;
+			margin-top: 10px;
+			margin-bottom: 10px;
+			font-weight: 600;
+			letter-spacing: 3px;
+			color: #666;
+			line-height: 1em;
+
+			@media (max-width: 440px) {
+				font-size: 0.65em;
+			}
+		}
+
+		&:nth-child(3) > div {
+			@media (max-width: 440px) {
+				&:first-child > div {
+					&  > div.olMap {
+						height : 300px;
+
+						&  .olControlZoom {
+							display: none;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	& >#header-row {
+
+		&:hover {
+			cursor: pointer;
+		}
+
+		& #app-navbar-site-title-container > #app-navbar-title-print {
+			display: none !important;
+		}
+	}
+
+}
+
+.control-button {
+	width: 100%;
+	margin-bottom:15px;
+	color:#003366;
+	font-size:.9em;
+}
+
+#info-container-publications-list{
+	list-style:none;
+
+	&  li ul{
+		list-style:circle;    
+	}
+}
+
+#label-action-center{
+	margin-bottom:8px;
+	font-size:1.3em;
+
+	&:hover{
+		cursor: pointer;
+	}
+}
+
+.action-arrow{
+	-ms-transform: rotate(0); /* IE 9 */
+	-webkit-transform: rotate(0); /* Chrome, Safari, Opera */
+	transform: rotate(0) !important;  
+}
+
+.action-arrow-right{
+	-ms-transform: rotate(-90deg); /* IE 9 */
+	-webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
+	transform: rotate(-90deg) !important;
+}
+
+.well{
+	padding:19px 19px 10px 19px;
+}
+
+.help-button{
+	float:right;
+	height:30px;
+	width:30px;
+	margin-bottom:10px;
+	text-align:center;
+	padding:0;
+}
+
+.action-question{
+	font-size:1.5em !important;
+	color:#003366;
+}
+#info-summary{
+	padding-bottom:5px;
+}
+
+.tooltip {
+	font-size: 1em;
+}
+
+.tooltip-arrow {
+	color: #003366;
+}
+
+.tooltip-inner {
+	background-color: #003366;
+	font-size: 1em;
+	color: #FFFFFF;
+	text-align:left;
+}
+
+
+#modal-services-view {
+	& .modal-dialog {
+		width: auto;
+	}
+
+	& .modal-body .row {
+		margin-bottom: 10px;
+		font-size: 1.2em;
+
+		& > input{
+			width: 100%;
+		}
+	}
+}
+
+
+/* Override the 40px padding bootstrap puts on lists */
+#info-container-publications-list-span > ul {
+	padding-left: 5px;
+	-webkit-padding-start: 5px;
+	-moz-padding-start: 5px;
+
+	&  > li {
+		text-transform: capitalize;
+	}
+}
+
+/* Social media sharing modal */
+#modal-share-summary-url-inputbox {
+	width: 100%;
+	font-size: 2em;
+}
+
+/* Section headers */
+.section-header {
+	font-weight: 600;
+	font-size: 1.3em !important;
+	margin-bottom:8px;
+}
+
+@media (min-width: 992px) {
+	.container > div.row:nth-child(3) > div:nth-child(2) div.row {
+		margin-left: 15px;
+	}
+
+	#info-row-control{
+		width:25%;
+	}
+
+	#summary-and-publications-row{
+		width:75%;
+		padding-left:0;
+	}
+
+	.well{
+		padding:10px 10px 0 10px;
+		margin-bottom:15px;
+	}
+
+	#action-center-title{
+		float:left;
+		margin-top:5px;
+		font-size:1.3em;
+	}
+}
+
+@media (max-width: 991px) {
+	/* Social Media Icon */
+	.container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
+		margin-top: 5px;
+		margin-left: 5px;
+	}
+
+	/* Info Graph */
+	.container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
+		height: 100px;
+	}
+
+	#action-center-title{
+		display:none;
+	}
+}
+
+
+@media (min-width:1300px){
+    .control-button{
+        font-size:1em;
+    }
+    #info-row-control{
+		width:20%;
+	}
+
+	#summary-and-publications-row{
+		width:80%;
+	}
+
+}
