@@ -160,9 +160,11 @@ CCH.Objects.Widget.Accordion = function (args) {
 		if (card.item.activeStorm) {
 			var ribbonWrapper = $('<div />').addClass('corner-ribbon-wrapper');
 			var ribbonContainer = $('<div />').addClass('corner-ribbon');
+                        var ribbonText = $('<p>Active Storm</p>');
 			heading.addClass('active-storm');
 			ribbonWrapper.append(ribbonContainer);
 			heading.append(ribbonWrapper);
+                        ribbonContainer.append(ribbonText);
 		}
 		heading.append(titleContainer);
 		

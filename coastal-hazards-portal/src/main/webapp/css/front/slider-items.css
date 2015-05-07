@@ -188,6 +188,7 @@
 #application-slide-items-content-container .panel-heading {
 	text-align: left;
 }
+
 #application-slide-items-content-container .panel-heading:hover {
 	cursor: pointer;
 }
@@ -195,6 +196,45 @@
 #application-slide-items-content-container .panel-title {
 	font-size: 1.5em;
 }
+
+/* Active Storm Sash */
+
+.active-storm{
+    position:relative;
+}
+
+.corner-ribbon-wrapper{
+  width: 125px;
+  height: 65px;
+  overflow:hidden;
+  position: absolute;
+  top: -1px;
+  right: 0px;
+}
+
+.corner-ribbon{
+	width:160px;
+	position:relative;
+	right:-10px;
+	top:7px;
+	padding:10px 0;
+	background:rgb(230,0,0);
+	text-align:center;
+	font-weight:bold;
+	font-size:.65em;
+	font-family:Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	-webkit-transform: rotate(45deg);
+  	-moz-transform:    rotate(45deg);
+  	-ms-transform:     rotate(45deg);
+  	-o-transform:      rotate(45deg);
+	box-shadow:0 2px 5px rgba(0,0,0,.2);
+	color:#fff;
+	}
+	
+.corner-ribbon p{
+	width:70px;
+	margin:0 0 0 53px
+	}
 
 /* Downward facing arrow on accordion */
 #application-slide-items-content-container .panel-title .accordion-title-arrow {
@@ -317,7 +357,7 @@
             height:26px
         }
 	#application-slide-items-content-container .panel-title {
-            font-size: 1.9em;
+            font-size: 1.7em;
 }
         
 }
@@ -397,4 +437,38 @@
 		border-bottom-left-radius: 10px 10px;
 		-webkit-border-bottom-left-radius: 10px 10px;
 	}
+        
+        .corner-ribbon{
+            font-size:.6em;
+        }
+        
+        .corner-ribbon p{
+            margin:0 0 0 49px;
+        }
+        
+}
+
+@media screen and (max-width:380px){
+    
+    #application-slide-items-content-container .panel-title {
+            font-size: 1em;
+            padding-top:2px;
+    }
+    
+    .corner-ribbon-wrapper{
+        width:75px;
+        height:47px;
+    }
+    
+    .corner-ribbon{
+        width:100px;
+        font-size:.45em;
+        right:0;
+        padding:5px;
+    }
+    
+    .corner-ribbon p{
+        width:90px;
+        margin:0 0 0 6px;
+    }
 }
