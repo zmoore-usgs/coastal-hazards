@@ -6,7 +6,7 @@
 	Boolean isOnSiteRequest = referer.contains(baseUrl);
 	
 %>
-<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/application-overlay/application-overlay<%= development ? "" :"-" + version + "-min"%>.css" />
+<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/overlay/application-overlay<%= development ? "" :"-" + version + "-min"%>.css" />
 <div id="application-overlay">
 	<div id="application-initial-load-splash" class="<%= isOnSiteRequest ? "hidden" : ""%>">
 		<div class="application-overlay-content-wrap">

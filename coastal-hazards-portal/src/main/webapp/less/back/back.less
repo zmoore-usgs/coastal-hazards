@@ -1,4 +1,4 @@
-@primaryColor: #003366;
+@import "../cch.less";
 
 // While I designed the app to work with both overflows set to auto,
 // for some reason, IE9 still gives me scroll bars which messes everything
@@ -22,7 +22,7 @@ html, body {
 }
 
 .fa-times{
-	color: @primaryColor;
+	color: @cch-primaryColor;
 }
 
 .close {
@@ -39,7 +39,7 @@ html, body {
 
 	& > div.row {
 		&:first-child {
-			background-color: @primaryColor !important;
+			background-color: @cch-primaryColor !important;
 			z-index: 1005;
 			margin-bottom: 4px;
 			height: 55px;
@@ -156,7 +156,7 @@ html, body {
 .control-button {
 	width: 100%;
 	margin-bottom:15px;
-	color:@primaryColor;
+	color:@cch-primaryColor;
 	font-size:.9em;
 
 	@media (min-width:1300px){
@@ -213,7 +213,7 @@ html, body {
 
 .action-question {
 	font-size:1.5em !important;
-	color:@primaryColor;
+	color:@cch-primaryColor;
 }
 #info-summary {
 	padding-bottom:5px;
@@ -224,11 +224,11 @@ html, body {
 }
 
 .tooltip-arrow {
-	color: @primaryColor;
+	color: @cch-primaryColor;
 }
 
 .tooltip-inner {
-	background-color: @primaryColor;
+	background-color: @cch-primaryColor;
 	font-size: 1em;
 	color: #FFFFFF;
 	text-align:left;
