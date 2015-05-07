@@ -16,15 +16,15 @@ import org.slf4j.LoggerFactory;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class DownloadService implements AutoCloseable {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(DownloadService.class);
-	
+
 	private DownloadManager manager;
-	
+
 	public DownloadService() {
 		manager = new DownloadManager();
 	}
-	
+
 	public boolean delete(String id) {
 		boolean deleted = false;
 		EntityTransaction transaction = manager.getTransaction();
@@ -68,19 +68,19 @@ public class DownloadService implements AutoCloseable {
 		}
 		return deleted;
 	}
-	
+
 	private boolean deleteDownload(Download download) {
 		boolean deleted = false;
 		try {
+			manager.delete(download);
 			File stagingFolder = download.fetchZipFile().getParentFile();
 			deleted = FileUtils.deleteQuietly(stagingFolder);
-			manager.delete(download);
 		} catch (URISyntaxException ex) {
 			log.error("Invalid file pointer", ex);
 		}
 		return deleted;
-	} 
-	
+	}
+
 	@Override
 	public void close() {
 		manager.close();
