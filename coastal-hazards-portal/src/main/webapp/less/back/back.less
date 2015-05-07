@@ -1,3 +1,5 @@
+@primaryColor: #003366;
+
 // While I designed the app to work with both overflows set to auto,
 // for some reason, IE9 still gives me scroll bars which messes everything
 // up :( so these need to be set to hidden
@@ -20,7 +22,7 @@ html, body {
 }
 
 .fa-times{
-	color:#003366;
+	color: @primaryColor;
 }
 
 .close {
@@ -37,7 +39,7 @@ html, body {
 
 	& > div.row {
 		&:first-child {
-			background-color: #003366 !important;
+			background-color: @primaryColor !important;
 			z-index: 1005;
 			margin-bottom: 4px;
 			height: 55px;
@@ -103,6 +105,25 @@ html, body {
 					}
 				}
 			}
+
+			@media (min-width: 992px) {
+				&:nth-child(2) div.row {
+					margin-left: 15px;
+				}
+			}
+
+			@media (max-width: 991px) {
+				&:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
+					margin-top: 5px;
+					margin-left: 5px;
+				}
+			}
+
+			@media (max-width: 991px) {
+				&:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
+					height: 100px;
+				}
+			}
 		}
 	}
 
@@ -119,11 +140,28 @@ html, body {
 
 }
 
+#action-center-title{
+	@media (max-width: 991px) {
+		display:none;
+	}
+
+	@media (min-width: 992px) {
+		float:left;
+		margin-top:5px;
+		font-size:1.3em;
+	}
+}
+
+
 .control-button {
 	width: 100%;
 	margin-bottom:15px;
-	color:#003366;
+	color:@primaryColor;
 	font-size:.9em;
+
+	@media (min-width:1300px){
+        font-size:1em;
+    }
 }
 
 #info-container-publications-list{
@@ -143,7 +181,7 @@ html, body {
 	}
 }
 
-.action-arrow{
+.action-arrow {
 	-ms-transform: rotate(0); /* IE 9 */
 	-webkit-transform: rotate(0); /* Chrome, Safari, Opera */
 	transform: rotate(0) !important;  
@@ -155,11 +193,16 @@ html, body {
 	transform: rotate(-90deg) !important;
 }
 
-.well{
+.well {
 	padding:19px 19px 10px 19px;
+
+	@media (min-width: 992px) {
+		padding:10px 10px 0 10px;
+		margin-bottom:15px;
+	}
 }
 
-.help-button{
+.help-button {
 	float:right;
 	height:30px;
 	width:30px;
@@ -168,11 +211,11 @@ html, body {
 	padding:0;
 }
 
-.action-question{
+.action-question {
 	font-size:1.5em !important;
-	color:#003366;
+	color:@primaryColor;
 }
-#info-summary{
+#info-summary {
 	padding-bottom:5px;
 }
 
@@ -181,11 +224,11 @@ html, body {
 }
 
 .tooltip-arrow {
-	color: #003366;
+	color: @primaryColor;
 }
 
 .tooltip-inner {
-	background-color: #003366;
+	background-color: @primaryColor;
 	font-size: 1em;
 	color: #FFFFFF;
 	text-align:left;
@@ -206,7 +249,6 @@ html, body {
 		}
 	}
 }
-
 
 /* Override the 40px padding bootstrap puts on lists */
 #info-container-publications-list-span > ul {
@@ -232,60 +274,23 @@ html, body {
 	margin-bottom:8px;
 }
 
-@media (min-width: 992px) {
-	.container > div.row:nth-child(3) > div:nth-child(2) div.row {
-		margin-left: 15px;
-	}
-
-	#info-row-control{
+#info-row-control {
+	@media (min-width: 992px) {
 		width:25%;
 	}
 
-	#summary-and-publications-row{
+	@media (min-width:1300px){
+		width:20%;
+	}
+}
+
+#summary-and-publications-row{
+	@media (min-width: 992px) {
 		width:75%;
 		padding-left:0;
 	}
 
-	.well{
-		padding:10px 10px 0 10px;
-		margin-bottom:15px;
-	}
-
-	#action-center-title{
-		float:left;
-		margin-top:5px;
-		font-size:1.3em;
-	}
-}
-
-@media (max-width: 991px) {
-	/* Social Media Icon */
-	.container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
-		margin-top: 5px;
-		margin-left: 5px;
-	}
-
-	/* Info Graph */
-	.container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
-		height: 100px;
-	}
-
-	#action-center-title{
-		display:none;
-	}
-}
-
-
-@media (min-width:1300px){
-    .control-button{
-        font-size:1em;
-    }
-    #info-row-control{
-		width:20%;
-	}
-
-	#summary-and-publications-row{
+	@media (min-width:1300px){
 		width:80%;
 	}
-
 }

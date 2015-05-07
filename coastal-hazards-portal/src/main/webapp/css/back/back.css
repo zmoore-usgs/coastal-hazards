@@ -85,17 +85,50 @@ body {
     display: none;
   }
 }
+@media (min-width: 992px) {
+  .container > div.row:nth-child(3) > div:nth-child(2) div.row {
+    margin-left: 15px;
+  }
+}
+@media (max-width: 991px) {
+  .container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
+    margin-top: 5px;
+    margin-left: 5px;
+  }
+}
+@media (max-width: 991px) {
+  .container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
+    height: 100px;
+  }
+}
 .container > #header-row:hover {
   cursor: pointer;
 }
 .container > #header-row #app-navbar-site-title-container > #app-navbar-title-print {
   display: none !important;
 }
+@media (max-width: 991px) {
+  #action-center-title {
+    display: none;
+  }
+}
+@media (min-width: 992px) {
+  #action-center-title {
+    float: left;
+    margin-top: 5px;
+    font-size: 1.3em;
+  }
+}
 .control-button {
   width: 100%;
   margin-bottom: 15px;
   color: #003366;
   font-size: .9em;
+}
+@media (min-width: 1300px) {
+  .control-button {
+    font-size: 1em;
+  }
 }
 #info-container-publications-list {
   list-style: none;
@@ -126,6 +159,12 @@ body {
 }
 .well {
   padding: 19px 19px 10px 19px;
+}
+@media (min-width: 992px) {
+  .well {
+    padding: 10px 10px 0 10px;
+    margin-bottom: 15px;
+  }
 }
 .help-button {
   float: right;
@@ -185,47 +224,22 @@ body {
   margin-bottom: 8px;
 }
 @media (min-width: 992px) {
-  .container > div.row:nth-child(3) > div:nth-child(2) div.row {
-    margin-left: 15px;
-  }
   #info-row-control {
     width: 25%;
   }
+}
+@media (min-width: 1300px) {
+  #info-row-control {
+    width: 20%;
+  }
+}
+@media (min-width: 992px) {
   #summary-and-publications-row {
     width: 75%;
     padding-left: 0;
   }
-  .well {
-    padding: 10px 10px 0 10px;
-    margin-bottom: 15px;
-  }
-  #action-center-title {
-    float: left;
-    margin-top: 5px;
-    font-size: 1.3em;
-  }
-}
-@media (max-width: 991px) {
-  /* Social Media Icon */
-  .container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
-    margin-top: 5px;
-    margin-left: 5px;
-  }
-  /* Info Graph */
-  .container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
-    height: 100px;
-  }
-  #action-center-title {
-    display: none;
-  }
 }
 @media (min-width: 1300px) {
-  .control-button {
-    font-size: 1em;
-  }
-  #info-row-control {
-    width: 20%;
-  }
   #summary-and-publications-row {
     width: 80%;
   }
