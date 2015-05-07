@@ -1,98 +1,95 @@
 .cchMapLegend {
-	position: absolute;
-	bottom: 65px; /* above USGS logo */
-	right: 0;
+  position: absolute;
+  bottom: 65px;
+  /* above USGS logo */
+  right: 0;
 }
-
 .cchMapLegendElement {
-	padding: 10px 5px 10px 35px;
-	-moz-border-radius: 6px 0 0 6px;
-	-webkit-border-radius: 6px 0 0 6px;
-	border-radius: 6px 0 0 6px;
-	-khtml-border-radius: 6px 0 0  6px;
-	background: rgba(0,51,102,0.7) !important;
+  -moz-border-radius: 6px 0px 0px 6px;
+  -webkit-border-radius: 6px 0px 0px 6px;
+  border-radius: 6px 0px 0px 6px;
+  -khtml-border-radius: 6px 0px 0px 6px;
+  padding: 10px 5px 10px 35px;
+  background: rgba(0, 51, 102, 0.7);
 }
-
+@media (max-width: 991px) {
+  .cchMapLegendElement {
+    padding: 10px 18px 10px 45px;
+  }
+}
 .cchMapLegendMinimizeButton,
 .cchMapLegendMaximizeButton {
-	bottom: 100px;
-	cursor: pointer;
+  bottom: 100px;
+  cursor: pointer;
 }
-
 .cchMapLegendMaximizeButton {
-	right: 0;
+  right: 0;
 }
-
-.cchMapLegendMinimizeButton {
-	left: 5px;
-}
-
-.cchMapLegendMinimizeButton img {
-	height: 25px;
-}
-
 .cchMapLegendMaximizeButton img {
-	height: 25px;
-	opacity: 0.7;
-	filter: alpha(opacity=70);
+  height: 25px;
+  opacity: 0.7;
+  filter: alpha(opacity=70);
 }
-
-#cchMapLegendInnerContainer {
-	background-color: #f5f5f5;
-	overflow-x: hidden;
-	overflow-y: auto;
-	padding: 4px;
-}
-
-#cchMapLegendInnerContainer table {
-	display: inline-table;
-	width: 100%;
-}
-
-#cchMapLegendInnerContainer table > caption {
-	display: table-caption;
-	font-size: 13px;
-	font-weight: 600;
-}
-
-#cchMapLegendInnerContainer table th, td{
-	width: 50%;
-}
-
-#cchMapLegendInnerContainer table tbody tr td{
-	vertical-align: middle;
-	font-size: 0.75em;
-}
-
-#cchMapLegendInnerContainer table tbody td:first-child{
-	text-align: right;
-}
-
-#cchMapLegendInnerContainer table tbody td:first-child span{
-	height: 10px;
-	border: #E3E3E3;
-	border-style: solid;
-	border-width: 1px;
-	border-radius: 3px;
-	display: inline-block;
-	margin-right: 5px;
-	width: 15px;
-	-moz-border-radius: 10px;
-	-webkit-botder-radius: 10px;
-}
-
 @media (max-width: 991px) {
-	.cchMapLegendElement {
-		padding: 10px 18px 10px 45px;
-	}
-
-	.cchMapLegendMinimizeButton img {
-		height: 20px;
-	}
-
-	.cchMapLegendMaximizeButton img {
-		height: 30px;
-	}
+  .cchMapLegendMaximizeButton img {
+    height: 30px;
+  }
 }
-
-
+.cchMapLegendMinimizeButton {
+  left: 5px;
+}
+.cchMapLegendMinimizeButton img {
+  height: 25px;
+}
+@media (max-width: 991px) {
+  .cchMapLegendMinimizeButton img {
+    height: 20px;
+  }
+}
+#cchMapLegendInnerContainer {
+  background-color: #f5f5f5;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 4px;
+}
+#cchMapLegendInnerContainer table {
+  display: inline-table;
+  width: 100%;
+}
+#cchMapLegendInnerContainer table > caption {
+  display: table-caption;
+  font-size: 13px;
+  font-weight: 600;
+}
+#cchMapLegendInnerContainer table th,
+#cchMapLegendInnerContainer table td {
+  width: 50%;
+}
+#cchMapLegendInnerContainer table tbody tr td {
+  vertical-align: middle;
+  font-size: 0.75em;
+}
+#cchMapLegendInnerContainer table tbody td:first-child {
+  text-align: right;
+}
+#cchMapLegendInnerContainer table tbody td:first-child span {
+  height: 10px;
+  border: #E3E3E3;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-right: 5px;
+  width: 15px;
+  -moz-border-radius: 10px;
+  -webkit-botder-radius: 10px;
+}
+@media (max-width: 991px) {
+  .cchMapLegendMinimizeButton img {
+    height: 20px;
+  }
+  .cchMapLegendMaximizeButton img {
+    height: 30px;
+  }
+}
+/*# sourceMappingURL=OLLegend.css.map */
