@@ -70,7 +70,7 @@ ul {
   margin: 15px 0px 5px 10px;
   padding-left: 15px;
   font-size: 1.2em;
-  color: #303030;
+  color: #333333;
 }
 ul li {
   margin-bottom: 5px;
@@ -136,7 +136,7 @@ h1.mobile {
     font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 1.3em;
     padding-top: 8px;
-    color: #4a4a4a;
+    color: #333333;
   }
   #text {
     width: 750px;
@@ -144,7 +144,7 @@ h1.mobile {
     margin-bottom: 10px;
   }
   #text p {
-    color: #303030;
+    color: #333333;
     padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
@@ -176,15 +176,14 @@ h1.mobile {
     padding-top: 5px;
   }
   .icon h3 a {
-    color: #0f416f;
+    color: #003366;
   }
   .icon h3 p {
-    color: #3b3b3b;
+    color: #333333;
     font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: .95em;
   }
   .icon_holder {
-    background: red;
     width: 220px;
     height: 220px;
     margin: 0 auto;
@@ -227,12 +226,12 @@ h1.mobile {
   #usgsfooterbar a:visited,
   #usgsfooterbar a:active {
     margin-right: 40px;
-    color: #ffffff;
+    color: #fff;
     text-decoration: none;
   }
   #usgsfooterbar a:hover {
     margin-right: 40px;
-    color: #ffffff;
+    color: #fff;
     text-decoration: underline;
   }
   #usgsfootertext {
@@ -282,7 +281,7 @@ h1.mobile {
     font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 1.3em;
     padding-top: 8px;
-    color: #4a4a4a;
+    color: #333333;
   }
   /*####################text##############*/
   #text {
@@ -292,7 +291,7 @@ h1.mobile {
     margin-bottom: 10px;
   }
   #text p {
-    color: #303030;
+    color: #333333;
     padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
@@ -326,10 +325,10 @@ h1.mobile {
     padding-top: 5px;
   }
   .icon a {
-    color: #0f416f;
+    color: #003366;
   }
   .icon p {
-    color: #3b3b3b;
+    color: #333333;
     font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: .95em;
   }
@@ -404,7 +403,7 @@ h1.mobile {
     font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 1.1em;
     padding-top: 10px;
-    color: #4a4a4a;
+    color: #333333;
   }
   #text {
     width: 100%;
@@ -413,7 +412,7 @@ h1.mobile {
     margin-bottom: 10px;
   }
   #text p {
-    color: #303030;
+    color: #333333;
     padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
@@ -446,10 +445,10 @@ h1.mobile {
     padding-top: 5px;
   }
   .icon h3 a {
-    color: #0f416f;
+    color: #003366;
   }
   .icon p {
-    color: #3b3b3b;
+    color: #333333;
     font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: .95em;
   }
