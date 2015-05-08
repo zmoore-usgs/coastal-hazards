@@ -223,6 +223,10 @@ body {
   font-size: 1.3em !important;
   margin-bottom: 8px;
 }
+#info-row-control a {
+  color: #003366;
+  text-decoration: none;
+}
 @media (min-width: 992px) {
   #info-row-control {
     width: 25%;
@@ -244,4 +248,4 @@ body {
     width: 80%;
   }
 }
-
+/*# sourceMappingURL=back.css.map */

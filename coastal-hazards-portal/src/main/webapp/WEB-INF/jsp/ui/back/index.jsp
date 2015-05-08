@@ -154,6 +154,7 @@
 										<button type="button" class="btn btn-default control-button" id="download-link-button" data-tooltip="tooltip" data-placement="right" title="Download this item to your computer">Download Dataset</button>
 										<button type="button" class="btn btn-default control-button hidden" id="analysis-link-button" data-tooltip="tooltip" data-placement="right" title="....">Make a Hazard Analysis</button>
 										<button type="button" class="btn btn-default control-button" data-toggle="modal" data-tooltip="tooltip" data-target="#modal-sharing-view" data-placement="right" title="Get a short URL to share this information with others">Share This Info</button>
+										<button type="button" class="btn btn-default control-button" id="print-button" data-tooltip="tooltip" data-placement="right" title="Go To Print View"><a href="<%=baseUrl%>/ui/print/item/<%=item.getId() %>">Go To Print View</a></button>
 									</div>
 								</div>
 							</div>
