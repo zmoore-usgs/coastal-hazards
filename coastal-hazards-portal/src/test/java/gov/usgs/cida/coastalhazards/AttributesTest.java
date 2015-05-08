@@ -14,8 +14,8 @@ public class AttributesTest {
 
 	@Test
 	public void testSetCreation() {
-		assertThat(Attributes.set.contains(Attributes.PACCRETION), is(true));
-		assertThat(Attributes.set.contains("foo"), is(false));
+		assertThat(Attributes.contains(Attributes.PACCRETION), is(true));
+		assertThat(Attributes.contains("foo"), is(false));
 		assertThat(Attributes.set.size(), is(equalTo(63)));
 	}
 	

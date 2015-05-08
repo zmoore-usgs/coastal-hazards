@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class Attributes {
 
-	public static final Set<String> set = new HashSet<>();
+	static final Set<String> set = new HashSet<>();
 	
 	public static final String E_RATE = "E_RATE";
 	public static final String ERATE = "ERATE";
@@ -60,7 +60,6 @@ public class Attributes {
 	
 	public static final String CVIRISK = "CVIRISK";
 	
-
 	public static final String PCOL = "PCOL";
 	public static final String PCOL1 = "PCOL1";
 	public static final String PCOL2 = "PCOL2";
@@ -102,5 +101,9 @@ public class Attributes {
 				// don't care
 			}
 		}
+	}
+	
+	public static boolean contains(String attribute) {
+		return set.contains(attribute);
 	}
 }
