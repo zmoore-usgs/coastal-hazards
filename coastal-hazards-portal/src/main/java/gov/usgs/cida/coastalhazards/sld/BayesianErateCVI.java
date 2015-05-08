@@ -1,5 +1,8 @@
 package gov.usgs.cida.coastalhazards.sld;
 
+
+import static gov.usgs.cida.coastalhazards.Attributes.*;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,7 +16,7 @@ public final class BayesianErateCVI {
 
     // E_RATE is deprecated by ERATE (Erate un-uppercased), and may be removed
     // when verified it is not being used.
-    protected static final String[] attrs = {"E_RATE", "ERATE"};
+    protected static final String[] attrs = {E_RATE, ERATE};
     protected static final float[] thresholds = {-2.0f, -1.0f, 1.0f, 2.0f};
     protected static final String[] colors = {"#ED2024", "#FCBF10", "#F6EB13", "#00B04F", "#29ADE3"};
 	
