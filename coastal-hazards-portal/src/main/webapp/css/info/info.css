@@ -5,7 +5,7 @@
 }
 html,
 body {
-  background: #ffffff;
+  background: #fff;
   height: 100%;
   font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -107,7 +107,7 @@ h1.mobile {
     margin-right: 10px;
   }
   header h1 {
-    color: #ffffff;
+    color: #fff;
     padding-top: 10px;
     font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 1.9em;
@@ -226,12 +226,12 @@ h1.mobile {
   #usgsfooterbar a:visited,
   #usgsfooterbar a:active {
     margin-right: 40px;
-    color: #ffffff;
+    color: #fff;
     text-decoration: none;
   }
   #usgsfooterbar a:hover {
     margin-right: 40px;
-    color: #ffffff;
+    color: #fff;
     text-decoration: underline;
   }
   #usgsfootertext {
@@ -255,7 +255,7 @@ h1.mobile {
   }
   header h1.mobile {
     display: block;
-    color: #ffffff;
+    color: #fff;
     padding-top: 10px;
     font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 1.9em;
@@ -377,7 +377,7 @@ h1.mobile {
   }
   header h1.mobile_portrait {
     display: block;
-    color: #ffffff;
+    color: #fff;
     padding-top: 10px;
     font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 2.1em;
