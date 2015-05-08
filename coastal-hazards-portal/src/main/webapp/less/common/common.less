@@ -1,0 +1,36 @@
+@cch-ol-grey: #D3D3D3;
+@cch-ol-grey-important: @cch-ol-grey !important;
+.scale-line-coloring() {
+	color: @cch-ol-grey;
+	text-shadow:
+		-1px -1px 0 black,  
+		1px -1px 0 black,
+		-1px 1px 0 black,
+		1px 1px 0 black;
+}
+
+/* Attribution Image */
+#map #openlayers-map-attribution-image {
+    height: 40px;
+    opacity: .25;
+    margin-right: 20px;
+    margin-top: 20px;
+}
+
+.olControlAttribution {
+    bottom: 20px !important;
+}
+
+.olControlScaleLineTop {
+	border-right-color: @cch-ol-grey-important;
+	border-bottom-color: @cch-ol-grey-important;
+	border-left-color: @cch-ol-grey-important;
+	.scale-line-coloring;
+}
+
+.olControlScaleLineBottom {
+	border-top-color: @cch-ol-grey-important;
+	border-right-color: @cch-ol-grey-important;
+	border-left-color: @cch-ol-grey-important;
+	.scale-line-coloring;
+}
