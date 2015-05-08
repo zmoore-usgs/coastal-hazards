@@ -1,0 +1,80 @@
+@import "../cch.less";
+
+#header-row {
+	.app-navbar-item-container {
+		float: left;
+		max-height: 55px;
+		display: table;
+		a:hover {
+			text-decoration: none;
+		}
+		&:first-child {
+			margin-right: 15px;
+			height: 55px;
+			width: 126px;
+			> img {
+				height: 56px;
+			}
+		}
+		&:nth-child(2) {
+			vertical-align: middle;
+			margin-top: 5px;
+			padding-right: 15px;
+			div {
+				color: #FFFFFF !important;
+				font-size: 2em;
+				a {
+					color: #FFFFFF;
+					text-decoration:none;
+				}
+			}
+		}
+		&:nth-child(5) > span {
+			width: 60px;
+			font-size: 32px;
+			height: 50px;
+			position: relative;
+			top: 8px;
+			> a {
+				> i {
+					display: inherit;
+					color: #FFFFFF;
+					text-decoration: none;
+					&:hover {
+						cursor: pointer;
+						color: #D6DCE6;
+					}
+				}
+				&:hover {
+					background-color: @cch-primaryColor;
+				}
+			}
+		}
+	}
+}
+
+@media (max-width: 991px) {
+	#header-row > .app-navbar-item-container {
+		&:nth-child(4) > span {
+			width: 60px;
+			font-size: 32px;
+			height: 50px;
+			position: relative;
+			top: 8px;
+			> a {
+				> i {
+					display: inherit;
+					color: #FFFFFF;
+					text-decoration: none;
+					&hover {
+						cursor: pointer;
+						color: #D6DCE6;
+					}
+				}
+				&hover {
+					background-color: @cch-primaryColor;
+				}
+			}
+		}
+	}
+}

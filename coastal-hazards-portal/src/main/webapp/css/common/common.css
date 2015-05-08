@@ -1,33 +1,25 @@
 /* Attribution Image */
 #map #openlayers-map-attribution-image {
-    height: 40px;
-    opacity: .25;
-    margin-right: 20px;
-    margin-top: 20px;
+  height: 40px;
+  opacity: .25;
+  margin-right: 20px;
+  margin-top: 20px;
 }
-
 .olControlAttribution {
-    bottom: 20px !important;
+  bottom: 20px !important;
 }
-
-/* Coloring scale line text (with dropshadow) and  scale line to light grey*/
-.olControlScaleLineTop, .olControlScaleLineBottom {
-	color: #D3D3D3;
-	text-shadow:
-		-1px -1px 0 #000,  
-		1px -1px 0 #000,
-		-1px 1px 0 #000,
-		1px 1px 0 #000;
-}
-
 .olControlScaleLineTop {
-	border-right-color: #D3D3D3 !important;
-	border-bottom-color: #D3D3D3 !important;
-	border-left-color: #D3D3D3 !important;
+  border-right-color: #d3d3d3 !important;
+  border-bottom-color: #d3d3d3 !important;
+  border-left-color: #d3d3d3 !important;
+  color: #d3d3d3;
+  text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
 }
-
 .olControlScaleLineBottom {
-	border-top-color: #D3D3D3 !important;
-	border-right-color: #D3D3D3 !important;
-	border-left-color: #D3D3D3 !important;
+  border-top-color: #d3d3d3 !important;
+  border-right-color: #d3d3d3 !important;
+  border-left-color: #d3d3d3 !important;
+  color: #d3d3d3;
+  text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
 }
+/*# sourceMappingURL=common.css.map */
