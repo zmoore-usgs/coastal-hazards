@@ -256,6 +256,42 @@ CCH.Objects.Publish.UI = function () {
 		$isActiveStormRow.addClass('hidden');
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
 	};
+	
+	me.enableNewTemplateForm = function () {
+		$itemType.val('template');
+		$titleFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$titleMediumTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$descriptionFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$descriptionMediumTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$descriptionTinyTextArea.removeAttr(CCH.CONFIG.strings.disabled);
+		$bboxNorth.removeAttr(CCH.CONFIG.strings.disabled);
+		$bboxWest.removeAttr(CCH.CONFIG.strings.disabled);
+		$bboxSouth.removeAttr(CCH.CONFIG.strings.disabled);
+		$bboxEast.removeAttr(CCH.CONFIG.strings.disabled);
+		$srcWfsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$srcWfsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$srcWmsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$srcWmsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$proxyWfsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$proxyWfsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$proxyWmsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$proxyWmsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		$typeSb.removeAttr(CCH.CONFIG.strings.disabled);
+		$('.form-group-keyword input').find('#form-publish-info-item-panel-publications-button-add').removeAttr(CCH.CONFIG.strings.disabled);
+		$ribbonableCb.removeAttr(CCH.CONFIG.strings.disabled);
+		$showChildrenCb.removeAttr(CCH.CONFIG.strings.disabled);
+		$name.removeAttr(CCH.CONFIG.strings.disabled);
+		$publicationsPanel.removeAttr(CCH.CONFIG.strings.disabled);
+		$childrenSortableList.removeAttr(CCH.CONFIG.strings.disabled);
+		$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
+		$itemEnabledField.val('false');
+		$keywordGroup.find('input').removeAttr(CCH.CONFIG.strings.disabled);
+		me.createSortableChildren();
+		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
+		$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
+		$isActiveStormRow.addClass('hidden');
+		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
+	};
 
 	me.isBlank = function ($ele) {
 		if (!$ele) {
@@ -1778,6 +1814,12 @@ CCH.Objects.Publish.UI = function () {
 		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
 		me.clearForm();
 		me.enableNewAggregationForm();
+	});
+	
+	$('#publish-button-create-template-option').on(CCH.CONFIG.strings.click, function () {
+		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
+		me.clearForm();
+		me.enableNewTemplateForm();
 	});
 
 	$('#publish-button-create-item-option').on(CCH.CONFIG.strings.click, function () {
