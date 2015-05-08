@@ -60,7 +60,7 @@ em {
 #content {
   overflow: auto;
 }
-.descriptive-text-title {
+.header {
   margin: 15px 0px 5px 10px;
   font-size: 1.4em;
   font-weight: bold;
@@ -480,4 +480,4 @@ h1.mobile {
     padding-top: 11px;
   }
 }
-/*# sourceMappingURL=info.css.map */
+

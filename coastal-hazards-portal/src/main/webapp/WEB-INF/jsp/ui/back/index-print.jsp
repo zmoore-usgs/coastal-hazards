@@ -110,13 +110,14 @@
 		<div id="print-content" class="container-fluid">
 			<div id="print-options">
 				<h3>Print Snapshot Options</h3>
-				<input type="checkbox" name="title" value="title" checked>Title<br>
-				<input type="checkbox" name="brief" value="brief_description"> Brief Description<br>
-				<input type="checkbox" name="exteneded" value="extended_description" checked> Extended Description<br>
-				<input type="checkbox" name="publications" value="publications" checked> Publications<br>
-				<input type="checkbox" name="resources" value="resources" checked> Resources<br>
-				<input type="checkbox" name="thumbnail" value="map_thumbnail" checked> Map Thumbnail<br>
-				<input type="checkbox" name="short" value="short_url" checked> Short URL<br>
+				<input type="checkbox" name="title" value="title" id="item_title" checked>Title<br>
+				<input type="radio" name="description_type" value="brief" checked> Brief Description<br>
+				<input type="radio" name="description_type" value="extended"> Extended Description<br>
+				<input type="checkbox" name="publications" value="publications" id="choice_publications" class="pubschoice" checked> Publications<br>
+				<input type="checkbox" name="resources" value="resources" id="choice_resources" class="pubschoice" checked> Resources<br>
+				<input type="checkbox" name="data" value="data" id="choice_data" class="pubschoice" checked> Data<br>
+				<input type="checkbox" name="thumbnail" value="map_thumbnail" id="map-thumb-cb" checked> Map Thumbnail<br>
+				<input type="checkbox" name="short" value="short_url" id="short-url-cb" checked> Short URL<br>
 				<input type="checkbox" name="link" value="link" checked> More Information Link<br>
 			</div>
 			<header id="header">
@@ -135,7 +136,7 @@
 					<p id="brief_description">
 						<%= item.getSummary().getMedium().getText()%>
 					</p>
-					<p id="extended_description">
+					<p id="extended_description" class="hidden">
 						<%= item.getSummary().getFull().getText()%>
 					</p>
 				</div>
@@ -145,7 +146,7 @@
 						<ul>
 							<c:forEach var="pub" items="${publicationMap['publications']}">
 								<li>${pub.title}</li>
-								</c:forEach>
+							</c:forEach>
 						</ul>
 						<p>More available on site...</p>
 					</c:if>
@@ -157,7 +158,7 @@
 						<ul>
 							<c:forEach var="pub" items="${publicationMap['resources']}">
 								<li>${pub.title}</li>
-								</c:forEach>
+							</c:forEach>
 						</ul>
 						<p>More available on site...</p>
 					</c:if>
@@ -169,7 +170,7 @@
 						<ul>
 							<c:forEach var="pub" items="${publicationMap['data']}">
 								<li>${pub.title}</li>
-								</c:forEach>
+							</c:forEach>
 						</ul>
 						<p>More available on site...</p>
 					</c:if>
@@ -189,23 +190,77 @@
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= resourceSuffix%>.js"></script>
 		<script type="text/javascript">
-			CCH.CONFIG = {
-				contextPath : '<%=baseUrl%>',
-				infoItemUrl : '<%=baseUrl + "/ui/info/item/" + item.getId()%>',
-				minifyCallback : function (data) {
-					var url = data.tinyUrl || data.responseJSON.full_url;
-					
-					document.querySelector('#tiny-url').textContent = url;
-				}
-			};
- 			
-			CCH.Util.Util.getMinifiedEndpoint({
-				location: CCH.CONFIG.infoItemUrl,
-				callbacks: {
-					success: [CCH.CONFIG.minifyCallback],
-					error: [CCH.CONFIG.minifyCallback]
-				}
+			$(document).on('ready', function () {
+				CCH.CONFIG = {
+					contextPath: '<%=baseUrl%>',
+					infoItemUrl: '<%=baseUrl + "/ui/info/item/" + item.getId()%>',
+					minifyCallback: function (data) {
+						var url = data.tinyUrl || data.responseJSON.full_url;
+
+						document.querySelector('#tiny-url').textContent = url;
+					}
+				};
+
+				CCH.Util.Util.getMinifiedEndpoint({
+					location: CCH.CONFIG.infoItemUrl,
+					callbacks: {
+						success: [CCH.CONFIG.minifyCallback],
+						error: [CCH.CONFIG.minifyCallback]
+					}
+				});
+				
+				$("#item_title").on("change", function (evt) {
+					var $title = $('#title');
+					if ($(evt.target).prop('checked')) {
+						$title.removeClass('hidden');
+					} else {
+						$title.addClass('hidden');
+					}
+				});
+				
+				$('input[name="description_type"]').on("change", function (evt) {
+					var $briefDesc = $('#brief_description'),
+						$extendedDesc = $('#extended_description');
+				
+					$briefDesc.addClass('hidden');
+					$extendedDesc.addClass('hidden');
+				
+					if (evt.target.value === 'brief') {
+						$briefDesc.removeClass('hidden');
+					} else {
+						$extendedDesc.removeClass('hidden');
+					}
+				});
+				
+				$('.pubschoice').on('change', function (evt) {
+					var $container = $('#' + evt.target.value + '-container');
+					if ($(evt.target).prop('checked')) {
+						$container.removeClass('hidden');
+					} else {
+						$container.addClass('hidden');
+					}
+				});
+				
+				$('#map-thumb-cb').on('change', function (evt) {
+					var $container = $('#map-pic-container');
+					if ($(evt.target).prop('checked')) {
+						$container.removeClass('hidden');
+					} else {
+						$container.addClass('hidden');
+					}
+				});
+				
+				$('#short-url-cb').on('change', function (evt) {
+					var $container = $('#url-container');
+					if ($(evt.target).prop('checked')) {
+						$container.removeClass('hidden');
+					} else {
+						$container.addClass('hidden');
+					}
+				});
+				
 			});
+
 		</script>
 	</body>
 </html>
