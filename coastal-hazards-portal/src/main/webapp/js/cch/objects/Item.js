@@ -196,12 +196,15 @@ CCH.Objects.Item = function (args) {
 					bbox: bbox,
 					itemid: id,
 					transitionEffect: 'map-resize',
-					type: 'cch'// CCH specific setting
+					type: 'cch'// CCH specific setting,
 				}
 			);
 		}
 		
 		if (endpoint.has("noaa")) {
+			if (layer.layers === "NHC_TRACK_POLY") {
+				layer.opacity = 0.5;
+			}
 			delete layer.params.SLD;
 		}
 		
