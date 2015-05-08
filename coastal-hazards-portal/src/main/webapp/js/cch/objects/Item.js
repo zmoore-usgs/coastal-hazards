@@ -202,7 +202,7 @@ CCH.Objects.Item = function (args) {
 		}
 		
 		if (endpoint.has("noaa")) {
-			if (layer.layers === "NHC_TRACK_POLY") {
+			if (layer.params.LAYERS === "NHC_TRACK_POLY") {
 				layer.opacity = 0.5;
 			}
 			delete layer.params.SLD;
