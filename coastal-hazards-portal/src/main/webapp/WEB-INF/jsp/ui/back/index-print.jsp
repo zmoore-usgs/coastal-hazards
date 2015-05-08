@@ -182,7 +182,7 @@
 
 			</main>
 			<div id="site-url">
-				<p><a href="href://marine.usgs.gov/coastalchangehazardsportal">marine.usgs.gov/coastalchangehazardsportal</a></p>
+				<p><a href="http://marine.usgs.gov/coastalchangehazardsportal/">marine.usgs.gov/coastalchangehazardsportal</a></p>
 			</div>
 		</div>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
