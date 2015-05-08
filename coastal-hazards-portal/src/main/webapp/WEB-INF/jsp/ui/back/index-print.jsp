@@ -144,7 +144,7 @@
 						<h3>Publications</h3>
 						<ul>
 							<c:forEach var="pub" items="${publicationMap['publications']}">
-								<li>${pub.title}</li>
+								<li><a href="${pub.link}" title="${pub.title}">${pub.title}</a></li>
 							</c:forEach>
 						</ul>
 						<p>More available on site...</p>
@@ -156,7 +156,7 @@
 						<h3>Resources</h3>
 						<ul>
 							<c:forEach var="pub" items="${publicationMap['resources']}">
-								<li>${pub.title}</li>
+								<li><a href="${pub.link}" title="${pub.title}">${pub.title}</a></li>
 							</c:forEach>
 						</ul>
 						<p>More available on site...</p>
@@ -168,7 +168,7 @@
 						<h3>Data</h3>
 						<ul>
 							<c:forEach var="pub" items="${publicationMap['data']}">
-								<li>${pub.title}</li>
+								<li><a href="${pub.link}" title="${pub.title}">${pub.title}</a></li>
 							</c:forEach>
 						</ul>
 						<p>More available on site...</p>
@@ -182,7 +182,7 @@
 
 			</main>
 			<div id="site-url">
-				<p>marine.usgs.gov/coastalchangehazardsportal</p>
+				<p><a href="href://marine.usgs.gov/coastalchangehazardsportal">marine.usgs.gov/coastalchangehazardsportal</a></p>
 			</div>
 		</div>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
@@ -194,9 +194,10 @@
 					contextPath: '<%=baseUrl%>',
 					infoItemUrl: '<%=baseUrl + "/ui/info/item/" + item.getId()%>',
 					minifyCallback: function (data) {
-						var url = data.tinyUrl || data.responseJSON.full_url;
+						var url = data.tinyUrl || data.responseJSON.full_url,
+							link = $('<a />').attr('href', url).html(url);
 
-						document.querySelector('#tiny-url').textContent = url;
+						$('#tiny-url').append(link);
 					}
 				};
 
