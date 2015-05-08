@@ -2261,6 +2261,15 @@ CCH.Objects.Publish.UI = function () {
 	});
 
 	me.clearForm();
+	
+	// If the item is a storm, give the user a chance to mark it active or inactive
+	$typeSb.on('change', function (evt) {
+		if (evt.target.value) {
+			$isActiveStormRow.removeClass('hidden');
+		} else {
+			$isActiveStormRow.addClass('hidden');
+		}
+	});
 
 	CCH.ows.requestCSWRecords({
 		maxRecords: 100000,
