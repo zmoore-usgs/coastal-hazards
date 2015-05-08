@@ -1,7 +1,7 @@
 /*jslint browser: true*/
 /*global CCH*/
-window.CCH = CCH || {};
-CCH.Util = CCH.Util || {};
+window.CCH = window.CCH ? window.CCH : {};
+CCH.Util = CCH.Util ? CCH.Util : {};
 CCH.Util.Util = {
 	
 	/**
