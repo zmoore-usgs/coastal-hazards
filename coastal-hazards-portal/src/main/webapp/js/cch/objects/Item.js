@@ -172,12 +172,9 @@ CCH.Objects.Item = function (args) {
 			itemType = me.itemType,
 			sldId = id,
 			layer = null,
-			sld;
+			sld = '';
 
 		if (itemType !== 'aggregation') {
-			if (me.type !== 'storms') { 
-				sld = CCH.CONFIG.publicUrl + '/data/sld/' + sldId;
-			}
 			layer = new OpenLayers.Layer.WMS(
 				id,
 				endpoint,
@@ -203,7 +200,11 @@ CCH.Objects.Item = function (args) {
 				}
 			);
 		}
-
+		
+		if (endpoint.has("noaa")) {
+			delete layer.params.SLD;
+		}
+		
 		return layer;
 	};
 
