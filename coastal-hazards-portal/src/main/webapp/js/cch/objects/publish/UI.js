@@ -2264,7 +2264,7 @@ CCH.Objects.Publish.UI = function () {
 	
 	// If the item is a storm, give the user a chance to mark it active or inactive
 	$typeSb.on('change', function (evt) {
-		if (evt.target.value) {
+		if (evt.target.value === "storms") {
 			$isActiveStormRow.removeClass('hidden');
 		} else {
 			$isActiveStormRow.addClass('hidden');
