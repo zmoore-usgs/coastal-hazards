@@ -1,40 +1,36 @@
 body {
-    min-width: 320px;
+  min-width: 320px;
 }
 .container {
-    margin-top: 10px;
+  margin-top: 10px;
 }
-
 #error-title-error-row {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
-
 #error-code-container {
-    font-size : 4em;
-    font-family:"Times New Roman", Times, serif;
-    font-style: italic;
-    font-weight: bold;
-    border-style: dashed;
-    text-align: center;
-    border-radius: 10px;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    border-color: #999999;
+  font-size: 4em;
+  font-family: "Times New Roman", Times, serif;
+  font-style: italic;
+  font-weight: bold;
+  border-style: dashed;
+  text-align: center;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-color: #999999;
 }
 #error-title-container {
-    font-size: 40px;
-    line-height: 60px;
+  font-size: 40px;
+  line-height: 60px;
 }
-
 #error-title-error-description-container {
-    font-size: 35px;
-    line-height: 40px;
+  font-size: 35px;
+  line-height: 40px;
 }
-
 #error-title-error-description {
-    margin-top: 50px;
+  margin-top: 50px;
 }
-
 #error-title-error-path {
-    text-decoration: underline;
+  text-decoration: underline;
 }
+/*# sourceMappingURL=error.css.map */

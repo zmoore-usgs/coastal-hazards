@@ -1,243 +1,216 @@
 #application-slide-bucket-container {
-    position: absolute;
-    z-index: 1008;
+  position: absolute;
+  z-index: 1008;
 }
 #application-slide-bucket-container .popover {
-    z-index: 9999;
+  z-index: 9999;
 }
-    #application-slide-bucket-container > div {
-        background-color: #F5F5F5;
-        border-bottom: 2px solid #E3E3E3;
-        border-top: 2px solid #E3E3E3;
-        border-left: 2px solid #E3E3E3;
-        float: right;
-        display: inline-block;
-        z-index: 2000;
-        height: 100%;
-        overflow-y: auto;
-    }
-    
-        /* Empty Bucket Div */
-        #application-slide-bucket-container > div > div > #application-slide-bucket-content-empty {
-            text-align: center;
-            font-size: 1.4em;
-        }
-    
-        /* Top row. Minimize and manage contents button */
-        #application-slide-bucket-container > div > div#application-slide-bucket-controlset {
-            margin-left: 0px;
-            margin-right: 0px;
-        }
-            /* Minimize Button */
-            #application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div#application-slide-bucket-controlset-control-close {
-                margin-left: -10px;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div#application-slide-bucket-controlset-control-close:hover {
-                cursor: pointer;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div#application-slide-bucket-controlset-control-close > i {
-                color: #003366;
-            }
-            #hide-your-bucket{
-                width:200px;
-                font-size:1em;
-                font-style:normal;
-                margin:2px 0 0 5px;
-            }
-            /* Combined Bucket Control Dropdown Menu */
-            #application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div:nth-child(2) > button {
-                color: #003366;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div:nth-child(2) li {
-                color: #003366;
-                padding: 5px 5px 5px 10px;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div:nth-child(2) li:hover {
-                background-color: #f5f5f5;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div:nth-child(2) li > button {
-                color: #003366;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div:nth-child(2) li > button:hover{
-                text-decoration: none;
-
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-controlset button > img {
-                height: 30px;
-            }
-
-        /* Card Image Column Div */
-        #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-image-container {
-            display: inline-block;
-            width: 20%;
-            vertical-align: top;
-            min-height: 90px;
-        }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-image-container > img {
-                max-width: 100%;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-image-container > img:hover {
-                cursor: pointer;
-            }
-
-        /* Card Description Column Div */
-        #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-title-description-container {
-            display: inline-block;
-            width: 53%;
-            min-height: 90px;
-        }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-title-description-container > div > div > div.application-slide-bucket-container-card-title {
-                font-weight: bold;
-                font-size: 1.2em;
-                text-align: center;
-                color: #003366;
-            }
-            
-        /* Card Navigation Column Div */
-        #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container {
-            display: inline-block;
-            width: 10%;
-            vertical-align: top;
-            text-align: center;
-            min-height: 90px;
-        }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well >div.application-slide-bucket-container-card-navigation-container > div {
-                color: #003366;
-                font-weight: bold;
-                font-size: 12px;
-                margin:0px 0 2px -2px;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container button {
-                width: 100%;
-                padding: 0px;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container button.application-slide-bucket-container-card-template-button-up {
-                margin-bottom: -7px;
-                vertical-align: bottom;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container i {
-                line-height: 0px !important;
-                font-size: 30px;
-                color: #003366;
-            }
-            
-        /* Close button */
-		/* Outer close button container */
-        #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > button.application-slide-bucket-container-card-button-remove {
-            right: -15px;
-            top: -15px;
-            position: relative;
-            float: right;
-			padding: 0px;
-        }
-			/* Close button image ("Remove" text) */
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > button.application-slide-bucket-container-card-button-remove > img {
-                height: 1.5em;
-            }
-            
-        /* Card Control Row Div */
-        #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container {
-            width: 100%;
-            text-align: center;
-        }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > *:hover {
-                cursor: pointer;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > button {
-                width: 22%;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > button > img{
-                height: 20px;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > button > i {
-                font-size: 30px;
-                color: #003366;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > div:not(.popover) {
-                width: 22%;
-                display: inline-block;
-                padding: 6px 12px;
-                margin-bottom: 0;
-                vertical-align: middle;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > div > i {
-                font-size: 30px;
-                color: #003366;
-            }
-            #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > div > img{
-                height: 20px;
-            }
-            
-    #application-slide-bucket-container > div > div.application-slide-content-container {
-        margin-top: 10px;
-        margin-right: 3px;
-        margin-left: 3px;
-    }
-    
-
+#application-slide-bucket-container > div {
+  background-color: #F5F5F5;
+  border-bottom: 2px solid #E3E3E3;
+  border-top: 2px solid #E3E3E3;
+  border-left: 2px solid #E3E3E3;
+  float: right;
+  display: inline-block;
+  z-index: 2000;
+  height: 100%;
+  overflow-y: auto;
+}
+/* Empty Bucket Div */
+#application-slide-bucket-container > div > div > #application-slide-bucket-content-empty {
+  text-align: center;
+  font-size: 1.4em;
+}
+/* Top row. Minimize and manage contents button */
+#application-slide-bucket-container > div > div#application-slide-bucket-controlset {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+/* Minimize Button */
+#application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div#application-slide-bucket-controlset-control-close {
+  margin-left: -10px;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div#application-slide-bucket-controlset-control-close:hover {
+  cursor: pointer;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div#application-slide-bucket-controlset-control-close > i {
+  color: #003366;
+}
+#hide-your-bucket {
+  width: 200px;
+  font-size: 1em;
+  font-style: normal;
+  margin: 2px 0 0 5px;
+}
+/* Combined Bucket Control Dropdown Menu */
+#application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div:nth-child(2) > button {
+  color: #003366;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div:nth-child(2) li {
+  color: #003366;
+  padding: 5px 5px 5px 10px;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div:nth-child(2) li:hover {
+  background-color: #f5f5f5;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div:nth-child(2) li > button {
+  color: #003366;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-controlset > div > div:nth-child(2) li > button:hover {
+  text-decoration: none;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-controlset button > img {
+  height: 30px;
+}
+/* Card Image Column Div */
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-image-container {
+  display: inline-block;
+  width: 20%;
+  vertical-align: top;
+  min-height: 90px;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-image-container > img {
+  max-width: 100%;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-image-container > img:hover {
+  cursor: pointer;
+}
+/* Card Description Column Div */
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-title-description-container {
+  display: inline-block;
+  width: 53%;
+  min-height: 90px;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-title-description-container > div > div > div.application-slide-bucket-container-card-title {
+  font-weight: bold;
+  font-size: 1.2em;
+  text-align: center;
+  color: #003366;
+}
+/* Card Navigation Column Div */
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container {
+  display: inline-block;
+  width: 10%;
+  vertical-align: top;
+  text-align: center;
+  min-height: 90px;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container > div {
+  color: #003366;
+  font-weight: bold;
+  font-size: 12px;
+  margin: 0px 0 2px -2px;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container button {
+  width: 100%;
+  padding: 0px;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container button.application-slide-bucket-container-card-template-button-up {
+  margin-bottom: -7px;
+  vertical-align: bottom;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container i {
+  line-height: 0px !important;
+  font-size: 30px;
+  color: #003366;
+}
+/* Close button */
+/* Outer close button container */
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > button.application-slide-bucket-container-card-button-remove {
+  right: -15px;
+  top: -15px;
+  position: relative;
+  float: right;
+  padding: 0px;
+}
+/* Close button image ("Remove" text) */
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > button.application-slide-bucket-container-card-button-remove > img {
+  height: 1.5em;
+}
+/* Card Control Row Div */
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container {
+  width: 100%;
+  text-align: center;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > *:hover {
+  cursor: pointer;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > button {
+  width: 22%;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > button > img {
+  height: 20px;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > button > i {
+  font-size: 30px;
+  color: #003366;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > div:not(.popover) {
+  width: 22%;
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > div > i {
+  font-size: 30px;
+  color: #003366;
+}
+#application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-controlset-container > div > img {
+  height: 20px;
+}
+#application-slide-bucket-container > div > div.application-slide-content-container {
+  margin-top: 10px;
+  margin-right: 3px;
+  margin-left: 3px;
+}
 #application-slide-bucket-container .more-info-badge {
-    background-color: #003366;
-    margin-left: 5px;
+  background-color: #003366;
+  margin-left: 5px;
 }
-
 #application-slide-bucket-container .more-info-badge a {
-    color: #FFFFFF;
+  color: #FFFFFF;
 }
-
 /*
 No tab shown on large display. Toggled via button in bar
 */
 @media (min-width: 992px) {
-    #application-slide-bucket-container > div {
-        border-top-left-radius: 10px 10px;
-        -webkit-border-top-left-radius: 10px 10px;
-        border-bottom-left-radius: 10px 10px;
-        -webkit-border-bottom-left-radius: 10px 10px;
-    }
-    
- /* Card Navigation Column Div better placement on larger screens*/
-    #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container {
-        float:right;
-           
-     }
-    #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well >div.application-slide-bucket-container-card-navigation-container > div {
-        margin:0 0 5px 0;
-    }
-
+  #application-slide-bucket-container > div {
+    border-top-left-radius: 10px 10px;
+    -webkit-border-top-left-radius: 10px 10px;
+    border-bottom-left-radius: 10px 10px;
+    -webkit-border-bottom-left-radius: 10px 10px;
+  }
+  /* Card Navigation Column Div better placement on larger screens*/
+  #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container {
+    float: right;
+  }
+  #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container > div {
+    margin: 0 0 5px 0;
+  }
 }
-
 @media (max-width: 991px) {
-    #application-slide-bucket-container > div {
-        border-bottom-left-radius: 10px 10px;
-        -webkit-border-bottom-left-radius: 10px 10px;
-        border-top-left-radius: 10px 10px;
-        -webkit-border-top-left-radius: 10px 10px;
-        border-bottom-left-radius: 10px 10px;
-        -webkit-border-bottom-left-radius: 10px 10px;
-    }
-
-    #application-slide-bucket-container .application-slide-bucket-container-card-image {
-        width: auto;
-    }
-    
-    #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container {
-        float:right;
-           
-     }
-    
-    
+  #application-slide-bucket-container > div {
+    border-top-left-radius: 10px 10px;
+    -webkit-border-top-left-radius: 10px 10px;
+    border-bottom-left-radius: 10px 10px;
+    -webkit-border-bottom-left-radius: 10px 10px;
+  }
+  #application-slide-bucket-container .application-slide-bucket-container-card-image {
+    width: auto;
+  }
+  #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container {
+    float: right;
+  }
 }
-
-@media (min-width: 686px){
-    
-    #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well >div.application-slide-bucket-container-card-navigation-container > div {
-         margin:0 0 5px 0;
-    }
+@media (min-width: 686px) {
+  #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container > div {
+    margin: 0 0 5px 0;
+  }
 }
-
-
 @media (max-width: 330px) {
-    #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well >div.application-slide-bucket-container-card-navigation-container > div {
-         margin:12px 0 -5px -6px;
-    }
+  #application-slide-bucket-container > div > div#application-slide-bucket-content-container > div.well > div.application-slide-bucket-container-card-navigation-container > div {
+    margin: 12px 0 -5px -6px;
+  }
 }
+/*# sourceMappingURL=slider-bucket.css.map */

@@ -1,478 +1,401 @@
-
 /* Slide item container */
 #content-column > div.application-slide-container > div.application-slide-content > div > div.panel-default:hover {
-	cursor: pointer;
+  cursor: pointer;
 }
-
 #content-column > div.application-slide-container > div.application-slide-content > div > div.panel-default div.panel-body {
-	background-color: #FFFFFF;
+  background-color: #FFFFFF;
 }
-
 #content-column > div.application-slide-container div.application-card-container > div.application-card-body-container .application-card-title-row {
-	font-size: 1.3em;
-	margin-bottom: 10px;
+  font-size: 1.3em;
+  margin-bottom: 10px;
 }
-
 .application-card-body-container {
-	padding: 2px;
+  padding: 2px;
 }
-
-
 /* eliminate space so animation appears to slide under header with no gap */
 .panel-collapse > .panel-body {
-        padding:0px 5px 5px 5px
+  padding: 0px 5px 5px 5px;
 }
-
 .application-card-collapse-icon-container {
-	display: table-cell;
-	vertical-align: middle;
+  display: table-cell;
+  vertical-align: middle;
 }
-
 .application-card-collapse-row {
-	color: #BBBBBB;
+  color: #BBBBBB;
 }
-
 .application-card-control-row .application-card-control-row-1 {
-	margin-bottom: 5px;
+  margin-bottom: 5px;
 }
-
-.application-card-control-row > div button.disabled{
-	color: #DCDCDC;
+.application-card-control-row > div button.disabled {
+  color: #DCDCDC;
 }
-
-.disabled img{
-    margin-top:-1px !important;
-    height:13px !important;
-    width:13px !important;
+.disabled img {
+  margin-top: -1px !important;
+  height: 13px !important;
+  width: 13px !important;
 }
-
 .application-card-control-row button,
 .application-card-explore-row button {
-	padding-right: 5px;
-        padding-left: 5px;
-	font-size: 10px;
-	color: #003366;
+  padding-right: 5px;
+  padding-left: 5px;
+  font-size: 10px;
+  color: #003366;
 }
-
 .application-card-add-bucket-btn {
-	color: #FFFFFF !important;
-	background-color: #003366;
+  color: #FFFFFF !important;
+  background-color: #003366;
 }
-
-.application-card-add-bucket-btn img{
-    margin-top:-6px;
+.application-card-add-bucket-btn img {
+  margin-top: -6px;
 }
-
-.application-card-more-info-btn img, 
-.application-card-zoom-to-btn img
-{
-	width: 12px !important;
+.application-card-more-info-btn img,
+.application-card-zoom-to-btn img {
+  width: 12px !important;
 }
-
-.application-card-more-info-btn, 
+.application-card-more-info-btn,
 .application-card-zoom-to-btn,
-.application-card-add-bucket-btn
-{
-	padding: 2px;
+.application-card-add-bucket-btn {
+  padding: 2px;
 }
 .application-card-explore-row {
-	text-align: left;
+  text-align: left;
 }
-
 .application-card-explore-row ul {
-	cursor: pointer;
-	margin: 0px;
-	padding: 2px;
+  cursor: pointer;
+  margin: 0px;
+  padding: 2px;
 }
-
 .application-card-explore-row ul li {
-	list-style-type: none;
-	padding: 2px;
+  list-style-type: none;
+  padding: 2px;
 }
-
 .application-card-explore-row button {
-	font-size: 12px;
-	white-space: normal;
-	width: 100%;
-	text-align: left;
+  font-size: 12px;
+  white-space: normal;
+  width: 100%;
+  text-align: left;
 }
-
 .application-card-title-row .application-card-title-container-medium {
-	font-size: 24px;
+  font-size: 24px;
 }
-
 .application-card-content-row .application-card-content-container-medium {
-	font-size: 16px;
+  font-size: 16px;
 }
-
 /* More Info Link */
 .application-card-content-row .application-card-content-container-medium > span {
-	white-space: nowrap;
+  white-space: nowrap;
 }
 .application-card-content-row .application-card-content-container-medium > span a {
-	color: #777;
+  color: #777;
 }
 .application-card-content-row .application-card-content-container-medium > span a:hover {
-	text-decoration: none;
+  text-decoration: none;
 }
-
 .application-card-collapse-row-dottedline,
 .application-card-breadcrumbs-container {
-	font-size: 13px;
-	display: table-cell;
-	width: 100%;
+  font-size: 13px;
+  display: table-cell;
+  width: 100%;
 }
-
 .application-card-breadcrumbs-container,
 .application-card-title {
-	color: #BBBBBB;
+  color: #BBBBBB;
 }
-
 .application-card-breadcrumb-parent-link {
-	cursor: pointer;
-	color: #003366;
+  cursor: pointer;
+  color: #003366;
 }
-
-
 .application-card-collapse-row-dottedline hr {
-	border-top:1px dashed #BBBBBB; 
+  border-top: 1px dashed #BBBBBB;
 }
-
 .application-card-container {
-	padding-top: 10px;
+  padding-top: 10px;
 }
-
 .application-card-container .application-card-content-row {
-	padding-bottom: 5px;
+  padding-bottom: 5px;
 }
-
 .application-card-container .item-control-button img {
-	height: 15px;
-	width: 15px;
+  height: 15px;
+  width: 15px;
 }
-
-.larger-text{
-            font-size:16px !important;
-        }
-
-.explore-contents-arrow{
-    margin:-5px 5px 0 0;
-    font-size:12px !important;
+.larger-text {
+  font-size: 16px !important;
 }
-
+.explore-contents-arrow {
+  margin: -5px 5px 0 0;
+  font-size: 12px !important;
+}
 .application-card-container .zoom-to-badge {
-	background-color: #003366;
-	margin-left: 5px;
+  background-color: #003366;
+  margin-left: 5px;
 }
 .application-card-container .zoom-to-badge:hover {
-	cursor: pointer;
+  cursor: pointer;
 }
-
 .application-card-container.open .application-card-collapse-row-closed {
-	display: none;
+  display: none;
 }
-
 .application-card-container:not(.open) .application-card-collapse-row-open {
-	display: none;
+  display: none;
 }
-
 .application-card-collapse-icon-container {
-	padding-right: 5px;
-	vertical-align: top;
+  padding-right: 5px;
+  vertical-align: top;
 }
-
 .application-card-collapse-icon-container:hover {
-	cursor: pointer;
-	font-size-adjust: 0.7;
+  cursor: pointer;
+  font-size-adjust: 0.7;
 }
 #application-slide-items-content-container .panel-heading {
-	text-align: left;
+  text-align: left;
 }
-
 #application-slide-items-content-container .panel-heading:hover {
-	cursor: pointer;
+  cursor: pointer;
 }
-
 #application-slide-items-content-container .panel-title {
-	font-size: 1.5em;
+  font-size: 1.5em;
 }
-
 /* Active Storm Sash */
-
-.active-storm{
-    position:relative;
+.active-storm {
+  position: relative;
 }
-
-.corner-ribbon-wrapper{
+.corner-ribbon-wrapper {
   width: 125px;
   height: 60px;
-  overflow:hidden;
+  overflow: hidden;
   position: absolute;
   top: -1px;
   right: 0px;
 }
-
-.corner-ribbon{
-	width:160px;
-	position:relative;
-	right:-10px;
-	top:7px;
-	padding:10px 0;
-	background:rgb(230,0,0);
-	text-align:center;
-	font-weight:bold;
-	font-size:.65em;
-	font-family:Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
-	-webkit-transform: rotate(45deg);
-  	-moz-transform:    rotate(45deg);
-  	-ms-transform:     rotate(45deg);
-  	-o-transform:      rotate(45deg);
-	box-shadow:0 2px 5px rgba(0,0,0,.2);
-	color:#fff;
-	}
-	
-.corner-ribbon p{
-	width:70px;
-	margin:0 0 0 53px
-	}
-
+.corner-ribbon {
+  width: 160px;
+  position: relative;
+  right: -10px;
+  top: 7px;
+  padding: 10px 0;
+  background: #e60000;
+  text-align: center;
+  font-weight: bold;
+  font-size: .65em;
+  font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  color: #fff;
+}
+.corner-ribbon p {
+  width: 70px;
+  margin: 0 0 0 53px;
+}
 /* Downward facing arrow on accordion */
 #application-slide-items-content-container .panel-title .accordion-title-arrow {
-	color: #DCDCDC;
-	margin-right: 1em;
-	margin-top: -5px;
-	vertical-align: middle;
-	font-size: 0.75em;
-	padding-bottom: 5px;
+  color: #DCDCDC;
+  margin-right: 1em;
+  margin-top: -5px;
+  vertical-align: middle;
+  font-size: 0.75em;
+  padding-bottom: 5px;
 }
-
 .aggregation-selection-container {
-	display: inline-block;
-	position: absolute;
-	border: 1px solid rgba(0, 0, 0, 0.15);
-	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-	min-width: 320px;
-	width: auto;
-	border-radius: 4px;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	z-index: 1007;
+  display: inline-block;
+  position: absolute;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  min-width: 320px;
+  width: auto;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  z-index: 1007;
 }
-
 .aggregation-selection-container ul {
-	list-style-type: none;
-	margin: 0px;
-	padding: .5px;
-	border-radius: 4px;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
+  list-style-type: none;
+  margin: 0px;
+  padding: .5px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
 }
-
 .aggregation-selection-container ul li {
-	background-color: #FFFFFF;
-	padding: 5px;
+  background-color: #FFFFFF;
+  padding: 5px;
 }
-
 .aggregation-selection-container ul li:hover {
-	cursor: pointer;
-	background-color: #f5f5f5;
+  cursor: pointer;
+  background-color: #f5f5f5;
 }
-
 .active-item-card-body {
-	color: #333;
-	background-color: #f5f5f5;
-	border-radius: 4px;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	padding: 5px;
+  color: #333;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  padding: 5px;
 }
 .active-item-card-body span > a {
-	color: #333 !important;
+  color: #333 !important;
 }
-
-
 @media (min-width: 992px) {
-	/* Chrome issue
+  /* Chrome issue
 	http://stackoverflow.com/questions/17508035/navigation-disappearing-in-chrome-after-scrolling-and-clicking
 	*/
-	#application-slide-items-content-container-inner-scrollable {
-		-webkit-transform: translateZ(0);
-	}  
-	#application-slide-items-content-container-inner-scrollable > .panel{
-		-webkit-transform: translateZ(0);
-	} 
-
-	/* No tab shown on large display. Toggled via button in bar */
-	#application-slide-items-tab {
-		display: none;
-	}
-
-	#application-slide-items-container {
-		top: auto;
-		left: auto;
-		/*background-color: #F5F5F5;*/
-	}
-
-	#application-slide-items-content {
-		height: 100%;
-		width: 100%;
-	}
-
-	#application-slide-items-content-container {
-		height: 100%;
-		width: 100%;
-		/*background-color: #F5F5F5;*/
-		overflow-y: auto;
-	}
-
-	#content-column {
-		height: 100%;
-	}
-
-	/* Scrollable inner container */
-	#application-slide-items-container > div:nth-child(2) > div > div {
-		overflow-y: auto;
-		height: 100%;
-	}
-        .application-card-control-row button,
-        .application-card-explore-row button {
-            font-size: 12px;
-        }
-        
-        /*more padding on desktop*/
-        .panel-collapse > .panel-body {
-            padding:0px 8px 8px 8px
-        }
-        /*larger icon for desktop*/
-        .application-card-container .item-control-button img {
-            height: 20px;
-            width: 20px;
-        }
-        .disabled img{
-            height:18px !important;
-            width:18px !important;
-        }
-        .application-card-add-bucket-btn {
-            height:26px
-        }
-	#application-slide-items-content-container .panel-title {
-            font-size: 1.7em;
+  #application-slide-items-content-container-inner-scrollable {
+    -webkit-transform: translateZ(0);
+  }
+  #application-slide-items-content-container-inner-scrollable > .panel {
+    -webkit-transform: translateZ(0);
+  }
+  /* No tab shown on large display. Toggled via button in bar */
+  #application-slide-items-tab {
+    display: none;
+  }
+  #application-slide-items-container {
+    top: auto;
+    left: auto;
+    /*background-color: #F5F5F5;*/
+  }
+  #application-slide-items-content {
+    height: 100%;
+    width: 100%;
+  }
+  #application-slide-items-content-container {
+    height: 100%;
+    width: 100%;
+    /*background-color: #F5F5F5;*/
+    overflow-y: auto;
+  }
+  #content-column {
+    height: 100%;
+  }
+  /* Scrollable inner container */
+  #application-slide-items-container > div:nth-child(2) > div > div {
+    overflow-y: auto;
+    height: 100%;
+  }
+  .application-card-control-row button,
+  .application-card-explore-row button {
+    font-size: 12px;
+  }
+  /*more padding on desktop*/
+  .panel-collapse > .panel-body {
+    padding: 0px 8px 8px 8px;
+  }
+  /*larger icon for desktop*/
+  .application-card-container .item-control-button img {
+    height: 20px;
+    width: 20px;
+  }
+  .disabled img {
+    height: 18px !important;
+    width: 18px !important;
+  }
+  .application-card-add-bucket-btn {
+    height: 26px;
+  }
+  #application-slide-items-content-container .panel-title {
+    font-size: 1.7em;
+  }
 }
-        
-}
-
 @media (max-width: 991px) {
-	#application-slide-items-container {
-		position: absolute;
-		z-index: 1006; /* 1005 is highest on map */
-		height: 98%;
-		overflow: hidden;
-	}
-
-	#application-slide-items-container > div:nth-child(2) > div {
-		padding: 5px 5px 10px 5px;
-		overflow-y: hidden;
-		background-color: #F5F5F5;
-		height: 100%;
-		border-left: 2px solid #E3E3E3;
-		border-top: 2px solid #E3E3E3;
-		border-bottom: 2px solid #E3E3E3;
-		border-top-left-radius: 10px 10px;
-		-webkit-border-top-left-radius: 10px 10px;
-		border-bottom-left-radius: 10px 10px;
-		-webkit-border-bottom-left-radius: 10px 10px;
-	}
-
-	/* Scrollable inner container */
-	#application-slide-items-container > div:nth-child(2) > div > div:nth-child(2) {
-		overflow-y: auto;
-		height: 90%;
-	}
-
-	#application-slide-items-container > div:nth-child(2) > div > div:first-child {
-		margin-bottom: 10px;
-	}
-	#application-slide-items-container > div:nth-child(2) > div> div:not(:first-child) {
-		/* 
+  #application-slide-items-container {
+    position: absolute;
+    z-index: 1006;
+    /* 1005 is highest on map */
+    height: 98%;
+    overflow: hidden;
+  }
+  #application-slide-items-container > div:nth-child(2) > div {
+    padding: 5px 5px 10px 5px;
+    overflow-y: hidden;
+    background-color: #F5F5F5;
+    height: 100%;
+    border-left: 2px solid #E3E3E3;
+    border-top: 2px solid #E3E3E3;
+    border-bottom: 2px solid #E3E3E3;
+    border-top-left-radius: 10px 10px;
+    -webkit-border-top-left-radius: 10px 10px;
+    border-bottom-left-radius: 10px 10px;
+    -webkit-border-bottom-left-radius: 10px 10px;
+  }
+  /* Scrollable inner container */
+  #application-slide-items-container > div:nth-child(2) > div > div:nth-child(2) {
+    overflow-y: auto;
+    height: 90%;
+  }
+  #application-slide-items-container > div:nth-child(2) > div > div:first-child {
+    margin-bottom: 10px;
+  }
+  #application-slide-items-container > div:nth-child(2) > div > div:not(:first-child) {
+    /* 
 			This fixes a bootstrap issue that causes the accordion to go beyond screen 
 			height, causing scroll bars when the items slide is open
 		*/
-		margin-bottom: 0px;
-	}
-
-	#application-slide-items-content {
-		height: 100%;
-		float:right;
-	}
-
-	#application-slide-items-tab {
-		height : fit-content;
-		width: fit-content;
-		display: inline-block;
-		background-color: #F5F5F5;
-		border-left: 2px solid #E3E3E3;
-		border-top: 2px solid #E3E3E3;
-		border-bottom: 2px solid #E3E3E3;
-		z-index: 2001;
-		border-top-left-radius: 40px 10px;
-		-webkit-border-top-left-radius: 40px 10px;
-		border-bottom-left-radius: 40px 10px;
-		-webkit-border-bottom-left-radius: 40px 10px;
-		float: left;
-		font-size: 1.4em;
-		padding-left: 5px;
-		padding-top: 5px;
-		padding-bottom: 5px;
-		color: #0033CC;
-		z-index: 1007;
-		top: 90%;
-	}
-
-	#application-slide-items-tab:hover {
-		cursor: pointer;
-	}
-
-	#application-slide-items-content {
-		border-bottom-left-radius: 10px 10px;
-		-webkit-border-bottom-left-radius: 10px 10px;
-	}
-        
-        .corner-ribbon-wrapper{
-            height:56px;
-        }
-        
-        .corner-ribbon{
-            font-size:.6em;
-        }
-        
-        .corner-ribbon p{
-            margin:0 0 0 49px;
-        }
-        
+    margin-bottom: 0px;
+  }
+  #application-slide-items-content {
+    height: 100%;
+    float: right;
+  }
+  #application-slide-items-tab {
+    height: fit-content;
+    width: fit-content;
+    display: inline-block;
+    background-color: #F5F5F5;
+    border-left: 2px solid #E3E3E3;
+    border-top: 2px solid #E3E3E3;
+    border-bottom: 2px solid #E3E3E3;
+    z-index: 2001;
+    border-top-left-radius: 40px 10px;
+    -webkit-border-top-left-radius: 40px 10px;
+    border-bottom-left-radius: 40px 10px;
+    -webkit-border-bottom-left-radius: 40px 10px;
+    float: left;
+    font-size: 1.4em;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: #0033CC;
+    z-index: 1007;
+    top: 90%;
+  }
+  #application-slide-items-tab:hover {
+    cursor: pointer;
+  }
+  #application-slide-items-content {
+    border-bottom-left-radius: 10px 10px;
+    -webkit-border-bottom-left-radius: 10px 10px;
+  }
+  .corner-ribbon-wrapper {
+    height: 56px;
+  }
+  .corner-ribbon {
+    font-size: .6em;
+  }
+  .corner-ribbon p {
+    margin: 0 0 0 49px;
+  }
 }
-
-@media screen and (max-width:380px){
-    
-    #application-slide-items-content-container .panel-title {
-            font-size: 1em;
-            padding-top:2px;
-    }
-    
-    .corner-ribbon-wrapper{
-        width:75px;
-        height:44px;
-    }
-    
-    .corner-ribbon{
-        width:100px;
-        font-size:.45em;
-        right:0;
-        padding:5px;
-    }
-    
-    .corner-ribbon p{
-        width:90px;
-        margin:0 0 0 6px;
-    }
+@media screen and (max-width: 380px) {
+  #application-slide-items-content-container .panel-title {
+    font-size: 1em;
+    padding-top: 2px;
+  }
+  .corner-ribbon-wrapper {
+    width: 75px;
+    height: 44px;
+  }
+  .corner-ribbon {
+    width: 100px;
+    font-size: .45em;
+    right: 0;
+    padding: 5px;
+  }
+  .corner-ribbon p {
+    width: 90px;
+    margin: 0 0 0 6px;
+  }
 }
+/*# sourceMappingURL=slider-items.css.map */

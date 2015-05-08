@@ -1,84 +1,71 @@
 /* ---------------------------------------------------------------------- UI */
-html, body {
-	/* While I designed the app to work with both overflows set to auto,
+html,
+body {
+  /* While I designed the app to work with both overflows set to auto,
 	   for some reason, IE9 still gives me scroll bars which messes everything
 	   up :( so these need to be set to hidden */
-	overflow-y: hidden;
-	overflow-x: hidden;
-	/* 
+  overflow-y: hidden;
+  overflow-x: hidden;
+  /* 
 	320 pixels is the minimum width and 600px is
 	the minimum height that this application will support.
 	Anything smaller, scroll the app
 	*/
-	min-width: 320px;
-	min-height: 480px;
-	height: 100%;
-	border: 0px;
-	padding: 0px;
-	font-size: 100%;
-	font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
-	color: #777;
+  min-width: 320px;
+  min-height: 480px;
+  height: 100%;
+  border: 0px;
+  padding: 0px;
+  font-size: 100%;
+  font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #777;
 }
-
 #application-container {
-	top : 0;
-	height: 100%;
-	width: 100%;
+  top: 0;
+  height: 100%;
+  width: 100%;
 }
-
-.fa-times{
-    color:#003366;
-}
-
-.close{opacity:1;}
-
-.close:hover,
-.close:focus{opacity:1;}
-
-/*
-	This resets bootstrap's row margins of -15px on each side - This is useful 
-	if we'd like to see the top and bottom rows extend all the way to the edge 
-	of the container - If we want to see that, remove this rule'
-*/
-#application-container > div.row:nth-child(1),
-#application-container > div.row:nth-child(3) {
-	margin-left: auto;
-	margin-right: auto;
-}
-
 #application-container > div.row:nth-child(1) {
-	background-color: #003366 !important;
-	z-index: 1005;
-	margin-bottom: 4px;
-	height: 55px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #003366 !important;
+  z-index: 1005;
+  margin-bottom: 4px;
+  height: 55px;
 }
-
-/* Gets the right edge of the accordion to line up with the header and footer edge */
 #application-container > div.row:nth-child(2) > div:first-child > div:nth-child(2) {
-	padding-right: 0px;
+  padding-right: 0px;
 }
-
-/* Footer Row */
 #application-container > div.row:nth-child(3) {
-	height: 25px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 25px;
 }
-
 #application-container > div.row:nth-child(3) > div {
-	background-color: #003366 !important;
-	height: 20px;
-	margin-top: 5px;
+  background-color: #003366 !important;
+  height: 20px;
+  margin-top: 5px;
 }
-
+.fa-times {
+  color: #003366;
+}
+.close {
+  opacity: 1;
+}
+.close:hover {
+  opacity: 1;
+}
+.close:focus {
+  opacity: 1;
+}
 #metadata-link .btn-default {
-	margin-left : 5px;
-	margin-right : 5px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
-
 /* Fixes pink tile issue in OpenLayers map */
 .olImageLoadError {
-	display : none !important;
+  display: none !important;
 }
-
 /*
 	Chrome for Windows @ high resolution fix: 
 	https://code.google.com/p/chromium/issues/detail?id=325236
@@ -88,182 +75,154 @@ html, body {
 	https://code.google.com/p/gmaps-api-issues/issues/detail?id=6498
 */
 .olTileImage {
-	-webkit-backface-visibility: visible !important;
-	-webkit-transform: none !important;
+  -webkit-backface-visibility: visible !important;
+  -webkit-transform: none !important;
 }
-
 #map {
-	min-height : 150px;
-	height: 100%;
+  min-height: 150px;
+  height: 100%;
 }
-
 /* Deals with layer identification on-click */
 #feature-identification-popup_contentDiv {
-	width: 100%;
+  width: 100%;
 }
 #feature-identification-popup_contentDiv table {
-	width: 100%;
-	margin-top: 10px;
+  width: 100%;
+  margin-top: 10px;
 }
 #feature-identification-popup_contentDiv table tr {
-	font-size: 1em;
-	vertical-align: middle;
-	margin-bottom: 5px;
+  font-size: 1em;
+  vertical-align: middle;
+  margin-bottom: 5px;
 }
-
 #feature-identification-popup_contentDiv table tr > td:nth-child(1) {
-	width: 70%;
+  width: 70%;
 }
 #feature-identification-popup_contentDiv table tr > td:nth-child(2) {
-	width: 10%;
+  width: 10%;
 }
-#feature-identification-popup_contentDiv table tr > td:nth-child(3) {
-	width: 20%;
-}
-
 #feature-identification-popup_contentDiv table tr > td:nth-child(2) > span {
-	height: 50%;
-	border: 1px solid #CCC; 
+  height: 50%;
+  border: 1px solid #CCC;
 }
 #feature-identification-popup_contentDiv table tr > td:nth-child(3) {
-	padding-left: 5px;
-	text-align: right;
+  width: 20%;
+  padding-left: 5px;
+  text-align: right;
 }
-
 .olControlLayerSwitcher {
-	right: inherit !important;
-	top: 80px !important;
-	margin-left: 0px !important;
+  right: inherit !important;
+  top: 80px !important;
+  margin-left: 0px !important;
 }
 .olControlLayerSwitcher .layersDiv {
-	background: rgba(0,51,102,0.7) !important;
+  background: rgba(0, 51, 102, 0.7) !important;
 }
-.olControlLayerSwitcher .maximizeDiv img{
-	height: 25px;
-	left: 18px;
-	opacity: 0.7;
-	filter: alpha(opacity=70);
+.olControlLayerSwitcher .maximizeDiv img {
+  height: 25px;
+  left: 18px;
+  opacity: 0.7;
+  filter: alpha(opacity=70);
 }
 .olControlZoom a {
-	background: rgba(0, 51, 102, 0.7) !important;
+  background: rgba(0, 51, 102, 0.7) !important;
 }
 .olControlZoom a:hover {
-	background: rgba(0, 51, 102, 0.7) !important;
+  background: rgba(0, 51, 102, 0.7) !important;
 }
-
 #OpenLayers_Control_MinimizeDiv img {
-	height: 100%;
-	left: -15px;
+  height: 100%;
+  left: -15px;
 }
-
 .olPopupCloseBox {
-	background: url("../../images/openlayers/layer-identify-close.svg") !important;
+  background: url("../../images/openlayers/layer-identify-close.svg") !important;
 }
-
 #feature-identification-popup_contentDiv table > tbody > tr:nth-child(even) {
-	background: #EEE;
+  background: #EEE;
 }
-
 @media (min-width: 992px) {
-	#application-container {
-		width: 100%;
-	}
+  #application-container {
+    width: 100%;
+  }
 }
-
 @media (min-width: 768px) {
-	#application-container {
-		width: 100%;
-	}
+  #application-container {
+    width: 100%;
+  }
 }
-
 @media (max-width: 991px) {
-	body {
-		padding:  0px !important;
-	}
-
-	#application-container {
-		padding-left: 0px;
-		padding-right:  0px;
-	}
-
-	/* Set the content row to not have any margins, overriding bootstrap's
+  body {
+    padding: 0px !important;
+  }
+  #application-container {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+  /* Set the content row to not have any margins, overriding bootstrap's
 		15px margins on left/right */
-	#application-container > div:nth-child(2) {
-		margin-left: 0px !important;
-		margin-right:  0px !important;
-	}
-	/* Set the content column to not have any padding, overriding bootstrap's
+  #application-container > div:nth-child(2) {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+  }
+  /* Set the content column to not have any padding, overriding bootstrap's
 	   15px margins on left/right */
-	#application-container > div:nth-child(2) > div.col-md-12 {
-		padding-left: 0px !important;
-		padding-right:  0px !important;
-	}
-
-	#application-container > div.row:nth-child(3) {
-		display: none;
-	}
-
-	.application-slide-controlset {
-		margin-top: 10px;
-	}
-	.application-slide-controlset div.pull-left > i {
-		font-size: 1.5em;
-	}
-	.application-slide-controlset div.pull-left > i:hover {
-		cursor: pointer;
-	}
-
-	#map #feature-identification-popup table tr {
-		font-size: 12px;
-	}
-
-	/* Click-to-identify close-box OpenLayers override */
-	.olPopupCloseBox {
-		width: 25px !important;
-		height: 25px !important;
-		background-size: contain !important;
-	}
-
-	#OpenLayers_Control_MaximizeDiv img {
-		height: 30px;
-	}
+  #application-container > div:nth-child(2) > div.col-md-12 {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+  }
+  #application-container > div.row:nth-child(3) {
+    display: none;
+  }
+  .application-slide-controlset {
+    margin-top: 10px;
+  }
+  .application-slide-controlset div.pull-left > i {
+    font-size: 1.5em;
+  }
+  .application-slide-controlset div.pull-left > i:hover {
+    cursor: pointer;
+  }
+  #map #feature-identification-popup table tr {
+    font-size: 12px;
+  }
+  /* Click-to-identify close-box OpenLayers override */
+  .olPopupCloseBox {
+    width: 25px !important;
+    height: 25px !important;
+    background-size: contain !important;
+  }
+  #OpenLayers_Control_MaximizeDiv img {
+    height: 30px;
+  }
 }
-
 @media (max-width: 440px) {
-	#info-title {
-		font-size: 0.65em;
-	}
-
-	#info-row-control iframe{
-		margin-left: 5px;
-	}
-
-	#map {
-		height : 300px;
-	}
-
-	.olControlZoom {
-		display: none;
-	}
+  #info-title {
+    font-size: 0.65em;
+  }
+  #info-row-control iframe {
+    margin-left: 5px;
+  }
+  #map {
+    height: 300px;
+  }
+  .olControlZoom {
+    display: none;
+  }
 }
-
-
 @media (max-width: 320px) {
-	overflow-x: auto;
+  overflow-x: auto;
 }
-
-#modal-share-summary-url-inputbox{
-	width: 97%;
-	font-size: 2em;
-	height: 1.6em;
-	line-height: 2em;
+#modal-share-summary-url-inputbox {
+  width: 97%;
+  font-size: 2em;
+  height: 1.6em;
+  line-height: 2em;
 }
-
 #modal-share-summary-text-label {
-	font-size : 1.5em;
+  font-size: 1.5em;
 }
-
-#modal-share-summary-twitter-label{
-	font-size: 1.5em;
-	line-height: 1.5em;
+#modal-share-summary-twitter-label {
+  font-size: 1.5em;
+  line-height: 1.5em;
 }
+/*# sourceMappingURL=application.css.map */
