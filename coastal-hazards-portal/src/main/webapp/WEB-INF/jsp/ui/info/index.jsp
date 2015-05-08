@@ -73,7 +73,7 @@
 						please email <a href="mailto:cch_help@usgs.gov">cch_help@usgs.gov.</a>
 					</p>
 
-					<span class="header">
+					<span class="descriptive-text-title">
 						Portal Functionality
 					</span>
 					<p class="descriptive-text">
@@ -161,7 +161,7 @@
 
 						</tbody>
 					</table>
-					<span class="header">
+					<span class="descriptive-text-title">
 						<a name="helpModal">More Info Action Center Descriptions</a>
 					</span>
 					<table id="application-icon-table">
@@ -205,7 +205,7 @@
 							</tr>
 						</tbody>
 					</table>		
-					<span class="header">
+					<span class="descriptive-text-title">
 						Background
 					</span>
 					<p class="descriptive-text">
