@@ -143,7 +143,7 @@
 					<c:if test="${fn:length(publicationMap['publications']) > 0}">
 						<h3>Publications</h3>
 						<ul>
-							<c:forEach var="pub" items="${publicationMap['publications']}">
+							<c:forEach var="pub" begin="0" end="4" step="1" items="${publicationMap['publications']}">
 								<li><a href="${pub.link}" title="${pub.title}">${pub.title}</a></li>
 							</c:forEach>
 						</ul>
@@ -155,7 +155,7 @@
 					<c:if test="${fn:length(publicationMap['resources']) > 0}">
 						<h3>Resources</h3>
 						<ul>
-							<c:forEach var="pub" items="${publicationMap['resources']}">
+							<c:forEach var="pub"  begin="0" end="4" step="1" items="${publicationMap['resources']}">
 								<li><a href="${pub.link}" title="${pub.title}">${pub.title}</a></li>
 							</c:forEach>
 						</ul>
@@ -167,7 +167,7 @@
 					<c:if test="${fn:length(publicationMap['data']) > 0}">
 						<h3>Data</h3>
 						<ul>
-							<c:forEach var="pub" items="${publicationMap['data']}">
+							<c:forEach var="pub"  begin="0" end="4" step="1" items="${publicationMap['data']}">
 								<li><a href="${pub.link}" title="${pub.title}">${pub.title}</a></li>
 							</c:forEach>
 						</ul>
