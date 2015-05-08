@@ -117,8 +117,7 @@
 				<input type="checkbox" name="resources" value="resources" id="choice_resources" class="pubschoice" checked> Resources<br>
 				<input type="checkbox" name="data" value="data" id="choice_data" class="pubschoice" checked> Data<br>
 				<input type="checkbox" name="thumbnail" value="map_thumbnail" id="map-thumb-cb" checked> Map Thumbnail<br>
-				<input type="checkbox" name="short" value="short_url" id="short-url-cb" checked> Short URL<br>
-				<input type="checkbox" name="link" value="link" checked> More Information Link<br>
+				<input type="checkbox" name="link" value="link" id="more-info-cb" checked> More Information Link<br>
 			</div>
 			<header id="header">
 				<img id="app-navbar-coop-logo-img" alt="CIDA/CMGP" src="<%=baseUrl%>/images/banner/cida-cmgp.svg" />
@@ -250,7 +249,7 @@
 					}
 				});
 				
-				$('#short-url-cb').on('change', function (evt) {
+				$('#more-info-cb').on('change', function (evt) {
 					var $container = $('#url-container');
 					if ($(evt.target).prop('checked')) {
 						$container.removeClass('hidden');
