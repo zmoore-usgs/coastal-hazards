@@ -28,9 +28,9 @@ build.properties
 target/
 
 ### Project Specific ###
+/coastal-hazards-portal/src/main/webapp/less/webjars/
 /coastal-hazards-geoserver/src/main/webapp/META-INF/
 /coastal-hazards-n52/src/main/webapp/META-INF/
-
 /coastal-hazards-portal/catalina.base_IS_UNDEFINED/
 /coastal-hazards-ui/catalina.base_IS_UNDEFINED/
 **/.project
@@ -39,3 +39,4 @@ target/
 dependency-reduced-pom.xml
 
 **/.DS_Store
+
