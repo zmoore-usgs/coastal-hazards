@@ -112,11 +112,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 
 		// Put the text for the selected item in the menu
 		toggleTextContainer.html(criteria);
-		toggleTextContainer.append(
-			$('<span />').append(
-			$('<i />').addClass('fa fa-caret-down')
-			)
-			);
+		toggleTextContainer.append($('<span />').append($('<i />').addClass('fa fa-caret-down')));
 	};
 
 	me.performSpatialSearch = function (args) {
@@ -182,7 +178,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 		});
 
 		if (criteria) {
-			$(me).trigger('combined-searchbar-search-performing', {
+			$(window).trigger('combined-searchbar-search-performing', {
 				type: type
 			});
 			$('#app-navbar-search-input').trigger('blur');
@@ -440,7 +436,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 			$('#' + me.SUBMIT_BUTTON_ID).trigger('click');
 		}
 	});
-
+	
 	// Preload required images
 	CCH.LOG.trace('CCH.Objects.Widget.CombinedSearch::constructor: Pre-loading images.');
 	$.get(me.DD_TOGGLE_SPINNER_IMG_LOCATION);

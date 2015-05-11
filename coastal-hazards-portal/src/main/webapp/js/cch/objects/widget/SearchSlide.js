@@ -3,6 +3,7 @@
 /*global $*/
 /*global CCH*/
 /*global OpenLayers*/
+/*global HandleBars*/
 
 window.CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
@@ -70,7 +71,7 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 			$slide.find('>div:nth-child(' + (ind + 2) + ')').
 					empty().
 					append($('<img />').
-							addClass('img-responsive').
+							addClass('img-responsive search-spinner').
 							attr({
 								'src': CCH.CONFIG.contextPath + '/images/spinner/spinner3.gif',
 								'alt': "Spinner Image"
@@ -157,6 +158,15 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 		} else {
 			me.close(args);
 		}
+	};
+
+	me.hideLocationSpinner = function () {
+		// Hide the spinner in the product card container since we're only doing a location search
+		$('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_I).find('.search-spinner').addClass('hidden');
+	};
+	
+	me.hideItemSpinner = function () {
+		$('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).find('.search-spinner').addClass('hidden');
 	};
 
 	// These functions should be implemented in the function that builds these
@@ -261,13 +271,13 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 			// The data type can either be location or item
 			switch (type) {
 				case 'location':
+					
 					$contentContainer = $locationContentContainer;
 					$resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
 					$slideContainer = $contentContainer.find('> div:nth-child(2)');
 					$pagingContainer = $contentContainer.find('> div:nth-child(3)');
 
-					// Hide the spinner in the product card container since we're only doing a location search
-					$productContentContainer.find('#location-splash-spinner').addClass('hidden');
+					me.hideLocationSpinner();
 
 					// I want to show locations if we have locations to show
 					if (locationSize > 0) {
@@ -379,7 +389,7 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 					$pagingContainer = $contentContainer.find('>div:nth-child(4)');
 					
 					// Hide the spinner in the product card container since we're only doing a location search
-					$productContentContainer.find('#item-splash-spinner').addClass('hidden');
+					me.hideItemSpinner();
 					
 					$resultsFoundsContainer.
 							removeClass('hidden').
@@ -745,7 +755,16 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 		'cch.slide.items.resized': function (args) {
 			me.resize(args);
 		},
-		'cch.slide.items.close': me.close
+		'cch.slide.items.close': me.close,
+		'combined-searchbar-search-performing' : function (evt, obj) {
+			var type = obj.type.toLowerCase();
+			if (type === 'location') {
+				me.hideItemSpinner();
+			}
+			if (type.indexOf('product') > -1) {
+				me.hideLocationSpinner();
+			}
+		}
 	});
 
 	$('body').on('click', function (evt) {
