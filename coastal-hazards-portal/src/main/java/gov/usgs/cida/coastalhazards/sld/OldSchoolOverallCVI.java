@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.sld;
 
+import static gov.usgs.cida.coastalhazards.Attributes.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Map;
  */
 public final class OldSchoolOverallCVI {
 
-    protected static final String[] attrs = {"CVIRISK"};
+    protected static final String[] attrs = {CVIRISK};
     protected static final float[] thresholds = {1.0f, 2.0f, 3.0f, 4.0f};
     protected static final String[] colors = {"#3B6800", "#FFFF00", "#FEAC00", "#FF0000"};
     protected static final String[] categories = {"Low", "Moderate", "High", "Very High"};
