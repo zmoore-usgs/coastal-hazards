@@ -1,14 +1,14 @@
 <div id="application-slide-search-container" class="application-slide-container">
     <div id="application-slide-search-content" class="application-slide-content">
         <div id="application-slide-search-controlset" class="application-slide-controlset">
-            <div class="pull-left"><i class="fa fa-times" alt="minus inside a square"></i></div>
+            <div class="pull-left"><i class="fa fa-times"></i></div>
         </div>
         <div id="application-slide-search-content-container" class="application-slide-content-container row">
             <%-- Location Container --%>
             <div id="application-slide-search-location-results-content-container">
                 <div><%-- Results Found Count Container--%></div>
                 <div id="application-slide-search-location-results-card-container" class="row">
-                    <img id="location-splash-spinner" src="${param['baseUrl']}/images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
+                    <img src="${param['baseUrl']}/images/spinner/spinner3.gif" class="img-responsive search-spinner" alt="Spinner Image"/>
                 </div>
                 <div id="application-slide-search-location-results-paging-container" class="application-slide-search-paging-container row">
                     <ul class="pagination"></ul>
@@ -19,10 +19,10 @@
             <div id="application-slide-search-product-results-content-container">
                 <div><%-- Results Found Count Container--%></div>
                 <div id="application-slide-search-product-results-spatial-filter-check-container" class="row">
-                    <button type="button" class="btn btn-default" data-toggle="button"><i class="fa fa-square-o" alt="minus inside a square"></i> Filter Results To Current View</button>
+                    <button type="button" class="btn btn-default" data-toggle="button"><i class="fa fa-square-o"></i> Filter Results To Current View</button>
                 </div>
                 <div id="application-slide-search-product-results-card-container" class="row">
-                    <img id="item-splash-spinner" src="${param['baseUrl']}/images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
+                    <img src="${param['baseUrl']}/images/spinner/spinner3.gif" class="img-responsive search-spinner" alt="Spinner Image"/>
                 </div>
                 <div id="application-slide-search-product-results-paging-container" class="application-slide-search-paging-container row">
                     <ul class="pagination"></ul>
