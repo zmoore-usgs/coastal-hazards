@@ -267,7 +267,7 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 					$pagingContainer = $contentContainer.find('> div:nth-child(3)');
 
 					// Hide the spinner in the product card container since we're only doing a location search
-					$productContentContainer.find('#splash-spinner').addClass('hidden');
+					$productContentContainer.find('#location-splash-spinner').addClass('hidden');
 
 					// I want to show locations if we have locations to show
 					if (locationSize > 0) {
@@ -377,7 +377,10 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 					$resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
 					$slideContainer = $contentContainer.find('>div:nth-child(3)');
 					$pagingContainer = $contentContainer.find('>div:nth-child(4)');
-
+					
+					// Hide the spinner in the product card container since we're only doing a location search
+					$productContentContainer.find('#item-splash-spinner').addClass('hidden');
+					
 					$resultsFoundsContainer.
 							removeClass('hidden').
 							html(productsSize + ' Product' + (productsSize !== 1 ? 's' : '') + ' Found');

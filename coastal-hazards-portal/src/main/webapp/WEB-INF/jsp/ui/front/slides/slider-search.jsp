@@ -8,7 +8,7 @@
             <div id="application-slide-search-location-results-content-container">
                 <div><%-- Results Found Count Container--%></div>
                 <div id="application-slide-search-location-results-card-container" class="row">
-                    <img id="splash-spinner" src="${param['baseUrl']}/images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
+                    <img id="location-splash-spinner" src="${param['baseUrl']}/images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
                 </div>
                 <div id="application-slide-search-location-results-paging-container" class="application-slide-search-paging-container row">
                     <ul class="pagination"></ul>
@@ -22,7 +22,7 @@
                     <button type="button" class="btn btn-default" data-toggle="button"><i class="fa fa-square-o" alt="minus inside a square"></i> Filter Results To Current View</button>
                 </div>
                 <div id="application-slide-search-product-results-card-container" class="row">
-                    <img id="splash-spinner" src="${param['baseUrl']}/images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
+                    <img id="item-splash-spinner" src="${param['baseUrl']}/images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
                 </div>
                 <div id="application-slide-search-product-results-paging-container" class="application-slide-search-paging-container row">
                     <ul class="pagination"></ul>
