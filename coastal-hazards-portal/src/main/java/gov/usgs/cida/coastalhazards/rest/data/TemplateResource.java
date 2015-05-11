@@ -23,9 +23,12 @@ import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.WFSIntrospector;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -62,7 +65,7 @@ public class TemplateResource {
 				throw new UnsupportedOperationException("Only template items may be instantiated");
 			}
 
-			List<String> childItems = template.proxiedChildren();
+			List<Item> childItems = template.getChildren();
 			List<Item> newItemList = null;
 			
 			JsonParser parser = new JsonParser();
@@ -100,8 +103,8 @@ public class TemplateResource {
 		return result;
 	}
 	
-	private List<Item> makeItemsFromDocument(JsonArray children, List<String> childItems, ItemManager itemMan, LayerManager layerMan) {
-		List<Item> newItemList = new LinkedList<>();
+	private List<Item> makeItemsFromDocument(JsonArray children, List<Item> childItems, ItemManager itemMan, LayerManager layerMan) {
+		Map<String, Item> childMap = makeChildItemMap(childItems);
 		Iterator<JsonElement> iterator = children.iterator();
 
 		while (iterator.hasNext()) {
@@ -113,16 +116,15 @@ public class TemplateResource {
 			JsonElement childId = child.get("id");
 			JsonElement attrElement = child.get("attr");
 			JsonElement layerId = child.get("layerId");
-
+			String replaceId = null;
 			// Generate item JSON from metadata
 			if (layerId != null) {
 				layer = layerMan.load(layerId.getAsString());
 				if (childId != null) {
 					// Replace the existing item in this place
-					String replaceId = childId.getAsString();
-					if (childItems.contains(replaceId)) {
+					replaceId = childId.getAsString();
+					if (childMap.containsKey(replaceId)) {
 						Item item = itemMan.load(replaceId);
-						childItems.remove(replaceId);
 						attr = item.getAttr();
 					} else {
 						throw new BadRequestException("Specified invalid child to replace");
@@ -137,9 +139,9 @@ public class TemplateResource {
 			}
 			Summary summary = makeSummary(layer, attr);
 			Item newItem = templateItem(attr, layer, summary);
-			newItemList.add(newItem);
+			childMap.replace(replaceId, newItem);
 		}
-		return newItemList;
+		return new LinkedList<>(childMap.values());
 	}
 
 	private Item templateItem(String attr, Layer layer, Summary summary) {
@@ -189,5 +191,13 @@ public class TemplateResource {
 		}
 		
 		return items;
+	}
+	
+	private Map<String, Item> makeChildItemMap(List<Item> children) {
+		Map<String, Item> result = new LinkedHashMap<>();
+		for (Item item : children) {
+			result.put(item.getId(), item);
+		}
+		return result;
 	}
 }
