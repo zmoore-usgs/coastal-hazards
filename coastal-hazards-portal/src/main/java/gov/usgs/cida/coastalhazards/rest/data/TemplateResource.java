@@ -139,7 +139,7 @@ public class TemplateResource {
 			}
 			Summary summary = makeSummary(layer, attr);
 			Item newItem = templateItem(attr, layer, summary);
-			childMap.replace(replaceId, newItem);
+			childMap.put(replaceId, newItem);
 		}
 		return new LinkedList<>(childMap.values());
 	}
