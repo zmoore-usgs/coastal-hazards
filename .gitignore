@@ -28,6 +28,7 @@ build.properties
 target/
 
 ### Project Specific ###
+/coastal-hazards-portal/src/main/webapp/css/
 /coastal-hazards-portal/src/main/webapp/less/webjars/
 /coastal-hazards-geoserver/src/main/webapp/META-INF/
 /coastal-hazards-n52/src/main/webapp/META-INF/
