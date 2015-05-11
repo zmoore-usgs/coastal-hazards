@@ -238,12 +238,29 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.3</version>
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
 					<goal>process-resources</goal>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.10</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeGroupIds>org.webjars</includeGroupIds>
+							<includeArtifactIds>bootstrap</includeArtifactIds>
+							<outputDirectory>src/main/webapp/less/webjars</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.lesscss</groupId>
@@ -252,6 +269,11 @@
 				<configuration>
 					<sourceDirectory>${project.basedir}/src/main/webapp/less</sourceDirectory>
 					<outputDirectory>${project.basedir}/src/main/webapp/css</outputDirectory>
+					<excludes>
+						<exclude>
+							webjars/META-INF/resources/webjars/bootstrap/${version.bootstrap}/less/*.less
+						</exclude>
+					</excludes>
 					<compress>false</compress>
 					<force>true</force>
 				</configuration>
@@ -278,6 +300,7 @@
 					<suffix>-${project.version}-min</suffix>
 					<excludes>
 						<exclude>**/js/third-party/</exclude>
+						<exclude>**/less/webjars/</exclude>
 					</excludes>
 				</configuration>  
 			</plugin>
@@ -300,6 +323,14 @@
 					<preloadSources>
 						<source>${project.basedir}/src/test/resources/gov/usgs/cida/coastalhazards/jasmine/prerequisites.js</source>
 					</preloadSources>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<packagingExcludes>less/webjars/**</packagingExcludes>
 				</configuration>
 			</plugin>
 		</plugins>
