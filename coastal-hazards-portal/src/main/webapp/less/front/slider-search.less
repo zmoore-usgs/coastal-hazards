@@ -1,7 +1,9 @@
 @import "../cch.less";
 
+@search-slide-name : application-slide-search;
+
 /* Outer search slide container */
-#application-slide-search-container {
+#@{search-slide-name}-container {
     position: absolute;
     z-index: 2000;
 	> div {
@@ -19,7 +21,7 @@
 }
 
 /* Close button row*/
-#application-slide-search-container > div > div:first-child {
+#@{search-slide-name}-controlset {
     margin-left: 0px;
     margin-right: 0px;
     width: 100%;
