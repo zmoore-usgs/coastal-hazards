@@ -1,183 +1,182 @@
 @import "../cch.less";
 
-@search-slide-name : application-slide-search;
+@apss : application-slide-search;
 
 /* Outer search slide container */
-#@{search-slide-name}-container {
+#@{apss}-container {
     position: absolute;
     z-index: 2000;
-	> div {
-		background-color: #F5F5F5;
-		border-bottom: 2px solid #E3E3E3;
-		border-top: 2px solid #E3E3E3;
-		border-left: 2px solid #E3E3E3;
-		height: 100%;
-		float: right;
-		display: inline-block;
-		z-index: 2000;
-		padding-left: 10px;
-		padding-right: 10px;
-	}
+	> div > div:nth-child(2) {
+		overflow-y: scroll;
+		overflow-x: hidden;
+		margin-right: 3px;
+		margin-left: 3px;
+		height: 97%;
+		> div {
+			padding-top: 10px;
+			padding-bottom: 10px;
+		}
+	}   
+}
+
+#@{apss}-content {
+	background-color: #F5F5F5;
+	border-bottom: 2px solid #E3E3E3;
+	border-top: 2px solid #E3E3E3;
+	border-left: 2px solid #E3E3E3;
+	height: 100%;
+	float: right;
+	display: inline-block;
+	z-index: 2000;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
 /* Close button row*/
-#@{search-slide-name}-controlset {
+#@{apss}-controlset {
     margin-left: 0px;
     margin-right: 0px;
     width: 100%;
 }
 
-#application-slide-search-container > div > div:nth-child(2) {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    margin-right: 3px;
-    margin-left: 3px;
-    height: 97%;
-}   
-/* Location and Product Container */
-#application-slide-search-container > div > div:nth-child(2) > div {
-	padding-top: 10px;
-	padding-bottom: 10px;
-}
-
 
 /* Paging containers */
-#application-slide-search-container > div > div:nth-child(3) > div > div:nth-child(2) {
+#@{apss}-container > div > div:nth-child(3) > div > div:nth-child(2) {
     text-align: center;
 }
 
 /* Location Container *********************************************************/
-#application-slide-search-container > div > div:nth-child(2) > div:first-child {
+#@{apss}-container > div > div:nth-child(2) > div:first-child {
     margin-bottom: 20px;
 } 
 /* Each row within the location container */
-#application-slide-search-container > div > div:nth-child(2) > div:first-child > div {
+#@{apss}-container > div > div:nth-child(2) > div:first-child > div {
 	margin-left: 10px;
 	margin-right: 10px;
 }
 /* Results Found Count Container */
-#application-slide-search-container > div > div:nth-child(2) > div:first-child > div:first-child {
+#@{apss}-container > div > div:nth-child(2) > div:first-child > div:first-child {
 	font-size: 1.5em;
-	color: #003366;
+	color: @cch-primaryColor;
 }
 /* Location Search Card - Left-hand Image */
-#application-slide-search-container > div > div:nth-child(2) > div:first-child > div#application-slide-search-location-results-card-container > div > div > div:nth-child(1) {
+#@{apss}-container > div > div:nth-child(2) > div:first-child > div#application-slide-search-location-results-card-container > div > div > div:nth-child(1) {
 	width: 10%;
 	max-height: 100px;
 	display: inline-block;
 }
-.application-slide-search-location-card-icon-compass {
+.@{apss}-location-card-icon-compass {
 	width: 100%;
 	max-height: 100%;
 }
 
-.application-slide-search-location-card-icon-compass:hover {
+.@{apss}-location-card-icon-compass:hover {
 	cursor: pointer;
 }
 
 /* Location Search Card - Right-hand Description */
-#application-slide-search-container > div > div:nth-child(2) > div:first-child > div#application-slide-search-location-results-card-container > div > div > div:nth-child(2) {
+#@{apss}-container > div > div:nth-child(2) > div:first-child > div#application-slide-search-location-results-card-container > div > div > div:nth-child(2) {
 	width: 80%;
 	display: inline-block;
 	padding-left: 20px;
 }
 
 /* Zoom-To link at end of sentence */
-.application-slide-search-location-card-link-zoomto {
-	background-color: #003366;
+.@{apss}-location-card-link-zoomto {
+	background-color: @cch-primaryColor;
 }
-.application-slide-search-location-card-link-zoomto:hover {
+.@{apss}-location-card-link-zoomto:hover {
 	cursor: pointer;
 }
 
 /* The control set row within the location container */
-#application-slide-search-container > div > div:nth-child(2) > div:first-child > div > div.application-slide-search-location-card-toggle {
+#@{apss}-container > div > div:nth-child(2) > div:first-child > div > div.application-slide-search-location-card-toggle {
 	text-align: center;
 }
-#application-slide-search-container > div > div:nth-child(2) > div:first-child > div > div.application-slide-search-location-card-toggle > span.badge {
-	background-color: #003366;
+#@{apss}-container > div > div:nth-child(2) > div:first-child > div > div.application-slide-search-location-card-toggle > span.badge {
+	background-color: @cch-primaryColor;
 }
-#application-slide-search-container > div > div:nth-child(2) > div:first-child > div > div.application-slide-search-location-card-toggle > span.badge:hover {
+#@{apss}-container > div > div:nth-child(2) > div:first-child > div > div.application-slide-search-location-card-toggle > span.badge:hover {
 	cursor: pointer;
 }
 /* Paging container */
-#application-slide-search-container > div > div:nth-child(2) > div:first-child > div:last-child {
+#@{apss}-container > div > div:nth-child(2) > div:first-child > div:last-child {
 	text-align: center;
 }
 /******************************************************************************/
 
 /* Product Container **********************************************************/
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) {
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) {
     margin-bottom: 10px;
 }
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div {
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div {
 	margin-left: 10px;
 	margin-right: 10px;
 }
 /* Results Found Count Container */
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:first-child {
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:first-child {
 	font-size: 1.5em;
-	color: #003366;
+	color: @cch-primaryColor;
 }
 /* Each row within the product container */
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div {
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div {
 	padding-bottom: 25px;
 }
 /* Add to bucket */
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > span.badge {
-	background-color: #003366;
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > span.badge {
+	background-color: @cch-primaryColor;
 	float: right;
 } 
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > span.badge:not(.disabled):hover {
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > span.badge:not(.disabled):hover {
 	cursor: pointer;
 }
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > span.badge.disabled {
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > span.badge.disabled {
 	background-color: #999999;
 } 
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > span.badge.badge > img {
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > span.badge.badge > img {
 	height: 10px;
 }
 /* Image Container */
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:first-child {
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:first-child {
 	width: 20%;
 	vertical-align: top;
 	min-height: 50px;
 	display: inline-block;
 }
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:first-child > img{
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:first-child > img{
 	width: 100%;
 	max-height: 100%;
 }
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:first-child > img:hover {
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:first-child > img:hover {
 	cursor: pointer;
 }
 /* Description Container */
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:nth-child(2) {
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:nth-child(2) {
 	width: 79%;
 	display: inline-block;
 }
 /* Title Container - Text */
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:nth-child(2) > div > div:first-child > span:first-child {
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:nth-child(2) > div > div:first-child > span:first-child {
 	font-size: 1.2em;
 	font-weight: bold;
 }
 /* Title Container - Badge */
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:nth-child(2) > div > div:first-child > span.badge {
-	background-color: #003366;
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:nth-child(2) > div > div:first-child > span.badge {
+	background-color: @cch-primaryColor;
 }
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:nth-child(2) > div > div:first-child > span.badge:hover {
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:nth-child(2) > div > div:first-child > span.badge:hover {
 	cursor: pointer;
 }
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(4) {
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(4) {
 	text-align: center;
 }
 /* Filter Results To Current View Button */
-#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > button.active i {
-	color: #008000;
+#@{apss}-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > button.active i {
+	color: @cch-primaryColor;
 }
 
 @media (min-width: 992px) {
-    #application-slide-search-container > div  {
+    #@{apss}-container > div  {
         border-top-left-radius: 10px 10px;
         -webkit-border-top-left-radius: 10px 10px;
         border-bottom-left-radius: 10px 10px;
@@ -186,16 +185,13 @@
 }
 
 @media (max-width: 991px) {
-    #application-slide-search-container > div {
+    #@{apss}-container > div {
         height: 97%;
         width: 100%;
-    }
-    #application-slide-search-container > div > div:nth-child(2) {
-        height: 97%;
-    }
-
-    #application-slide-search-container > div {
-        border-bottom-left-radius: 10px 10px;
+		border-bottom-left-radius: 10px 10px;
         -webkit-border-bottom-left-radius: 10px 10px;
+		> div:nth-child(2) {
+			height: 97%;
+		}
     }
 }
