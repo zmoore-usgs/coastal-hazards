@@ -1,7 +1,7 @@
 package gov.usgs.cida.coastalhazards.rest.security;
 
 import gov.usgs.cida.auth.client.AuthClientSingleton;
-import gov.usgs.cida.auth.client.CachingAuthClient;
+import gov.usgs.cida.coastalhazards.AuthenticationUtil;
 
 import javax.ws.rs.ApplicationPath;
 
@@ -13,20 +13,17 @@ import org.slf4j.LoggerFactory;
 
 @ApplicationPath("/security")
 public class SecurityApplication extends ResourceConfig {
-    private static final Logger LOG = LoggerFactory.getLogger(SecurityApplication.class);
-	
+
+	private static final Logger LOG = LoggerFactory.getLogger(SecurityApplication.class);
+
 	public SecurityApplication() {
 		register(JspMvcFeature.class);
-		
+
 		//security
-        register(RolesAllowedDynamicFeature.class);
-        if ( !AuthClientSingleton.isInitialized() ) {
-        	try {
-        		AuthClientSingleton.initAuthClient(CachingAuthClient.class);
-        	} catch (IllegalArgumentException e) {
-        		LOG.warn("JNDI properties for CIDA Auth Webservice not set. Any secured endpoints will be restricted", e);
-        	}
-        }
+		register(RolesAllowedDynamicFeature.class);
+		if (!AuthClientSingleton.isInitialized()) {
+			AuthenticationUtil.initCCHAuthClient();
+		}
 		register(CoastalHazardsTokenBasedSecurityFilter.class);
 		register(SecurityResources.class);
 	}
