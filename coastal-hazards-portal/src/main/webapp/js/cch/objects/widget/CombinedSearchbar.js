@@ -1,8 +1,9 @@
-/*jslint browser: true*/
-/*jslint plusplus: true */
-/*global $*/
-/*global splashUpdate*/
-/*global CCH*/
+/* jslint browser: true */
+/* jslint plusplus: true */
+/* global $ */
+/* global splashUpdate */
+/* global CCH */
+/* global OpenLayers */
 
 window.CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
@@ -46,17 +47,17 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 
 	me.resizeContainer = function (evt) {
 		var $container = $('#' + me.CONTAINER_ID),
-			$parentContainer = $container.parent(),
-			parentContainerWidth = $parentContainer.width(),
-			$navSearchbarLocator = $('#' + me.CONTAINER_ID).find('> div'),
-			$dropDown = $navSearchbarLocator.find('> div:first-child > button'),
-			$searchBar = $navSearchbarLocator.find('> input'),
-			$submitButton = $navSearchbarLocator.find('div:last-child > button'),
-			$parentContainerVisibleItems,
-			childrenCombinedWidth,
-			containerMarginRight,
-			idealInputWidth,
-			isSmall = CCH.ui.isSmall();
+				$parentContainer = $container.parent(),
+				parentContainerWidth = $parentContainer.width(),
+				$navSearchbarLocator = $('#' + me.CONTAINER_ID).find('> div'),
+				$dropDown = $navSearchbarLocator.find('> div:first-child > button'),
+				$searchBar = $navSearchbarLocator.find('> input'),
+				$submitButton = $navSearchbarLocator.find('div:last-child > button'),
+				$parentContainerVisibleItems,
+				childrenCombinedWidth,
+				containerMarginRight,
+				idealInputWidth,
+				isSmall = CCH.ui.isSmall();
 
 		if (isSmall) {
 			idealInputWidth = '100%';
@@ -66,12 +67,12 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 		} else {
 			// Get all visible, non-modal children of the parent that are also not my container
 			$parentContainerVisibleItems = $parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
-				// Get the width of child containers
-				childrenCombinedWidth = $parentContainerVisibleItems.toArray().sum(function (el) {
+					// Get the width of child containers
+					childrenCombinedWidth = $parentContainerVisibleItems.toArray().sum(function (el) {
 				return $(el).outerWidth(true);
 			}),
-				containerMarginRight = 15, // TODO- This is problematic between IE9 and others
-				idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
+					containerMarginRight = 15, // TODO- This is problematic between IE9 and others
+					idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
 			$dropDown.height(20);
 			$searchBar.height(20);
 			$submitButton.height(20);
@@ -93,14 +94,49 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 
 	me.submitButtonClicked = function () {
 		var inputBox = $(me.INPUTBOX_SELECTOR),
-			criteria = inputBox.val(),
-			type = me.selectedOption;
+				criteria = inputBox.val(),
+				type = me.selectedOption;
 
 		if (criteria) {
 			me.performSearch({
 				criteria: criteria,
 				type: type
 			});
+		} else {
+			if (type === 'location') {
+				// If the location search type is selected and nothing is in the 
+				// location box, do a client geolocation search
+				CCH.Util.Util.getGeolocation({
+					callbacks: {
+						success: function (pos) {
+							var lat = pos.coords.latitude,
+									lon = pos.coords.longitude,
+									locationLonLat = new OpenLayers.LonLat(lon, lat).transform().transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection),
+									bounds = new OpenLayers.Bounds();
+
+							bounds.extend(locationLonLat);
+							bounds.extend(locationLonLat);
+							CCH.map.getMap().zoomToExtent(bounds);
+						},
+						error: function (err) {
+							switch (err.code) {
+								case err.PERMISSION_DENIED:
+									CCH.LOG.warn("User denied the request for Geolocation.");
+									break;
+								case err.POSITION_UNAVAILABLE:
+									CCH.LOG.warn("Location information is unavailable.");
+									break;
+								case err.TIMEOUT:
+									CCH.LOG.warn("The request to get user location timed out.");
+									break;
+								case err.UNKNOWN_ERROR:
+									CCH.LOG.warn("An unknown error occurred.");
+									break;
+							}
+						}
+					}
+				})
+			}
 		}
 	};
 
@@ -108,7 +144,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 		args = args || {};
 
 		var toggleTextContainer = $(me.DD_TOGGLE_BUTTON_SELECTOR),
-			criteria = args.criteria;
+				criteria = args.criteria;
 
 		// Put the text for the selected item in the menu
 		toggleTextContainer.html(criteria);
@@ -119,8 +155,8 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 		args = args || {};
 
 		var criteria = args.criteria + String(),
-			callbacks = args.callbacks,
-			scope = args.scope || me;
+				callbacks = args.callbacks,
+				scope = args.scope || me;
 
 		me.search.submitLocationSearch({
 			criteria: criteria,
@@ -134,19 +170,19 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 		args = args || {};
 
 		var criteria = args.criteria + String(),
-			types = args.types,
-			callbacks = args.callbacks,
-			bbox = null,
-			scope = args.scope || me;
+				types = args.types,
+				callbacks = args.callbacks,
+				bbox = null,
+				scope = args.scope || me;
 
 		if (me.includeBboxInSearch) {
 			bbox = CCH.map.getMap().
-				getExtent().
-				transform(
-					CCH.map.getMap().displayProjection,
-					CCH.CONFIG.map.modelProjection).
-				toArray().
-				join(',');
+					getExtent().
+					transform(
+							CCH.map.getMap().displayProjection,
+							CCH.CONFIG.map.modelProjection).
+					toArray().
+					join(',');
 		}
 
 		me.search.submitItemSearch({
@@ -162,14 +198,14 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 		args = args || {};
 
 		var criteria = args.criteria + String(),
-			type = args.type.toLowerCase(),
-			spatialAndItemType = 'all',
-			allSpatialType = 'location',
-			allProductsType = 'products',
-			// extreme storms, shoreline change, sea level rise
-			itemsArray = ['storms', 'historical', 'vulnerability'],
-			types = [],
-			count = args.count || 20;
+				type = args.type.toLowerCase(),
+				spatialAndItemType = 'all',
+				allSpatialType = 'location',
+				allProductsType = 'products',
+				// extreme storms, shoreline change, sea level rise
+				itemsArray = ['storms', 'historical', 'vulnerability'],
+				types = [],
+				count = args.count || 20;
 
 		ga('send', 'event', {
 			'eventCategory': 'search',
@@ -372,12 +408,12 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 	// Any link that is clicked, register that as a change
 	$('#' + me.CONTAINER_ID + '> div > div > ul li > a').on('click', function (evt) {
 		var target = evt.currentTarget,
-			criteria = target.title,
-			parentListEl = target.parentElement,
-			allItems = $('.' + me.DD_TOGGLE_MENU_ITEMS_CLASS),
-			// The id has the type as the last word
-			type = evt.target.id.split('-').last(),
-			isDisabled = $(target).parent().hasClass('disabled');
+				criteria = target.title,
+				parentListEl = target.parentElement,
+				allItems = $('.' + me.DD_TOGGLE_MENU_ITEMS_CLASS),
+				// The id has the type as the last word
+				type = evt.target.id.split('-').last(),
+				isDisabled = $(target).parent().hasClass('disabled');
 
 		if (!isDisabled) {
 			// First, remove the disabled class from all list elements
@@ -430,13 +466,13 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 	// Clicking enter in the input box should submit the search
 	$(me.INPUTBOX_SELECTOR).on('keyup', function (evt) {
 		var keyCode = evt.keyCode,
-			enterKeyCode = 13;
+				enterKeyCode = 13;
 
 		if (keyCode === enterKeyCode) {
 			$('#' + me.SUBMIT_BUTTON_ID).trigger('click');
 		}
 	});
-	
+
 	// Preload required images
 	CCH.LOG.trace('CCH.Objects.Widget.CombinedSearch::constructor: Pre-loading images.');
 	$.get(me.DD_TOGGLE_SPINNER_IMG_LOCATION);
