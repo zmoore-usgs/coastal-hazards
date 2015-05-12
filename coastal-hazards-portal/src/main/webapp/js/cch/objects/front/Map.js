@@ -392,8 +392,7 @@ CCH.Objects.Front.Map = function (args) {
 			// are no items in the session or if none are pinned, zoom to the bounding box 
 			// provided in the session
 			if (!session.items.length) {
-				center = new OpenLayers.LonLat(session.center[0], session.center[1]).
-					transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection);
+				center = new OpenLayers.LonLat(session.center[0], session.center[1]).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection);
 				me.map.setCenter(center);
 				me.map.zoomToScale(session.scale);
 			}
@@ -465,6 +464,9 @@ CCH.Objects.Front.Map = function (args) {
 		},
 		moveendCallback: function () {
 			CCH.session.updateSession();
+			$(window).trigger('cch.map.action.moveend', {
+				map : me.map
+			});
 		},
 		changelayerCallback: function (evt) {
 			var layer = evt.layer;

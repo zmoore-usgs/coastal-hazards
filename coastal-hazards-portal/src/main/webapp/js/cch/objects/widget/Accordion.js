@@ -11,7 +11,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 
 	CCH.LOG.trace('Accordion.js::constructor:Accordion class is initializing.');
 	var me = (this === window) ? {} : this,
-		container;
+			container;
 
 	args = args || {};
 
@@ -30,9 +30,9 @@ CCH.Objects.Widget.Accordion = function (args) {
 		args = args || {};
 
 		var callbacks = args.callbacks || {},
-			id = args.id,
-			index = args.index,
-			item = new CCH.Objects.Item({id: id});
+				id = args.id,
+				index = args.index,
+				item = new CCH.Objects.Item({id: id});
 
 		callbacks = args.callbacks || {
 			success: [],
@@ -60,12 +60,12 @@ CCH.Objects.Widget.Accordion = function (args) {
 		args = args || {};
 
 		var card = args.card,
-			item = args.item,
-			index = args.index,
-			$scrollContainer = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID),
-			child,
-			bellow,
-			cardExists;
+				item = args.item,
+				index = args.index,
+				$scrollContainer = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID),
+				child,
+				bellow,
+				cardExists;
 
 		cardExists = $('#' + me.CONTAINER_ID).find('.panel-collapse#accordion-body-' + item.id).length !== 0;
 
@@ -80,7 +80,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 			bellow = me.createBellow({
 				card: card
 			});
-			
+
 			// I want to insert the card into the accordion at a specified index if 
 			// one was specified. This fixes a race condition in the pulling of the 
 			// data for these cards 
@@ -103,39 +103,69 @@ CCH.Objects.Widget.Accordion = function (args) {
 		return bellow;
 	};
 
+	me.checkIfMapExtentContainsItem = function (bellow) {
+		var extent = CCH.map.getMap().getExtent(),
+			$bellow = $(bellow),
+			card = $bellow.data('card'),
+			bellowBbox = card.convertedBbox;
+	
+		return extent.intersectsBounds(bellowBbox);
+	};
+	
+	me.updatePanelsBasedOnMapExtent = function () {
+		var bellows = me.getBellows();
+		
+		for (var bIdx = 0; bIdx < bellows.length; bIdx++) {
+			var id = $(bellows[bIdx]).data('card').id;
+			if (me.checkIfMapExtentContainsItem(bellows[bIdx])) {
+				me.lightenContainer(id);
+			} else {
+				me.darkenContainer(id);
+			}
+		}
+	};
+
+	me.darkenContainer = function (id) {
+		$('#panel-heading-' + id).addClass('outside-extent');
+	};
+
+	me.lightenContainer = function (id) {
+		$('#panel-heading-' + id).removeClass('outside-extent');
+	};
+
 	me.createBellow = function (args) {
 		args = args || {};
 
 		var card = args.card,
-			id = card.id,
-			cardContainer = card.getContainer(),
-			titleRow = cardContainer.find('.application-card-title-row'),
-			downFacingArrow = $('<i />').addClass('fa fa-chevron-down accordion-title-arrow'),
-			titleMedium = titleRow.find('.application-card-title-container-medium').html(),
-			group = $('<div />').addClass('panel panel-default'),
-			heading = $('<div />').addClass('panel-heading'),
-			titleContainer = $('<span />').addClass('panel-title'),
-			toggleTarget = $('<a />').addClass('accordion-toggle'),
-			accordionBody = $('<div />').addClass('panel-collapse collapse'),
-			bodyInner = $('<div />').addClass('panel-body'),
-			accordionBodyId = 'accordion-body-' + id,
-			headingClickHandler = function (evt) {
-				// Because clicking the link inside the header also triggers the 
-				// click handler of the header, this will loop forever. Must unbind,
-				// click, rebind
-				evt.stopImmediatePropagation();
-				$(evt.currentTarget).off('click', headingClickHandler);
-				$(evt.currentTarget).find('a').trigger('click');
-				$(evt.currentTarget).on('click', headingClickHandler);
-			};
+				id = card.id,
+				cardContainer = card.getContainer(),
+				titleRow = cardContainer.find('.application-card-title-row'),
+				downFacingArrow = $('<i />').addClass('fa fa-chevron-down accordion-title-arrow'),
+				titleMedium = titleRow.find('.application-card-title-container-medium').html(),
+				group = $('<div />').addClass('panel panel-default'),
+				heading = $('<div />').addClass('panel-heading').attr('id', 'panel-heading-' + id),
+				titleContainer = $('<span />').addClass('panel-title'),
+				toggleTarget = $('<a />').addClass('accordion-toggle'),
+				accordionBody = $('<div />').addClass('panel-collapse collapse'),
+				bodyInner = $('<div />').addClass('panel-body'),
+				accordionBodyId = 'accordion-body-' + id,
+				headingClickHandler = function (evt) {
+					// Because clicking the link inside the header also triggers the 
+					// click handler of the header, this will loop forever. Must unbind,
+					// click, rebind
+					evt.stopImmediatePropagation();
+					$(evt.currentTarget).off('click', headingClickHandler);
+					$(evt.currentTarget).find('a').trigger('click');
+					$(evt.currentTarget).on('click', headingClickHandler);
+				};
 		toggleTarget.append(
-			$('<span />').addClass('accordion-toggle-title-medium').html([downFacingArrow, titleMedium])
-			).attr({
+				$('<span />').addClass('accordion-toggle-title-medium').html([downFacingArrow, titleMedium])
+				).attr({
 			'data-parent': '#' + me.SCROLLABLE_BELLOW_CONTAINER_ID,
 			'href': '#' + accordionBodyId,
 			'data-toggle': 'collapse',
 			'onclick': 'javascript:return false;' // Yes, this isn't ideal but
-				// it does keep from the url being altered when a user clicks a bellow
+					// it does keep from the url being altered when a user clicks a bellow
 		});
 
 		accordionBody.attr('id', accordionBodyId);
@@ -148,26 +178,29 @@ CCH.Objects.Widget.Accordion = function (args) {
 
 		titleRow.remove();
 
-		group.data('id', id);
+		group.data({
+			'id': id,
+			'card': card
+		});
 		group.append(heading, accordionBody);
 		titleContainer.append(toggleTarget);
-		
+
 		accordionBody.append(bodyInner);
 
 		heading.on('click', headingClickHandler);
-		
+
 		// If this is an active storm, wrap the title container inside a ribbon container
 		if (card.item.activeStorm) {
 			var ribbonWrapper = $('<div />').addClass('corner-ribbon-wrapper');
 			var ribbonContainer = $('<div />').addClass('corner-ribbon');
-                        var ribbonText = $('<p>Active Storm</p>');
+			var ribbonText = $('<p>Active Storm</p>');
 			heading.addClass('active-storm');
 			ribbonWrapper.append(ribbonContainer);
 			heading.append(ribbonWrapper);
-                        ribbonContainer.append(ribbonText);
+			ribbonContainer.append(ribbonText);
 		}
 		heading.append(titleContainer);
-		
+
 		accordionBody.on({
 			'show.bs.collapse': function (evt) {
 				card.show({
@@ -177,7 +210,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 			},
 			'shown.bs.collapse': function (evt) {
 				var $this = $(this),
-					abId = $this.data('id');
+						abId = $this.data('id');
 
 				ga('send', 'event', {
 					'eventCategory': 'accordion',
@@ -193,7 +226,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 			},
 			'hidden.bs.collapse': function (evt) {
 				var $this = $(this),
-					abId = $this.data('id');
+						abId = $this.data('id');
 
 				ga('send', 'event', {
 					'eventCategory': 'accordion', // Required.
@@ -227,7 +260,9 @@ CCH.Objects.Widget.Accordion = function (args) {
 					scrollTop: $container[0].scrollHeight
 				}, 1000);
 			}
-		}
+		},
+		'cch.map.action.moveend': me.updatePanelsBasedOnMapExtent,
+		'cch.ui.overlay.removed': me.updatePanelsBasedOnMapExtent
 	});
 	me.explore = function (evt, args) {
 		// When a user clicks explore, I want to be able to search through every
@@ -237,16 +272,16 @@ CCH.Objects.Widget.Accordion = function (args) {
 		// clicked in the item.  If the item isn't found, I want to load the item
 		// and add it to the accordion.
 		var id = args.id,
-			idIdx = 0,
-			ids = me.getBellows().map(function (ind, b) {
+				idIdx = 0,
+				ids = me.getBellows().map(function (ind, b) {
 			return $(b).data().id;
 		}),
-			$bellow,
-			$bellowTitle,
-			$bellowBody,
-			path = [],
-			card,
-			openPath;
+				$bellow,
+				$bellowTitle,
+				$bellowBody,
+				path = [],
+				card,
+				openPath;
 
 		// Go down the top level items until we have a hit for an id
 		if (ids.length > 0) {
@@ -318,6 +353,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 		showCurrent: me.showCurrent,
 		getCurrent: me.getCurrent,
 		explore: me.explore,
+		updatePanelsForExtent: me.updatePanelsBasedOnMapExtent,
 		CLASS_NAME: 'CCH.Objects.Widget.Accordion'
 	});
 };

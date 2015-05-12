@@ -361,7 +361,7 @@ CCH.Objects.Widget.ItemsSlide = function (args) {
 			if (me.isSmall()) {
 				me.close();
 			}
-		}
+		}		
 	});
 
 	// This is a horrible hack - Chrome for android seems to be not show anything
