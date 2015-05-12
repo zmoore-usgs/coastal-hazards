@@ -130,8 +130,6 @@ CCH.Util.Util = {
 	}
 };
 
-
-
 // http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
 String.prototype.hashCode = function () {
 	"use strict";
