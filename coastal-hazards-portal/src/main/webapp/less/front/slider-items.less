@@ -1,15 +1,18 @@
 @import "../cch.less";
 
-/* Slide item container */
-#content-column > div.application-slide-container > div.application-slide-content > div > div.panel-default:hover {
-	cursor: pointer;
+#content-column {
+	.panel-default {
+		&:hover {
+			cursor: pointer;
+		}
+		.panel-body {
+			background-color: white;
+			padding:0px 5px 5px 5px
+		}
+	}
 }
 
-#content-column > div.application-slide-container > div.application-slide-content > div > div.panel-default div.panel-body {
-	background-color: #FFFFFF;
-}
-
-#content-column > div.application-slide-container div.application-card-container > div.application-card-body-container .application-card-title-row {
+.application-card-title-row {
 	font-size: 1.3em;
 	margin-bottom: 10px;
 }
@@ -18,11 +21,6 @@
 	padding: 2px;
 }
 
-
-/* eliminate space so animation appears to slide under header with no gap */
-.panel-collapse > .panel-body {
-        padding:0px 5px 5px 5px
-}
 
 .application-card-collapse-icon-container {
 	display: table-cell;
@@ -33,7 +31,7 @@
 	color: #BBBBBB;
 }
 
-.application-card-control-row .application-card-control-row-1 {
+.application-card-control-row-1 {
 	margin-bottom: 5px;
 }
 
@@ -50,14 +48,14 @@
 .application-card-control-row button,
 .application-card-explore-row button {
 	padding-right: 5px;
-        padding-left: 5px;
+	padding-left: 5px;
 	font-size: 10px;
-	color: #003366;
+	color: @cch-primaryColor;
 }
 
 .application-card-add-bucket-btn {
-	color: #FFFFFF !important;
-	background-color: #003366;
+	color: white !important;
+	background-color: @cch-primaryColor;
 }
 
 .application-card-add-bucket-btn img{
@@ -78,24 +76,21 @@
 }
 .application-card-explore-row {
 	text-align: left;
-}
-
-.application-card-explore-row ul {
-	cursor: pointer;
-	margin: 0px;
-	padding: 2px;
-}
-
-.application-card-explore-row ul li {
-	list-style-type: none;
-	padding: 2px;
-}
-
-.application-card-explore-row button {
-	font-size: 12px;
-	white-space: normal;
-	width: 100%;
-	text-align: left;
+	ul {
+		cursor: pointer;
+		margin: 0px;
+		padding: 2px;
+		li {
+			list-style-type: none;
+			padding: 2px;
+		}
+	}
+	button {
+		font-size: 12px;
+		white-space: normal;
+		width: 100%;
+		text-align: left;
+	}
 }
 
 .application-card-title-row .application-card-title-container-medium {
@@ -104,17 +99,15 @@
 
 .application-card-content-row .application-card-content-container-medium {
 	font-size: 16px;
-}
-
-/* More Info Link */
-.application-card-content-row .application-card-content-container-medium > span {
-	white-space: nowrap;
-}
-.application-card-content-row .application-card-content-container-medium > span a {
-	color: #777;
-}
-.application-card-content-row .application-card-content-container-medium > span a:hover {
-	text-decoration: none;
+	> span {
+		white-space: nowrap;
+		a {
+			color: #777;
+			&:hover {
+				text-decoration: none;
+			}
+		}
+	}
 }
 
 .application-card-collapse-row-dottedline,
@@ -153,8 +146,8 @@
 }
 
 .larger-text{
-            font-size:16px !important;
-        }
+	font-size:16px !important;
+}
 
 .explore-contents-arrow{
     margin:-5px 5px 0 0;
@@ -205,12 +198,12 @@
 }
 
 .corner-ribbon-wrapper{
-  width: 125px;
-  height: 62px;
-  overflow:hidden;
-  position: absolute;
-  top: -1px;
-  right: 0px;
+	width: 125px;
+	height: 56px;
+	overflow:hidden;
+	position: absolute;
+	top: -1px;
+	right: 0px;
 }
 
 .corner-ribbon{
@@ -223,19 +216,19 @@
 	text-align:center;
 	font-weight:bold;
 	font-size:.7em;
-	font-family:@cch-fontFamily;
+	font-family:Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	-webkit-transform: rotate(45deg);
-  	-moz-transform:    rotate(45deg);
-  	-ms-transform:     rotate(45deg);
-  	-o-transform:      rotate(45deg);
+	-moz-transform:    rotate(45deg);
+	-ms-transform:     rotate(45deg);
+	-o-transform:      rotate(45deg);
 	box-shadow:0 2px 5px rgba(0,0,0,.2);
 	color:#fff;
-	}
-	
+}
+
 .corner-ribbon p{
 	width:70px;
-	margin:0 0 0 53px
-	}
+	margin:0 0 0 50px
+}
 
 /* Downward facing arrow on accordion */
 #application-slide-items-content-container .panel-title .accordion-title-arrow {
@@ -336,29 +329,31 @@
 		overflow-y: auto;
 		height: 100%;
 	}
-        .application-card-control-row button,
-        .application-card-explore-row button {
-            font-size: 12px;
-        }
-        
-        /*more padding on desktop*/
-        .panel-collapse > .panel-body {
-            padding:0px 8px 8px 8px
-        }
-        /*larger icon for desktop*/
-        .application-card-container .item-control-button img {
-            height: 20px;
-            width: 20px;
-        }
-        .disabled img{
-            height:18px !important;
-            width:18px !important;
-        }
-        
+	.application-card-control-row button,
+	.application-card-explore-row button {
+		font-size: 12px;
+	}
+
+	/*more padding on desktop*/
+	.panel-collapse > .panel-body {
+		padding:0px 8px 8px 8px
+	}
+	/*larger icon for desktop*/
+	.application-card-container .item-control-button img {
+		height: 20px;
+		width: 20px;
+	}
+	.disabled img{
+		height:18px !important;
+		width:18px !important;
+	}
+	.application-card-add-bucket-btn {
+		height:26px
+	}
 	#application-slide-items-content-container .panel-title {
-            font-size: 1.7em;
-        }
-        
+		font-size: 1.7em;
+	}
+
 }
 
 @media (max-width: 991px) {
@@ -436,40 +431,40 @@
 		border-bottom-left-radius: 10px 10px;
 		-webkit-border-bottom-left-radius: 10px 10px;
 	}
-        
-        .corner-ribbon-wrapper{
-            height:56px;
-        }
-        
-        .corner-ribbon{
-            font-size:.65em;
-        }
-        
-        .corner-ribbon p{
-            margin:0 0 0 50px;
-        }
-        
+
+	.corner-ribbon-wrapper{
+		height:53px;
+	}
+
+	.corner-ribbon{
+		font-size:.7em;
+	}
+
+	.corner-ribbon p{
+		margin:0 0 0 49px;
+	}
+
 }
 
 @media screen and (max-width:380px){
-    
+
     #application-slide-items-content-container .panel-title {
-            font-size: 1em;
-            padding-top:2px;
+		font-size: 1em;
+		padding-top:2px;
     }
-    
+
     .corner-ribbon-wrapper{
         width:75px;
-        height:44px;
+        height:42px;
     }
-    
+
     .corner-ribbon{
         width:100px;
         font-size:.45em;
         right:0;
         padding:5px;
     }
-    
+
     .corner-ribbon p{
         width:90px;
         margin:0 0 0 6px;
