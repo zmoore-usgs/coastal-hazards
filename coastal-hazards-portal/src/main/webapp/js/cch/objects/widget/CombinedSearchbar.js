@@ -144,7 +144,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 		args = args || {};
 
 		var toggleTextContainer = $(me.DD_TOGGLE_BUTTON_SELECTOR),
-				criteria = args.criteria;
+			criteria = args.criteria;
 
 		// Put the text for the selected item in the menu
 		toggleTextContainer.html(criteria);
@@ -384,9 +384,10 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 			src: me.DD_TOGGLE_SPINNER_IMG_LOCATION,
 			alt: 'Spinner Image',
 			id: 'app-navbar-search-spinner-image'
-		});
-		$('#' + me.SUBMIT_BUTTON_ID).empty();
-		$('#' + me.SUBMIT_BUTTON_ID).append(spinnerImage);
+		}),
+			$submitButton = $('#' + me.SUBMIT_BUTTON_ID);
+		$submitButton.empty();
+		$submitButton.append(spinnerImage);
 	};
 
 	/**
@@ -394,9 +395,10 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 	 * restoring the magnifying glass
 	 */
 	me.hideSpinner = function () {
-		var magnifyingGlass = $('<i />').addClass('fa fa-search');
-		$('#' + me.SUBMIT_BUTTON_ID).empty();
-		$('#' + me.SUBMIT_BUTTON_ID).append(magnifyingGlass);
+		var magnifyingGlass = $('<i />').addClass('fa fa-search'),
+			$submitButton = $('#' + me.SUBMIT_BUTTON_ID);
+		$submitButton.empty();
+		$submitButton.append(magnifyingGlass);
 	};
 
 	// Bind the search submit button
