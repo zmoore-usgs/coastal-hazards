@@ -171,8 +171,7 @@ CCH.Objects.Item = function (args) {
 			bbox = me.bbox,
 			itemType = me.itemType,
 			sldId = id,
-			layer = null,
-			sld = '';
+			layer = null;
 
 		if (itemType !== 'aggregation') {
 			layer = new OpenLayers.Layer.WMS(
@@ -205,7 +204,9 @@ CCH.Objects.Item = function (args) {
 			if (layer.params.LAYERS === "NHC_TRACK_POLY") {
 				layer.opacity = 0.5;
 			}
+			delete layer.params.STYLES;
 			delete layer.params.SLD;
+			layer.params.CB = new Date().getTime(); // Cache breaking just in case
 		}
 		
 		return layer;
