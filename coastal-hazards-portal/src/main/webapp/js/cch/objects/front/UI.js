@@ -394,8 +394,10 @@ CCH.Objects.Front.UI = function (args) {
 		cards.each(function (card, index) {
 			// Every card in the bucket has an associated id referencing the item it belongs to
 			id = card.data('id');
+			
 			// If the item is visible, show it in the legend
 			itemVisible = CCH.session.getItemById(id).visible;
+			
 			if (itemVisible) {
 				// Get the item, check that it has associated layers to show and create the legend
 				item = CCH.items.getById({id: id});

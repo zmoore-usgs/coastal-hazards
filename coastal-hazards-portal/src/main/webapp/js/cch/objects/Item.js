@@ -69,7 +69,6 @@ CCH.Objects.Item = function (args) {
 		me.summary = data.summary;
 		me.type = data.type;
 		me.services = data.services;
-		me.activeStorm = data.activeStorm || false;
 
 		CCH.items.add({item: me});
 
@@ -122,7 +121,7 @@ CCH.Objects.Item = function (args) {
 					itemData.parent = parent;
 					itemData.loaded = true;
 					item = new CCH.Objects.Item(itemData);
-
+					
 					// For each child, recurse back into this function using my child's data 
 					if (itemData.children) {
 						for (var i = 0; i < itemData.children.length; i++) {

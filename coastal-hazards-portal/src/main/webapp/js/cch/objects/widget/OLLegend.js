@@ -34,7 +34,7 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 		// Create the primary element
 		OpenLayers.Control.prototype.draw.apply(this, arguments);
 		this.element = document.createElement('div');
-		this.element.className = this.displayClass + 'Element' + ' olScrollable';
+		this.element.className = this.displayClass + 'Element olScrollable';
 		this.element.style.overflow = 'auto';
 		this.element.style.display = 'none';
 

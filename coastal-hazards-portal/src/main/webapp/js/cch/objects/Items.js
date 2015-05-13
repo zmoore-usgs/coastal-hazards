@@ -4,6 +4,7 @@
 /*global LOG*/
 /*global OpenLayers*/
 /*global CCH*/
+/*global alertify*/
 
 /**
  * Top level JS container for product items
@@ -81,7 +82,7 @@ CCH.Objects.Items = function (args) {
 
 		args.callbacks.error.push([
 			function (xhr, status, error) {
-				alertify.error('Could not perform search. Check logs for details.', 1000)
+				alertify.error('Could not perform search. Check logs for details.', 1000);
 				CCH.LOG.warn('An error occurred during search: ' + error);
 			}
 		]);
