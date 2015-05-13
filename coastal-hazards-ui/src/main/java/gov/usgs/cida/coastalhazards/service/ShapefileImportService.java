@@ -6,14 +6,12 @@ import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO;
 import gov.usgs.cida.coastalhazards.dao.geoserver.GeoserverDAO.DBaseColumn.ColumnType;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.file.FileHelper;
-import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +62,7 @@ public class ShapefileImportService extends HttpServlet {
 	public void init() throws ServletException {
 		super.init();
 		LOG.info("Initializing ShapefileImportService servlet");
-		uploadDirectory = PropertyUtil.getProperty(Property.DIRECTORIES_BASE) + File.pathSeparatorChar + PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD);
+		uploadDirectory = PropertyUtil.getProperty(Property.DIRECTORIES_BASE) + File.separatorChar + PropertyUtil.getProperty(Property.DIRECTORIES_UPLOAD);
 		geoserverEndpoint = PropertyUtil.getProperty(Property.GEOSERVER_ENDPOINT);
 		geoserverUsername = PropertyUtil.getProperty(Property.GEOSERVER_USERNAME);
 		geoserverPassword = PropertyUtil.getProperty(Property.GEOSERVER_PASSWORD);
