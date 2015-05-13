@@ -19,7 +19,7 @@
             <div id="application-slide-search-product-results-content-container">
                 <div><%-- Results Found Count Container--%></div>
                 <div id="application-slide-search-product-results-spatial-filter-check-container" class="row">
-                    <button type="button" class="btn btn-default" data-toggle="button"><i class="fa fa-square-o"></i> Filter Results To Current View</button>
+                    <button id="application-slide-search-product-results-spatial-filter-check-button" type="button" class="btn btn-default" data-toggle="button"><i class="fa fa-square-o"></i> Filter Results To Current View</button>
                 </div>
                 <div id="application-slide-search-product-results-card-container" class="row">
                     <img src="${param['baseUrl']}/images/spinner/spinner3.gif" class="img-responsive search-spinner" alt="Spinner Image"/>

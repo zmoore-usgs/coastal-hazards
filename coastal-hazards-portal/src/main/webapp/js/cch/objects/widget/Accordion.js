@@ -103,36 +103,6 @@ CCH.Objects.Widget.Accordion = function (args) {
 		return bellow;
 	};
 
-	me.checkIfMapExtentContainsItem = function (bellow) {
-		var extent = CCH.map.getMap().getExtent(),
-			$bellow = $(bellow),
-			card = $bellow.data('card'),
-			bellowBbox = card.convertedBbox;
-	
-		return extent.intersectsBounds(bellowBbox);
-	};
-	
-	me.updatePanelsBasedOnMapExtent = function () {
-		var bellows = me.getBellows();
-		
-		for (var bIdx = 0; bIdx < bellows.length; bIdx++) {
-			var id = $(bellows[bIdx]).data('card').id;
-			if (me.checkIfMapExtentContainsItem(bellows[bIdx])) {
-				me.lightenContainer(id);
-			} else {
-				me.darkenContainer(id);
-			}
-		}
-	};
-
-	me.darkenContainer = function (id) {
-		$('#panel-heading-' + id).addClass('outside-extent');
-	};
-
-	me.lightenContainer = function (id) {
-		$('#panel-heading-' + id).removeClass('outside-extent');
-	};
-
 	me.createBellow = function (args) {
 		args = args || {};
 
@@ -260,9 +230,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 					scrollTop: $container[0].scrollHeight
 				}, 1000);
 			}
-		},
-		'cch.map.action.moveend': me.updatePanelsBasedOnMapExtent,
-		'cch.ui.overlay.removed': me.updatePanelsBasedOnMapExtent
+		}
 	});
 	me.explore = function (evt, args) {
 		// When a user clicks explore, I want to be able to search through every
@@ -353,7 +321,6 @@ CCH.Objects.Widget.Accordion = function (args) {
 		showCurrent: me.showCurrent,
 		getCurrent: me.getCurrent,
 		explore: me.explore,
-		updatePanelsForExtent: me.updatePanelsBasedOnMapExtent,
 		CLASS_NAME: 'CCH.Objects.Widget.Accordion'
 	});
 };

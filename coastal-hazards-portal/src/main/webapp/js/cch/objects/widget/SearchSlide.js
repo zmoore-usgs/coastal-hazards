@@ -46,6 +46,8 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 	me.LOCATION_SLIDE_SEARCH_PAGE_CONTAINER = 'application-slide-search-location-results-paging-container';
 	me.FILTER_RESULTS_BUTTON = $('#application-slide-search-product-results-spatial-filter-check-container > button');
 	me.$SEARCH_TYPE_LISTITEM = $('.app-navbar-search-dropdown-item');
+	me.ID_PRODUCT_CARD_CONTAINER = 'application-slide-search-product-results-card-container';
+	me.ID_LOCATION_CARD_CONTAINER = 'application-slide-search-location-results-card-container';
 	me.bucket = args.bucket;
 	
 	me.SMALL_OFFSET = 10;
@@ -715,23 +717,21 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 	me.$SEARCH_TYPE_LISTITEM.on('click', function (evt) {
 		var choice = $(evt.target).attr('title').toLowerCase();
 
+		// Remove spinner images
 		if (choice !== 'all') {
 			if (choice === 'location') {
-				$('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).
-						find('>div:nth-child(2)').
-						empty();
+				$('#' + me.ID_PRODUCT_CARD_CONTAINER).empty();
 			} else {
-				$('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID).
-						find('>div:nth-child(2)').
-						empty();
+				$('#' + me.ID_LOCATION_CARD_CONTAINER).empty();
 			}
 		}
 	});
 
 	$(me.FILTER_RESULTS_BUTTON).on('click', function (evt) {
 		var active = true,
-				$button = $(evt.target),
-				$i = $button.find('i');
+			$button = $(evt.target),
+			$i = $button.find('i');
+			
 		if ($button.hasClass('active')) {
 			// Button had the active class on when pushed. This means user is 
 			// turning it off
