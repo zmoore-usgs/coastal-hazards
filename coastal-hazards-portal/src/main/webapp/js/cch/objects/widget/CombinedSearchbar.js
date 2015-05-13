@@ -135,7 +135,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 							}
 						}
 					}
-				})
+				});
 			}
 		}
 	};
@@ -406,7 +406,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 	});
 
 	// Any link that is clicked, register that as a change
-	$('#' + me.CONTAINER_ID + '> div > div > ul li > a').on('click', function (evt) {
+	$('.' + me.DD_TOGGLE_MENU_ITEMS_CLASS + ' > a').on('click', function (evt) {
 		var target = evt.currentTarget,
 				criteria = target.title,
 				parentListEl = target.parentElement,
