@@ -23,7 +23,7 @@
 		<dependency>
 			<groupId>gov.usgs.cida.auth</groupId>
 			<artifactId>auth-web-utils</artifactId>
-			<version>1.0.4-SNAPSHOT</version>
+			<version>1.1.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.servlet</groupId>
@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>gov.usgs.cida.auth</groupId>
 			<artifactId>auth-client</artifactId>
-			<version>1.0.4-SNAPSHOT</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida.coastalhazards</groupId>
