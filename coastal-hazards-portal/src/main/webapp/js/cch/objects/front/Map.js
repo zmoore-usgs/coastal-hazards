@@ -33,6 +33,7 @@ CCH.Objects.Front.Map = function (args) {
 		'template': '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="' + me.attributionSource + '" /></a>'
 	});
 	me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
+	me.zoomToCurrentLocationControl = new CCH.Objects.Widget.OLZoomToIcon();
 	me.clickControl = null; // Defined in init 
 
 	me.showLayer = function (args) {
@@ -227,10 +228,12 @@ CCH.Objects.Front.Map = function (args) {
 				me.attributionControl,
 				me.clickControl,
 				me.scaleLineControl,
-				me.legendControl
+				me.legendControl,
+				me.zoomToCurrentLocationControl
 			]);
 			me.clickControl.activate();
 			me.legendControl.activate();
+			me.zoomToCurrentLocationControl.activate();
 
 			CCH.LOG.debug('Map.js::init():Binding map event handlers');
 			me.map.events.on({
