@@ -102,41 +102,6 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 				criteria: criteria,
 				type: type
 			});
-		} else {
-			if (type === 'location') {
-				// If the location search type is selected and nothing is in the 
-				// location box, do a client geolocation search
-				CCH.Util.Util.getGeolocation({
-					callbacks: {
-						success: function (pos) {
-							var lat = pos.coords.latitude,
-									lon = pos.coords.longitude,
-									locationLonLat = new OpenLayers.LonLat(lon, lat).transform().transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection),
-									bounds = new OpenLayers.Bounds();
-
-							bounds.extend(locationLonLat);
-							bounds.extend(locationLonLat);
-							CCH.map.getMap().zoomToExtent(bounds);
-						},
-						error: function (err) {
-							switch (err.code) {
-								case err.PERMISSION_DENIED:
-									CCH.LOG.warn("User denied the request for Geolocation.");
-									break;
-								case err.POSITION_UNAVAILABLE:
-									CCH.LOG.warn("Location information is unavailable.");
-									break;
-								case err.TIMEOUT:
-									CCH.LOG.warn("The request to get user location timed out.");
-									break;
-								case err.UNKNOWN_ERROR:
-									CCH.LOG.warn("An unknown error occurred.");
-									break;
-							}
-						}
-					}
-				});
-			}
 		}
 	};
 
