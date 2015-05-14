@@ -10,8 +10,8 @@
 		title: 'Zoom To Your Location',
 		displayClass: 'ol-zoom-to-location',
 		type: OpenLayers.Control.TYPE_TOOL,
-		px: new OpenLayers.Pixel(10, 150),
-		size: {w: 18, h: 18},
+		px: new OpenLayers.Pixel(8, 54),
+		size: {w: 28, h: 28},
 		initialize: function (options) {
 			options = options || {};
 			options.displayClass = this.displayClass;
@@ -23,7 +23,7 @@
 			OpenLayers.Control.prototype.draw.apply(this, arguments);
 
 			this.position = this.px.clone();
-			var img = CCH.CONFIG.contextPath + '/images/openlayers/maximize_minimize_toggle/cch-legend-toggle-closed.svg';
+			var img = CCH.CONFIG.contextPath + '/images/search/cross.svg';
 			var btn = OpenLayers.Util.createAlphaImageDiv(
 					this.displayClass,
 					this.px,
@@ -32,7 +32,7 @@
 					'absolute',
 					'none',
 					'image',
-					0.7);
+					0.8);
 			btn.style.cursor = 'pointer';
 			this.button = btn;
 			this.div.appendChild(btn);
