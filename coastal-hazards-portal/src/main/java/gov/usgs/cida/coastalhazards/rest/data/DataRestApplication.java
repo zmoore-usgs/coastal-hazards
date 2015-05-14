@@ -1,7 +1,7 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import gov.usgs.cida.auth.client.AuthClientSingleton;
-import gov.usgs.cida.auth.client.CachingAuthClient;
+import gov.usgs.cida.coastalhazards.AuthenticationUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -28,12 +28,7 @@ public class DataRestApplication extends ResourceConfig {
 		//security
 		register(RolesAllowedDynamicFeature.class);
 		if (!AuthClientSingleton.isInitialized()) {
-			try {
-				AuthClientSingleton.initAuthClient(CachingAuthClient.class);
-			}
-			catch (IllegalArgumentException e) {
-				LOG.warn("JNDI properties for CIDA Auth Webservice not set. Any secured endpoints will be restricted", e);
-			}
+			AuthenticationUtil.initCCHAuthClient();
 		}
 		register(CoastalHazardsTokenBasedSecurityFilter.class);
 	}

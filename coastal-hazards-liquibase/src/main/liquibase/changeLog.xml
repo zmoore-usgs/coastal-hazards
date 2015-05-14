@@ -33,4 +33,5 @@
 	<include file="50calculateBbox.xml" relativeToChangelogFile="true" />
 	<include file="60createActivestormColumn.xml" relativeToChangelogFile="true" />
 	<include file="70bboxOnLayer.xml" relativeToChangelogFile="true" />
+	<include file="80fixAggregationPkey.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
