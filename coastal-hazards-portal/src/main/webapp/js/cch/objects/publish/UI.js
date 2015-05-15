@@ -13,68 +13,68 @@ CCH.Objects.Publish.UI = function () {
 	CCH.LOG.trace('UI.js::constructor: UI class is initializing.');
 
 	var me = (this === window) ? {} : this,
-		$form = $('form'),
-		$itemIdInput = $form.find('#form-publish-item-id'),
-		$titleFullTextArea = $form.find('#form-publish-item-title-full'),
-		$titleMediumTextArea = $form.find('#form-publish-item-title-medium'),
-		$descriptionFullTextArea = $form.find('#form-publish-item-description-full'),
-		$descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
-		$descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
-		$bboxNorth = $form.find('#form-publish-item-bbox-input-north'),
-		$bboxWest = $form.find('#form-publish-item-bbox-input-west'),
-		$bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
-		$bboxEast = $form.find('#form-publish-item-bbox-input-east'),
-		$typeSb = $form.find('#form-publish-item-type'),
-		$attributeSelect = $form.find('#form-publish-item-attribute'),
-		$attributeRetrieveDataButton = $form.find('#form-publish-item-attribute-button'),
-		$keywordGroup = $form.find('.form-group-keyword'),
-		$cswServiceInput = $form.find('#form-publish-item-service-csw'),
-		$srcWfsServiceInput = $form.find('#form-publish-item-service-source-wfs'),
-		$srcWfsServiceParamInput = $form.find('#form-publish-item-service-source-wfs-serviceparam'),
-		$srcWmsServiceInput = $form.find('#form-publish-item-service-source-wms'),
-		$srcWmsServiceParamInput = $form.find('#form-publish-item-service-source-wms-serviceparam'),
-		$proxyWfsServiceInput = $form.find('#form-publish-item-service-proxy-wfs'),
-		$proxyWfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wfs-serviceparam'),
-		$proxyWmsServiceInput = $form.find('#form-publish-item-service-proxy-wms'),
-		$proxyWmsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
-		$publicationsPanel = $form.find('#publications-panel'),
-		$ribbonableCb = $form.find('#form-publish-item-ribbonable'),
-		$showChildrenCb = $form.find('#form-publish-item-showchildren'),
-		$itemType = $form.find('#form-publish-info-item-itemtype'),
-		$name = $form.find('#form-publish-item-name'),
-		$wfsImportButton = $form.find('#form-publish-item-service-source-wfs-import-button'),
-		$keywordGroupClone = $keywordGroup.clone(),
-		$childrenSortableList = $form.find('#form-publish-info-item-children-sortable-ul'),
-		$alertModal = $('#alert-modal'),
-		$alertModalTitle = $alertModal.find('.modal-title'),
-		$alertModalBody = $alertModal.find('.modal-body'),
-		$alertModalFooter = $alertModal.find('.modal-footer'),
-		$metadataDropdownGroup = $('#publish-button-edit-metadata-existing-grp'),
-		$metadataDropdownList = $('#publish-list-edit-metadata-existing'),
-		$metadataSummaryField = $('#form-publish-info-item-summary-version'),
-		$uploaderDummy = $('#qq-uploader-dummy'),
-		$itemEnabledField = $('#form-publish-info-item-enabled'),
-		$itemImage = $form.find('#form-publish-info-item-image'),
-		$imageGenButton = $form.find('#form-publish-info-item-image-gen'),
-		$buttonSave = $('#publish-button-save'),
-		$buttonDelete = $('#publish-button-delete'),
-		$buttonLogout = $('#publish-button-logout'),
-		$buttonViewAll = $('#publish-button-view-all'),
-		$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
-		$wfsHelpLink = $form.find('.form-publish-item-service-source-wfs-import-button-service-help-link'),
-		$wmsHelpLink = $form.find('.form-publish-item-service-source-wms-import-button-service-help-link'),
-		$sourceWfsCheckButton = $form.find('#form-publish-item-service-source-wfs-import-button-check'),
-		$sourceWmsCheckButton = $form.find('#form-publish-item-service-source-wms-import-button-check'),
-		$wfsSourceCopyButton = $form.find('#form-publish-item-service-source-wfs-copy-button'),
-		$wmsServerHelpButton = $form.find('#form-publish-item-service-source-wms-import-button-service-select'),
-		$proxyWfsCheckButton = $form.find('#form-publish-item-service-proxy-wfs-import-button-check'),
-		$proxyWmsCheckButton = $form.find('#form-publish-item-service-proxy-wms-import-button-check'),
-		$getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button'),
-		$emphasisItemSpan = $form.find('.emphasis-item'),
-		$emphasisAggregationSpan = $form.find('.emphasis-aggregation'),
-		$isActiveStormRow = $form.find('#form-publish-info-item-active-storm'),
-		$isActiveStormChecbox = $form.find('#checkbox-isactive'),
-		$resourceSortableContainers = $('.resource-list-container-sortable');
+			$form = $('form'),
+			$itemIdInput = $form.find('#form-publish-item-id'),
+			$titleFullTextArea = $form.find('#form-publish-item-title-full'),
+			$titleMediumTextArea = $form.find('#form-publish-item-title-medium'),
+			$descriptionFullTextArea = $form.find('#form-publish-item-description-full'),
+			$descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
+			$descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
+			$bboxNorth = $form.find('#form-publish-item-bbox-input-north'),
+			$bboxWest = $form.find('#form-publish-item-bbox-input-west'),
+			$bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
+			$bboxEast = $form.find('#form-publish-item-bbox-input-east'),
+			$typeSb = $form.find('#form-publish-item-type'),
+			$attributeSelect = $form.find('#form-publish-item-attribute'),
+			$attributeRetrieveDataButton = $form.find('#form-publish-item-attribute-button'),
+			$keywordGroup = $form.find('.form-group-keyword'),
+			$cswServiceInput = $form.find('#form-publish-item-service-csw'),
+			$srcWfsServiceInput = $form.find('#form-publish-item-service-source-wfs'),
+			$srcWfsServiceParamInput = $form.find('#form-publish-item-service-source-wfs-serviceparam'),
+			$srcWmsServiceInput = $form.find('#form-publish-item-service-source-wms'),
+			$srcWmsServiceParamInput = $form.find('#form-publish-item-service-source-wms-serviceparam'),
+			$proxyWfsServiceInput = $form.find('#form-publish-item-service-proxy-wfs'),
+			$proxyWfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wfs-serviceparam'),
+			$proxyWmsServiceInput = $form.find('#form-publish-item-service-proxy-wms'),
+			$proxyWmsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
+			$publicationsPanel = $form.find('#publications-panel'),
+			$ribbonableCb = $form.find('#form-publish-item-ribbonable'),
+			$showChildrenCb = $form.find('#form-publish-item-showchildren'),
+			$itemType = $form.find('#form-publish-info-item-itemtype'),
+			$name = $form.find('#form-publish-item-name'),
+			$wfsImportButton = $form.find('#form-publish-item-service-source-wfs-import-button'),
+			$keywordGroupClone = $keywordGroup.clone(),
+			$childrenSortableList = $form.find('#form-publish-info-item-children-sortable-ul'),
+			$alertModal = $('#alert-modal'),
+			$alertModalTitle = $alertModal.find('.modal-title'),
+			$alertModalBody = $alertModal.find('.modal-body'),
+			$alertModalFooter = $alertModal.find('.modal-footer'),
+			$metadataDropdownGroup = $('#publish-button-edit-metadata-existing-grp'),
+			$metadataDropdownList = $('#publish-list-edit-metadata-existing'),
+			$metadataSummaryField = $('#form-publish-info-item-summary-version'),
+			$uploaderDummy = $('#qq-uploader-dummy'),
+			$itemEnabledField = $('#form-publish-info-item-enabled'),
+			$itemImage = $form.find('#form-publish-info-item-image'),
+			$imageGenButton = $form.find('#form-publish-info-item-image-gen'),
+			$buttonSave = $('#publish-button-save'),
+			$buttonDelete = $('#publish-button-delete'),
+			$buttonLogout = $('#publish-button-logout'),
+			$buttonViewAll = $('#publish-button-view-all'),
+			$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
+			$wfsHelpLink = $form.find('.form-publish-item-service-source-wfs-import-button-service-help-link'),
+			$wmsHelpLink = $form.find('.form-publish-item-service-source-wms-import-button-service-help-link'),
+			$sourceWfsCheckButton = $form.find('#form-publish-item-service-source-wfs-import-button-check'),
+			$sourceWmsCheckButton = $form.find('#form-publish-item-service-source-wms-import-button-check'),
+			$wfsSourceCopyButton = $form.find('#form-publish-item-service-source-wfs-copy-button'),
+			$wmsServerHelpButton = $form.find('#form-publish-item-service-source-wms-import-button-service-select'),
+			$proxyWfsCheckButton = $form.find('#form-publish-item-service-proxy-wfs-import-button-check'),
+			$proxyWmsCheckButton = $form.find('#form-publish-item-service-proxy-wms-import-button-check'),
+			$getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button'),
+			$emphasisItemSpan = $form.find('.emphasis-item'),
+			$emphasisAggregationSpan = $form.find('.emphasis-aggregation'),
+			$isActiveStormRow = $form.find('#form-publish-info-item-active-storm'),
+			$isActiveStormChecbox = $form.find('#checkbox-isactive'),
+			$resourceSortableContainers = $('.resource-list-container-sortable');
 
 	me.templates = {};
 
@@ -256,7 +256,7 @@ CCH.Objects.Publish.UI = function () {
 		$isActiveStormRow.addClass('hidden');
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
 	};
-	
+
 	me.enableNewTemplateForm = function () {
 		$itemType.val('template');
 		$titleFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
@@ -315,7 +315,23 @@ CCH.Objects.Publish.UI = function () {
 
 	me.validateForm = function () {
 		var type = $itemType.val(),
-				errors = [];
+				errors = [],
+				validateBbox = function (errors) {
+					if (me.isBlank($bboxNorth)) {
+						errors.push('Bounding box north is not provided');
+					}
+					if (me.isBlank($bboxWest)) {
+						errors.push('Bounding box west is not provided');
+					}
+					if (me.isBlank($bboxSouth)) {
+						errors.push('Bounding box south is not provided');
+					}
+					if (me.isBlank($bboxEast)) {
+						errors.push('Bounding box east is not provided');
+					}
+					return errors;
+				};
+
 		if (type) {
 			if ('data' === type) {
 				if (me.isBlank($attributeSelect)) {
@@ -401,11 +417,16 @@ CCH.Objects.Publish.UI = function () {
 					if (link.length > CCH.CONFIG.limits.publication.link) {
 						errors.push('Publication link is longer than ' + CCH.CONFIG.limits.publication.link + ' characters for publication ' + (ind + 1));
 					}
+					
+					validateBbox(errors);
 				});
-			} else if ('aggregation' === type || 'uber' === type || 'template' === type) {
+			} else if ('aggregation' === type || 'uber' === type) {
 				if ($childrenSortableList.find('li > span > div > button:first-child.active').length === 0) {
 					errors.push('Aggregations require at least one child');
 				}
+				validateBbox(errors);
+			} else if ('template' === type) {
+				// TODO- What validation goes into a template type?
 			}
 
 			if (me.isBlank($titleFullTextArea)) {
@@ -443,19 +464,6 @@ CCH.Objects.Publish.UI = function () {
 				errors.push('Tiny description was longer than ' + CCH.CONFIG.limits.summary.tiny.text + ' characters');
 			}
 
-			if (me.isBlank($bboxNorth)) {
-				errors.push('Bounding box north is not provided');
-			}
-			if (me.isBlank($bboxWest)) {
-				errors.push('Bounding box west is not provided');
-			}
-			if (me.isBlank($bboxSouth)) {
-				errors.push('Bounding box south is not provided');
-			}
-			if (me.isBlank($bboxEast)) {
-				errors.push('Bounding box east is not provided');
-			}
-
 			if ($('.form-group-keyword').length === 1) {
 				errors.push('No keywords provided');
 			}
@@ -482,41 +490,41 @@ CCH.Objects.Publish.UI = function () {
 
 	me.buildItemFromForm = function () {
 		var id = $itemIdInput.val(),
-			itemType = $itemType.val(),
-			summary = {},
-			keywordsArray = [],
-			name = $name.val(),
-			type = $typeSb.val(),
-			attr = $attributeSelect.val() || '',
-			ribbonable = $ribbonableCb.prop(CCH.CONFIG.strings.checked),
-			showChildren = $showChildrenCb.prop(CCH.CONFIG.strings.checked),
-			enabled = $itemEnabledField.val() === 'true' ? true : false,
-			activeStorm = $isActiveStormChecbox.prop('checked'),
-			services = [],
-			children = [],
-			displayedChildren = [],
-			bbox = [
-				$bboxWest.val(),
-				$bboxSouth.val(),
-				$bboxEast.val(),
-				$bboxNorth.val()
-			],
-			item = {
-				id: id,
-				itemType: itemType,
-				attr: attr,
-				bbox: bbox,
-				name: name,
-				type: type,
-				ribbonable: ribbonable,
-				summary: summary,
-				showChildren: showChildren,
-				enabled: enabled,
-				services: services,
-				children: children,
-				displayedChildren: displayedChildren,
-				activeStorm: activeStorm
-			};
+				itemType = $itemType.val(),
+				summary = {},
+				keywordsArray = [],
+				name = $name.val(),
+				type = $typeSb.val(),
+				attr = $attributeSelect.val() || '',
+				ribbonable = $ribbonableCb.prop(CCH.CONFIG.strings.checked),
+				showChildren = $showChildrenCb.prop(CCH.CONFIG.strings.checked),
+				enabled = $itemEnabledField.val() === 'true' ? true : false,
+				activeStorm = $isActiveStormChecbox.prop('checked'),
+				services = [],
+				children = [],
+				displayedChildren = [],
+				bbox = [
+					$bboxWest.val(),
+					$bboxSouth.val(),
+					$bboxEast.val(),
+					$bboxNorth.val()
+				],
+				item = {
+					id: id,
+					itemType: itemType,
+					attr: attr,
+					bbox: bbox,
+					name: name,
+					type: type,
+					ribbonable: ribbonable,
+					summary: summary,
+					showChildren: showChildren,
+					enabled: enabled,
+					services: services,
+					children: children,
+					displayedChildren: displayedChildren,
+					activeStorm: activeStorm
+				};
 
 		summary.version = 'manual';
 		summary.tiny = {
@@ -535,7 +543,7 @@ CCH.Objects.Publish.UI = function () {
 				resources: []
 			}
 		};
-		
+
 		$('.resource-panel .panel-body ul > li div.well').each(function (idx, panel) {
 			var $panel = $(panel),
 					title = $panel.find('>div:nth-child(2) input').val().trim(),
@@ -604,10 +612,10 @@ CCH.Objects.Publish.UI = function () {
 	me.initUploader = function (args) {
 		args = args || {};
 		var button = args.button,
-			callbacks = args.callbacks || {
-				success: [],
-				error: []
-			},
+				callbacks = args.callbacks || {
+					success: [],
+					error: []
+				},
 		qqUploader;
 
 		qqUploader = new qq.FineUploader({
@@ -661,20 +669,20 @@ CCH.Objects.Publish.UI = function () {
 
 	me.bindKeywordGroup = function ($grp) {
 		$grp.find('button')
-			.on(CCH.CONFIG.strings.click, function () {
-				if ($form.find('.form-group-keyword').length > 1) {
-					// This is the last keyword group, so don't remove it
-					$grp.remove();
-				}
-			});
-		$grp.find('input')
-			.on({
-				'focusout': function (evt) {
-					if (evt.target.value === '') {
+				.on(CCH.CONFIG.strings.click, function () {
+					if ($form.find('.form-group-keyword').length > 1) {
+						// This is the last keyword group, so don't remove it
 						$grp.remove();
 					}
-				}
-			});
+				});
+		$grp.find('input')
+				.on({
+					'focusout': function (evt) {
+						if (evt.target.value === '') {
+							$grp.remove();
+						}
+					}
+				});
 	};
 
 	me.addKeywordGroup = function (keyword) {
@@ -709,26 +717,26 @@ CCH.Objects.Publish.UI = function () {
 					tag;
 			cswNodes[0].children.each(function (node) {
 				tag = node.tag;
-				
+
 				if (tag === 'idinfo') {
 					node.children.each(function (childNode) {
 						tag = childNode.tag;
 						switch (tag) {
-						case 'spdom':
-							childNode.children[0].children.each(function (spdom) {
-								var direction = spdom.tag.substring(0, spdom.tag.length - 2);
-								$('#form-publish-item-bbox-input-' + direction).val(spdom.text);
-							});
-							break;
-						case 'keywords':
-							childNode.children.each(function (kwNode) {
-								var keywords = kwNode.children;
-								keywords.splice(1).each(function (kwObject) {
-									var keyword = kwObject.text;
-									me.addKeywordGroup(keyword);
+							case 'spdom':
+								childNode.children[0].children.each(function (spdom) {
+									var direction = spdom.tag.substring(0, spdom.tag.length - 2);
+									$('#form-publish-item-bbox-input-' + direction).val(spdom.text);
 								});
-							});
-							break;
+								break;
+							case 'keywords':
+								childNode.children.each(function (kwNode) {
+									var keywords = kwNode.children;
+									keywords.splice(1).each(function (kwObject) {
+										var keyword = kwObject.text;
+										me.addKeywordGroup(keyword);
+									});
+								});
+								break;
 						}
 					});
 				}
@@ -792,10 +800,10 @@ CCH.Objects.Publish.UI = function () {
 	me.publishMetadata = function (args) {
 		args = args || {};
 		var token = args.token,
-			callbacks = args.callbacks || {
-				success: [],
-				error: []
-			};
+				callbacks = args.callbacks || {
+					success: [],
+					error: []
+				};
 
 		$.ajax({
 			url: CCH.CONFIG.contextPath + '/publish/metadata/' + token,
@@ -881,17 +889,17 @@ CCH.Objects.Publish.UI = function () {
 
 	me.createPublicationRow = function (link, title, type, prepend) {
 		var exists = false,
-			$panel = $('#' + type + '-panel'),
-			$panelBodyListContainer = $panel.find('.panel-body > ul');
-		
+				$panel = $('#' + type + '-panel'),
+				$panelBodyListContainer = $panel.find('.panel-body > ul');
+
 		var publicationRowHtml = CCH.ui.templates.publication_row({
-			linkValue : link, 
-			titleValue : title,
-			linkInputMaxLength : CCH.CONFIG.limits.publication.link,
-			titleInputMaxLength : CCH.CONFIG.limits.publication.title
+			linkValue: link,
+			titleValue: title,
+			linkInputMaxLength: CCH.CONFIG.limits.publication.link,
+			titleInputMaxLength: CCH.CONFIG.limits.publication.title
 		});
 		var $rowObject = $(publicationRowHtml);
-		
+
 		// Check that this item does not yet exist in the UI
 		$('.resource-panel .well').each(function (i, pubPanel) {
 			var pTitle = $(pubPanel).find('>.row:nth-child(2) input').val() || '',
@@ -911,24 +919,24 @@ CCH.Objects.Publish.UI = function () {
 			} else {
 				$panelBodyListContainer.prepend($rowObject);
 			}
-			
+
 			$rowObject.find('.publicationrow-closebutton').on(CCH.CONFIG.strings.click, function (evt) {
 				$(evt.target).closest('.well').remove();
 			});
 			$rowObject.find('select').val(type);
 			$rowObject.find('select').on('change', me.resourceTypeChanged);
-			
+
 		}
 		return $rowObject;
 	};
-	
+
 	// When a resource type changes, I want to remove it from its current bin
 	// and place a new resource item into the bin it should go into
 	me.resourceTypeChanged = function (evt) {
 		var type = evt.target.value,
-			$parentContainer = $(evt.target).closest('li'),
-			title = $parentContainer.find('.panel-item-title').val(),
-			link = $parentContainer.find('.panel-item-link').val();
+				$parentContainer = $(evt.target).closest('li'),
+				title = $parentContainer.find('.panel-item-title').val(),
+				link = $parentContainer.find('.panel-item-link').val();
 
 		$parentContainer.remove();
 		me.createPublicationRow(link, title, type);
@@ -992,15 +1000,15 @@ CCH.Objects.Publish.UI = function () {
 
 				// Fill out item type
 				$typeSb
-					.val(item.type)
-					.removeAttr(CCH.CONFIG.strings.disabled)
-					.on('change', me.createSortableChildren)
-					.trigger('change');
+						.val(item.type)
+						.removeAttr(CCH.CONFIG.strings.disabled)
+						.on('change', me.createSortableChildren)
+						.trigger('change');
 
 				// Show Children
 				$showChildrenCb
-					.prop(CCH.CONFIG.strings.checked, item.showChildren)
-					.removeAttr(CCH.CONFIG.strings.disabled);
+						.prop(CCH.CONFIG.strings.checked, item.showChildren)
+						.removeAttr(CCH.CONFIG.strings.disabled);
 
 				// Select children
 				item.children.reverse().each(function (child) {
@@ -1012,7 +1020,7 @@ CCH.Objects.Publish.UI = function () {
 					}
 
 					var $li = $childrenSortableList
-						.find('li#child-item-' + id);
+							.find('li#child-item-' + id);
 
 					// Move child to top of list
 					$childrenSortableList.prepend($li);
@@ -1023,17 +1031,17 @@ CCH.Objects.Publish.UI = function () {
 						$button.click();
 					}
 				});
-				
+
 				item.displayedChildren.each(function (child) {
 					var $button = $childrenSortableList
-						.find('li#child-item-' + child)
-						.find('div > button:nth-child(2)');
+							.find('li#child-item-' + child)
+							.find('div > button:nth-child(2)');
 
 					if (!$button.hasClass('active')) {
 						$button.click();
 					}
 				});
-				
+
 				// Bubble the displayed children to the top of the stack in proper order
 				item.displayedChildren.reverse().each(function (id) {
 					var $displayedChild = $('.form-publish-info-item-children-sortable-li#child-item-' + id);
@@ -1042,7 +1050,7 @@ CCH.Objects.Publish.UI = function () {
 
 				$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
 				$metadataDropdownGroup.addClass(CCH.CONFIG.strings.hidden);
-				
+
 				if (CCH.CONFIG.ui.disableBoundingBoxInputForAggregations === false) {
 					$bboxWest.removeAttr(CCH.CONFIG.strings.disabled);
 					$bboxSouth.removeAttr(CCH.CONFIG.strings.disabled);
@@ -1053,16 +1061,16 @@ CCH.Objects.Publish.UI = function () {
 				$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 				$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
 				$childrenSortableList.empty();
-				
+
 				// Fill out item type
 				$typeSb
-					.val(item.type)
-					.removeAttr(CCH.CONFIG.strings.disabled);
-			
+						.val(item.type)
+						.removeAttr(CCH.CONFIG.strings.disabled);
+
 				// Show Children
 				$showChildrenCb
-					.prop(CCH.CONFIG.strings.checked, false)
-					.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+						.prop(CCH.CONFIG.strings.checked, false)
+						.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 
 				// Fill out services array
 				item.services.each(function (service) {
@@ -1070,7 +1078,7 @@ CCH.Objects.Publish.UI = function () {
 					services[service.type].endpoint = service.endpoint;
 					services[service.type].serviceParameter = service.serviceParameter;
 				});
-				
+
 				if (item.services.length > 0) {
 					// Fill out attribute selectbox by making a call to the WFS
 					if (services.proxy_wfs) {
@@ -1081,8 +1089,8 @@ CCH.Objects.Publish.UI = function () {
 								success: [function (responseObject) {
 										me.updateSelectAttribtue(responseObject);
 										$attributeSelect
-											.val(item.attr)
-											.removeAttr(CCH.CONFIG.strings.disabled);
+												.val(item.attr)
+												.removeAttr(CCH.CONFIG.strings.disabled);
 									}],
 								error: [
 									function (data) {
@@ -1102,50 +1110,50 @@ CCH.Objects.Publish.UI = function () {
 							}
 						});
 					}
-					
+
 					// Fill out services panel
 					if (services.csw) {
 						$cswServiceInput
-							.val(services.csw.endpoint)
-							.removeAttr(CCH.CONFIG.strings.disabled);
+								.val(services.csw.endpoint)
+								.removeAttr(CCH.CONFIG.strings.disabled);
 					}
-					
+
 					if (services.source_wfs) {
 						$srcWfsServiceInput
-							.val(services.source_wfs.endpoint)
-							.removeAttr(CCH.CONFIG.strings.disabled);
+								.val(services.source_wfs.endpoint)
+								.removeAttr(CCH.CONFIG.strings.disabled);
 						$srcWfsServiceParamInput
-							.val(services.source_wfs.serviceParameter)
-							.removeAttr(CCH.CONFIG.strings.disabled);
-					}	
-					
+								.val(services.source_wfs.serviceParameter)
+								.removeAttr(CCH.CONFIG.strings.disabled);
+					}
+
 					if (services.source_wms) {
 						$srcWmsServiceInput
-							.val(services.source_wms.endpoint)
-							.removeAttr(CCH.CONFIG.strings.disabled);
+								.val(services.source_wms.endpoint)
+								.removeAttr(CCH.CONFIG.strings.disabled);
 						$srcWmsServiceParamInput
-							.val(services.source_wms.serviceParameter)
-							.removeAttr(CCH.CONFIG.strings.disabled);
+								.val(services.source_wms.serviceParameter)
+								.removeAttr(CCH.CONFIG.strings.disabled);
 					}
-					
+
 					if (services.proxy_wfs) {
 						$proxyWfsServiceInput
-							.val(services.proxy_wfs.endpoint)
-							.removeAttr(CCH.CONFIG.strings.disabled);
+								.val(services.proxy_wfs.endpoint)
+								.removeAttr(CCH.CONFIG.strings.disabled);
 						$proxyWfsServiceParamInput
-							.val(services.proxy_wfs.serviceParameter)
-							.removeAttr(CCH.CONFIG.strings.disabled);
+								.val(services.proxy_wfs.serviceParameter)
+								.removeAttr(CCH.CONFIG.strings.disabled);
 						$getWfsAttributesButton.removeAttr(CCH.CONFIG.strings.disabled);
 					}
-					
+
 					if (services.proxy_wms) {
 						$proxyWmsServiceInput
-							.val(services.proxy_wms.endpoint)
-							.removeAttr(CCH.CONFIG.strings.disabled);
+								.val(services.proxy_wms.endpoint)
+								.removeAttr(CCH.CONFIG.strings.disabled);
 
 						$proxyWmsServiceParamInput
-							.val(services.proxy_wms.serviceParameter)
-							.removeAttr(CCH.CONFIG.strings.disabled);
+								.val(services.proxy_wms.serviceParameter)
+								.removeAttr(CCH.CONFIG.strings.disabled);
 					}
 				}
 
@@ -1191,7 +1199,7 @@ CCH.Objects.Publish.UI = function () {
 						]
 					}
 				});
-				
+
 				$bboxWest.removeAttr(CCH.CONFIG.strings.disabled);
 				$bboxSouth.removeAttr(CCH.CONFIG.strings.disabled);
 				$bboxEast.removeAttr(CCH.CONFIG.strings.disabled);
@@ -1205,22 +1213,22 @@ CCH.Objects.Publish.UI = function () {
 
 			// Add Item Text
 			$titleFullTextArea
-				.val(titleFull)
-				.removeAttr(CCH.CONFIG.strings.disabled);
+					.val(titleFull)
+					.removeAttr(CCH.CONFIG.strings.disabled);
 			$titleMediumTextArea
-				.val(titleMedium)
-				.removeAttr(CCH.CONFIG.strings.disabled);
+					.val(titleMedium)
+					.removeAttr(CCH.CONFIG.strings.disabled);
 
 			// Add Description Text
 			$descriptionFullTextArea
-				.val(descriptionFull)
-				.removeAttr(CCH.CONFIG.strings.disabled);
+					.val(descriptionFull)
+					.removeAttr(CCH.CONFIG.strings.disabled);
 			$descriptionMediumTextArea
-				.val(descriptionMedium)
-				.removeAttr(CCH.CONFIG.strings.disabled);
+					.val(descriptionMedium)
+					.removeAttr(CCH.CONFIG.strings.disabled);
 			$descriptionTinyTextArea
-				.val(descriptionTiny)
-				.removeAttr(CCH.CONFIG.strings.disabled);
+					.val(descriptionTiny)
+					.removeAttr(CCH.CONFIG.strings.disabled);
 
 			// Add keywords
 			keywords.each(function (keyword) {
@@ -1244,8 +1252,8 @@ CCH.Objects.Publish.UI = function () {
 
 			// Ribbonable
 			$ribbonableCb
-				.prop(CCH.CONFIG.strings.checked, item.ribbonable)
-				.removeAttr(CCH.CONFIG.strings.disabled);
+					.prop(CCH.CONFIG.strings.checked, item.ribbonable)
+					.removeAttr(CCH.CONFIG.strings.disabled);
 
 			// Publications
 			$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
@@ -1283,28 +1291,28 @@ CCH.Objects.Publish.UI = function () {
 						}
 					}
 				};
-				
+
 		CCH.items.each(function (item) {
 			itemId = item.id;
 			if (itemId !== currentAggregationId && isOfType(item)) {
 				var $li = $('<li />')
-					.addClass('ui-state-default form-publish-info-item-children-sortable-li')
-					.attr('id', 'child-item-' + item.id),
-					$span = $('<span />')
+						.addClass('ui-state-default form-publish-info-item-children-sortable-li')
+						.attr('id', 'child-item-' + item.id),
+						$span = $('<span />')
 						.addClass('form-publish-info-item-children-sortable-li-span'),
-					$buttonDiv = $('<div />'),
-					$activeButton = $('<button />')
+						$buttonDiv = $('<div />'),
+						$activeButton = $('<button />')
 						.addClass('btn btn-xs btn-default btn-child-active')
 						.attr({
-						'type': 'button',
-						'data-toggle': 'button'
-					}),
-					$viewButton = $('<button />')
+							'type': 'button',
+							'data-toggle': 'button'
+						}),
+						$viewButton = $('<button />')
 						.addClass('btn btn-xs btn-default btn-child-visible')
 						.attr({
-						'type': 'button',
-						'data-toggle': 'button'
-					});
+							'type': 'button',
+							'data-toggle': 'button'
+						});
 
 				$activeButton.append($('<i />').addClass('fa fa-check'));
 				$viewButton.append($('<i />').addClass('fa fa-eye'));
@@ -1312,11 +1320,11 @@ CCH.Objects.Publish.UI = function () {
 				$buttonDiv.append($activeButton, $viewButton);
 
 				$span
-					.append(
-						$('<i />').addClass("fa fa-arrows-v"),
-						' ' + item.summary.medium.title + ' ',
-						$buttonDiv
-						);
+						.append(
+								$('<i />').addClass("fa fa-arrows-v"),
+								' ' + item.summary.medium.title + ' ',
+								$buttonDiv
+								);
 
 				$li.append($span);
 
@@ -1344,7 +1352,7 @@ CCH.Objects.Publish.UI = function () {
 										$button.addClass('active');
 										processChildren();
 									}),
-									$alertModal.modal(CCH.CONFIG.strings.hide);
+											$alertModal.modal(CCH.CONFIG.strings.hide);
 									$alertModalTitle.html('Cyclic Relationship Found');
 									$alertModalBody.html('There was a cyclic relationship found ' +
 											'between parent ' + currentAggregationId +
@@ -1376,7 +1384,7 @@ CCH.Objects.Publish.UI = function () {
 			}
 
 		});
-		
+
 		$childrenSortableList.sortable();
 	};
 
@@ -1427,10 +1435,10 @@ CCH.Objects.Publish.UI = function () {
 		args = args || {};
 
 		var item = args.item,
-			callbacks = args.callbacks || {
-				success: [],
-				error: []
-			},
+				callbacks = args.callbacks || {
+					success: [],
+					error: []
+				},
 		method,
 				url = CCH.CONFIG.contextPath + '/data/item/';
 
@@ -1464,11 +1472,11 @@ CCH.Objects.Publish.UI = function () {
 		args = args || {};
 
 		var service = args.service,
-			param = args.param,
-			callbacks = args.callbacks || {
-				success: [],
-				error: []
-			};
+				param = args.param,
+				callbacks = args.callbacks || {
+					success: [],
+					error: []
+				};
 
 		if (service && param) {
 			CCH.ows.describeFeatureType({
@@ -1542,7 +1550,7 @@ CCH.Objects.Publish.UI = function () {
 						$bboxNorth.val(item.bbox[3]);
 					}
 				}
-				
+
 			});
 		} else {
 			$bboxWest.val('');
@@ -1555,37 +1563,37 @@ CCH.Objects.Publish.UI = function () {
 	me.deleteItem = function (id) {
 		var $deleteButton = $('<button />')
 				.attr({
-				type: 'button',
-				'data-dismiss': 'modal'
-			})
-			.addClass('btn btn-danger')
-			.html('Delete')
-			.on(CCH.CONFIG.strings.click, function () {
-				$.ajax({
-					url: CCH.CONFIG.contextPath + '/data/item/' + id,
-					method: 'DELETE',
-					success: function () {
-						window.location = CCH.CONFIG.contextPath + '/publish/item/';
-					},
-					error: function (jqXHR, err, errTxt) {
-						if (errTxt.indexOf('Unauthorized') !== -1) {
-							$alertModal.modal(CCH.CONFIG.strings.hide);
-							$alertModalTitle.html('Item Could Not Be Deleted');
-							$alertModalBody.html('It looks like your session has expired.' +
-									'You should try reloading the page to continue.');
-							$alertModal.modal(CCH.CONFIG.strings.show);
-						} else {
-							$alertModal.modal(CCH.CONFIG.strings.hide);
-							$alertModalTitle.html('Item Could Not Be Deleted');
-							$alertModalBody.html('Unfortunately the item you\'re ' +
-									'trying to delete couldn\'t be deleted. ' +
-									'You may need to contact the system administrator ' +
-									'to manually remove it in order to continue');
-							$alertModal.modal(CCH.CONFIG.strings.show);
+					type: 'button',
+					'data-dismiss': 'modal'
+				})
+				.addClass('btn btn-danger')
+				.html('Delete')
+				.on(CCH.CONFIG.strings.click, function () {
+					$.ajax({
+						url: CCH.CONFIG.contextPath + '/data/item/' + id,
+						method: 'DELETE',
+						success: function () {
+							window.location = CCH.CONFIG.contextPath + '/publish/item/';
+						},
+						error: function (jqXHR, err, errTxt) {
+							if (errTxt.indexOf('Unauthorized') !== -1) {
+								$alertModal.modal(CCH.CONFIG.strings.hide);
+								$alertModalTitle.html('Item Could Not Be Deleted');
+								$alertModalBody.html('It looks like your session has expired.' +
+										'You should try reloading the page to continue.');
+								$alertModal.modal(CCH.CONFIG.strings.show);
+							} else {
+								$alertModal.modal(CCH.CONFIG.strings.hide);
+								$alertModalTitle.html('Item Could Not Be Deleted');
+								$alertModalBody.html('Unfortunately the item you\'re ' +
+										'trying to delete couldn\'t be deleted. ' +
+										'You may need to contact the system administrator ' +
+										'to manually remove it in order to continue');
+								$alertModal.modal(CCH.CONFIG.strings.show);
+							}
 						}
-					}
+					});
 				});
-			});
 		$alertModal.modal(CCH.CONFIG.strings.hide);
 		$alertModalTitle.html('Delete Item?');
 		$alertModalBody.html('<h2>WARNING: This action cannot be undone</h2>');
@@ -1595,7 +1603,7 @@ CCH.Objects.Publish.UI = function () {
 
 	me.generateImage = function (id) {
 		var imageEndpoint = CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id;
-		
+
 		CCH.ows.generateThumbnail({
 			id: id,
 			callbacks: {
@@ -1750,44 +1758,44 @@ CCH.Objects.Publish.UI = function () {
 				errorCallback = function (errorText) {
 					if (errorText.indexOf('already exists') !== -1) {
 						var $overwriteButton = $('<button />')
-							.attr({
-								type: 'button',
-								'data-dismiss': 'modal'
-							})
-							.addClass('btn btn-primary')
-							.html('Overwrite')
-							.on(CCH.CONFIG.strings.click, function () {
-								$alertModal.modal(CCH.CONFIG.strings.hide);
+								.attr({
+									type: 'button',
+									'data-dismiss': 'modal'
+								})
+								.addClass('btn btn-primary')
+								.html('Overwrite')
+								.on(CCH.CONFIG.strings.click, function () {
+									$alertModal.modal(CCH.CONFIG.strings.hide);
 
-								var deleteCall = function () {
-									$alertModal.off('hidden.bs.modal', deleteCall);
-									var updatedLayerName = $srcWfsServiceParamInput.val().split(':')[1];
+									var deleteCall = function () {
+										$alertModal.off('hidden.bs.modal', deleteCall);
+										var updatedLayerName = $srcWfsServiceParamInput.val().split(':')[1];
 
-									$.ajax({
-										url: CCH.CONFIG.contextPath + '/data/layer/' + encodeURIComponent(updatedLayerName),
-										method: 'DELETE',
-										success: function () {
-											importCall();
-										},
-										error: function (jqXHR, err, errTxt) {
-											if (errTxt.indexOf('Unauthorized') !== -1) {
+										$.ajax({
+											url: CCH.CONFIG.contextPath + '/data/layer/' + encodeURIComponent(updatedLayerName),
+											method: 'DELETE',
+											success: function () {
+												importCall();
+											},
+											error: function (jqXHR, err, errTxt) {
+												if (errTxt.indexOf('Unauthorized') !== -1) {
+													$alertModalTitle.html('Layer Could Not Be Removed');
+													$alertModalBody.html('It looks like your session has expired.' +
+															'You should try reloading the page to continue.');
+													$alertModal.modal(CCH.CONFIG.strings.show);
+												}
 												$alertModalTitle.html('Layer Could Not Be Removed');
-												$alertModalBody.html('It looks like your session has expired.' +
-														'You should try reloading the page to continue.');
+												$alertModalBody.html('Unfortunately the layer you\'re ' +
+														'trying to import could not be overwritten. ' +
+														'You may need to contact the system administrator ' +
+														'to manually remove it in order to continue');
 												$alertModal.modal(CCH.CONFIG.strings.show);
 											}
-											$alertModalTitle.html('Layer Could Not Be Removed');
-											$alertModalBody.html('Unfortunately the layer you\'re ' +
-													'trying to import could not be overwritten. ' +
-													'You may need to contact the system administrator ' +
-													'to manually remove it in order to continue');
-											$alertModal.modal(CCH.CONFIG.strings.show);
-										}
-									});
-								};
+										});
+									};
 
-								$alertModal.on('hidden.bs.modal', deleteCall);
-							});
+									$alertModal.on('hidden.bs.modal', deleteCall);
+								});
 						$alertModalTitle.html('Layer Could Not Be Imported');
 						$alertModalBody.html('Layer Already Exists On Server. Overwrite?');
 						$alertModalFooter.append($overwriteButton);
@@ -1823,19 +1831,19 @@ CCH.Objects.Publish.UI = function () {
 		}
 	});
 
-	['publications', 'resources', 'data'].forEach(function(type) {
+	['publications', 'resources', 'data'].forEach(function (type) {
 		$('#form-publish-info-item-panel-' + type + '-button-add').on(CCH.CONFIG.strings.click, function () {
 			me.createPublicationRow('', '', type, true);
 		});
 	});
-	
+
 
 	$('#publish-button-create-aggregation-option').on(CCH.CONFIG.strings.click, function () {
 		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
 		me.clearForm();
 		me.enableNewAggregationForm();
 	});
-	
+
 	$('#publish-button-create-template-option').on(CCH.CONFIG.strings.click, function () {
 		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
 		me.clearForm();
@@ -1905,7 +1913,7 @@ CCH.Objects.Publish.UI = function () {
 		$alertModalBody.empty();
 		$alertModalFooter.find('button').not('#alert-modal-close-button').remove();
 	});
-	
+
 	$buttonLogout.on(CCH.CONFIG.strings.click, function () {
 		CCH.Auth.logout();
 	});
@@ -1926,11 +1934,11 @@ CCH.Objects.Publish.UI = function () {
 							if (!id) {
 								id = $itemIdInput.val();
 							}
-							
+
 							$(window).on('generate.image.complete', function (evt, id) {
 								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
 							});
-							
+
 							CCH.ui.generateImage(id);
 						}
 					],
@@ -2089,11 +2097,11 @@ CCH.Objects.Publish.UI = function () {
 				}
 			} else if (srcWfsVal.indexOf(CCH.CONFIG.data.sources['marine-arcserver'].endpoint) !== -1) {
 				var serverName = 'marine-arcserver',
-					serverData = CCH.CONFIG.data.sources[serverName],
-					namespace = srcWfsVal.substring(serverData.endpoint.length + 1),
-					url = $srcWfsServiceInput.val(),
-					nsSvc = url.substring(url.indexOf('cmgp') + 5);
-					
+						serverData = CCH.CONFIG.data.sources[serverName],
+						namespace = srcWfsVal.substring(serverData.endpoint.length + 1),
+						url = $srcWfsServiceInput.val(),
+						nsSvc = url.substring(url.indexOf('cmgp') + 5);
+
 				CCH.ows.getWFSCapabilities({
 					'server': serverName,
 					'namespace': nsSvc,
@@ -2323,7 +2331,7 @@ CCH.Objects.Publish.UI = function () {
 	});
 
 	me.clearForm();
-	
+
 	// If the item is a storm, give the user a chance to mark it active or inactive
 	$typeSb.on('change', function (evt) {
 		if (evt.target.value === "storms") {
@@ -2341,9 +2349,9 @@ CCH.Objects.Publish.UI = function () {
 					response.children.each(function (responseChild) {
 						if (responseChild.tag === "csw:SearchResults" && responseChild.children) {
 							var id,
-								title,
-								$li,
-								$a;
+									title,
+									$li,
+									$a;
 
 							responseChild.children.each(function (recordSummary) {
 								recordSummary.children.each(function (recordAttribute) {
@@ -2357,11 +2365,11 @@ CCH.Objects.Publish.UI = function () {
 								if (id && title) {
 									$li = $('<li />');
 									$a = $('<a />')
-										.attr({
-											'data-attr': id,
-											'href': '#'
-										})
-										.html(title);
+											.attr({
+												'data-attr': id,
+												'href': '#'
+											})
+											.html(title);
 									$li.append($a);
 									$metadataDropdownList.append($li);
 
@@ -2394,32 +2402,32 @@ CCH.Objects.Publish.UI = function () {
 			]
 		}
 	});
-	
+
 	me.loadTemplates = function () {
 		["publication_row", "item_list"].each(function (templateName) {
 			$.ajax({
-				url : CCH.CONFIG.contextPath + '/resource/template/handlebars/publish/' + templateName + '.html',
+				url: CCH.CONFIG.contextPath + '/resource/template/handlebars/publish/' + templateName + '.html',
 				context: {
-					templateName : templateName
+					templateName: templateName
 				},
-				success : function (data) {
+				success: function (data) {
 					CCH.ui.templates[this.templateName] = Handlebars.compile(data);
 				},
-				error : function () {
+				error: function () {
 					window.alert('Unable to load resources required for a functional publication page. Please contact CCH admin team.');
 				}
 			});
 		});
 	};
-	
+
 	me.initializeResourceSorting = function () {
 		$resourceSortableContainers.sortable({
 			placeholder: 'ui-state-highlight'
 		});
 	};
-	
+
 	me.initializeResourceSorting();
 	me.loadTemplates();
-	
+
 	return $.extend(me, {});
 };
