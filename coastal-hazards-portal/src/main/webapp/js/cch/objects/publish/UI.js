@@ -1070,6 +1070,7 @@ CCH.Objects.Publish.UI = function () {
 					services[service.type].endpoint = service.endpoint;
 					services[service.type].serviceParameter = service.serviceParameter;
 				});
+				
 				if (item.services.length > 0) {
 					// Fill out attribute selectbox by making a call to the WFS
 					if (services.proxy_wfs) {
@@ -1256,6 +1257,8 @@ CCH.Objects.Publish.UI = function () {
 
 			$itemEnabledField.val(isItemEnabled);
 			CCH.LOG.info('UI.js::addItemToForm: Item ' + item.id + ' added');
+			$buttonSave.removeAttr('disabled');
+			$buttonDelete.removeAttr('disabled');
 		} else {
 			CCH.LOG.warn('UI.js::addItemToForm: function was called with no item');
 		}

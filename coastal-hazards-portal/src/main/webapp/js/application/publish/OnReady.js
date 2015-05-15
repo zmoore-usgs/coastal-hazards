@@ -45,7 +45,6 @@ $(document).ready(function () {
 			success: [
 				function (itemsJSON) {
 					CCH.items = itemsJSON.items;
-
 					var rootOutChildren = function (item) {
 						if (item.itemType === 'aggregation') {
 							if (!CCH.items.find(function (itemsItem) {
@@ -67,16 +66,17 @@ $(document).ready(function () {
 						}
 					},
 						$list = $('#publish-button-edit-existing-list'),
-						sortedItems;
+						sortedItems,
+						sortedListItems;
 
 					CCH.items.each(function (item) {
 						rootOutChildren(item);
 					});
 
-					var sortedItems = CCH.items.sortBy(function (i) {
+					sortedItems = CCH.items.sortBy(function (i) {
 						return i.summary.full.title;
 					}),
-						sortedListItems = CCH.ui.templates.item_list({
+					sortedListItems = CCH.ui.templates.item_list({
 						items : sortedItems,
 						baseUrl : CCH.CONFIG.contextPath
 					});
@@ -128,70 +128,8 @@ $(document).ready(function () {
 	});
 });
 
-var buildServiceEndpoint = function (endpoint) {
-	var updatedEndpoint = null;
-	var urlIndex = 0;
-	if (endpoint && endpoint.toLowerCase().indexOf('http') !== -1) {
-		if (endpoint.toLowerCase().has('coastalmap.marine.usgs.gov')) {
-			urlIndex = endpoint.indexOf('cmgp/') + 5;
-			updatedEndpoint = contextPath + '/marine/' + endpoint.substring(urlIndex);
-			CCH.config.endpoint.servertype = 'arcgis';
-		} else if (endpoint.toLowerCase().has('olga.er.usgs.gov')) {
-			urlIndex = endpoint.indexOf('services') + 8;
-			updatedEndpoint = contextPath + '/stpgis/' + endpoint.substring(urlIndex);
-			CCH.config.endpoint.servertype = 'arcgis';
-		} else if (endpoint.toLowerCase().has('cida.usgs.gov')) {
-			urlIndex = endpoint.indexOf('geoserver') + 10;
-			updatedEndpoint = contextPath + '/cidags/' + endpoint.substring(urlIndex);
-			CCH.config.endpoint.servertype = 'geoserver';
-		}
-		var indexOfQueryStart = updatedEndpoint ? updatedEndpoint.indexOf('?') : -1;
-		if (indexOfQueryStart !== -1) {
-			return updatedEndpoint.substring(0, indexOfQueryStart);
-		}
-	}
-	return updatedEndpoint;
-};
-
-var serviceTypesDropdownChangeHandler = function (evt) {
-	var val = evt.target.value;
-	var namespace = val.split(':')[0];
-	var layer = val.split(':')[1];
-	describeFeatureType({
-		layername: layer,
-		callbacks: {
-			success: [
-				function (featuresDescription) {
-					$('#attribute-checkbox-list').empty();
-					featuresDescription.featureTypes[0].properties.each(function (prop) {
-						var name = prop.name;
-						var nameTlc = name.toLowerCase();
-						if (nameTlc !== 'objectid' && nameTlc !== 'shape_length' && nameTlc !== 'shape_len') {
-							var li = $('<li />').attr('id', 'li-' + name);
-							var cb = $('<input />').attr({
-								'type': 'checkbox',
-								'value': name
-							}).addClass('attr-checkbox');
-							var nameSpan = $('<span />').addClass('name-span').html(name);
-							if (!CCH.config.type) {
-								// Using the attribute, match it to a type
-								CCH.config.type = deriveTypeFromAttribute(nameTlc);
-							}
-							var previewButton = $('<button />').addClass('publish-preview-button btn btn-default disabled').attr('id', 'btn-preview-' + name).attr('name', name).html('Preview');
-							var controls = $('<span />').addClass('publish-container-actions').append(previewButton);
-							li.append(cb, nameSpan, controls);
-							$('#attribute-checkbox-list').append(li);
-							cb.on('change', bindCheckbox);
-							previewButton.on('click', previewButtonClickHandler);
-						}
-					});
-				}
-			]
-		}
-	});
-};
-
 var deriveTypeFromAttribute = function (name) {
+	"use strict";
 	if (historicAttributes.indexOf(name.toLowerCase()) !== -1) {
 		return 'historical';
 	} else if (vulnAttributes.indexOf(name.toLowerCase()) !== -1) {
@@ -204,6 +142,7 @@ var deriveTypeFromAttribute = function (name) {
 };
 
 var wmsLayersDropdownChangeHandler = function (evt) {
+	"use strict";
 	var wmsLayer = CCH.config.endpoint.wmsCaps.capability.layers.find(function (l) {
 		return l.name === evt.target.value;
 	});
@@ -212,6 +151,7 @@ var wmsLayersDropdownChangeHandler = function (evt) {
 };
 
 var formatEndpoint = function (e) {
+	"use strict";
 	var cutoffIndex = e.indexOf('?');
 	if (cutoffIndex !== -1) {
 		return e.substring(0, cutoffIndex);
@@ -221,6 +161,7 @@ var formatEndpoint = function (e) {
 };
 
 var previewButtonClickHandler = function (evt) {
+	"use strict";
 	var btn = evt.target;
 	var attName = $(btn).attr('name');
 	var metadataToken = CCH.config.metadataToken;
@@ -266,6 +207,7 @@ var previewButtonClickHandler = function (evt) {
 };
 
 var publishPreview = function (args) {
+	"use strict";
 	args = args || {};
 	var previewData = args.previewData;
 	var callbacks = args.callbacks || {
@@ -297,6 +239,7 @@ var publishPreview = function (args) {
 };
 
 var publishMetadata = function (args) {
+	"use strict";
 	args = args || {};
 	var token = args.token;
 	var callbacks = args.callbacks || {
@@ -326,6 +269,7 @@ var publishMetadata = function (args) {
 };
 
 var publishData = function (args) {
+	"use strict";
 	args = args || {};
 	var publishData = args.publishData;
 	var callbacks = args.callbacks || {
@@ -357,6 +301,7 @@ var publishData = function (args) {
 };
 
 var getItem = function (args) {
+	"use strict";
 	args = args || {};
 	var itemId = args.itemId;
 	var callbacks = args.callbacks || {
@@ -386,6 +331,7 @@ var getItem = function (args) {
 };
 
 var publish = function (args) {
+	"use strict";
 	args = args || {};
 	if (CCH.config.attributes.length) {
 		var previewData = {
@@ -459,32 +405,8 @@ var publish = function (args) {
 	}
 };
 
-var publishButtonClickHandler = function () {
-	CCH.config.attributes = $(".attr-checkbox:checked").map(function (ind, cb) {
-		return cb.value;
-	}).toArray();
-
-	if (CCH.config.attributes.length) {
-		publishMetadata({
-			token: CCH.config.metadataToken,
-			callbacks: {
-				success: [
-					function (data, status, xhr) {
-						CCH.config.metadataUrl = data.metadata;
-						publish();
-					}
-				],
-				error: [
-					function (xhr, status, error) {
-						console.log('Could not parse metadata: ' + error);
-					}
-				]
-			}
-		});
-	}
-};
-
 var bindCheckbox = function (evt) {
+	"use strict";
 	var cb = evt.target;
 	var li = cb.parentNode;
 	var buttons = $(li).find('button');
@@ -495,17 +417,4 @@ var bindCheckbox = function (evt) {
 	} else {
 		$('#publish-publish-button').addClass('disabled');
 	}
-};
-
-var getFullEndpoint = function (val) {
-	var queryBegin = val.indexOf('?');
-	var fullPath;
-
-	if (queryBegin === -1) {
-		fullPath = val;
-	} else {
-		fullPath = val.substring(0, queryBegin);
-	}
-
-	return fullPath;
 };
