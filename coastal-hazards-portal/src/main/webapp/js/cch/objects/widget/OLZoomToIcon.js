@@ -1,5 +1,6 @@
 /*global CCH*/
 /*global OpenLayers*/
+/*global alertify*/
 (function () {
 	"use strict";
 	window.CCH = CCH || {};
@@ -60,19 +61,20 @@
 						CCH.map.getMap().zoomToExtent(bounds);
 					},
 					error: function (err) {
+						alertify.log("Cannot Find Your Location");
 						switch (err.code) {
-							case err.PERMISSION_DENIED:
-								CCH.LOG.warn("User denied the request for Geolocation.");
-								break;
-							case err.POSITION_UNAVAILABLE:
-								CCH.LOG.warn("Location information is unavailable.");
-								break;
-							case err.TIMEOUT:
-								CCH.LOG.warn("The request to get user location timed out.");
-								break;
-							case err.UNKNOWN_ERROR:
-								CCH.LOG.warn("An unknown error occurred.");
-								break;
+						case err.PERMISSION_DENIED:
+							CCH.LOG.warn("User denied the request for Geolocation.");
+							break;
+						case err.POSITION_UNAVAILABLE:
+							CCH.LOG.warn("Location information is unavailable.");
+							break;
+						case err.TIMEOUT:
+							CCH.LOG.warn("The request to get user location timed out.");
+							break;
+						case err.UNKNOWN_ERROR:
+							CCH.LOG.warn("An unknown error occurred.");
+							break;
 						}
 					}
 				}
