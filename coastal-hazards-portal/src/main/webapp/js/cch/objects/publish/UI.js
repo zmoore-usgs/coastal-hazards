@@ -1565,7 +1565,7 @@ CCH.Objects.Publish.UI = function () {
 					url: CCH.CONFIG.contextPath + '/data/item/' + id,
 					method: 'DELETE',
 					success: function () {
-						CCH.CONFIG.contextPath + '/publish/item/';
+						window.location = CCH.CONFIG.contextPath + '/publish/item/';
 					},
 					error: function (jqXHR, err, errTxt) {
 						if (errTxt.indexOf('Unauthorized') !== -1) {
