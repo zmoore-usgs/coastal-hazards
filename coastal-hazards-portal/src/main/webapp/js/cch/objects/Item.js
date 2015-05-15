@@ -12,7 +12,7 @@ CCH.Objects.Item = function (args) {
 
 	var me = this === window ? {} : this;
 
-	me.UNITED_STATES_BBOX = [-124.731,24.956,  -66.97, 49.372 ];
+	me.UNITED_STATES_BBOX = [-124.731, 24.956, -66.97, 49.372];
 	me.id = args.id;
 	me.parent = args.parent || null;
 	me.loaded = args.loaded || false;
@@ -33,8 +33,8 @@ CCH.Objects.Item = function (args) {
 		args = args || {};
 
 		var callbacks = args.callbacks || {},
-			subtree = args.subtree || false,
-			context = args.context || me;
+				subtree = args.subtree || false,
+				context = args.context || me;
 
 		callbacks.success = callbacks.success || [];
 		callbacks.error = callbacks.error || [];
@@ -79,8 +79,8 @@ CCH.Objects.Item = function (args) {
 					var loadedItemIsChild = me.children.findIndex(function (childId) {
 						return childId === args.id;
 					}) !== -1,
-						childItems = [],
-						allLoaded;
+							childItems = [],
+							allLoaded;
 					if (loadedItemIsChild) {
 						me.children.each(function (childId) {
 							var childItem = CCH.items.getById({id: childId});
@@ -116,12 +116,12 @@ CCH.Objects.Item = function (args) {
 
 				var loadDataToItem = function (itemData, parent) {
 					var child,
-						item;
+							item;
 
 					itemData.parent = parent;
 					itemData.loaded = true;
 					item = new CCH.Objects.Item(itemData);
-					
+
 					// For each child, recurse back into this function using my child's data 
 					if (itemData.children) {
 						for (var i = 0; i < itemData.children.length; i++) {
@@ -160,17 +160,15 @@ CCH.Objects.Item = function (args) {
 		}
 	};
 
-	me.createWmsLayer = function (args) {
-		args = args || {};
-		
+	me.createWmsLayer = function () {
 		var id = me.id,
-			service = me.getService('proxy_wms'),
-			endpoint = service.endpoint,
-			layers = service.serviceParameter || [],
-			bbox = me.bbox,
-			itemType = me.itemType,
-			sldId = id,
-			layer = null;
+				service = me.getService('proxy_wms'),
+				endpoint = service.endpoint,
+				layers = service.serviceParameter || [],
+				bbox = me.bbox,
+				itemType = me.itemType,
+				sldId = id,
+				layer = null;
 
 		if (itemType !== 'aggregation') {
 			layer = new OpenLayers.Layer.WMS(
@@ -185,21 +183,20 @@ CCH.Objects.Item = function (args) {
 					sld: CCH.CONFIG.publicUrl + '/data/sld/' + sldId,
 					exceptions: 'application/vnd.ogc.se_blank'
 				}, {
-					displayOutsideMaxExtent: false,
-					projection: 'EPSG:3857',
-					isBaseLayer: false,
-					displayInLayerSwitcher: false,
-					singleTile: me.ribboned || false,
-					maxExtent: new OpenLayers.Bounds(bbox).transform(CCH.CONFIG.map.modelProjection, new OpenLayers.Projection('EPSG:3857')),
-					bbox: bbox,
-					itemid: id,
-					transitionEffect: 'map-resize',
-					type: 'cch'// CCH specific setting,
-				}
-			);
+				displayOutsideMaxExtent: false,
+				projection: 'EPSG:3857',
+				isBaseLayer: false,
+				displayInLayerSwitcher: false,
+				singleTile: me.ribboned || false,
+				maxExtent: new OpenLayers.Bounds(bbox).transform(CCH.CONFIG.map.modelProjection, new OpenLayers.Projection('EPSG:3857')),
+				bbox: bbox,
+				itemid: id,
+				transitionEffect: 'map-resize',
+				type: 'cch'// CCH specific setting,
+			});
 		}
-		
-		if (endpoint.has("noaa")) {
+
+		if (layer && me.type === 'storm_track') {
 			if (layer.params.LAYERS === "NHC_TRACK_POLY") {
 				layer.opacity = 0.5;
 			}
@@ -207,21 +204,21 @@ CCH.Objects.Item = function (args) {
 			delete layer.params.SLD;
 			layer.params.CB = new Date().getTime(); // Cache breaking just in case
 		}
-		
+
 		return layer;
 	};
 
 	me.getLayerList = function (args) {
 		args = args || {};
 		var index,
-			layerName,
-			idx,
-			child,
-			aggregationName = args.aggregationName || '',
-			layers = args.layers || [],
-			bboxObject = args.bboxObject || {},
-			stringifiedBbox = me.bbox.toString(),
-			childReturnObj;
+				layerName,
+				idx,
+				child,
+				aggregationName = args.aggregationName || '',
+				layers = args.layers || [],
+				bboxObject = args.bboxObject || {},
+				stringifiedBbox = me.bbox.toString(),
+				childReturnObj;
 
 		if (me.itemType === 'aggregation') {
 			if (aggregationName === '') {
@@ -275,16 +272,16 @@ CCH.Objects.Item = function (args) {
 	me.showLayer = function (args) {
 		args = args || {};
 		var index,
-			layer,
-			idx,
-			child,
-			layerName,
-			aggregationName = args.aggregationName || '',
-			visible = args.visible,
-			layers = args.layers || [],
-			bboxObject = args.bboxObject || {},
-			stringifiedBbox = me.bbox.toString(),
-			childReturnObj;
+				layer,
+				idx,
+				child,
+				layerName,
+				aggregationName = args.aggregationName || '',
+				visible = args.visible,
+				layers = args.layers || [],
+				bboxObject = args.bboxObject || {},
+				stringifiedBbox = me.bbox.toString(),
+				childReturnObj;
 
 
 		// Check to see if this is an aggregation. If it is, I need
@@ -398,7 +395,7 @@ CCH.Objects.Item = function (args) {
 	 */
 	me.pathToItem = function (id, path) {
 		var idx = 0,
-			child;
+				child;
 		path = path || [];
 
 		if (me.id === id) {

@@ -1,4 +1,7 @@
-
+<%@page import="java.util.HashSet"%>
+<%@page import="org.apache.commons.lang3.ArrayUtils"%>
+<%@page import="java.util.Set"%>
+<%@page import="gov.usgs.cida.coastalhazards.Attributes"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
@@ -24,6 +27,14 @@
 	String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");
 %>
 <%
+	Set<String> stormTrackSet = Attributes.getStormTrackAttrs();
+	Set<String> quotedStormTrackSet = new HashSet<String>(stormTrackSet.size());
+	for (String attr : stormTrackSet) {
+		quotedStormTrackSet.add("'" + attr + "'");
+	}
+	String stormTrackAttrs = StringUtils.join(quotedStormTrackSet, ",");
+	
+	
 	if (publicUrl.endsWith("/")) {
 		publicUrl = publicUrl.substring(0, publicUrl.length() - 1);
 	}
@@ -160,7 +171,8 @@
                     'external-csw' : {
                         'endpoint' : '<%=externalCSWEndpoint%>'
                     }
-				}
+				},
+				'storm_track_attributes' : [<%=stormTrackAttrs%>]
 			}
 		}
 	};

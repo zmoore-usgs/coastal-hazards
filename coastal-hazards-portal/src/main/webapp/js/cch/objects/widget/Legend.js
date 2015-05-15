@@ -67,7 +67,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			me.generateMixedLegendTables({
 				item: item
 			});
-		} else if (itemType === me.itemTypes.RTS) {
+		} else if (itemType === me.itemTypes.TRACK) {
 			me.generateRealTimeStormLegendTable({
 				item: item
 			});
@@ -172,10 +172,16 @@ CCH.Objects.Widget.Legend = function (args) {
 		return $legendTable;
 	};
 
-	me.generateRealTimeStormLegendTable = function () {
-		return CCH.Objects.Widget.Legend.prototype.templates.rts_legend({
+	me.generateRealTimeStormLegendTable = function (args) {
+		var table = CCH.Objects.Widget.Legend.prototype.templates.rts_legend({
 			id: 'test',
 			title: 'test title'
+		});
+
+		me.tableAdded({
+			total : 1,
+			legendTables : [$(table)],
+			item : args.item
 		});
 	};
 
@@ -345,13 +351,13 @@ CCH.Objects.Widget.Legend = function (args) {
 						success: [
 							function (sld) {
 								var $legendTable = -1,
-										index = this.index,
-										allItems = this.allItems,
-										itemId = this.itemId,
-										legendTables = this.legendTables,
-										total = allItems.length,
-										item = null,
-										tableAddedCallback = this.tableAddedCallback || me.tableAdded;
+									index = this.index,
+									allItems = this.allItems,
+									itemId = this.itemId,
+									legendTables = this.legendTables,
+									total = allItems.length,
+									item = null,
+									tableAddedCallback = this.tableAddedCallback || me.tableAdded;
 								try {
 									item = CCH.items.getById({id: itemId});
 									$legendTable = this.generateLegendTable.call(me, {
@@ -438,21 +444,21 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.tableAdded = function (args) {
 		args = args || {};
 		var total = args.total,
-				legendTables = args.legendTables,
-				item = args.item || null,
-				ribboned = me.item.ribboned || false,
-				legendGroups,
-				legendGroup,
-				firstLegend,
-				currentLegend,
-				captionSpan,
-				currentLegendCaptionText,
-				hashKey,
-				tableIndex,
-				lIdx,
-				indexCompare = function (t) {
-					return $(t).attr('legend-index') === currentLegend.attr('legend-index');
-				};
+			legendTables = args.legendTables,
+			item = args.item || null,
+			ribboned = me.item.ribboned || false,
+			legendGroups,
+			legendGroup,
+			firstLegend,
+			currentLegend,
+			captionSpan,
+			currentLegendCaptionText,
+			hashKey,
+			tableIndex,
+			lIdx,
+			indexCompare = function (t) {
+				return $(t).attr('legend-index') === currentLegend.attr('legend-index');
+			};
 
 		// All legend tables have been attained so now I need to actually slice and dice the collection of tables into
 		// a nicely formatted single or set of legend tables
