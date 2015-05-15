@@ -24,8 +24,9 @@
 			OpenLayers.Control.prototype.draw.apply(this, arguments);
 
 			this.position = this.px.clone();
-			var img = CCH.CONFIG.contextPath + '/images/search/cross.svg';
-			var btn = OpenLayers.Util.createAlphaImageDiv(
+			var desktopImage = CCH.CONFIG.contextPath + '/images/map/zoom/cross.svg',
+				img = desktopImage,
+				btn = OpenLayers.Util.createAlphaImageDiv(
 					this.displayClass,
 					this.px,
 					this.size,
@@ -34,6 +35,7 @@
 					'none',
 					'image',
 					0.8);
+					
 			btn.style.cursor = 'pointer';
 			this.button = btn;
 			this.div.appendChild(btn);
@@ -51,6 +53,15 @@
 			OpenLayers.Event.observe(this.div, 'touchend', OpenLayers.Function.bind(function (ele, evt) {
 				OpenLayers.Event.stop(evt);
 			}, this, this.div));
+			
+			$(window).on('cch.ui.resized', function (evt) {
+				var magicMobileWidth = 441,
+					isMobile = $(window).outerWidth() < magicMobileWidth,
+					divImage = isMobile ? CCH.CONFIG.contextPath + '/images/map/zoom/cross-mobile.svg' :
+						CCH.CONFIG.contextPath + '/images/map/zoom/cross.svg';
+				
+				$('#ol-zoom-to-location_innerImage').attr('src', divImage);
+			});
 			return this.div;
 		},
 		setMap: function () {
