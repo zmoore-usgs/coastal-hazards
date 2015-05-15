@@ -41,6 +41,16 @@
 				OpenLayers.Event.stop(evt ? evt : window.event, true);
 				this.onButtonClick();
 			}, this, this.div));
+			OpenLayers.Event.observe(this.div, 'touchstart', OpenLayers.Function.bind(function (ele, evt) {
+				this.onButtonClick();
+				OpenLayers.Event.stop(evt);
+			}, this, this.div));
+			OpenLayers.Event.observe(this.div, 'touchmove', OpenLayers.Function.bind(function (ele, evt) {
+				OpenLayers.Event.stop(evt ? evt : window.event);
+			}, this, this.div));
+			OpenLayers.Event.observe(this.div, 'touchend', OpenLayers.Function.bind(function (ele, evt) {
+				OpenLayers.Event.stop(evt);
+			}, this, this.div));
 			return this.div;
 		},
 		setMap: function () {
@@ -65,18 +75,18 @@
 					error: function (err) {
 						alertify.log("Cannot Find Your Location");
 						switch (err.code) {
-						case err.PERMISSION_DENIED:
-							CCH.LOG.warn("User denied the request for Geolocation.");
-							break;
-						case err.POSITION_UNAVAILABLE:
-							CCH.LOG.warn("Location information is unavailable.");
-							break;
-						case err.TIMEOUT:
-							CCH.LOG.warn("The request to get user location timed out.");
-							break;
-						case err.UNKNOWN_ERROR:
-							CCH.LOG.warn("An unknown error occurred.");
-							break;
+							case err.PERMISSION_DENIED:
+								CCH.LOG.warn("User denied the request for Geolocation.");
+								break;
+							case err.POSITION_UNAVAILABLE:
+								CCH.LOG.warn("Location information is unavailable.");
+								break;
+							case err.TIMEOUT:
+								CCH.LOG.warn("The request to get user location timed out.");
+								break;
+							case err.UNKNOWN_ERROR:
+								CCH.LOG.warn("An unknown error occurred.");
+								break;
 						}
 					}
 				}
