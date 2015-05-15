@@ -47,7 +47,9 @@
 			OpenLayers.Control.prototype.setMap.apply(this, arguments);
 		},
 		onButtonClick: function (evt) {
-			OpenLayers.Event.stop(evt ? evt : window.event, true);
+			if (evt) {
+				OpenLayers.Event.stop(evt, true);
+			}
 			CCH.Util.Util.getGeolocation({
 				callbacks: {
 					success: function (pos) {
