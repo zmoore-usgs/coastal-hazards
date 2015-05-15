@@ -8,7 +8,7 @@ CCH.CONFIG = CCH.CONFIG || {};
 /**
  * Loads the top-level item for the entire portal
  * 
- * @param {type} args
+ * @param {viewType} args
  * @returns {undefined}
  */
 CCH.CONFIG.loadUberItem = function (args) {
@@ -88,7 +88,7 @@ CCH.CONFIG.loadUberItem = function (args) {
 CCH.CONFIG.onAppInitialize = function () {
 	"use strict";
 	//Begins the item loading process based on how the user is entering the application
-	var type = (CCH.CONFIG.params.type + String()).toLowerCase(),
+	var viewType = (CCH.CONFIG.params.type + String()).toLowerCase(),
 		id = CCH.CONFIG.params.id,
 		sessionItems = CCH.session.getSession().items;
 
@@ -103,9 +103,9 @@ CCH.CONFIG.onAppInitialize = function () {
 	// 
 	// Most of the application is now initialized, so I'm going to try and load
 	// either one item, a view or all top level items. First I check if idType exists
-	if (type) {
+	if (viewType) {
 		// User is coming in with either an item or a view, check which
-		if (type === 'view') {
+		if (viewType === 'view') {
 			splashUpdate("Loading View...");
 
 			// Begin by trying to load the session from the incoming url
@@ -185,7 +185,7 @@ CCH.CONFIG.onAppInitialize = function () {
 				'eventAction': 'loadView',
 				'eventLabel': '"' + CCH.CONFIG.params.id + '"'
 			});
-		} else if (type === 'item') {
+		} else if (viewType === 'item') {
 			// User is coming in with an item, so load that item
 			$(window).on('cch.item.loaded.all', function (evt) {
 				if (evt.namespace === 'all.item.loaded') {

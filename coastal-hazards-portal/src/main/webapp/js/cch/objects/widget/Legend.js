@@ -3,6 +3,7 @@
 /*global $*/
 /*global LOG*/
 /*global CCH*/
+/*global Handlebars*/
 
 window.CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
@@ -43,11 +44,11 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		return me;
 	};
-	
+
 	me.generateLegend = function (args) {
 		args = args || {};
 		var item = args.item,
-			itemType = item.type;
+				itemType = item.type;
 
 		if (itemType === me.itemTypes.HISTORICAL) {
 			me.generateHistoricalLegendTables({
@@ -66,34 +67,38 @@ CCH.Objects.Widget.Legend = function (args) {
 			me.generateMixedLegendTables({
 				item: item
 			});
+		} else if (itemType === me.itemTypes.TRACK) {
+			me.generateRealTimeStormLegendTable({
+				item: item
+			});
 		} else {
 			me.hide();
 		}
 
 		return me;
 	};
-	
+
 	me.generateGenericLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
-			$table = $('<table />'),
-			$thead = $('<thead />'),
-			$caption = $('<caption />'),
-			$theadTr = $('<tr />'),
-			$theadUOM = $('<td />'),
-			$colorContainer,
-			$tr,
-			$colorTd,
-			$rangeTd,
-			bins = sld.bins,
-			uom = sld.units || '',
-			title = sld.title || '',
-			upperBound,
-			lowerBound,
-			category,
-			years,
-			color,
-			range;
+				$table = $('<table />'),
+				$thead = $('<thead />'),
+				$caption = $('<caption />'),
+				$theadTr = $('<tr />'),
+				$theadUOM = $('<td />'),
+				$colorContainer,
+				$tr,
+				$colorTd,
+				$rangeTd,
+				bins = sld.bins,
+				uom = sld.units || '',
+				title = sld.title || '',
+				upperBound,
+				lowerBound,
+				category,
+				years,
+				color,
+				range;
 		// Create the table head which displays the unit of measurements
 		$caption.html(title);
 		$theadUOM.html(uom);
@@ -132,7 +137,7 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.generateMixedLegendTables = function (args) {
 		args = args || {};
 		var item = args.item,
-			childItems;
+				childItems;
 		if ('aggregation' === item.itemType.toLowerCase()) {
 			childItems = me.getAggregationChildrenIds(item.id);
 		} else {
@@ -148,10 +153,10 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.generateMixedLegendTable = function (args) {
 		args = args || {};
 		var item = args.item,
-			$legendTable,
-			attr = item.attr,
-			index = args.index || null,
-			sld = args.sld;
+				$legendTable,
+				attr = item.attr,
+				index = args.index || null,
+				sld = args.sld;
 
 
 		$legendTable = me.generateGenericLegendTable({
@@ -167,12 +172,26 @@ CCH.Objects.Widget.Legend = function (args) {
 		return $legendTable;
 	};
 
+	me.generateRealTimeStormLegendTable = function (args) {
+		var item = args.item;
+		var table = CCH.Objects.Widget.Legend.prototype.templates.rts_legend({
+			id: item.id,
+			title: args.item.summary.full.title
+		});
+
+		me.tableAdded({
+			total : 1,
+			legendTables : [$(table)],
+			item : args.item
+		});
+	};
+
 	me.generateHistoricalLegendTables = function (args) {
 		args = args || {};
 		var item = args.item,
-			childItemIdArray,
-			dataItem,
-			isYearAggregation;
+				childItemIdArray,
+				dataItem,
+				isYearAggregation;
 
 		if ('aggregation' === item.itemType.toLowerCase()) {
 			childItemIdArray = me.getAggregationChildrenIds(item.id);
@@ -208,12 +227,12 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.generateHistoricalLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
-			item = args.item,
-			attr = item.attr,
-			index = args.index || null,
-			$legendTable,
-			$legendTableTBody,
-			$yearRows;
+				item = args.item,
+				attr = item.attr,
+				index = args.index || null,
+				$legendTable,
+				$legendTableTBody,
+				$yearRows;
 
 		$legendTable = me.generateGenericLegendTable({
 			sld: sld
@@ -241,7 +260,7 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.generateStormLegendTables = function (args) {
 		args = args || {};
 		var item = args.item,
-			childItems;
+				childItems;
 
 		if ('aggregation' === item.itemType.toLowerCase()) {
 			childItems = me.getAggregationChildrenIds(item.id);
@@ -258,24 +277,26 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.generateStormLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
-			item = args.item,
-			index = args.index,
-			attr = item.attr,
-			$legendTable = me.generateGenericLegendTable({
-				sld: sld
-			});
+				item = args.item,
+				index = args.index,
+				attr = item.attr,
+				$legendTable = me.generateGenericLegendTable({
+					sld: sld
+				});
+
 		$legendTable.attr({
 			'legend-attribute': attr,
 			'legend-index': index,
 			'legend-item-id': item.id
 		});
+
 		return $legendTable;
 	};
 
 	me.generateVulnerabilityLegendTables = function (args) {
 		args = args || {};
 		var item = args.item,
-			childItems;
+				childItems;
 		if ('aggregation' === item.itemType.toLowerCase()) {
 			childItems = me.getAggregationChildrenIds(item.id);
 		} else {
@@ -291,12 +312,12 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.generateVulnerabilityLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
-			item = args.item,
-			index = args.index,
-			attr = item.attr,
-			$legendTable = me.generateGenericLegendTable({
-				sld: sld
-			});
+				item = args.item,
+				index = args.index,
+				attr = item.attr,
+				$legendTable = me.generateGenericLegendTable({
+					sld: sld
+				});
 		$legendTable.attr({
 			'legend-attribute': attr,
 			'legend-index': index,
@@ -308,12 +329,14 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.createLegendsFromItems = function (args) {
 		args = args || {};
 		var items = args.items,
-			xhrRequest,
-			legendTables = [],
-			generateLegendTable = args.generateLegendTable,
-			tableAddedCallback = args.tableAddedCallback;
+				xhrRequest,
+				legendTables = [],
+				generateLegendTable = args.generateLegendTable,
+				tableAddedCallback = args.tableAddedCallback;
+		
 		items.each(function (childId, index, allItems) {
 			if (!me.destroyed) {
+				
 				xhrRequest = CCH.Util.Util.getSLD({
 					contextPath: CCH.CONFIG.contextPath,
 					itemId: childId,
@@ -397,8 +420,8 @@ CCH.Objects.Widget.Legend = function (args) {
 	 */
 	me.getAggregationChildrenIds = function (itemId) {
 		var item = CCH.items.getById({id: itemId}),
-			childLayers = item.getLayerList(),
-			items = [];
+				childLayers = item.getLayerList(),
+				items = [];
 		childLayers.layers.each(function (layerName) {
 			// Possible formats:
 			// aggregationId_itemId_r_ribbonIndexInteger (Ribboned, example: C68abcd_C67pzz9_r_1)
@@ -407,6 +430,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		});
 		return items;
 	};
+
 	me.generateRangeString = function (ub, lb) {
 		if (lb && ub) {
 			return lb + ' to ' + ub;
@@ -417,12 +441,13 @@ CCH.Objects.Widget.Legend = function (args) {
 		}
 		return '';
 	};
+
 	me.tableAdded = function (args) {
 		args = args || {};
 		var total = args.total,
 			legendTables = args.legendTables,
 			item = args.item || null,
-			ribboned = me.item.ribboned  || false,
+			ribboned = me.item.ribboned || false,
 			legendGroups,
 			legendGroup,
 			firstLegend,
@@ -449,13 +474,13 @@ CCH.Objects.Widget.Legend = function (args) {
 				if (legendGroups.hasOwnProperty(hashKey)) {
 					// Sort the legend group by the table's legend index attribtue
 					legendGroup = legendGroups[hashKey].sortBy(function (table) {
-						return parseInt($(table).attr('legend-index'));
+						return parseInt($(table).attr('legend-index'), 10);
 					});
-					
+
 					captionSpan = $('<span />').attr('id', 'cch-legend-caption-container');
-					
+
 					firstLegend = legendGroup[0];
-					
+
 					for (lIdx = 0; lIdx < legendGroup.length; lIdx++) {
 						currentLegend = legendGroup[lIdx];
 						// The items here may be ribboned. If so, I want to mark their caption spans with
@@ -463,26 +488,26 @@ CCH.Objects.Widget.Legend = function (args) {
 						// user mouses over the caption
 						if (ribboned) {
 							currentLegendCaptionText = currentLegend.find('caption').html();
-							captionSpan.append(
-								$('<span />').
-								addClass('ribboned-legend-caption').
-								attr('ribbon-layer-id', currentLegend.attr('legend-item-id')).
-								html(currentLegendCaptionText),$('<br />'));
+							captionSpan.append($('<span />')
+									.addClass('ribboned-legend-caption')
+									.attr('ribbon-layer-id', currentLegend.attr('legend-item-id'))
+									.html(currentLegendCaptionText), $('<br />'));
 						}
+
 						tableIndex = legendTables.findIndex(indexCompare);
-						
+
 						// I only want to display the first table in this group, so don't kill the first table
 						if (lIdx !== 0) {
 							legendTables[tableIndex] = -1;
 						}
 					}
-					
+
 					if (!ribboned) {
 						firstLegend.find('caption').empty().append($('<span />').html(me.item.summary.tiny.text));
 					} else {
 						firstLegend.find('caption').empty().append(captionSpan);
 					}
-					
+
 				}
 			}
 
@@ -500,7 +525,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			}).unique(function (table) {
 				return $(table).attr('legend-attribute');
 			});
-			
+
 			if (legendTables.length === 0) {
 				// Remove the container and hyst run the onComplete
 				me.hide();
@@ -515,7 +540,7 @@ CCH.Objects.Widget.Legend = function (args) {
 					// If there's multiple tables, sort them according to index, leaving
 					// titles as is
 					legendTables = legendTables.sort(function (a, b) {
-						return parseInt($(a).attr('legend-index')) - parseInt($(b).attr('legend-index'));
+						return parseInt($(a).attr('legend-index'), 10) - parseInt($(b).attr('legend-index'), 10);
 					});
 				}
 
@@ -572,3 +597,18 @@ CCH.Objects.Widget.Legend = function (args) {
 	}
 
 };
+
+(function () {
+	$.ajax({
+		url: CCH.CONFIG.contextPath + '/resource/template/handlebars/legend/real_time_storms.html',
+		success: function (data) {
+			if (!CCH.Objects.Widget.Legend.prototype.templates) {
+				CCH.Objects.Widget.Legend.prototype.templates = {};
+			}
+			CCH.Objects.Widget.Legend.prototype.templates.rts_legend = Handlebars.compile(data);
+		},
+		error: function () {
+			window.alert('Unable to load resources required for a functional publication page. Please contact CCH admin team.');
+		}
+	});
+})();
