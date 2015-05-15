@@ -23,7 +23,6 @@ import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.WFSIntrospector;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -77,17 +76,19 @@ public class TemplateResource {
 				if (layer != null) {
 					String layerId = layer.getAsString();
 					try {
-						newItemList = makeItemsFromLayer(layerId, layerMan);
+						newItemList = makeItemsFromLayer(template, layerId, layerMan);
 					} catch (IOException ex) {
 						log.error("Cannot create items", ex);
 					}
 				}
 			} else {
 				JsonArray children = parsed.get("children").getAsJsonArray();
-				newItemList = makeItemsFromDocument(children, childItems, itemMan, layerMan);
+				newItemList = makeItemsFromDocument(template, children, childItems, itemMan, layerMan);
 			}
+			List<String> displayed = makeDisplayedChildren(newItemList);
 			itemMan.persistAll(newItemList);
 			template.setChildren(newItemList);
+			template.setDisplayedChildren(displayed);
 			itemMan.merge(template);
 			response = Response.ok().build();
 		}
@@ -103,7 +104,7 @@ public class TemplateResource {
 		return result;
 	}
 	
-	private List<Item> makeItemsFromDocument(JsonArray children, List<Item> childItems, ItemManager itemMan, LayerManager layerMan) {
+	private List<Item> makeItemsFromDocument(Item template, JsonArray children, List<Item> childItems, ItemManager itemMan, LayerManager layerMan) {
 		Map<String, Item> childMap = makeChildItemMap(childItems);
 		Iterator<JsonElement> iterator = children.iterator();
 
@@ -138,16 +139,35 @@ public class TemplateResource {
 				throw new BadRequestException("Layer does not exist");
 			}
 			Summary summary = makeSummary(layer, attr);
-			Item newItem = templateItem(attr, layer, summary);
+			Item newItem = templateItem(template, attr, layer, summary);
 			childMap.put(replaceId, newItem);
 		}
 		return new LinkedList<>(childMap.values());
 	}
+	
+	private List<Item> makeItemsFromLayer(Item template, String layerId, LayerManager layerMan) throws IOException {
+		List<Item> items = new LinkedList<>();
+		
+		Layer layer = layerMan.load(layerId);
+		WFSService wfs = (WFSService) Service.ogcHelper(Service.ServiceType.proxy_wfs, layer.getServices());
+		List<String> attrs = WFSIntrospector.getAttrs(wfs);
+		for (String attr : attrs) {
+			if (Attributes.contains(attr)) {
+				Summary summary = makeSummary(layer, attr);
+				Item item = templateItem(template, attr, layer, summary);
+				items.add(item);
+			}
+		}
+		
+		return items;
+	}
 
-	private Item templateItem(String attr, Layer layer, Summary summary) {
+	private Item templateItem(Item template, String attr, Layer layer, Summary summary) {
 		String newId = IdGenerator.generate();
 		Item newItem = new Item();
 		newItem.setAttr(attr);
+		boolean isRibbonable = Attributes.getRibbonableAttrs().contains(attr);
+		
 		List<Service> services = layer.getServices();
 		Bbox bbox = layer.getBbox();
 		List<Service> serviceCopies = new LinkedList<>();
@@ -159,6 +179,10 @@ public class TemplateResource {
 		newItem.setSummary(summary);
 		newItem.setId(newId);
 		newItem.setBbox(Bbox.copyValues(bbox, new Bbox()));
+		newItem.setActiveStorm(template.isActiveStorm());
+		newItem.setRibbonable(isRibbonable);
+		newItem.setType(template.getType());
+		newItem.setName(template.getName());
 		return newItem;
 	}
 
@@ -176,28 +200,24 @@ public class TemplateResource {
 		return summary;
 	}
 	
-	private List<Item> makeItemsFromLayer(String layerId, LayerManager layerMan) throws IOException {
-		List<Item> items = new LinkedList<>();
-		
-		Layer layer = layerMan.load(layerId);
-		WFSService wfs = (WFSService) Service.ogcHelper(Service.ServiceType.proxy_wfs, layer.getServices());
-		List<String> attrs = WFSIntrospector.getAttrs(wfs);
-		for (String attr : attrs) {
-			if (Attributes.contains(attr)) {
-				Summary summary = makeSummary(layer, attr);
-				Item item = templateItem(attr, layer, summary);
-				items.add(item);
-			}
-		}
-		
-		return items;
-	}
-	
 	private Map<String, Item> makeChildItemMap(List<Item> children) {
 		Map<String, Item> result = new LinkedHashMap<>();
 		for (Item item : children) {
 			result.put(item.getId(), item);
 		}
 		return result;
+	}
+	
+	// TODO make this more configurable, right now just using PCOI
+	private List<String> makeDisplayedChildren(List<Item> children) {
+		List<String> displayed = new LinkedList<>();
+		for (Item child : children) {
+			String attr = child.getAttr();
+			boolean isDisplayed = Attributes.getPCOIAttrs().contains(attr);
+			if (isDisplayed) {
+				displayed.add(attr);
+			}
+		}
+		return displayed;
 	}
 }
