@@ -176,7 +176,8 @@ CCH.Objects.Widget.Legend = function (args) {
 		var item = args.item;
 		var table = CCH.Objects.Widget.Legend.prototype.templates.rts_legend({
 			id: item.id,
-			title: args.item.summary.full.title
+			title: args.item.summary.full.title,
+			baseUrl: CCH.CONFIG.contextPath
 		});
 
 		me.tableAdded({
