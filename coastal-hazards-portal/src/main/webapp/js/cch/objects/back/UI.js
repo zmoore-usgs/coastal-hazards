@@ -207,7 +207,7 @@ CCH.Objects.Back.UI = function (args) {
 	};
 	
 	me.enableToolTips = function () {
-		$('[data-tooltip="tooltip"]').tooltip({ container: 'body' });
+		$('[data-tooltip="tooltip"]').tooltip({ container: 'body', trigger: 'hover'});
 	};
 	
 	me.disableToolTips = function () {
