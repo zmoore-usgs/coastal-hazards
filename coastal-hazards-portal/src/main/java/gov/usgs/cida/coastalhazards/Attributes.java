@@ -140,4 +140,53 @@ public class Attributes {
 		tracks.add(NHC_TRACK_PT_120CAT);
 		return tracks;
 	}
+	
+	public static Set<String> getPCOIAttrs() {
+		Set<String> pcois = new HashSet<>();
+		pcois.add(PCOL);
+		pcois.add(PCOL1);
+		pcois.add(PCOL2);
+		pcois.add(PCOL3);
+		pcois.add(PCOL4);
+		pcois.add(PCOL5);
+
+		pcois.add(POVW);
+		pcois.add(POVW1);
+		pcois.add(POVW2);
+		pcois.add(POVW3);
+		pcois.add(POVW4);
+		pcois.add(POVW5);
+
+		pcois.add(PIND);
+		pcois.add(PIND1);
+		pcois.add(PIND2);
+		pcois.add(PIND3);
+		pcois.add(PIND4);
+		pcois.add(PIND5);
+		return pcois;
+	}
+	
+	public static Set<String> getRibbonableAttrs() {
+		Set<String> ribbonableAttrs = new HashSet<>();
+		ribbonableAttrs.addAll(getPCOIAttrs());
+		ribbonableAttrs.add(TR);
+		ribbonableAttrs.add(TIDES);
+		ribbonableAttrs.add(MWH);
+		ribbonableAttrs.add(WAVES);
+		ribbonableAttrs.add(DLOW);
+		ribbonableAttrs.add(DHIGH);
+		ribbonableAttrs.add(EXTREME);
+		ribbonableAttrs.add(EXTREME1);
+		ribbonableAttrs.add(EXTREME2);
+		ribbonableAttrs.add(EXTREME3);
+		ribbonableAttrs.add(EXTREME4);
+		ribbonableAttrs.add(EXTREME5);
+		ribbonableAttrs.add(MEAN);
+		ribbonableAttrs.add(MEAN1);
+		ribbonableAttrs.add(MEAN2);
+		ribbonableAttrs.add(MEAN3);
+		ribbonableAttrs.add(MEAN4);
+		ribbonableAttrs.add(MEAN5);
+		return ribbonableAttrs;
+	}
 }
