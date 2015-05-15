@@ -173,9 +173,10 @@ CCH.Objects.Widget.Legend = function (args) {
 	};
 
 	me.generateRealTimeStormLegendTable = function (args) {
+		var item = args.item;
 		var table = CCH.Objects.Widget.Legend.prototype.templates.rts_legend({
-			id: 'test',
-			title: 'test title'
+			id: item.id,
+			title: args.item.summary.full.title
 		});
 
 		me.tableAdded({
