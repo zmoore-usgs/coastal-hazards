@@ -1,4 +1,7 @@
 
+<%@page import="java.util.HashSet"%>
+<%@page import="java.util.Set"%>
+<%@page import="gov.usgs.cida.coastalhazards.Attributes"%>
 <%@page import="java.io.File"%>
 <%@page import="gov.usgs.cida.coastalhazards.model.summary.Summary"%>
 <%@page import="gov.usgs.cida.coastalhazards.model.summary.Publication"%>
@@ -87,7 +90,7 @@
 			CCH.CONFIG.contextPath = '<%= baseUrl %>';
 			CCH.CONFIG.ui = {
 				'disableBoundingBoxInputForAggregations' : true
-			}
+			},
 			CCH.CONFIG.limits = {
 				map: {
 					modelProjection: new OpenLayers.Projection('EPSG:4326')
@@ -510,10 +513,10 @@
 					</form>
 				</div>
 				<div id="row-controls-save" class="row clear">
-					<button type="button" id="publish-button-save" class="btn btn-lg btn-success">
+					<button type="button" id="publish-button-save" class="btn btn-lg btn-success" disabled="disabled">
 						Save
 					</button>
-					<button type="button" id="publish-button-delete" class="btn btn-lg btn-success">
+					<button type="button" id="publish-button-delete" class="btn btn-lg btn-success" disabled="disabled">
 						Delete
 					</button>
 				</div>

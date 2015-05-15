@@ -72,7 +72,7 @@
 		<div id="application-container" class="container">
 			<div id="header-row" class="row">
 				<a id="app-navbar-coop-logo-img-container" class="app-navbar-item-container" href="null/">
-					<img id="app-navbar-coop-logo-img" src="<%= baseUrl %>/images/banner/cida-cmgp.svg" alt="Navigation Bar Cooperator Logo">
+					<img id="app-navbar-coop-logo-img" src="<%= baseUrl%>/images/banner/cida-cmgp.svg" alt="Navigation Bar Cooperator Logo">
 				</a>
 				<div id="app-navbar-site-title-container" class="app-navbar-item-container">
 					<div class="app-navbar-title visible-lg hidden-md hidden-sm hidden-xs">USGS Coastal Change Hazards Portal</div>
@@ -117,7 +117,7 @@
                                     </tr>
                                     <tr>
                                         <td></td>
-                                        <td style="text-align: right;"><input name="submit" tabindex="3" type="button" value="Login" onclick="CCH.Auth.submitLogin('<%=forward%>')"/></td>
+                                        <td style="text-align: right;"><input id="button-submit" name="submit" tabindex="3" type="button" value="Login" onclick="CCH.Auth.submitLogin('<%=forward%>')"/></td>
                                     </tr>
                                 </table>
                             </div>
@@ -134,11 +134,11 @@
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/handlebars/<%=vHandlebars%>/handlebars<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
 		<script type="text/javascript">
-											var CCH = {
-												CONFIG: {
-													contextPath: '<%=baseUrl%>'
-												}
-											};
+			var CCH = {
+				CONFIG: {
+					contextPath: '<%=baseUrl%>'
+				}
+			};
 		</script>
 
 		<%-- TODO: Refactor log4javascript to take the log4js script from webjars --%>

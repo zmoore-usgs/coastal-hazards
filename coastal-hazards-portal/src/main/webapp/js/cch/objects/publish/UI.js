@@ -1070,65 +1070,83 @@ CCH.Objects.Publish.UI = function () {
 					services[service.type].endpoint = service.endpoint;
 					services[service.type].serviceParameter = service.serviceParameter;
 				});
+				
 				if (item.services.length > 0) {
 					// Fill out attribute selectbox by making a call to the WFS
-					CCH.ows.describeFeatureType({
-						layerName: services.proxy_wfs.serviceParameter,
-						sourceServer: CCH.CONFIG.strings.cidaGeoserver,
-						callbacks: {
-							success: [function (responseObject) {
-									me.updateSelectAttribtue(responseObject);
-									$attributeSelect
-										.val(item.attr)
-										.removeAttr(CCH.CONFIG.strings.disabled);
-								}],
-							error: [
-								function (data) {
-									var errorText = data.firstChild.textContent.trim();
-									if (errorText.indexOf('not find') !== -1) {
-										$srcWfsServiceInput.empty();
-										$srcWfsServiceParamInput.empty();
-										$srcWmsServiceInput.empty();
-										$srcWmsServiceParamInput.empty();
-										$alertModalTitle.html('Proxy Layer Could Not Be Found');
-										$alertModalBody.html('The proxy layer could not be found on our server.' +
-												' You may want to try re-importing it');
-										$alertModal.modal(CCH.CONFIG.strings.show);
+					if (services.proxy_wfs) {
+						CCH.ows.describeFeatureType({
+							layerName: services.proxy_wfs.serviceParameter,
+							sourceServer: CCH.CONFIG.strings.cidaGeoserver,
+							callbacks: {
+								success: [function (responseObject) {
+										me.updateSelectAttribtue(responseObject);
+										$attributeSelect
+											.val(item.attr)
+											.removeAttr(CCH.CONFIG.strings.disabled);
+									}],
+								error: [
+									function (data) {
+										var errorText = data.firstChild.textContent.trim();
+										if (errorText.indexOf('not find') !== -1) {
+											$srcWfsServiceInput.empty();
+											$srcWfsServiceParamInput.empty();
+											$srcWmsServiceInput.empty();
+											$srcWmsServiceParamInput.empty();
+											$alertModalTitle.html('Proxy Layer Could Not Be Found');
+											$alertModalBody.html('The proxy layer could not be found on our server.' +
+													' You may want to try re-importing it');
+											$alertModal.modal(CCH.CONFIG.strings.show);
+										}
 									}
-								}
-							]
-						}
-					});
-
+								]
+							}
+						});
+					}
+					
 					// Fill out services panel
-					$cswServiceInput
-						.val(services.csw.endpoint)
-						.removeAttr(CCH.CONFIG.strings.disabled);
-					$srcWfsServiceInput
-						.val(services.source_wfs.endpoint)
-						.removeAttr(CCH.CONFIG.strings.disabled);
-					$srcWfsServiceParamInput
-						.val(services.source_wfs.serviceParameter)
-						.removeAttr(CCH.CONFIG.strings.disabled);
-					$srcWmsServiceInput
-						.val(services.source_wms.endpoint)
-						.removeAttr(CCH.CONFIG.strings.disabled);
-					$srcWmsServiceParamInput
-						.val(services.source_wms.serviceParameter)
-						.removeAttr(CCH.CONFIG.strings.disabled);
-					$proxyWfsServiceInput
-						.val(services.proxy_wfs.endpoint)
-						.removeAttr(CCH.CONFIG.strings.disabled);
-					$proxyWfsServiceParamInput
-						.val(services.proxy_wfs.serviceParameter)
-						.removeAttr(CCH.CONFIG.strings.disabled);
-					$getWfsAttributesButton.removeAttr(CCH.CONFIG.strings.disabled);
-					$proxyWmsServiceInput
-						.val(services.proxy_wms.endpoint)
-						.removeAttr(CCH.CONFIG.strings.disabled);
-					$proxyWmsServiceParamInput
-						.val(services.proxy_wms.serviceParameter)
-						.removeAttr(CCH.CONFIG.strings.disabled);
+					if (services.csw) {
+						$cswServiceInput
+							.val(services.csw.endpoint)
+							.removeAttr(CCH.CONFIG.strings.disabled);
+					}
+					
+					if (services.source_wfs) {
+						$srcWfsServiceInput
+							.val(services.source_wfs.endpoint)
+							.removeAttr(CCH.CONFIG.strings.disabled);
+						$srcWfsServiceParamInput
+							.val(services.source_wfs.serviceParameter)
+							.removeAttr(CCH.CONFIG.strings.disabled);
+					}	
+					
+					if (services.source_wms) {
+						$srcWmsServiceInput
+							.val(services.source_wms.endpoint)
+							.removeAttr(CCH.CONFIG.strings.disabled);
+						$srcWmsServiceParamInput
+							.val(services.source_wms.serviceParameter)
+							.removeAttr(CCH.CONFIG.strings.disabled);
+					}
+					
+					if (services.proxy_wfs) {
+						$proxyWfsServiceInput
+							.val(services.proxy_wfs.endpoint)
+							.removeAttr(CCH.CONFIG.strings.disabled);
+						$proxyWfsServiceParamInput
+							.val(services.proxy_wfs.serviceParameter)
+							.removeAttr(CCH.CONFIG.strings.disabled);
+						$getWfsAttributesButton.removeAttr(CCH.CONFIG.strings.disabled);
+					}
+					
+					if (services.proxy_wms) {
+						$proxyWmsServiceInput
+							.val(services.proxy_wms.endpoint)
+							.removeAttr(CCH.CONFIG.strings.disabled);
+
+						$proxyWmsServiceParamInput
+							.val(services.proxy_wms.serviceParameter)
+							.removeAttr(CCH.CONFIG.strings.disabled);
+					}
 				}
 
 				$wfsServerHelpButton.removeAttr(CCH.CONFIG.strings.disabled);
@@ -1239,6 +1257,8 @@ CCH.Objects.Publish.UI = function () {
 
 			$itemEnabledField.val(isItemEnabled);
 			CCH.LOG.info('UI.js::addItemToForm: Item ' + item.id + ' added');
+			$buttonSave.removeAttr('disabled');
+			$buttonDelete.removeAttr('disabled');
 		} else {
 			CCH.LOG.warn('UI.js::addItemToForm: function was called with no item');
 		}
@@ -2376,7 +2396,7 @@ CCH.Objects.Publish.UI = function () {
 	});
 	
 	me.loadTemplates = function () {
-		["publication_row"].each(function (templateName) {
+		["publication_row", "item_list"].each(function (templateName) {
 			$.ajax({
 				url : CCH.CONFIG.contextPath + '/resource/template/handlebars/publish/' + templateName + '.html',
 				context: {

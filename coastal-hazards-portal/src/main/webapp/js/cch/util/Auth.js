@@ -3,7 +3,7 @@
 /*global alertify*/
 window.CCH = CCH || {};
 CCH.Auth = {
-	authTokenLabel : 'CoastalHazardsAuthCookie',
+	authTokenLabel: 'CoastalHazardsAuthCookie',
 	checkAuthStatus: function () {
 		"use strict";
 		$.ajax({
@@ -58,7 +58,7 @@ CCH.Auth = {
 		if (!tokenId) {
 			$.removeCookie(this.authTokenLabel);
 		}
-		$.cookie(this.authTokenLabel, tokenId, { expires : 1 });
+		$.cookie(this.authTokenLabel, tokenId, {expires: 1});
 	},
 	getAuthToken: function () {
 		"use strict";
@@ -66,6 +66,14 @@ CCH.Auth = {
 		return token;
 	}
 };
+
+$('document').ready(function () {
+	$('#password').on('keypress', function (evt) {
+		if (evt.keyCode === 13) {
+			$('#button-submit').click();
+		}
+	});
+});
 
 //set global JQuery handler to always intercept 401/403s
 $(document).ajaxError(function (event, jqxhr, settings, thrownError) {
@@ -84,3 +92,4 @@ $.ajaxSetup({
 		"Authorization": "Bearer " + CCH.Auth.getAuthToken()
 	}
 });
+
