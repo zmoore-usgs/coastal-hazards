@@ -2376,7 +2376,7 @@ CCH.Objects.Publish.UI = function () {
 	});
 	
 	me.loadTemplates = function () {
-		["publication_row"].each(function (templateName) {
+		["publication_row", "item_list"].each(function (templateName) {
 			$.ajax({
 				url : CCH.CONFIG.contextPath + '/resource/template/handlebars/publish/' + templateName + '.html',
 				context: {

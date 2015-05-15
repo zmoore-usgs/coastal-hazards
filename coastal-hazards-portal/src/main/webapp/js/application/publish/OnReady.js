@@ -4,16 +4,17 @@
 /*global LOG*/
 /*global CCH*/
 /*global initializeLogging*/
-/*global qq*/
 /*global contextPath*/
 /*global vulnAttributes*/
 /*global stormAttributes*/
 /*global historicAttributes*/
 $(document).ready(function () {
 	"use strict";
+	
 	initializeLogging({
 		LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
 	});
+	
 	CCH.LOG = LOG;
 	
 	CCH.Auth.checkAuthStatus();
@@ -65,7 +66,6 @@ $(document).ready(function () {
 							}
 						}
 					},
-						$option,
 						$list = $('#publish-button-edit-existing-list'),
 						sortedItems;
 
@@ -73,20 +73,17 @@ $(document).ready(function () {
 						rootOutChildren(item);
 					});
 
-					CCH.items.each(function (item) {
-						$option = $('<li />').
-							append(
-								$('<a />').
-								attr({
-									'href': CCH.CONFIG.contextPath + '/publish/item/' + item.id
-								}).
-								html(item.summary.full.title));
-						$list.append($option);
+					var sortedItems = CCH.items.sortBy(function (i) {
+						return i.summary.full.title;
+					}),
+						sortedListItems = CCH.ui.templates.item_list({
+						items : sortedItems,
+						baseUrl : CCH.CONFIG.contextPath
 					});
-					sortedItems = $list.find('li').toArray().sortBy(function (li) {
-						return $(li).find('a').html();
-					});
-					$list.empty().append(sortedItems);
+					
+					// Replace current list with new sorted list of items
+					$list.empty().append(sortedListItems);
+					
 					if (CCH.itemid) {
 						CCH.CONFIG.item = CCH.items.find(function (item) {
 							return item.id === CCH.itemid;
