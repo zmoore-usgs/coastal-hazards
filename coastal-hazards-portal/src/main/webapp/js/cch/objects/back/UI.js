@@ -2,7 +2,6 @@
 /*jslint plusplus: true */
 /*global $ */
 /*global CCH */
-/*global OpenLayers */
 /*global twttr */
 /*global alertify */
 /*global Handlebars */
@@ -108,9 +107,9 @@ CCH.Objects.Back.UI = function (args) {
 			$publist = $('<ul />').attr('id', 'info-container-publications-list');
 			Object.keys(item.summary.full.publications, function (type) {
 				var pubTypeArray = item.summary.full.publications[type],
-					pubTypeListHeader = $('<li />').
-					addClass('publist-header').
-					html(type),
+					pubTypeListHeader = $('<li />')
+							.addClass('publist-header')
+							.html(type),
 					subList = $('<ul />'),
 					pubLink;
 				if (pubTypeArray.length) {
@@ -240,7 +239,7 @@ CCH.Objects.Back.UI = function (args) {
 		if (!direction) {
 			return;
 		}
-		 var $actionArrow = $('.action-arrow');
+		var $actionArrow = $('.action-arrow');
 		if (direction === 'right') {
 			$actionArrow.addClass('action-arrow-right');
 		} else if (direction === 'down') {
@@ -248,16 +247,16 @@ CCH.Objects.Back.UI = function (args) {
 		}
 		return $actionArrow;
 	};
-	
-	me.toggleArrowRotation = function(direction){
-	   var $actionArrow = $('.action-arrow');
 
-	   if (!$('#container-control-button').hasClass('hidden')) {
-		   $actionArrow.removeClass('action-arrow-right').addClass('action-arrow');
-	   } else {
-		   $actionArrow.addClass('action-arrow-right');
-	   }
-	   return $actionArrow;
+	me.toggleArrowRotation = function () {
+		var $actionArrow = $('.action-arrow');
+
+		if (!$('#container-control-button').hasClass('hidden')) {
+			$actionArrow.removeClass('action-arrow-right').addClass('action-arrow');
+		} else {
+			$actionArrow.addClass('action-arrow-right');
+		}
+		return $actionArrow;
 	};
 
 	me.createModalServicesTab = function (args) {
@@ -292,31 +291,21 @@ CCH.Objects.Back.UI = function (args) {
 		Handlebars.registerHelper('list_translation', function (serviceType) {
 			var serviceString = '';
 			switch (serviceType) {
-				case ('csw') :
-					{
-						serviceString = 'CSW';
-						break;
-					}
-				case ('source_wms') :
-					{
-						serviceString = 'Source WMS';
-						break;
-					}
-				case ('source_wfs') :
-					{
-						serviceString = 'Source WFS';
-						break;
-					}
-				case ('proxy_wfs') :
-					{
-						serviceString = 'Proxy WFS';
-						break;
-					}
-				case ('proxy_wms') :
-					{
-						serviceString = 'Proxy WMS';
-						break;
-					}
+			case ('csw') :
+				serviceString = 'CSW';
+				break;
+			case ('source_wms') :
+				serviceString = 'Source WMS';
+				break;
+			case ('source_wfs') :
+				serviceString = 'Source WFS';
+				break;
+			case ('proxy_wfs') :
+				serviceString = 'Proxy WFS';
+				break;
+			case ('proxy_wms') :
+				serviceString = 'Proxy WMS';
+				break;
 			}
 			return serviceString;
 		});
