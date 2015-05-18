@@ -66,7 +66,7 @@ public class PublishResource {
     @Produces(MediaType.TEXT_HTML)
     @Path("/item/")
     public Response viewBlankItem(@Context HttpServletRequest req) throws URISyntaxException {
-       return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", new HashMap<>())).build();
+       return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", new HashMap<>(0))).build();
     }
     
     @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
@@ -74,7 +74,7 @@ public class PublishResource {
     @Produces(MediaType.TEXT_HTML)
     @Path("/item/{token}")
     public Response viewItemById(@Context HttpServletRequest req, @PathParam("token") String token) throws URISyntaxException {
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>(1);
         map.put("id", token);
         return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", map)).build();
     }
