@@ -130,14 +130,15 @@ CCH.Objects.Publish.UI = function () {
 					$item.val('');
 				});
 		
+		[$ribbonableCb, $showChildrenCb, $isActiveStormChecbox].each(function ($i) {
+			$i.prop(CCH.CONFIG.strings.checked, false);
+		});
+		
 		$('.form-group-keyword').not(':first').remove();
 		$('.form-group-keyword button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
-		$publicationsPanel.find('.resource-list-container-sortable').empty();
-		$ribbonableCb.prop(CCH.CONFIG.strings.checked, false);
-		$showChildrenCb.prop(CCH.CONFIG.strings.checked, false);
-		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
-		$childrenSortableList.empty();
 		$metadataDropdownGroup.addClass(CCH.CONFIG.strings.hidden);
+		$publicationsPanel.find('.resource-list-container-sortable').empty();
+		$childrenSortableList.empty();
 		$itemImage.attr('src', '');
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
@@ -169,13 +170,13 @@ CCH.Objects.Publish.UI = function () {
 		$proxyWfsServiceInput.val(gsBaseUrl + 'wfs');
 		$proxyWmsServiceInput.val(gsBaseUrl + 'wms');
 		$showChildrenCb.prop(CCH.CONFIG.strings.checked, false);
+		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
 		$uploaderDummy.removeClass(CCH.CONFIG.strings.hidden);
 		$metadataDropdownGroup.removeClass(CCH.CONFIG.strings.hidden);
-		$itemEnabledField.val('false');
-		$childrenSortableList.empty();
 		$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
-		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
+		$itemEnabledField.val('false');
+		$childrenSortableList.empty();
 		$isActiveStormRow.addClass('hidden');
 	};
 
@@ -212,15 +213,7 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.isBlank = function ($ele) {
-		if (!$ele) {
-			return true;
-		}
-
-		if ($ele.length === 0) {
-			return true;
-		}
-
-		if (!$ele.val()) {
+		if (!$ele || $ele.length === 0 || !$ele.val()) {
 			return true;
 		}
 
@@ -229,22 +222,22 @@ CCH.Objects.Publish.UI = function () {
 
 	me.validateForm = function () {
 		var type = $itemType.val(),
-				errors = [],
-				validateBbox = function (errors) {
-					if (me.isBlank($bboxNorth)) {
-						errors.push('Bounding box north is not provided');
-					}
-					if (me.isBlank($bboxWest)) {
-						errors.push('Bounding box west is not provided');
-					}
-					if (me.isBlank($bboxSouth)) {
-						errors.push('Bounding box south is not provided');
-					}
-					if (me.isBlank($bboxEast)) {
-						errors.push('Bounding box east is not provided');
-					}
-					return errors;
-				};
+			errors = [],
+			validateBbox = function (errors) {
+				if (me.isBlank($bboxNorth)) {
+					errors.push('Bounding box north is not provided');
+				}
+				if (me.isBlank($bboxWest)) {
+					errors.push('Bounding box west is not provided');
+				}
+				if (me.isBlank($bboxSouth)) {
+					errors.push('Bounding box south is not provided');
+				}
+				if (me.isBlank($bboxEast)) {
+					errors.push('Bounding box east is not provided');
+				}
+				return errors;
+			};
 
 		if (type) {
 			if ('data' === type) {
@@ -435,7 +428,7 @@ CCH.Objects.Publish.UI = function () {
 			};
 			
 		// Bbox may be blank and that may be ok (e.g. if it's a template)
-		if (bbox.join()) {
+		if (bbox.join('')) {
 			item.bbox = bbox;
 		}
 			
@@ -548,11 +541,11 @@ CCH.Objects.Publish.UI = function () {
 	me.initUploader = function (args) {
 		args = args || {};
 		var button = args.button,
-				callbacks = args.callbacks || {
-					success: [],
-					error: []
-				},
-		qqUploader;
+			callbacks = args.callbacks || {
+				success: [],
+				error: []
+			},
+			qqUploader;
 
 		qqUploader = new qq.FineUploader({
 			element: button,
@@ -605,20 +598,20 @@ CCH.Objects.Publish.UI = function () {
 
 	me.bindKeywordGroup = function ($grp) {
 		$grp.find('button')
-				.on(CCH.CONFIG.strings.click, function () {
-					if ($form.find('.form-group-keyword').length > 1) {
-						// This is the last keyword group, so don't remove it
+			.on(CCH.CONFIG.strings.click, function () {
+				if ($form.find('.form-group-keyword').length > 1) {
+					// This is the last keyword group, so don't remove it
+					$grp.remove();
+				}
+			});
+		$grp.find('input')
+			.on({
+				'focusout': function (evt) {
+					if (evt.target.value === '') {
 						$grp.remove();
 					}
-				});
-		$grp.find('input')
-				.on({
-					'focusout': function (evt) {
-						if (evt.target.value === '') {
-							$grp.remove();
-						}
-					}
-				});
+				}
+			});
 	};
 
 	me.addKeywordGroup = function (keyword) {
@@ -658,21 +651,21 @@ CCH.Objects.Publish.UI = function () {
 					node.children.each(function (childNode) {
 						tag = childNode.tag;
 						switch (tag) {
-							case 'spdom':
-								childNode.children[0].children.each(function (spdom) {
-									var direction = spdom.tag.substring(0, spdom.tag.length - 2);
-									$('#form-publish-item-bbox-input-' + direction).val(spdom.text);
+						case 'spdom':
+							childNode.children[0].children.each(function (spdom) {
+								var direction = spdom.tag.substring(0, spdom.tag.length - 2);
+								$('#form-publish-item-bbox-input-' + direction).val(spdom.text);
+							});
+							break;
+						case 'keywords':
+							childNode.children.each(function (kwNode) {
+								var keywords = kwNode.children;
+								keywords.splice(1).each(function (kwObject) {
+									var keyword = kwObject.text;
+									me.addKeywordGroup(keyword);
 								});
-								break;
-							case 'keywords':
-								childNode.children.each(function (kwNode) {
-									var keywords = kwNode.children;
-									keywords.splice(1).each(function (kwObject) {
-										var keyword = kwObject.text;
-										me.addKeywordGroup(keyword);
-									});
-								});
-								break;
+							});
+							break;
 						}
 					});
 				}
@@ -681,12 +674,12 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.initNewItemForm = function () {
-		var cswUrl = $('#form-publish-item-service-csw').val();
+		var cswUrl = me.$cswServiceInput.val();
 
 		me.clearForm();
 		me.enableNewItemForm();
 
-		$('#form-publish-item-service-csw').val(cswUrl);
+		me.$cswServiceInput.val(cswUrl);
 
 		me.getCSWInfo({
 			url: cswUrl,
@@ -736,10 +729,10 @@ CCH.Objects.Publish.UI = function () {
 	me.publishMetadata = function (args) {
 		args = args || {};
 		var token = args.token,
-				callbacks = args.callbacks || {
-					success: [],
-					error: []
-				};
+			callbacks = args.callbacks || {
+				success: [],
+				error: []
+			};
 
 		$.ajax({
 			url: CCH.CONFIG.contextPath + '/publish/metadata/' + token,
@@ -785,12 +778,7 @@ CCH.Objects.Publish.UI = function () {
 			featureTypes.properties.each(function (ft) {
 				ftName = ft.name;
 				ftNameLower = ftName.toLowerCase();
-				if (ftNameLower !== 'objectid' &&
-						ftNameLower !== 'shape' &&
-						ftNameLower !== 'shape.len' &&
-						ftNameLower !== 'the_geom' &&
-						ftNameLower !== 'descriptio' &&
-						ftNameLower !== 'name') {
+				if ($.inArray(ftNameLower, ['objectid','shape','shape.len', 'the_geom', 'descriptio','name']) === -1) {
 					$option = $('<option>')
 							.attr('value', ft.name)
 							.html(ft.name);
@@ -2011,10 +1999,10 @@ CCH.Objects.Publish.UI = function () {
 				}
 			} else if (srcWfsVal.indexOf(CCH.CONFIG.data.sources['marine-arcserver'].endpoint) !== -1) {
 				var serverName = 'marine-arcserver',
-						serverData = CCH.CONFIG.data.sources[serverName],
-						namespace = srcWfsVal.substring(serverData.endpoint.length + 1),
-						url = $srcWfsServiceInput.val(),
-						nsSvc = url.substring(url.indexOf('cmgp') + 5);
+					serverData = CCH.CONFIG.data.sources[serverName],
+					namespace = srcWfsVal.substring(serverData.endpoint.length + 1),
+					url = $srcWfsServiceInput.val(),
+					nsSvc = url.substring(url.indexOf('cmgp') + 5);
 
 				CCH.ows.getWFSCapabilities({
 					'server': serverName,
