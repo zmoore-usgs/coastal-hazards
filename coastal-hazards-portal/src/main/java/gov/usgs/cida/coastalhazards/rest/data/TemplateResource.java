@@ -215,7 +215,7 @@ public class TemplateResource {
 			String attr = child.getAttr();
 			boolean isDisplayed = Attributes.getPCOIAttrs().contains(attr);
 			if (isDisplayed) {
-				displayed.add(attr);
+				displayed.add(child.getId());
 			}
 		}
 		return displayed;

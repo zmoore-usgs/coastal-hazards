@@ -170,7 +170,7 @@ CCH.Objects.Item = function (args) {
 				sldId = id,
 				layer = null;
 
-		if (itemType !== 'aggregation') {
+		if (itemType !== 'aggregation' && itemType !== 'template') {
 			layer = new OpenLayers.Layer.WMS(
 				id,
 				endpoint,
@@ -286,7 +286,7 @@ CCH.Objects.Item = function (args) {
 
 		// Check to see if this is an aggregation. If it is, I need
 		// to pull the layers from all of its children
-		if (this.itemType === 'aggregation') {
+		if (this.itemType === 'aggregation' || this.itemType === 'template') {
 
 			if (aggregationName === '') {
 				aggregationName = me.id + '_';
