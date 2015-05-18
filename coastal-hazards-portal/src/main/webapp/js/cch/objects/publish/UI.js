@@ -105,70 +105,40 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.clearForm = function () {
-		$titleFullTextArea.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$titleMediumTextArea.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$descriptionFullTextArea.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$descriptionMediumTextArea.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$descriptionTinyTextArea.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$bboxNorth.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$bboxWest.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$bboxSouth.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$bboxEast.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$typeSb.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$attributeSelect.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$('.form-group-keyword input').attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$srcWfsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$srcWfsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$srcWmsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$srcWmsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$proxyWfsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$proxyWfsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$proxyWmsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$proxyWmsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$ribbonableCb.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$showChildrenCb.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$itemType.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$name.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$keywordGroup.find('input').attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$itemIdInput.val('');
-		$titleFullTextArea.val('');
-		$titleMediumTextArea.val('');
-		$descriptionFullTextArea.val('');
-		$descriptionMediumTextArea.val('');
-		$descriptionTinyTextArea.val('');
-		$bboxNorth.val('');
-		$bboxWest.val('');
-		$bboxSouth.val('');
-		$bboxEast.val('');
-		$typeSb.val('');
-		$itemEnabledField.val('');
-		$attributeSelect.val('');
+		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
+			$descriptionMediumTextArea, $descriptionTinyTextArea, $descriptionTinyTextArea,
+			$bboxNorth, $bboxWest, $bboxSouth, $bboxEast, $typeSb, $attributeSelect,
+			$('.form-group-keyword input'), $srcWfsServiceInput, $srcWfsServiceParamInput,
+			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
+			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $proxyWmsServiceParamInput,
+			$ribbonableCb, $showChildrenCb, $itemType, $name,
+			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')].each(function ($item) {
+			$item.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+		});
+		
+		[$itemIdInput, $titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
+			$descriptionMediumTextArea, $descriptionTinyTextArea, $bboxNorth, $bboxWest,
+			$bboxSouth, $bboxEast, $typeSb, $itemEnabledField, $attributeSelect, 
+			$('.form-group-keyword input'), $cswServiceInput, $srcWfsServiceInput,
+			$srcWfsServiceParamInput, $srcWmsServiceInput, $srcWmsServiceParamInput,
+			$proxyWfsServiceInput, $proxyWfsServiceParamInput, $proxyWmsServiceInput,
+			$proxyWmsServiceParamInput, $metadataSummaryField, $itemType, $name].each(function ($item) {
+			$item.val('');
+		});
+		
 		$('.form-group-keyword').not(':first').remove();
 		$('.form-group-keyword button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
-		$('.form-group-keyword input').val('');
-		$cswServiceInput.val('');
-		$srcWfsServiceInput.val('');
-		$srcWfsServiceParamInput.val('');
-		$srcWmsServiceInput.val('');
-		$srcWmsServiceParamInput.val('');
-		$proxyWfsServiceInput.val('');
-		$proxyWfsServiceParamInput.val('');
-		$proxyWmsServiceInput.val('');
-		$proxyWmsServiceParamInput.val('');
-		$metadataSummaryField.val('');
 		$publicationsPanel.find('.resource-list-container-sortable').empty();
 		$ribbonableCb.prop(CCH.CONFIG.strings.checked, false);
 		$showChildrenCb.prop(CCH.CONFIG.strings.checked, false);
-		$itemType.val('');
-		$name.val('');
+		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
 		$childrenSortableList.empty();
 		$metadataDropdownGroup.addClass(CCH.CONFIG.strings.hidden);
 		$itemImage.attr('src', '');
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$isActiveStormRow.addClass('hidden');
-		$isActiveStormChecbox.prop('checked', false);
+		
 	};
 
 	me.enableNewItemForm = function () {
@@ -219,6 +189,8 @@ CCH.Objects.Publish.UI = function () {
 		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
 		$isActiveStormRow.addClass('hidden');
+		$buttonSave.removeAttr(CCH.CONFIG.strings.disabled);
+		$buttonDelete.removeAttr(CCH.CONFIG.strings.disabled);
 	};
 
 	me.enableNewAggregationForm = function () {
@@ -255,6 +227,8 @@ CCH.Objects.Publish.UI = function () {
 		$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
 		$isActiveStormRow.addClass('hidden');
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
+		$buttonSave.removeAttr(CCH.CONFIG.strings.disabled);
+		$buttonDelete.removeAttr(CCH.CONFIG.strings.disabled);
 	};
 
 	me.enableNewTemplateForm = function () {
@@ -291,6 +265,8 @@ CCH.Objects.Publish.UI = function () {
 		$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
 		$isActiveStormRow.addClass('hidden');
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
+		$buttonSave.removeAttr(CCH.CONFIG.strings.disabled);
+		$buttonDelete.removeAttr(CCH.CONFIG.strings.disabled);
 	};
 
 	me.isBlank = function ($ele) {
@@ -400,6 +376,10 @@ CCH.Objects.Publish.UI = function () {
 					errors.push('WMS Proxy parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
+				if ($('.form-group-keyword').length === 1) {
+					errors.push('No keywords provided');
+				}
+
 				$('.resource-panel .panel-body ul > li div.well').each(function (ind, pubPanel) {
 					var title = $(pubPanel).find('div:nth-child(2) > input').val() || '',
 							link = $(pubPanel).find('div:nth-child(3) > input').val() || '';
@@ -426,7 +406,7 @@ CCH.Objects.Publish.UI = function () {
 				}
 				validateBbox(errors);
 			} else if ('template' === type) {
-				// TODO- What validation goes into a template type?
+				// TODO- What validation goes into a template type? Anything?
 			}
 
 			if (me.isBlank($titleFullTextArea)) {
@@ -462,10 +442,6 @@ CCH.Objects.Publish.UI = function () {
 			}
 			if ($descriptionTinyTextArea.val().length > CCH.CONFIG.limits.summary.tiny.text) {
 				errors.push('Tiny description was longer than ' + CCH.CONFIG.limits.summary.tiny.text + ' characters');
-			}
-
-			if ($('.form-group-keyword').length === 1) {
-				errors.push('No keywords provided');
 			}
 
 			if (me.isBlank($name)) {
