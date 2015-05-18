@@ -1151,10 +1151,12 @@ CCH.Objects.Publish.UI = function () {
 			});
 
 			// Fill out bbox
-			$bboxWest.val(item.bbox[0]);
-			$bboxSouth.val(item.bbox[1]);
-			$bboxEast.val(item.bbox[2]);
-			$bboxNorth.val(item.bbox[3]);
+			if (item.bbox) {
+				$bboxWest.val(item.bbox[0]);
+				$bboxSouth.val(item.bbox[1]);
+				$bboxEast.val(item.bbox[2]);
+				$bboxNorth.val(item.bbox[3]);
+			}
 
 			// Ribbonable
 			$ribbonableCb.prop(CCH.CONFIG.strings.checked, item.ribbonable);
