@@ -417,29 +417,28 @@ CCH.Objects.Publish.UI = function () {
 				services = [],
 				children = [],
 				displayedChildren = [],
-				bbox = [
-					$bboxWest.val(),
-					$bboxSouth.val(),
-					$bboxEast.val(),
-					$bboxNorth.val()
-				],
+				bbox = [$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()],
 				item = {
-					id: id,
-					itemType: itemType,
-					attr: attr,
-					bbox: bbox,
-					name: name,
-					type: type,
-					ribbonable: ribbonable,
-					summary: summary,
-					showChildren: showChildren,
-					enabled: enabled,
-					services: services,
-					children: children,
-					displayedChildren: displayedChildren,
-					activeStorm: activeStorm
-				};
-
+				id: id,
+				itemType: itemType,
+				attr: attr,
+				name: name,
+				type: type,
+				ribbonable: ribbonable,
+				summary: summary,
+				showChildren: showChildren,
+				enabled: enabled,
+				services: services,
+				children: children,
+				displayedChildren: displayedChildren,
+				activeStorm: activeStorm
+			};
+			
+		// Bbox may be blank and that may be ok (e.g. if it's a template)
+		if (bbox.join()) {
+			item.bbox = bbox;
+		}
+			
 		summary.version = 'manual';
 		summary.tiny = {
 			text: $descriptionTinyTextArea.val().trim()
@@ -476,31 +475,54 @@ CCH.Objects.Publish.UI = function () {
 		});
 		item.summary.keywords = keywordsArray.join('|');
 
-		services.push({
-			type: 'csw',
-			endpoint: $cswServiceInput.val().trim(),
-			serviceParameter: ''
-		});
-		services.push({
-			type: 'source_wfs',
-			endpoint: $srcWfsServiceInput.val().trim(),
-			serviceParameter: $srcWfsServiceParamInput.val().trim()
-		});
-		services.push({
-			type: 'source_wms',
-			endpoint: $srcWmsServiceInput.val().trim(),
-			serviceParameter: $srcWmsServiceParamInput.val().trim()
-		});
-		services.push({
-			type: 'proxy_wfs',
-			endpoint: $proxyWfsServiceInput.val().trim(),
-			serviceParameter: $proxyWfsServiceParamInput.val().trim()
-		});
-		services.push({
-			type: 'proxy_wms',
-			endpoint: $proxyWmsServiceInput.val().trim(),
-			serviceParameter: $proxyWmsServiceParamInput.val().trim()
-		});
+		var cswServiceEndpoint = $cswServiceInput.val().trim();
+		if (cswServiceEndpoint) {
+			services.push({
+				type: 'csw',
+				endpoint: cswServiceEndpoint,
+				serviceParameter: ''
+			});
+		}
+		
+		var sourceWfsServiceEndpoint = $srcWfsServiceInput.val().trim(),
+			sourceWfsServiceParam = $srcWfsServiceParamInput.val().trim();
+		if (sourceWfsServiceEndpoint) { 
+			services.push({
+				type: 'source_wfs',
+				endpoint: sourceWfsServiceEndpoint,
+				serviceParameter: sourceWfsServiceParam
+			});
+		}
+		
+		var sourceWmsServiceEndpoint = $srcWmsServiceInput.val().trim(),
+			sourceWmsServiceParam = $srcWmsServiceParamInput.val().trim();
+		if (sourceWmsServiceEndpoint) {
+			services.push({
+				type: 'source_wms',
+				endpoint: sourceWmsServiceEndpoint,
+				serviceParameter: sourceWmsServiceParam
+			});
+		}
+		
+		var proxyWfsServiceEndpoint = $proxyWfsServiceInput.val().trim(),
+			proxyWfsServiceParam = $proxyWfsServiceParamInput.val().trim();
+		if (proxyWfsServiceEndpoint) {
+			services.push({
+				type: 'proxy_wfs',
+				endpoint: proxyWfsServiceEndpoint,
+				serviceParameter: proxyWfsServiceParam
+			});
+		}
+		
+		var proxyWmsServiceEndpoint = $proxyWmsServiceInput.val().trim(),
+			proxyWmsServiceParam = $proxyWmsServiceParamInput.val().trim();
+		if (proxyWmsServiceEndpoint) {
+			services.push({
+				type: 'proxy_wms',
+				endpoint: proxyWmsServiceEndpoint,
+				serviceParameter: proxyWmsServiceParam
+			});
+		}
 
 		$childrenSortableList.find('li > span > div > button:nth-child(1).active').each(function (ind, btn) {
 			var $li = $(btn).parent().parent().parent(),
@@ -1244,7 +1266,7 @@ CCH.Objects.Publish.UI = function () {
 										$button.addClass('active');
 										processChildren();
 									}),
-											$alertModal.modal(CCH.CONFIG.strings.hide);
+									$alertModal.modal(CCH.CONFIG.strings.hide);
 									$alertModalTitle.html('Cyclic Relationship Found');
 									$alertModalBody.html('There was a cyclic relationship found ' +
 											'between parent ' + currentAggregationId +
@@ -1327,12 +1349,12 @@ CCH.Objects.Publish.UI = function () {
 		args = args || {};
 
 		var item = args.item,
-				callbacks = args.callbacks || {
-					success: [],
-					error: []
-				},
-		method,
-				url = CCH.CONFIG.contextPath + '/data/item/';
+			callbacks = args.callbacks || {
+				success: [],
+				error: []
+			},
+			method,
+			url = CCH.CONFIG.contextPath + '/data/item/';
 
 		if (item.id) {
 			method = 'PUT';
@@ -1364,11 +1386,11 @@ CCH.Objects.Publish.UI = function () {
 		args = args || {};
 
 		var service = args.service,
-				param = args.param,
-				callbacks = args.callbacks || {
-					success: [],
-					error: []
-				};
+			param = args.param,
+			callbacks = args.callbacks || {
+				success: [],
+				error: []
+			};
 
 		if (service && param) {
 			CCH.ows.describeFeatureType({
@@ -1811,9 +1833,10 @@ CCH.Objects.Publish.UI = function () {
 
 	$buttonSave.on(CCH.CONFIG.strings.click, function () {
 		var errors = me.validateForm.call(this),
-				$ul = $('<ul />'),
-				$li,
-				item;
+			$ul = $('<ul />'),
+			$li,
+			item;
+			
 		if (errors.length === 0) {
 			item = me.buildItemFromForm();
 			me.saveItem({
