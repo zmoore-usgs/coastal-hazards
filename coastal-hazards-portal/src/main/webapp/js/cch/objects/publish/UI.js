@@ -108,23 +108,27 @@ CCH.Objects.Publish.UI = function () {
 		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $descriptionTinyTextArea,
 			$bboxNorth, $bboxWest, $bboxSouth, $bboxEast, $typeSb, $attributeSelect,
-			$('.form-group-keyword input'), $srcWfsServiceInput, $srcWfsServiceParamInput,
+			$srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $proxyWmsServiceParamInput,
 			$ribbonableCb, $showChildrenCb, $itemType, $name,
-			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')].each(function ($item) {
-			$item.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		});
-		
+			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')]
+				.concat($('.form-group-keyword input'))
+				.each(function ($item) {
+					$item.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+				});
+
 		[$itemIdInput, $titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $bboxNorth, $bboxWest,
-			$bboxSouth, $bboxEast, $typeSb, $itemEnabledField, $attributeSelect, 
-			$('.form-group-keyword input'), $cswServiceInput, $srcWfsServiceInput,
+			$bboxSouth, $bboxEast, $typeSb, $itemEnabledField, $attributeSelect,
+			$cswServiceInput, $srcWfsServiceInput,
 			$srcWfsServiceParamInput, $srcWmsServiceInput, $srcWmsServiceParamInput,
 			$proxyWfsServiceInput, $proxyWfsServiceParamInput, $proxyWmsServiceInput,
-			$proxyWmsServiceParamInput, $metadataSummaryField, $itemType, $name].each(function ($item) {
-			$item.val('');
-		});
+			$proxyWmsServiceParamInput, $metadataSummaryField, $itemType, $name]
+				.concat($('.form-group-keyword input'))
+				.each(function ($item) {
+					$item.val('');
+				});
 		
 		$('.form-group-keyword').not(':first').remove();
 		$('.form-group-keyword button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
@@ -149,16 +153,18 @@ CCH.Objects.Publish.UI = function () {
 		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $bboxNorth,
 			$bboxWest, $bboxSouth, $bboxEast, $typeSb, $attributeSelect,
-			$('.form-group-keyword input'), $srcWfsServiceInput, $srcWfsServiceParamInput,
+			$srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
 			$proxyWmsServiceParamInput, $ribbonableCb, $name, $wfsServerHelpButton,
-			$keywordGroup.find('input'), $wfsSourceCopyButton, $sourceWfsCheckButton,
+			$wfsSourceCopyButton, $sourceWfsCheckButton,
 			$sourceWmsCheckButton, $wmsServerHelpButton, $proxyWfsCheckButton,
 			$proxyWmsCheckButton, $buttonSave, $buttonDelete,
-			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')].each(function ($item) {
-			$item.removeAttr(CCH.CONFIG.strings.disabled);
-		});
+			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')]
+				.concat($keywordGroup.find('input'))
+				.each(function ($item) {
+					$item.removeAttr(CCH.CONFIG.strings.disabled);
+				});
 		
 		$proxyWfsServiceInput.val(gsBaseUrl + 'wfs');
 		$proxyWmsServiceInput.val(gsBaseUrl + 'wms');
@@ -178,16 +184,18 @@ CCH.Objects.Publish.UI = function () {
 		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $bboxNorth,
 			$bboxWest, $bboxSouth, $bboxEast, $typeSb, $attributeSelect,
-			$('.form-group-keyword input'), $srcWfsServiceInput, $srcWfsServiceParamInput,
+			$srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
 			$proxyWmsServiceParamInput, $ribbonableCb, $name, $wfsServerHelpButton,
-			$keywordGroup.find('input'), $wfsSourceCopyButton, $sourceWfsCheckButton,
+			$wfsSourceCopyButton, $sourceWfsCheckButton,
 			$sourceWmsCheckButton, $wmsServerHelpButton, $proxyWfsCheckButton,
 			$proxyWmsCheckButton, $buttonSave, $buttonDelete,
-			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')].each(function ($item) {
-			$item.removeAttr(CCH.CONFIG.strings.disabled);
-		});
+			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')]
+				.concat($('.form-group-keyword input'))
+				.each(function ($item) {
+					$item.removeAttr(CCH.CONFIG.strings.disabled);
+				});
 		
 		$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
 		$itemEnabledField.val('false');
@@ -209,10 +217,6 @@ CCH.Objects.Publish.UI = function () {
 		}
 
 		if ($ele.length === 0) {
-			return true;
-		}
-
-		if (!$ele.val()) {
 			return true;
 		}
 
@@ -1067,16 +1071,29 @@ CCH.Objects.Publish.UI = function () {
 					}
 				}
 
-				$wfsServerHelpButton.removeAttr(CCH.CONFIG.strings.disabled);
-				$sourceWfsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
-				$wfsSourceCopyButton.removeAttr(CCH.CONFIG.strings.disabled);
-				$wmsServerHelpButton.removeAttr(CCH.CONFIG.strings.disabled);
-				$sourceWmsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
-				$proxyWfsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
-				$proxyWmsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
-
+				[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
+					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
+					$proxyWmsCheckButton, $bboxWest, $bboxSouth, $bboxEast, $bboxNorth,
+					$titleFullTextArea, $titleMediumTextArea, $ribbonableCb,
+					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
+					$buttonSave, $buttonDelete]
+						.concat($keywordGroup.find('input'))
+						.concat($keywordGroup.find('button'))
+						.each(function ($item) {
+					$item.removeAttr(CCH.CONFIG.strings.disabled);
+				});
+				
+				$name.val(item.name);
+				$titleFullTextArea.val(titleFull);
+				$titleMediumTextArea.val(titleMedium);
+				$descriptionFullTextArea.val(descriptionFull);
+				$descriptionMediumTextArea.val(descriptionMedium);
+				$descriptionTinyTextArea.val(descriptionTiny);
+				$metadataSummaryField.val(summary.version || 'unknown');
+				
 				$metadataDropdownGroup.removeClass(CCH.CONFIG.strings.hidden);
 				$uploaderDummy.empty().removeClass(CCH.CONFIG.strings.hidden);
+				
 				me.createUploader({
 					callbacks: {
 						success: [
@@ -1109,44 +1126,14 @@ CCH.Objects.Publish.UI = function () {
 						]
 					}
 				});
-
-				$bboxWest.removeAttr(CCH.CONFIG.strings.disabled);
-				$bboxSouth.removeAttr(CCH.CONFIG.strings.disabled);
-				$bboxEast.removeAttr(CCH.CONFIG.strings.disabled);
-				$bboxNorth.removeAttr(CCH.CONFIG.strings.disabled);
 			}
-
-			// Item Name
-			$name.val(item.name).removeAttr(CCH.CONFIG.strings.disabled);
-
-			$metadataSummaryField.val(summary.version || 'unknown');
-
-			// Add Item Text
-			$titleFullTextArea
-					.val(titleFull)
-					.removeAttr(CCH.CONFIG.strings.disabled);
-			$titleMediumTextArea
-					.val(titleMedium)
-					.removeAttr(CCH.CONFIG.strings.disabled);
-
-			// Add Description Text
-			$descriptionFullTextArea
-					.val(descriptionFull)
-					.removeAttr(CCH.CONFIG.strings.disabled);
-			$descriptionMediumTextArea
-					.val(descriptionMedium)
-					.removeAttr(CCH.CONFIG.strings.disabled);
-			$descriptionTinyTextArea
-					.val(descriptionTiny)
-					.removeAttr(CCH.CONFIG.strings.disabled);
 
 			// Add keywords
 			keywords.each(function (keyword) {
 				me.addKeywordGroup(keyword);
 			});
-			$keywordGroup.find('input').removeAttr(CCH.CONFIG.strings.disabled);
+			
 			$keywordGroup.find('button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
-			$keywordGroup.find('button').removeAttr(CCH.CONFIG.strings.disabled);
 			$keywordGroup.find('button').on(CCH.CONFIG.strings.click, function () {
 				if ($keywordGroup.find('input').val() !== '') {
 					me.addKeywordGroup($keywordGroup.find('input').val());
@@ -1159,11 +1146,8 @@ CCH.Objects.Publish.UI = function () {
 			$bboxEast.val(item.bbox[2]);
 			$bboxNorth.val(item.bbox[3]);
 
-
 			// Ribbonable
-			$ribbonableCb
-					.prop(CCH.CONFIG.strings.checked, item.ribbonable)
-					.removeAttr(CCH.CONFIG.strings.disabled);
+			$ribbonableCb.prop(CCH.CONFIG.strings.checked, item.ribbonable);
 
 			// Publications
 			$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
@@ -1175,8 +1159,6 @@ CCH.Objects.Publish.UI = function () {
 
 			$itemEnabledField.val(isItemEnabled);
 			CCH.LOG.info('UI.js::addItemToForm: Item ' + item.id + ' added');
-			$buttonSave.removeAttr('disabled');
-			$buttonDelete.removeAttr('disabled');
 		} else {
 			CCH.LOG.warn('UI.js::addItemToForm: function was called with no item');
 		}
@@ -1463,10 +1445,9 @@ CCH.Objects.Publish.UI = function () {
 
 			});
 		} else {
-			$bboxWest.val('');
-			$bboxSouth.val('');
-			$bboxEast.val('');
-			$bboxNorth.val('');
+			[$bboxWest, $bboxWest, $bboxEast, $bboxNorth].each(function($i) {
+				$i.val('');
+			});
 		}
 	};
 
