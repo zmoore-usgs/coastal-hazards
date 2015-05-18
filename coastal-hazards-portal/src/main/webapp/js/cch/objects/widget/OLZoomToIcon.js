@@ -82,6 +82,7 @@
 						bounds.extend(locationLonLat);
 						bounds.extend(locationLonLat);
 						CCH.map.getMap().zoomToExtent(bounds);
+						CCH.map.getMap().zoomTo(15);
 					},
 					error: function (err) {
 						alertify.log("Cannot Find Your Location");
