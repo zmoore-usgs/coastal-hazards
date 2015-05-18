@@ -1837,12 +1837,19 @@ CCH.Objects.Publish.UI = function () {
 							if (!id) {
 								id = $itemIdInput.val();
 							}
-
+							
 							$(window).on('generate.image.complete', function (evt, id) {
 								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
 							});
 							
-							CCH.ui.generateImage(id);
+							// Do not image gen if no bbox
+							if ([$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()].join('')) {
+								CCH.ui.generateImage(id);
+							} else {
+								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
+							}
+							
+							
 						}
 					],
 					error: [
