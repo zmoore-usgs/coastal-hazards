@@ -143,130 +143,64 @@ CCH.Objects.Publish.UI = function () {
 
 	me.enableNewItemForm = function () {
 		var gsBaseUrl = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources[CCH.CONFIG.strings.cidaGeoserver].proxy + 'proxied/';
+		
 		$itemType.val('data');
-		$titleFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$titleMediumTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$descriptionFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$descriptionMediumTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$descriptionTinyTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$bboxNorth.removeAttr(CCH.CONFIG.strings.disabled);
-		$bboxWest.removeAttr(CCH.CONFIG.strings.disabled);
-		$bboxSouth.removeAttr(CCH.CONFIG.strings.disabled);
-		$bboxEast.removeAttr(CCH.CONFIG.strings.disabled);
-		$typeSb.removeAttr(CCH.CONFIG.strings.disabled);
-		$attributeSelect.removeAttr(CCH.CONFIG.strings.disabled);
-		$('.form-group-keyword input').removeAttr(CCH.CONFIG.strings.disabled);
-		$srcWfsServiceInput.removeAttr(CCH.CONFIG.strings.disabled);
-		$srcWfsServiceParamInput.removeAttr(CCH.CONFIG.strings.disabled);
-		$srcWmsServiceInput.removeAttr(CCH.CONFIG.strings.disabled);
-		$srcWmsServiceParamInput.removeAttr(CCH.CONFIG.strings.disabled);
-		$proxyWfsServiceInput
-				.removeAttr(CCH.CONFIG.strings.disabled)
-				.val(gsBaseUrl + 'wfs');
-		$proxyWfsServiceParamInput.removeAttr(CCH.CONFIG.strings.disabled);
-		$proxyWmsServiceInput
-				.removeAttr(CCH.CONFIG.strings.disabled)
-				.val(gsBaseUrl + 'wms');
-		$getWfsAttributesButton.removeAttr(CCH.CONFIG.strings.disabled);
-		$proxyWmsServiceParamInput.removeAttr(CCH.CONFIG.strings.disabled);
-		$ribbonableCb.removeAttr(CCH.CONFIG.strings.disabled);
+		
+		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
+			$descriptionMediumTextArea, $descriptionTinyTextArea, $bboxNorth,
+			$bboxWest, $bboxSouth, $bboxEast, $typeSb, $attributeSelect,
+			$('.form-group-keyword input'), $srcWfsServiceInput, $srcWfsServiceParamInput,
+			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
+			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
+			$proxyWmsServiceParamInput, $ribbonableCb, $name, $wfsServerHelpButton,
+			$keywordGroup.find('input'), $wfsSourceCopyButton, $sourceWfsCheckButton,
+			$sourceWmsCheckButton, $wmsServerHelpButton, $proxyWfsCheckButton,
+			$proxyWmsCheckButton, $buttonSave, $buttonDelete,
+			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')].each(function ($item) {
+			$item.removeAttr(CCH.CONFIG.strings.disabled);
+		});
+		
+		$proxyWfsServiceInput.val(gsBaseUrl + 'wfs');
+		$proxyWmsServiceInput.val(gsBaseUrl + 'wms');
 		$showChildrenCb.prop(CCH.CONFIG.strings.checked, false);
-		$name.removeAttr(CCH.CONFIG.strings.disabled);
-		$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr(CCH.CONFIG.strings.disabled);
 		$uploaderDummy.removeClass(CCH.CONFIG.strings.hidden);
 		$metadataDropdownGroup.removeClass(CCH.CONFIG.strings.hidden);
 		$itemEnabledField.val('false');
-		$keywordGroup.find('input').removeAttr(CCH.CONFIG.strings.disabled);
-		$wfsServerHelpButton.removeAttr(CCH.CONFIG.strings.disabled);
-		$wfsSourceCopyButton.removeAttr(CCH.CONFIG.strings.disabled);
-		$sourceWfsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
-		$sourceWmsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
-		$wmsServerHelpButton.removeAttr(CCH.CONFIG.strings.disabled);
-		$proxyWfsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
-		$proxyWmsCheckButton.removeAttr(CCH.CONFIG.strings.disabled);
 		$childrenSortableList.empty();
 		$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
 		$isActiveStormRow.addClass('hidden');
-		$buttonSave.removeAttr(CCH.CONFIG.strings.disabled);
-		$buttonDelete.removeAttr(CCH.CONFIG.strings.disabled);
 	};
 
 	me.enableNewAggregationForm = function () {
 		$itemType.val('aggregation');
-		$titleFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$titleMediumTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$descriptionFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$descriptionMediumTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$descriptionTinyTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$bboxNorth.removeAttr(CCH.CONFIG.strings.disabled);
-		$bboxWest.removeAttr(CCH.CONFIG.strings.disabled);
-		$bboxSouth.removeAttr(CCH.CONFIG.strings.disabled);
-		$bboxEast.removeAttr(CCH.CONFIG.strings.disabled);
-		$srcWfsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$srcWfsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$srcWmsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$srcWmsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$proxyWfsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$proxyWfsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$proxyWmsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$proxyWmsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$typeSb.removeAttr(CCH.CONFIG.strings.disabled);
-		$('.form-group-keyword input').find('#form-publish-info-item-panel-publications-button-add').removeAttr(CCH.CONFIG.strings.disabled);
-		$ribbonableCb.removeAttr(CCH.CONFIG.strings.disabled);
-		$showChildrenCb.removeAttr(CCH.CONFIG.strings.disabled);
-		$name.removeAttr(CCH.CONFIG.strings.disabled);
-		$publicationsPanel.removeAttr(CCH.CONFIG.strings.disabled);
-		$childrenSortableList.removeAttr(CCH.CONFIG.strings.disabled);
+		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
+			$descriptionMediumTextArea, $descriptionTinyTextArea, $bboxNorth,
+			$bboxWest, $bboxSouth, $bboxEast, $typeSb, $attributeSelect,
+			$('.form-group-keyword input'), $srcWfsServiceInput, $srcWfsServiceParamInput,
+			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
+			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
+			$proxyWmsServiceParamInput, $ribbonableCb, $name, $wfsServerHelpButton,
+			$keywordGroup.find('input'), $wfsSourceCopyButton, $sourceWfsCheckButton,
+			$sourceWmsCheckButton, $wmsServerHelpButton, $proxyWfsCheckButton,
+			$proxyWmsCheckButton, $buttonSave, $buttonDelete,
+			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')].each(function ($item) {
+			$item.removeAttr(CCH.CONFIG.strings.disabled);
+		});
+		
 		$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
 		$itemEnabledField.val('false');
-		$keywordGroup.find('input').removeAttr(CCH.CONFIG.strings.disabled);
 		me.createSortableChildren();
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
 		$isActiveStormRow.addClass('hidden');
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
-		$buttonSave.removeAttr(CCH.CONFIG.strings.disabled);
-		$buttonDelete.removeAttr(CCH.CONFIG.strings.disabled);
 	};
 
 	me.enableNewTemplateForm = function () {
+		me.enableNewAggregationForm();
 		$itemType.val('template');
-		$titleFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$titleMediumTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$descriptionFullTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$descriptionMediumTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$descriptionTinyTextArea.removeAttr(CCH.CONFIG.strings.disabled);
-		$bboxNorth.removeAttr(CCH.CONFIG.strings.disabled);
-		$bboxWest.removeAttr(CCH.CONFIG.strings.disabled);
-		$bboxSouth.removeAttr(CCH.CONFIG.strings.disabled);
-		$bboxEast.removeAttr(CCH.CONFIG.strings.disabled);
-		$srcWfsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$srcWfsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$srcWmsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$srcWmsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$proxyWfsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$proxyWfsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$proxyWmsServiceInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$proxyWmsServiceParamInput.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-		$typeSb.removeAttr(CCH.CONFIG.strings.disabled);
-		$('.form-group-keyword input').find('#form-publish-info-item-panel-publications-button-add').removeAttr(CCH.CONFIG.strings.disabled);
-		$ribbonableCb.removeAttr(CCH.CONFIG.strings.disabled);
-		$showChildrenCb.removeAttr(CCH.CONFIG.strings.disabled);
-		$name.removeAttr(CCH.CONFIG.strings.disabled);
-		$publicationsPanel.removeAttr(CCH.CONFIG.strings.disabled);
-		$childrenSortableList.removeAttr(CCH.CONFIG.strings.disabled);
-		$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
-		$itemEnabledField.val('false');
-		$keywordGroup.find('input').removeAttr(CCH.CONFIG.strings.disabled);
-		me.createSortableChildren();
-		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
-		$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
-		$isActiveStormRow.addClass('hidden');
-		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
-		$buttonSave.removeAttr(CCH.CONFIG.strings.disabled);
-		$buttonDelete.removeAttr(CCH.CONFIG.strings.disabled);
 	};
 
 	me.isBlank = function ($ele) {
