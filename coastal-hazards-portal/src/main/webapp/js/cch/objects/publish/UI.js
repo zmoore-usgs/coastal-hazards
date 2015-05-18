@@ -1529,6 +1529,7 @@ CCH.Objects.Publish.UI = function () {
 				error: [
 					function () {
 						$itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+						$(window).trigger('generate.image.complete', [id]);
 					}
 				]
 			}
@@ -1840,7 +1841,7 @@ CCH.Objects.Publish.UI = function () {
 							$(window).on('generate.image.complete', function (evt, id) {
 								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
 							});
-
+							
 							CCH.ui.generateImage(id);
 						}
 					],
