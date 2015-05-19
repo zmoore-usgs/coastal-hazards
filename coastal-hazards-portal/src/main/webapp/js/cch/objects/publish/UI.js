@@ -976,10 +976,10 @@ CCH.Objects.Publish.UI = function () {
 				$metadataDropdownGroup.addClass(CCH.CONFIG.strings.hidden);
 
 				if (CCH.CONFIG.ui.disableBoundingBoxInputForAggregations === false) {
-					$bboxWest.removeAttr(CCH.CONFIG.strings.disabled);
-					$bboxSouth.removeAttr(CCH.CONFIG.strings.disabled);
-					$bboxEast.removeAttr(CCH.CONFIG.strings.disabled);
-					$bboxNorth.removeAttr(CCH.CONFIG.strings.disabled);
+					[$bboxWest, $bboxSouth, $bboxEast, $bboxNorth]
+							.each(function ($i) {
+						$i.removeAttr(CCH.CONFIG.strings.disabled);
+					});
 				}
 			} else {
 				$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
@@ -1093,13 +1093,6 @@ CCH.Objects.Publish.UI = function () {
 					$item.removeAttr(CCH.CONFIG.strings.disabled);
 				});
 				
-				$name.val(item.name);
-				$titleFullTextArea.val(titleFull);
-				$titleMediumTextArea.val(titleMedium);
-				$descriptionFullTextArea.val(descriptionFull);
-				$descriptionMediumTextArea.val(descriptionMedium);
-				$descriptionTinyTextArea.val(descriptionTiny);
-				$metadataSummaryField.val(summary.version || 'unknown');
 				
 				$metadataDropdownGroup.removeClass(CCH.CONFIG.strings.hidden);
 				$uploaderDummy.empty().removeClass(CCH.CONFIG.strings.hidden);
@@ -1137,7 +1130,26 @@ CCH.Objects.Publish.UI = function () {
 					}
 				});
 			}
-
+			[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
+					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
+					$proxyWmsCheckButton, $bboxWest, $bboxSouth, $bboxEast, $bboxNorth,
+					$titleFullTextArea, $titleMediumTextArea, $ribbonableCb,
+					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
+					$buttonSave, $buttonDelete, $ribbonableCb, $metadataSummaryField]
+						.concat($keywordGroup.find('input'))
+						.concat($keywordGroup.find('button'))
+						.each(function ($item) {
+					$item.removeAttr(CCH.CONFIG.strings.disabled);
+				});
+			
+			$name.val(item.name);
+			$titleFullTextArea.val(titleFull);
+			$titleMediumTextArea.val(titleMedium);
+			$descriptionFullTextArea.val(descriptionFull);
+			$descriptionMediumTextArea.val(descriptionMedium);
+			$descriptionTinyTextArea.val(descriptionTiny);
+			$metadataSummaryField.val(summary.version || 'unknown');
+			
 			// Add keywords
 			keywords.each(function (keyword) {
 				me.addKeywordGroup(keyword);
