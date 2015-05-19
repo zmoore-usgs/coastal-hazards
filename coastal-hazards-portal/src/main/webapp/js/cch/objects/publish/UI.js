@@ -24,6 +24,7 @@ CCH.Objects.Publish.UI = function () {
 			$bboxWest = $form.find('#form-publish-item-bbox-input-west'),
 			$bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
 			$bboxEast = $form.find('#form-publish-item-bbox-input-east'),
+			$bboxes = $('.bbox'),
 			$typeSb = $form.find('#form-publish-item-type'),
 			$attributeSelect = $form.find('#form-publish-item-attribute'),
 			$attributeRetrieveDataButton = $form.find('#form-publish-item-attribute-button'),
@@ -107,25 +108,27 @@ CCH.Objects.Publish.UI = function () {
 	me.clearForm = function () {
 		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $descriptionTinyTextArea,
-			$bboxNorth, $bboxWest, $bboxSouth, $bboxEast, $typeSb, $attributeSelect,
+			$typeSb, $attributeSelect,
 			$srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $proxyWmsServiceParamInput,
 			$ribbonableCb, $showChildrenCb, $itemType, $name,
 			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')]
 				.concat($('.form-group-keyword input'))
+				.concat($bboxes)
 				.each(function ($item) {
 					$item.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 				});
 
 		[$itemIdInput, $titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
-			$descriptionMediumTextArea, $descriptionTinyTextArea, $bboxNorth, $bboxWest,
-			$bboxSouth, $bboxEast, $typeSb, $itemEnabledField, $attributeSelect,
+			$descriptionMediumTextArea, $descriptionTinyTextArea, $typeSb, 
+			$itemEnabledField, $attributeSelect,
 			$cswServiceInput, $srcWfsServiceInput,
 			$srcWfsServiceParamInput, $srcWmsServiceInput, $srcWmsServiceParamInput,
 			$proxyWfsServiceInput, $proxyWfsServiceParamInput, $proxyWmsServiceInput,
 			$proxyWmsServiceParamInput, $metadataSummaryField, $itemType, $name]
 				.concat($('.form-group-keyword input'))
+				.concat($bboxes)
 				.each(function ($item) {
 					$item.val('');
 				});
@@ -153,7 +156,7 @@ CCH.Objects.Publish.UI = function () {
 		
 		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $bboxNorth,
-			$bboxWest, $bboxSouth, $bboxEast, $typeSb, $attributeSelect,
+			$typeSb, $attributeSelect,
 			$srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
@@ -163,6 +166,7 @@ CCH.Objects.Publish.UI = function () {
 			$proxyWmsCheckButton, $buttonSave, $buttonDelete,
 			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')]
 				.concat($keywordGroup.find('input'))
+				.concat($bboxes)
 				.each(function ($item) {
 					$item.removeAttr(CCH.CONFIG.strings.disabled);
 				});
@@ -183,8 +187,8 @@ CCH.Objects.Publish.UI = function () {
 	me.enableNewAggregationForm = function () {
 		$itemType.val('aggregation');
 		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
-			$descriptionMediumTextArea, $descriptionTinyTextArea, $bboxNorth,
-			$bboxWest, $bboxSouth, $bboxEast, $typeSb, $attributeSelect,
+			$descriptionMediumTextArea, $descriptionTinyTextArea, $typeSb,
+			$attributeSelect,
 			$srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
@@ -194,6 +198,7 @@ CCH.Objects.Publish.UI = function () {
 			$proxyWmsCheckButton, $buttonSave, $buttonDelete,
 			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')]
 				.concat($('.form-group-keyword input'))
+				.concat($bboxes)
 				.each(function ($item) {
 					$item.removeAttr(CCH.CONFIG.strings.disabled);
 				});
@@ -976,11 +981,8 @@ CCH.Objects.Publish.UI = function () {
 				$metadataDropdownGroup.addClass(CCH.CONFIG.strings.hidden);
 
 				if (CCH.CONFIG.ui.disableBoundingBoxInputForAggregations === false) {
-					[$bboxWest, $bboxSouth, $bboxEast, $bboxNorth]
-							.each(function ($i) {
-						$i.removeAttr(CCH.CONFIG.strings.disabled);
-					});
-				}
+					$bboxes.removeAttr(CCH.CONFIG.strings.disabled);
+				};
 			} else {
 				$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 				$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
@@ -1083,10 +1085,11 @@ CCH.Objects.Publish.UI = function () {
 
 				[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
 					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
-					$proxyWmsCheckButton, $bboxWest, $bboxSouth, $bboxEast, $bboxNorth,
+					$proxyWmsCheckButton,
 					$titleFullTextArea, $titleMediumTextArea, $ribbonableCb,
 					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
 					$buttonSave, $buttonDelete]
+						.concat($bboxes)
 						.concat($keywordGroup.find('input'))
 						.concat($keywordGroup.find('button'))
 						.each(function ($item) {
@@ -1132,10 +1135,11 @@ CCH.Objects.Publish.UI = function () {
 			}
 			[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
 					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
-					$proxyWmsCheckButton, $bboxWest, $bboxSouth, $bboxEast, $bboxNorth,
+					$proxyWmsCheckButton,
 					$titleFullTextArea, $titleMediumTextArea, $ribbonableCb,
 					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
 					$buttonSave, $buttonDelete, $ribbonableCb, $metadataSummaryField]
+						.concat($bboxes)
 						.concat($keywordGroup.find('input'))
 						.concat($keywordGroup.find('button'))
 						.each(function ($item) {
@@ -1420,11 +1424,8 @@ CCH.Objects.Publish.UI = function () {
 
 	me.updateBoundingBox = function () {
 		var $children = $childrenSortableList.find('li > span > div > button:first-child.active');
-
-		$bboxWest.val('');
-		$bboxEast.val('');
-		$bboxNorth.val('');
-		$bboxSouth.val('');
+		
+		$bboxes.val('');
 
 		if ($children.length !== 0) {
 			$childrenSortableList.find('li > span > div > button:first-child.active').each(function (idx, btn) {
@@ -1467,10 +1468,6 @@ CCH.Objects.Publish.UI = function () {
 					}
 				}
 
-			});
-		} else {
-			[$bboxWest, $bboxWest, $bboxEast, $bboxNorth].each(function($i) {
-				$i.val('');
 			});
 		}
 	};
