@@ -409,26 +409,26 @@
 										<td></td>
 										<td id="form-publish-info-item-bbox-table-north">
 											<label for="form-publish-item-bbox-input-north">North</label>
-											<input type="text" id="form-publish-item-bbox-input-north" class="form-control" placeholder="180" disabled="disabled" />
+											<input type="text" id="form-publish-item-bbox-input-north" class="form-control bbox" placeholder="180" disabled="disabled" />
 										</td>
 										<td></td>
 									</tr>
 									<tr>
 										<td id="form-publish-info-item-bbox-table-west">
 											<label for="form-publish-item-bbox-input-west">West</label>
-											<input type="text" id="form-publish-item-bbox-input-west" class="form-control" placeholder="-180" disabled="disabled" />
+											<input type="text" id="form-publish-item-bbox-input-west" class="form-control bbox" placeholder="-180" disabled="disabled" />
 										</td>
 										<td></td>
 										<td id="form-publish-info-item-bbox-table-east">
 											<label for="form-publish-item-bbox-input-east">East</label>
-											<input type="text" id="form-publish-item-bbox-input-east" class="form-control" placeholder="180" disabled="disabled" />
+											<input type="text" id="form-publish-item-bbox-input-east" class="form-control bbox" placeholder="180" disabled="disabled" />
 										</td>
 									</tr>
 									<tr>
 										<td></td>
 										<td id="form-publish-info-item-bbox-table-south">
 											<label for="form-publish-item-bbox-input-south">South</label>
-											<input type="text" id="form-publish-item-bbox-input-south" class="form-control" placeholder="-180" disabled="disabled" />
+											<input type="text" id="form-publish-item-bbox-input-south" class="form-control bbox" placeholder="-180" disabled="disabled" />
 										</td>
 										<td></td>
 									</tr>
