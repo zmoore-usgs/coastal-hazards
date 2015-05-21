@@ -34,6 +34,7 @@ CCH.Objects.Front.Map = function (args) {
 	});
 	me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
 	me.zoomToCurrentLocationControl = new CCH.Objects.Widget.OLZoomToIcon();
+	me.drawBoxControl =  new CCH.Objects.Widget.OLDrawBoxControl(CCH.CONFIG.map.layers.drawBoxLayer);
 	me.clickControl = null; // Defined in init 
 
 	me.showLayer = function (args) {
@@ -219,7 +220,7 @@ CCH.Objects.Front.Map = function (args) {
 
 			CCH.LOG.debug('Map.js::init():Adding base layers to map');
 			me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
-			me.map.addLayers([CCH.CONFIG.map.layers.worldBoundariesAndPlaces]);
+			me.map.addLayers([CCH.CONFIG.map.layers.worldBoundariesAndPlaces, CCH.CONFIG.map.layers.drawBoxLayer]);
 			
 			CCH.LOG.debug('Map.js::init():Adding controls to map');
 			me.map.addControls([
@@ -229,7 +230,8 @@ CCH.Objects.Front.Map = function (args) {
 				me.clickControl,
 				me.scaleLineControl,
 				me.legendControl,
-				me.zoomToCurrentLocationControl
+				me.zoomToCurrentLocationControl,
+				me.drawBoxControl
 			]);
 			me.clickControl.activate();
 			me.legendControl.activate();
