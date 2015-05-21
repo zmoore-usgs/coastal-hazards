@@ -124,10 +124,21 @@ CCH.Objects.Widget.Accordion = function (args) {
 					// click handler of the header, this will loop forever. Must unbind,
 					// click, rebind
 					evt.stopImmediatePropagation();
-					$(evt.currentTarget).off('click', headingClickHandler);
-					$(evt.currentTarget).find('a').trigger('click');
-					$(evt.currentTarget).on('click', headingClickHandler);
+					var $bellow = $(evt.currentTarget);
+					
+					$bellow.off('click', headingClickHandler);
+					$bellow.find('a').trigger('click');
+					$bellow.on('click', headingClickHandler);
+					
+					// Figure out if we're opening
+					if ($bellow.find('.accordion-toggle').attr('aria-expanded') === 'true') {
+						// Currently open. We are going to be closing
+						// TODO - Marty, animate the carat from down to right
+					} else {
+						// TODO - Marty, ainmate the carat from right to down
+					}
 				};
+				
 		toggleTarget.append(
 				$('<span />').addClass('accordion-toggle-title-medium').html([downFacingArrow, titleMedium])
 				).attr({
