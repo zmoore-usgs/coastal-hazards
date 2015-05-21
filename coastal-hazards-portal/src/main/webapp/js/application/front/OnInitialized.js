@@ -54,7 +54,7 @@ CCH.CONFIG.loadUberItem = function (args) {
 					// Is the user coming in from another part of the application?
 					if (CCH.session.isReturning() === true && CCH.session.getSession().center && !overridePreviousBounds) {
 						// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
-						CCH.map.updateFromCookie();
+						CCH.map.updateFromSession();
 					} else if (zoomToBbox) {
 						CCH.map.zoomToBoundingBox({
 							bbox: data.bbox,
@@ -91,8 +91,6 @@ CCH.CONFIG.onAppInitialize = function () {
 	var viewType = (CCH.CONFIG.params.type + String()).toLowerCase(),
 		id = CCH.CONFIG.params.id,
 		sessionItems = CCH.session.getSession().items;
-
-	splashUpdate('Loading Application...');
 
 	// Populate the UI with incoming data
 	// Decide how to load the application. 
@@ -185,6 +183,7 @@ CCH.CONFIG.onAppInitialize = function () {
 				'eventAction': 'loadView',
 				'eventLabel': '"' + CCH.CONFIG.params.id + '"'
 			});
+			
 		} else if (viewType === 'item') {
 			// User is coming in with an item, so load that item
 			$(window).on('cch.item.loaded.all', function (evt) {

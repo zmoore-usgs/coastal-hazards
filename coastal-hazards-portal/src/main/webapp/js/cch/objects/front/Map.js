@@ -34,6 +34,7 @@ CCH.Objects.Front.Map = function (args) {
 	});
 	me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
 	me.zoomToCurrentLocationControl = new CCH.Objects.Widget.OLZoomToIcon();
+	me.drawBoxControl =  new CCH.Objects.Widget.OLDrawBoxControl(CCH.CONFIG.map.layers.drawBoxLayer);
 	me.clickControl = null; // Defined in init 
 
 	me.showLayer = function (args) {
@@ -219,7 +220,7 @@ CCH.Objects.Front.Map = function (args) {
 
 			CCH.LOG.debug('Map.js::init():Adding base layers to map');
 			me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
-			me.map.addLayers([CCH.CONFIG.map.layers.worldBoundariesAndPlaces]);
+			me.map.addLayers([CCH.CONFIG.map.layers.worldBoundariesAndPlaces, CCH.CONFIG.map.layers.drawBoxLayer]);
 			
 			CCH.LOG.debug('Map.js::init():Adding controls to map');
 			me.map.addControls([
@@ -229,7 +230,8 @@ CCH.Objects.Front.Map = function (args) {
 				me.clickControl,
 				me.scaleLineControl,
 				me.legendControl,
-				me.zoomToCurrentLocationControl
+				me.zoomToCurrentLocationControl,
+				me.drawBoxControl
 			]);
 			me.clickControl.activate();
 			me.legendControl.activate();
@@ -246,6 +248,10 @@ CCH.Objects.Front.Map = function (args) {
 				'changebaselayer' : me.changeBaseLayerCallback
 			});
 
+			if (CCH.session && CCH.session.getSession() && CCH.session.getSession().baseLayer) {
+				me.map.setBaseLayer(me.map.getLayersByName(CCH.session.getSession().baseLayer));
+			}
+
 			CCH.LOG.debug('Map.js::init():Replacing map graphics');
 			$('#OpenLayers_Control_MaximizeDiv_innerImage').attr('src', CCH.CONFIG.contextPath + '/images/openlayers/maximize_minimize_toggle/cch-layer-switcher-closed.svg');
 			$('#OpenLayers_Control_MinimizeDiv_innerImage').attr('src', CCH.CONFIG.contextPath + '/images/openlayers/maximize_minimize_toggle/cch-layer-switcher-opened.svg');
@@ -257,6 +263,7 @@ CCH.Objects.Front.Map = function (args) {
 				'cch.slide.search.closed': me.removeMarkerLayer,
 				'cch.data.locations.searched': function (evt, locations) {
 					if (locations && locations.items && locations.items.length > 0) {
+						me.map.zoomToExtent(new CCH.Util.Search().getBboxOfLocationResults(locations.items));
 						me.removeMarkerLayer();
 						me.createMarkerLayer();
 						me.addLocationMarkers(locations.items);
@@ -338,38 +345,6 @@ CCH.Objects.Front.Map = function (args) {
 			return true;
 		},
 		/**
-		 * Updates the map based on the 
-		 * @returns {undefined}
-		 */
-		updateFromCookie: function () {
-			CCH.LOG.info('Map.js::updateFromSession():Map being recreated from cookie');
-			var session = CCH.session.getSession(),
-				center = new OpenLayers.LonLat(session.center[0], session.center[1]).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection),
-				scale = session.scale;
-
-			// Becaue we don't want these events to write back to the session, 
-			// unhook the event handlers for map events tied to session writing.
-			// They will be rehooked later
-			me.map.events.un({
-				'moveend': me.moveendCallback,
-				'addlayer': me.addlayerCallback,
-				'changelayer': me.changelayerCallback,
-				'removelayer': me.removeLayerCallback
-			});
-
-			me.map.setCenter(center);
-			me.map.zoomToScale(scale, true);
-
-			// We're done altering the map to fit the session. Let's re-register those 
-			// events we disconnected earlier
-			me.map.events.on({
-				'moveend': me.moveendCallback,
-				'removelayer': me.removeLayerCallback,
-				'addlayer': me.addLayerCallback,
-				'changelayer': me.changelayerCallback
-			});
-		},
-		/**
 		 * Updates the map based on the information contained in the session object
 		 * 
 		 * @returns {undefined}
@@ -390,16 +365,6 @@ CCH.Objects.Front.Map = function (args) {
 				'removelayer': me.removeLayerCallback
 			});
 
-			// If the session holds items, they will be loaded and if they are pinned,
-			// the map will zoom to those items that are pinned. However, if there 
-			// are no items in the session or if none are pinned, zoom to the bounding box 
-			// provided in the session
-			if (!session.items.length) {
-				center = new OpenLayers.LonLat(session.center[0], session.center[1]).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection);
-				me.map.setCenter(center);
-				me.map.zoomToScale(session.scale);
-			}
-
 			// A session will have a base layer set. Check if the base layer is 
 			// different from the current base layer. If so, switch to that base layer
 			if (session.baselayer && session.baselayer !== me.map.baseLayer.name) {
@@ -414,6 +379,17 @@ CCH.Objects.Front.Map = function (args) {
 					// Add it to the map as a new baselayer
 					me.map.setBaseLayer(baselayer);
 				}
+			}
+			
+			
+			// If the session holds items, they will be loaded and if they are pinned,
+			// the map will zoom to those items that are pinned. However, if there 
+			// are no items in the session or if none are pinned, zoom to the bounding box 
+			// provided in the session
+			if (!session.items.length) {
+				center = new OpenLayers.LonLat(session.center[0], session.center[1]).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection);
+				me.map.setCenter(center);
+				me.map.zoomToScale(session.scale);
 			}
 
 			// We're done altering the map to fit the session. Let's re-register those 
@@ -494,6 +470,7 @@ CCH.Objects.Front.Map = function (args) {
 			} else {
 				placeNames.setVisibility(false);
 			}
+			
 			return placeNames.getVisibility();
 		},
 		preAddLayerCallback: function (evt) {

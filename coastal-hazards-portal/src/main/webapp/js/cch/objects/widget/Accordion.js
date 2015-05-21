@@ -110,7 +110,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 				id = card.id,
 				cardContainer = card.getContainer(),
 				titleRow = cardContainer.find('.application-card-title-row'),
-				downFacingArrow = $('<i />').addClass('fa fa-chevron-down accordion-title-arrow'),
+				downFacingArrow = $('<i />').addClass('fa fa-chevron-right accordion-title-arrow'),
 				titleMedium = titleRow.find('.application-card-title-container-medium').html(),
 				group = $('<div />').addClass('panel panel-default'),
 				heading = $('<div />').addClass('panel-heading').attr('id', 'panel-heading-' + id),
@@ -124,10 +124,13 @@ CCH.Objects.Widget.Accordion = function (args) {
 					// click handler of the header, this will loop forever. Must unbind,
 					// click, rebind
 					evt.stopImmediatePropagation();
-					$(evt.currentTarget).off('click', headingClickHandler);
-					$(evt.currentTarget).find('a').trigger('click');
-					$(evt.currentTarget).on('click', headingClickHandler);
+					var $bellow = $(evt.currentTarget);
+					
+					$bellow.off('click', headingClickHandler);
+					$bellow.find('a').trigger('click');
+					$bellow.on('click', headingClickHandler);
 				};
+				
 		toggleTarget.append(
 				$('<span />').addClass('accordion-toggle-title-medium').html([downFacingArrow, titleMedium])
 				).attr({
@@ -176,6 +179,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 				card.show({
 					duration: 0
 				});
+                                downFacingArrow.addClass('downwardfacingarrow');
 				$(window).trigger('cch.accordion.show', evt);
 			},
 			'shown.bs.collapse': function (evt) {
@@ -192,6 +196,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 			'hide.bs.collapse': function (evt) {
 				card.closeChild();
 				card.hide();
+                                downFacingArrow.removeClass('downwardfacingarrow');
 				$(window).trigger('cch.accordion.hide', evt);
 			},
 			'hidden.bs.collapse': function (evt) {
@@ -205,6 +210,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 				});
 				$(window).trigger('cch.accordion.hidden', evt);
 			}
+                         
 		});
 
 		return group;
@@ -213,7 +219,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 	me.getAccordion = function () {
 		return $('#' + me.CONTAINER_ID);
 	};
-
+        
 	me.getBellows = function () {
 		return $('#' + me.CONTAINER_ID + ' .panel');
 	};

@@ -134,6 +134,7 @@
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/ItemsSlide<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/OLLegend<%= resourceSuffix %>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/OLDrawBoxControl<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/OLZoomToIcon<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/BucketSlide<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/SearchSlide<%= resourceSuffix %>.js"></script>
