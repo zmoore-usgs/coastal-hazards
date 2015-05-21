@@ -63,6 +63,13 @@ CCH.Util.Search = function (args) {
 			}
 		});
 	};
+	
+	me.getBboxOfLocationResults = function (items) {
+		var points = items.map(function (i) {
+			return new OpenLayers.Geometry.Point(i.feature.geometry.x, i.feature.geometry.y);
+		});
+		return new OpenLayers.Geometry.MultiPoint(points).getBounds();
+	};
 
 	me.submitItemSearch = function (args) {
 		if (!args) {
@@ -131,7 +138,8 @@ CCH.Util.Search = function (args) {
 
 	return {
 		submitLocationSearch: me.submitLocationSearch,
-		submitItemSearch: me.submitItemSearch
+		submitItemSearch: me.submitItemSearch,
+		getBboxOfLocationResults: me.getBboxOfLocationResults
 	};
 
 };

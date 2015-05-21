@@ -257,6 +257,7 @@ CCH.Objects.Front.Map = function (args) {
 				'cch.slide.search.closed': me.removeMarkerLayer,
 				'cch.data.locations.searched': function (evt, locations) {
 					if (locations && locations.items && locations.items.length > 0) {
+						me.map.zoomToExtent(new CCH.Util.Search().getgetBboxOfLocationResults(location.items));
 						me.removeMarkerLayer();
 						me.createMarkerLayer();
 						me.addLocationMarkers(locations.items);
