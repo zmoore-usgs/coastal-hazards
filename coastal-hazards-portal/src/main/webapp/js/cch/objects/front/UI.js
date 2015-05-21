@@ -279,6 +279,14 @@ CCH.Objects.Front.UI = function (args) {
 			textStatus: textStatus
 		});
 	};
+	
+	me.addItemsInViewToBucket = function () {
+		var items = CCH.items.getItemsWithinBounds(CCH.map.getMap().getExtent());
+		
+		items.forEach(function (i){
+			CCH.ui.bucket.add({item : i});
+		});
+	};
 
 	me.addItemsToBucketOnLoad = function (items) {
 		items = items || [];
@@ -587,6 +595,7 @@ CCH.Objects.Front.UI = function (args) {
 		accordion: me.accordion,
 		errorResponseHandler: me.errorResponseHandler,
 		addItemsToBucketOnLoad: me.addItemsToBucketOnLoad,
+		addItemsInViewToBucket: me.addItemsInViewToBucket,
 		CLASS_NAME: 'CCH.Objects.UI'
 	});
 };
