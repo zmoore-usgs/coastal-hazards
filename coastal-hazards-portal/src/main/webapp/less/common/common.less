@@ -1,5 +1,5 @@
 @cch-ol-grey: #D3D3D3;
-@cch-ol-grey-important: @cch-ol-grey !important;
+@cch-ol-grey-border: @cch-ol-grey;
 .scale-line-coloring() {
 	color: @cch-ol-grey;
 	text-shadow:
@@ -22,15 +22,15 @@
 }
 
 .olControlScaleLineTop {
-	border-right-color: @cch-ol-grey-important;
-	border-bottom-color: @cch-ol-grey-important;
-	border-left-color: @cch-ol-grey-important;
+	border-right-color: @cch-ol-grey-border !important;
+	border-bottom-color: @cch-ol-grey-border !important;
+	border-left-color: @cch-ol-grey-border !important;
 	.scale-line-coloring;
 }
 
 .olControlScaleLineBottom {
-	border-top-color: @cch-ol-grey-important;
-	border-right-color: @cch-ol-grey-important;
-	border-left-color: @cch-ol-grey-important;
+	border-top-color: @cch-ol-grey-border !important;
+	border-right-color: @cch-ol-grey-border !important;
+	border-left-color: @cch-ol-grey-border !important;
 	.scale-line-coloring;
 }
