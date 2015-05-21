@@ -129,17 +129,6 @@ CCH.Objects.Widget.Accordion = function (args) {
 					$bellow.off('click', headingClickHandler);
 					$bellow.find('a').trigger('click');
 					$bellow.on('click', headingClickHandler);
-					
-					// Figure out if we're opening
-					if ($bellow.find('.accordion-toggle').attr('aria-expanded') === 'true') {
-						// Currently open. We are going to be closing
-						// TODO - Marty, animate the carat from down to right
-                                                downFacingArrow.addClass('downwardfacingarrow');
-                                                
-					} else {
-						// TODO - Marty, ainmate the carat from right to down
-                                                downFacingArrow.removeClass('downwardfacingarrow');
-					}
 				};
 				
 		toggleTarget.append(
@@ -190,6 +179,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 				card.show({
 					duration: 0
 				});
+                                downFacingArrow.addClass('downwardfacingarrow');
 				$(window).trigger('cch.accordion.show', evt);
 			},
 			'shown.bs.collapse': function (evt) {
@@ -206,6 +196,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 			'hide.bs.collapse': function (evt) {
 				card.closeChild();
 				card.hide();
+                                downFacingArrow.removeClass('downwardfacingarrow');
 				$(window).trigger('cch.accordion.hide', evt);
 			},
 			'hidden.bs.collapse': function (evt) {
@@ -219,6 +210,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 				});
 				$(window).trigger('cch.accordion.hidden', evt);
 			}
+                         
 		});
 
 		return group;
@@ -227,7 +219,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 	me.getAccordion = function () {
 		return $('#' + me.CONTAINER_ID);
 	};
-
+        
 	me.getBellows = function () {
 		return $('#' + me.CONTAINER_ID + ' .panel');
 	};
