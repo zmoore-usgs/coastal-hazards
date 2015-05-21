@@ -90,6 +90,9 @@
 				ribbonOffset: 6, //Must be an integer
 				modelProjection : new OpenLayers.Projection('EPSG:4326'),
 				layers: {
+					drawBoxLayer : new OpenLayers.Layer.Vector('Box Layer', {
+						displayInLayerSwitcher: false
+					}),
 					markerLayer: new OpenLayers.Layer.Markers('Markers', {
 						displayInLayerSwitcher: false
 					}),

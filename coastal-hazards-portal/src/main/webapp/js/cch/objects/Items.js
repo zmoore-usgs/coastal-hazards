@@ -27,6 +27,14 @@ CCH.Objects.Items = function (args) {
 	me.items = {};
 	me.search = new CCH.Util.Search();
 
+	me.findWithinBounds = function (bounds) {
+		var itemsInBounds = Object.values(me.items)
+				.filter(function (i) {
+					return i.id.toLowerCase() !== 'uber' && i.isWithinBounds(bounds);
+				});
+		return itemsInBounds;
+	};
+
 	me.addItem = function (args) {
 		args = args || {};
 
@@ -52,6 +60,7 @@ CCH.Objects.Items = function (args) {
 	return {
 		add: me.addItem,
 		search: me.search.submitItemSearch,
+		getItemsWithinBounds : me.findWithinBounds,
 		getItems: function () {
 			return me.items;
 		},

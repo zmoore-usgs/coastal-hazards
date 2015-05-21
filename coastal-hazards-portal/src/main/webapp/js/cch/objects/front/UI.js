@@ -144,10 +144,11 @@ CCH.Objects.Front.UI = function (args) {
 				shareInput = $('#' + me.SHARE_INPUT_ID);
 
 			shareInput.val(url);
+			
 			$('#' + me.SHARE_URL_BUTTON_ID).attr({
 				'href': url
 			}).removeClass('disabled');
-			shareInput.select();
+			
 			twttr.widgets.createShareButton(
 				url,
 				$('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
@@ -162,7 +163,9 @@ CCH.Objects.Front.UI = function (args) {
 					count: 'none'
 				}
 			);
+	
 			$('#' + me.SHARE_MODAL_ID).modal('show');
+			
 			twttr.events.bind('tweet', function () {
 				alertify.log('Your view has been tweeted. Thank you.');
 			});
@@ -274,6 +277,14 @@ CCH.Objects.Front.UI = function (args) {
 			errorThrown: errorThrown,
 			status: jqXHR.status,
 			textStatus: textStatus
+		});
+	};
+	
+	me.addItemsInViewToBucket = function () {
+		var items = CCH.items.getItemsWithinBounds(CCH.map.getMap().getExtent());
+		
+		items.forEach(function (i){
+			CCH.ui.bucket.add({item : i});
 		});
 	};
 
@@ -561,6 +572,12 @@ CCH.Objects.Front.UI = function (args) {
 			'eventAction': 'cidaCmgpLinkClicked'
 		});
 	});
+	
+	// Ensure that when the share modal pops up, text is pre-selected for 
+	// easier copying in mobile
+	$('#' + me.SHARE_MODAL_ID).on('shown.bs.modal', function () {
+		$('#' + me.SHARE_INPUT_ID).select();
+	});
 
 	$(window).trigger('cch.ui.initialized');
 
@@ -578,6 +595,7 @@ CCH.Objects.Front.UI = function (args) {
 		accordion: me.accordion,
 		errorResponseHandler: me.errorResponseHandler,
 		addItemsToBucketOnLoad: me.addItemsToBucketOnLoad,
+		addItemsInViewToBucket: me.addItemsInViewToBucket,
 		CLASS_NAME: 'CCH.Objects.UI'
 	});
 };

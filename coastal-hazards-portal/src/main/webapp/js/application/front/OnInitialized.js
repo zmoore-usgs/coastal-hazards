@@ -92,8 +92,6 @@ CCH.CONFIG.onAppInitialize = function () {
 		id = CCH.CONFIG.params.id,
 		sessionItems = CCH.session.getSession().items;
 
-	splashUpdate('Loading Application...');
-
 	// Populate the UI with incoming data
 	// Decide how to load the application. 
 	// Depending on the 'idType' string, the application can be loaded either through:

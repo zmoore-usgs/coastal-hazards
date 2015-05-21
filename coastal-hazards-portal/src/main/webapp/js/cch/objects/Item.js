@@ -447,6 +447,14 @@ CCH.Objects.Item = function (args) {
 		return serviceObject || defaultServiceObject;
 	};
 
+	me.isWithinBounds = function (bounds) {
+		if (me.bbox) {
+			var bbox = new OpenLayers.Bounds(me.bbox).transform(CCH.CONFIG.map.modelProjection, new OpenLayers.Projection('EPSG:3857'));
+			return bounds.intersectsBounds(bbox);
+		}
+		return false;
+	};
+
 	CCH.LOG.trace('Item.js::init():Item class finished initializing.');
 
 	return $.extend(me, {
@@ -466,6 +474,7 @@ CCH.Objects.Item = function (args) {
 		hideLayer: me.hideLayer,
 		pathToItem: me.pathToItem,
 		getAncestor: me.getAncestor,
+		isWithinBounds : me.isWithinBounds,
 		CLASS_NAME: 'CCH.Objects.Item'
 	});
 };
