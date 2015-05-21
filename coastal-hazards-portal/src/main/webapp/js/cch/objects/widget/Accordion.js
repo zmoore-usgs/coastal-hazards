@@ -134,8 +134,11 @@ CCH.Objects.Widget.Accordion = function (args) {
 					if ($bellow.find('.accordion-toggle').attr('aria-expanded') === 'true') {
 						// Currently open. We are going to be closing
 						// TODO - Marty, animate the carat from down to right
+                                                downFacingArrow.addClass('downwardfacingarrow');
+                                                
 					} else {
 						// TODO - Marty, ainmate the carat from right to down
+                                                downFacingArrow.removeClass('downwardfacingarrow');
 					}
 				};
 				
