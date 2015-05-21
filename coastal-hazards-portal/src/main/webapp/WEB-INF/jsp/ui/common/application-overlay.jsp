@@ -42,9 +42,5 @@
 	var splashAppend = function(elements) {
 		$('.splash-status-update').append(elements);
 	};
-	if ('null' === '<%= referer %>' || !'<%= referer %>') {
-		splashUpdate("Loading Application...");
-	} else {
-		splashUpdate("Refreshing View...");
-	}
+	splashUpdate("Working...");
 </script>
