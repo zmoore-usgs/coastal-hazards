@@ -13,8 +13,8 @@
 }
 
 .application-card-title-row {
-	font-size: 1.3em;
-	margin-bottom: 10px;
+	margin-bottom: 5px;
+        line-height:1.1em;
 }
 
 .application-card-body-container {
@@ -94,7 +94,12 @@
 }
 
 .application-card-title-row .application-card-title-container-medium {
-	font-size: 24px;
+	font-size: 18px;
+        font-weight:bold;
+}
+
+.application-card-content-row{
+    margin-bottom:5px;
 }
 
 .application-card-content-row .application-card-content-container-medium {
@@ -363,6 +368,14 @@
 	#application-slide-items-content-container .panel-title {
 		font-size: 1.7em;
 	}
+        
+        .application-card-title-row{
+            line-height:1.2em;
+        }
+        
+        .application-card-title-row .application-card-title-container-medium {
+                font-size: 20px;
+        }
 
 }
 
@@ -453,19 +466,27 @@
 	.corner-ribbon p{
 		margin:0 0 0 50px;
 	}
+        
+        .application-card-breadcrumbs-container{
+            font-size:16px;
+        }
 
 }
 
 @media screen and (max-width:380px){
 
     #application-slide-items-content-container .panel-title {
-		font-size: 1em;
+		font-size: 1.2em;
 		padding-top:2px;
     }
-
+    
+    .application-card-title-row .application-card-title-container-medium {
+	font-size: 14px;
+    }
+    
     .corner-ribbon-wrapper{
         width:75px;
-        height:44px;
+        height:50px;
     }
 
     .corner-ribbon{
@@ -477,6 +498,6 @@
 
     .corner-ribbon p{
         width:90px;
-        margin:0 0 0 6px;
+        margin:0 0 0 7px;
     }
 }
