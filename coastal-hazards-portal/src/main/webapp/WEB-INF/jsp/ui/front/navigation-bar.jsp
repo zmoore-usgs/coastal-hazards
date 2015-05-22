@@ -38,17 +38,17 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="well well-small">
+                    <div class="well well-small catering">
                         <label for="modal-share-summary-url-inputbox-div"><div id="modal-share-summary-url-inputbox-div">
 								<label for="modal-share-summary-url-inputbox"><input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." title="modal-share-summary-url-inputbox"/></label>
 							</div></label>
                         <a id="modal-share-summary-url-button" class="btn btn-default" target="portal_view_window" role="button">View In Portal</a>
                     </div>
-                    <span class="pull-right" id='multi-card-twitter-button'></span>
                 </div>
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
+                 <span class="pull-right" id='multi-card-twitter-button'></span>
+                <a href="#" class="btn btn-default shareclosebutton"  data-dismiss="modal" aria-hidden="true">Close</a>
             </div>
         </div>
     </div>
