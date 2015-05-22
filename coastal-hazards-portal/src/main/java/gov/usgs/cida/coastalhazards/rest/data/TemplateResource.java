@@ -14,6 +14,8 @@ import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Layer;
 import gov.usgs.cida.coastalhazards.model.Service;
+import gov.usgs.cida.coastalhazards.model.summary.Full;
+import gov.usgs.cida.coastalhazards.model.summary.Publication;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
@@ -25,9 +27,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -39,6 +43,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.parsers.ParserConfigurationException;
+import jersey.repackaged.com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -89,6 +94,7 @@ public class TemplateResource {
 			itemMan.persistAll(newItemList);
 			template.setChildren(newItemList);
 			template.setDisplayedChildren(displayed);
+			template.setSummary(gatherTemplateSummary(template.getSummary(), newItemList));
 			itemMan.merge(template);
 			response = Response.ok().build();
 		}
@@ -219,5 +225,41 @@ public class TemplateResource {
 			}
 		}
 		return displayed;
+	}
+	
+	private Summary gatherTemplateSummary(Summary previousSummary, List<Item> children) {
+		
+		String keywords = previousSummary.getKeywords();
+		Set<String> keywordSet = keywordsFromString(keywords);
+		Set<Publication> publicationSet = new LinkedHashSet<>();
+		
+		Full full = previousSummary.getFull();
+		List<Publication> publications = full.getPublications();
+		publicationSet.addAll(publications);
+		if (children != null) {
+			for (Item item : children) {
+				Set<String> childKeywords = keywordsFromString(item.getSummary().getKeywords());
+				keywordSet.addAll(childKeywords);
+				publicationSet.addAll(item.getSummary().getFull().getPublications());
+			}
+		}
+		String newKeywords = String.join("|", keywordSet);
+		previousSummary.setKeywords(newKeywords);
+		previousSummary.getFull().setPublications(Lists.newArrayList(publicationSet));
+
+		return previousSummary;
+	}
+	
+	private Set<String> keywordsFromString(String keywords) {
+		Set<String> keywordSet = new LinkedHashSet<>();
+		if (keywords != null) {
+			String[] splitKeywords = keywords.split("|");
+			if (splitKeywords != null) {
+				for (String key : splitKeywords) {
+					keywordSet.add(key);
+				}
+			}
+		}
+		return keywordSet;
 	}
 }
