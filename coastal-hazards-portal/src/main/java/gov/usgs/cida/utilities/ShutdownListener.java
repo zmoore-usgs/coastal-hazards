@@ -18,9 +18,6 @@ public class ShutdownListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		try (DownloadManager downloadManager = new DownloadManager()) {
-			downloadManager.deleteAllMissing();
-		}
 		LOG.debug("Coastal Change Hazards Portal initialized");
 	}
 
