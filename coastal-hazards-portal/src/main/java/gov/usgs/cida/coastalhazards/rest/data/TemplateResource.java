@@ -25,6 +25,7 @@ import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.WFSIntrospector;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -227,7 +228,7 @@ public class TemplateResource {
 		return displayed;
 	}
 	
-	private Summary gatherTemplateSummary(Summary previousSummary, List<Item> children) {
+	protected Summary gatherTemplateSummary(Summary previousSummary, List<Item> children) {
 		
 		String keywords = previousSummary.getKeywords();
 		Set<String> keywordSet = keywordsFromString(keywords);
@@ -250,14 +251,12 @@ public class TemplateResource {
 		return previousSummary;
 	}
 	
-	private Set<String> keywordsFromString(String keywords) {
+	protected Set<String> keywordsFromString(String keywords) {
 		Set<String> keywordSet = new LinkedHashSet<>();
 		if (keywords != null) {
-			String[] splitKeywords = keywords.split("|");
+			String[] splitKeywords = keywords.split("\\|");
 			if (splitKeywords != null) {
-				for (String key : splitKeywords) {
-					keywordSet.add(key);
-				}
+				keywordSet.addAll(Arrays.asList(splitKeywords));
 			}
 		}
 		return keywordSet;
