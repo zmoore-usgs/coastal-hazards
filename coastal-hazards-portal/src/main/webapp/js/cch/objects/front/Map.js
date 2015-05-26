@@ -204,7 +204,9 @@ CCH.Objects.Front.Map = function (args) {
 				projection: me.mapProjection,
 				initialExtent: me.initialExtent,
 				displayProjection: me.displayProjection,
-				tileManager: new CCH.Objects.FixedTileManager()
+				tileManager : new CCH.Objects.FixedTileManager({
+					maps : [me.map]
+				})
 			});
 
 			me.clickControl = new CCH.Objects.ClickControl({
