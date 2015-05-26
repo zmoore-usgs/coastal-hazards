@@ -22,13 +22,14 @@ CCH.Objects.ClickControl = OpenLayers.Class(OpenLayers.Control, {
 		// Whenever a layer is added, it may be added on top of the marker layer. I need to move the marker layer
 		// above all other layers
 		var baseLayers = this.getLayersBy('isBaseLayer', true),
+			markersLayer = this.getLayersByName('Markers')[0],
 			highestLayer = baseLayers.max(function (layer) {
 				return layer.map.getLayerIndex(layer);
 			}),
 			highestLayerIndex = this.getLayerIndex(highestLayer);
 
 		if (highestLayerIndex !== -1) {
-			this.setLayerIndex(this.getLayersByName('Markers')[0], highestLayerIndex + 1);
+			this.setLayerIndex(markersLayer, highestLayerIndex + 1);
 		}
 	},
 	/**
@@ -104,6 +105,8 @@ CCH.Objects.ClickControl = OpenLayers.Class(OpenLayers.Control, {
 			}, this.handlerOptions
 			);
 
+		this.map.tileManager.events.register('emptied-tilequeue', this.map, this.onAddLayer);
+		
 		this.map.events.on({
 			'addlayer': this.onAddLayer
 		});
