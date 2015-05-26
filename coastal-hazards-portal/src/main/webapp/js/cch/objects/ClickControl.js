@@ -105,6 +105,9 @@ CCH.Objects.ClickControl = OpenLayers.Class(OpenLayers.Control, {
 			}, this.handlerOptions
 			);
 
+		// This is an attempt to also raise the marker layer when the tileManager
+		// has reported that the final layer in the cache has been drawn. I've yet 
+		// to test this but at worst, this is a no-op
 		this.map.tileManager.events.register('emptied-tilequeue', this.map, this.onAddLayer);
 		
 		this.map.events.on({
