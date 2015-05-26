@@ -96,8 +96,12 @@ public class TemplateResource {
 			template.setChildren(newItemList);
 			template.setDisplayedChildren(displayed);
 			template.setSummary(gatherTemplateSummary(template.getSummary(), newItemList));
-			itemMan.merge(template);
-			response = Response.ok().build();
+			String mergeId = itemMan.merge(template);
+			if (mergeId != null) {
+				response = Response.ok().build();
+			} else {
+				response = Response.serverError().build();
+			}
 		}
 		return response;
 	}
@@ -229,7 +233,8 @@ public class TemplateResource {
 	}
 	
 	protected Summary gatherTemplateSummary(Summary previousSummary, List<Item> children) {
-		
+		Summary newSummary = Summary.copyValues(previousSummary, null);
+
 		String keywords = previousSummary.getKeywords();
 		Set<String> keywordSet = keywordsFromString(keywords);
 		Set<Publication> publicationSet = new LinkedHashSet<>();
@@ -241,14 +246,17 @@ public class TemplateResource {
 			for (Item item : children) {
 				Set<String> childKeywords = keywordsFromString(item.getSummary().getKeywords());
 				keywordSet.addAll(childKeywords);
-				publicationSet.addAll(item.getSummary().getFull().getPublications());
+				List<Publication> childPubs = item.getSummary().getFull().getPublications();
+				for (Publication pub : childPubs) {
+					publicationSet.add(Publication.copyValues(pub, null));
+				}
 			}
 		}
 		String newKeywords = String.join("|", keywordSet);
-		previousSummary.setKeywords(newKeywords);
-		previousSummary.getFull().setPublications(Lists.newArrayList(publicationSet));
+		newSummary.setKeywords(newKeywords);
+		newSummary.getFull().setPublications(Lists.newArrayList(publicationSet));
 
-		return previousSummary;
+		return newSummary;
 	}
 	
 	protected Set<String> keywordsFromString(String keywords) {

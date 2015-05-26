@@ -106,6 +106,17 @@ public class Publication implements Serializable {
 		}
 		return typedPubs;
 	}
+	
+	public static Publication copyValues(Publication from, Publication to) {
+		Publication newPub = new Publication();
+		if (to != null) {
+			newPub.setId(to.getId());
+		}
+		newPub.setLink(from.getLink());
+		newPub.setTitle(from.getTitle());
+		newPub.setType(from.getType());
+		return newPub;
+	}
 
 	@Override
 	public int hashCode() {
