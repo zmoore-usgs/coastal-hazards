@@ -31,7 +31,7 @@ CCH.Objects.Session = function (args) {
 				localStorage[me.storageName] = me.toString();
 			} else {
 				try {
-					me.session = $.extend({}, me.session, JSON.parse(localStorage[me.storageName]));
+					me.session = $.extend({}, JSON.parse(localStorage[me.storageName]), me.session);
 				} catch (ex) {
 					CCH.LOG.warn("Session could not be loaded. Creating new session");
 					localStorage[me.storageName] = me.toString();
