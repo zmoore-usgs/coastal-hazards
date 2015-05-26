@@ -100,7 +100,7 @@ public class Publication implements Serializable {
 		}
 
 		for (Publication pub : pubList) {
-			if (pub.getType() == type) {
+			if (pub != null && pub.getType() == type) {
 				typedPubs.add(pub);
 			}
 		}
