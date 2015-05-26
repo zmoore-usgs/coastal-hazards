@@ -29,6 +29,7 @@ public class JPAHelper {
 			} catch (Exception e) {
 				log.error("Unable to build entity manager factory", e);
 			}
+			cleanup();
 		}
 		return emf;
 	}
@@ -42,6 +43,18 @@ public class JPAHelper {
 	public static void close(EntityManager em) {
 		if (em != null && em.isOpen()) {
 			em.close();
+		}
+	}
+	
+	/**
+	 * This is used to perform several tasks on startup related to database.
+	 * Meant to get the database to a good state before the app starts using it
+	 */
+	private static void cleanup() {
+		try (DownloadManager downloadManager = new DownloadManager()) {
+			downloadManager.deleteAllMissing();
+		} catch (Exception ex) {
+			log.error("Unable to clean up properly.");
 		}
 	}
 
