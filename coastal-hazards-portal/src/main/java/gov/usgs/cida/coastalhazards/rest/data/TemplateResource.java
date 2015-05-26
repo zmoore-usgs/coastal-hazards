@@ -45,6 +45,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.parsers.ParserConfigurationException;
 import jersey.repackaged.com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -252,7 +253,7 @@ public class TemplateResource {
 				}
 			}
 		}
-		String newKeywords = String.join("|", keywordSet);
+		String newKeywords = StringUtils.join(keywordSet, "|");
 		newSummary.setKeywords(newKeywords);
 		newSummary.getFull().setPublications(Lists.newArrayList(publicationSet));
 
