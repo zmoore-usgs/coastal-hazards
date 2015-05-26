@@ -26,32 +26,32 @@ html, body {
 	top : 0;
 	height: 100%;
 	width: 100%;
-	> div.row {
-		&:nth-child(1) {
-			margin-left: auto;
-			margin-right: auto;
-			background-color: @cch-primaryColor !important;
-			z-index: 1005;
-			margin-bottom: 4px;
-			height: 55px;
-		}
-		&:nth-child(2){ 
-			> div:first-child > div:nth-child(2) {
-				padding-right: 0px;
-			}
-		}
-		&:nth-child(3) {
-			margin-left: auto;
-			margin-right: auto;
-			height: 25px;
-			> div {
-				background-color: @cch-primaryColor !important;
-				height: 20px;
-				margin-top: 5px;
-			}
-		}
-	}
+}
 
+#header-row {
+	margin-left: auto;
+	margin-right: auto;
+	background-color: @cch-primaryColor !important;
+	z-index: 1005;
+	margin-bottom: 4px;
+	height: 55px;
+}
+
+#content-row { 
+	> div:first-child > div:nth-child(2) {
+		padding-right: 0px;
+	}
+}
+
+#footer-row {
+	margin-left: auto;
+	margin-right: auto;
+	height: 25px;
+	> div {
+		background-color: @cch-primaryColor !important;
+		height: 20px;
+		margin-top: 5px;
+	}
 }
 
 .fa-times{
@@ -183,7 +183,7 @@ html, body {
 
 .catering{
     margin-bottom:0px;
-    
+
     & label{
         width:78%;
     }
@@ -223,29 +223,30 @@ html, body {
 
 	/* Set the content row to not have any margins, overriding bootstrap's
 		15px margins on left/right */
-	#application-container > div:nth-child(2) {
+	#content-row {
 		margin-left: 0px !important;
 		margin-right:  0px !important;
-	}
-	/* Set the content column to not have any padding, overriding bootstrap's
+		/* Set the content column to not have any padding, overriding bootstrap's
 	   15px margins on left/right */
-	#application-container > div:nth-child(2) > div.col-md-12 {
-		padding-left: 0px !important;
-		padding-right:  0px !important;
+		> div.col-md-12 {
+			padding-left: 0px !important;
+			padding-right:  0px !important;
+		}
 	}
 
-	#application-container > div.row:nth-child(3) {
+
+	#footer-row {
 		display: none;
 	}
 
 	.application-slide-controlset {
 		margin-top: 10px;
-	}
-	.application-slide-controlset div.pull-left > i {
-		font-size: 1.5em;
-	}
-	.application-slide-controlset div.pull-left > i:hover {
-		cursor: pointer;
+		div.pull-left > i {
+			font-size: 1.5em;
+			&:hover {
+				cursor: pointer;
+			}
+		}
 	}
 
 	#map #feature-identification-popup table tr {
@@ -280,23 +281,23 @@ html, body {
 	.olControlZoom {
 		display: none;
 	}
-        
-        .catering{
-            padding:5px;
-            
-            & label{
-                width:64%;
-            }
-        }
+
+	.catering{
+		padding:5px;
+
+		& label{
+			width:64%;
+		}
+	}
 }
 
 
 @media (max-width: 320px) {
 	overflow-x: auto;
-        
-        .catering label{
-            width:60%;
-        }
+
+	.catering label{
+		width:60%;
+	}
 }
 
 #modal-share-summary-url-inputbox {
