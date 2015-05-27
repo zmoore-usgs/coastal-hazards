@@ -81,7 +81,11 @@ public class Bbox implements Serializable {
 		if (to != null) {
 			bbox.setId(to.getId());
 		}
-		bbox.setBbox(from.getBbox());
+		if (from != null) {
+			bbox.setBbox(from.getBbox());
+		} else {
+			bbox = null;
+		}
 		return bbox;
 	}
 

@@ -114,16 +114,9 @@ CCH.CONFIG.onAppInitialize = function () {
 						function (session) {
 							var items = CCH.session.getSession().items;
 
-							CCH.ui.addItemsToBucketOnLoad(items);
-
-							CCH.CONFIG.loadUberItem({
-								zoomToBbox: false,
-								subtree: true,
-								overridePreviousBbox: true
-							});
-
 							var resizeHandler = function () {
 								$(window).off('cch.ui.resized', resizeHandler);
+
 								CCH.map.zoomToBoundingBox({
 									'bbox': session.bbox,
 									'fromProjection': CCH.CONFIG.map.modelProjection
@@ -149,6 +142,14 @@ CCH.CONFIG.onAppInitialize = function () {
 									$(document).on(CCH.ui.bucket.bucketLoadEvent, openBucketFunction);
 								}
 								
+							});
+							
+							CCH.ui.addItemsToBucketOnLoad(items);
+
+							CCH.CONFIG.loadUberItem({
+								zoomToBbox: false,
+								subtree: true,
+								overridePreviousBbox: true
 							});
 						}
 					],
@@ -200,6 +201,13 @@ CCH.CONFIG.onAppInitialize = function () {
 						// it doesn't. It looks like a timing issue. Adding this hack here ensure that the layer 
 						// the user came to see shows up
 						CCH.items.getById({id: id}).showLayer();
+						
+						$(window).on('cch.ui.resized', function () {
+							CCH.map.zoomToBoundingBox({
+								'bbox': CCH.items.getById({id:id}).bbox,
+								'fromProjection': CCH.CONFIG.map.modelProjection.projCode
+							});
+						});
 					} else {
 						// The item could not be found. Show an error and wait for the app to resize
 						// (happens on loading completetion). When it happens, zoom to the bounding

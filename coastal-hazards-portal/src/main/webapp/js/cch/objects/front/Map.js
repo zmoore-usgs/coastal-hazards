@@ -204,7 +204,9 @@ CCH.Objects.Front.Map = function (args) {
 				projection: me.mapProjection,
 				initialExtent: me.initialExtent,
 				displayProjection: me.displayProjection,
-				tileManager: new CCH.Objects.FixedTileManager()
+				tileManager : new CCH.Objects.FixedTileManager({
+					maps : [me.map]
+				})
 			});
 
 			me.clickControl = new CCH.Objects.ClickControl({
@@ -381,16 +383,9 @@ CCH.Objects.Front.Map = function (args) {
 				}
 			}
 			
-			
-			// If the session holds items, they will be loaded and if they are pinned,
-			// the map will zoom to those items that are pinned. However, if there 
-			// are no items in the session or if none are pinned, zoom to the bounding box 
-			// provided in the session
-			if (!session.items.length) {
-				center = new OpenLayers.LonLat(session.center[0], session.center[1]).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection);
-				me.map.setCenter(center);
-				me.map.zoomToScale(session.scale);
-			}
+			center = new OpenLayers.LonLat(session.center[0], session.center[1]).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection);
+			me.map.setCenter(center);
+			me.map.zoomToScale(session.scale);
 
 			// We're done altering the map to fit the session. Let's re-register those 
 			// events we disconnected earlier

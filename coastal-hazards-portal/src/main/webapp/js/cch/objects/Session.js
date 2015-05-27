@@ -15,13 +15,13 @@ CCH.Objects.Session = function (args) {
 
 	me.storageName = 'cch';
 	me.hasLocalStorage = 'localStorage' in window && window['localStorage'] !== null;
-
+	
 	me.session = {
 		items: [],
 		baselayer: '',
-		scale: 0,
-		bbox: [0.0, 0.0, 0.0, 0.0],
-		center: [0.0, 0.0]
+		scale: 55467893.20,
+		bbox: [-138.48502349853044, 7.986650381678925, -55.86783599853124, 56.56752394039768],
+		center: [-95.76961135864461, 37.0182344690233]
 	};
 	
 	me.initSession = function () {
@@ -30,7 +30,12 @@ CCH.Objects.Session = function (args) {
 			if (!localStorage[me.storageName]) {
 				localStorage[me.storageName] = me.toString();
 			} else {
-				me.session = JSON.parse(localStorage[me.storageName]);
+				try {
+					me.session = $.extend({}, me.session, JSON.parse(localStorage[me.storageName]));
+				} catch (ex) {
+					CCH.LOG.warn("Session could not be loaded. Creating new session");
+					localStorage[me.storageName] = me.toString();
+				}
 			}
 		} else {
 			// Cookie handling
