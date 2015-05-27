@@ -214,6 +214,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					$titleContainer.html(title);
 					// Data unavailable, insert two dashes for color and for value
 					$legendRow.append($titleContainer, $colorContainer.empty().html('--'), $valueContainer.append(attrAvg));
+					$table.append($legendRow);
 				} else if ('year' === units) {
 					// Data is historical, create a year/color table here
 
@@ -288,7 +289,10 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 						displayedAttrValue = bins[attrAvg.toFixed(0) - 1].category;
 						//don't append units
 					} else {
-						if ('%' === units) {
+						if (!$.isNumeric(attrAvg)) {
+							// defensive for toFixed
+							displayedAttrValue = '';
+						} else if ('%' === units) {
 							displayedAttrValue = attrAvg.toFixed(0);
 						} else {
 							if ((attrAvg).isInteger()) {
@@ -394,12 +398,14 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 				}
 			});
 
-			// Average them out
-			attrAvg /= incomingFeatureCount;
+			
+			
 
 			if (incomingFeatureCount === 0) {
 				attrAvg = this.naAttrText;
 			} else {
+				// Average them out
+				attrAvg /= incomingFeatureCount;
 				if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(attr.toUpperCase()) !== -1) {
 					attrAvg = Math.ceil(attrAvg);
 					category = sld.bins[attrAvg - 1].category;
