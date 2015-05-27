@@ -220,7 +220,7 @@ CCH.Objects.Item = function (args) {
 				stringifiedBbox = me.bbox.toString(),
 				childReturnObj;
 
-		if (me.itemType === 'aggregation') {
+		if (me.itemType === 'aggregation' || me.itemType === 'template') {
 			if (aggregationName === '') {
 				aggregationName = me.id + '_';
 			}
@@ -364,7 +364,7 @@ CCH.Objects.Item = function (args) {
 			CCH.map.hideLayersByName(layerName);
 		});
 
-		if (me.itemType === 'aggregation') {
+		if (me.itemType === 'aggregation' || me.itemType === 'template') {
 			$(window).trigger('cch.map.hid.layer', {
 				layer: {
 					itemid: me.id
