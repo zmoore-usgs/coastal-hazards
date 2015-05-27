@@ -344,6 +344,9 @@ CCH.Objects.Back.UI = function (args) {
 							'aggregation': {
 								'icon': 'fa fa-angle-double-right'
 							},
+							'template': {
+								'icon': 'fa fa-angle-double-right'
+							},
 							'data': {
 								'icon': 'fa fa-angle-right'
 							}

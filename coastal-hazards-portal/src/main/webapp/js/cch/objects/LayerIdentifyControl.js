@@ -376,6 +376,9 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					popup.setSize(new OpenLayers.Size(width(), height()));
 					popup.panIntoView();
 				});
+			},
+			isMissing = function(val) {
+				return isNaN(val) || val === -999;
 			};
 
 		if (item.type.toLowerCase() === 'vulnerability' ||
@@ -384,7 +387,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 			// Add up the count for each feature
 			incomingFeatures.each(function (f) {
 				var pFl = parseFloat(f[attr]);
-				if (isNaN(pFl)) {
+				if (isMissing(pFl)) {
 					incomingFeatureCount--;
 				} else {
 					attrAvg += pFl;
