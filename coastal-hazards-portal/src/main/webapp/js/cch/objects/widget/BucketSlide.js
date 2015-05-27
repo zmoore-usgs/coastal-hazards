@@ -604,7 +604,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				'title': 'Visibility On/Off'
 			}).
 			on('click', function () {
-				var isAggregation = item.itemType === 'aggregation',
+				var isAggregation = item.itemType === 'aggregation' || item.itemType === 'template',
 					isLayerInMap = false;
 
 				isLayerInMap = item.getLayerList().layers.every(function (id) {

@@ -138,7 +138,8 @@ CCH.Objects.Widget.Legend = function (args) {
 		args = args || {};
 		var item = args.item,
 				childItems;
-		if ('aggregation' === item.itemType.toLowerCase()) {
+		if ('aggregation' === item.itemType.toLowerCase() ||
+			'template' === item.itemType.toLowerCase()) {
 			childItems = me.getAggregationChildrenIds(item.id);
 		} else {
 			childItems = [item.id];
@@ -194,7 +195,8 @@ CCH.Objects.Widget.Legend = function (args) {
 				dataItem,
 				isYearAggregation;
 
-		if ('aggregation' === item.itemType.toLowerCase()) {
+		if ('aggregation' === item.itemType.toLowerCase() ||
+			'template' === item.itemType.toLowerCase()) {
 			childItemIdArray = me.getAggregationChildrenIds(item.id);
 
 			// Figure out if this is a date-type historical aggregation. If so, I'll have to stitch together the year 
@@ -263,7 +265,8 @@ CCH.Objects.Widget.Legend = function (args) {
 		var item = args.item,
 				childItems;
 
-		if ('aggregation' === item.itemType.toLowerCase()) {
+		if ('aggregation' === item.itemType.toLowerCase() ||
+			'template' === item.itemType.toLowerCase()) {
 			childItems = me.getAggregationChildrenIds(item.id);
 		} else {
 			childItems = [item.id];
@@ -298,7 +301,8 @@ CCH.Objects.Widget.Legend = function (args) {
 		args = args || {};
 		var item = args.item,
 				childItems;
-		if ('aggregation' === item.itemType.toLowerCase()) {
+		if ('aggregation' === item.itemType.toLowerCase() ||
+			'template' === item.itemType.toLowerCase()) {
 			childItems = me.getAggregationChildrenIds(item.id);
 		} else {
 			childItems = [item.id];
