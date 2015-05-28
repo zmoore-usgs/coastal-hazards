@@ -73,28 +73,43 @@ public class TemplateResource {
 
 			List<Item> childItems = template.getChildren();
 			List<Item> newItemList = null;
+			List<Item> newAndOldList = null;
+			List<Item> retainedItems = null;
 			
 			JsonParser parser = new JsonParser();
 			JsonObject parsed = parser.parse(content).getAsJsonObject();
 			// TODO only supporting one level for now, bring in aggs later
 			boolean allAttributes = parseAllAttribute(parsed);
+			boolean retainAggregations = retainAggregations(parsed);
 			if (allAttributes) {
 				JsonElement layer = parsed.get("layerId");
 				if (layer != null) {
 					String layerId = layer.getAsString();
 					try {
 						newItemList = makeItemsFromLayer(template, layerId, layerMan);
+						retainedItems = findItemsToRetain(template, retainAggregations);
+						newAndOldList = new LinkedList<>(retainedItems);
+						newAndOldList.addAll(newItemList);
 					} catch (IOException ex) {
 						log.error("Cannot create items", ex);
 					}
 				}
 			} else {
+				// TODO allow for displayed flag in children structure
 				JsonArray children = parsed.get("children").getAsJsonArray();
 				newItemList = makeItemsFromDocument(template, children, childItems, itemMan, layerMan);
+				newAndOldList = newItemList;
 			}
-			List<String> displayed = makeDisplayedChildren(newItemList);
+			
+			List<String> displayed = new LinkedList<>();
+			for (Item retained : retainedItems) {
+				displayed.add(retained.getId());
+			}
+			List<String> displayedIdByAttr = makeDisplayedChildren(newItemList);
+			displayed.addAll(displayedIdByAttr);
+			
 			itemMan.persistAll(newItemList);
-			template.setChildren(newItemList);
+			template.setChildren(newAndOldList);
 			template.setDisplayedChildren(displayed);
 			template.setSummary(gatherTemplateSummary(template.getSummary(), newItemList));
 			String mergeId = itemMan.merge(template);
@@ -112,6 +127,15 @@ public class TemplateResource {
 		JsonElement allAttributes = parent.get("allAttributes");
 		if (allAttributes != null) {
 			result = allAttributes.getAsBoolean();
+		}
+		return result;
+	}
+	
+	private boolean retainAggregations(JsonObject parent) {
+		boolean result = false;
+		JsonElement retainAggregations = parent.get("retainAggregations");
+		if (retainAggregations != null) {
+			result = retainAggregations.getAsBoolean();
 		}
 		return result;
 	}
@@ -270,4 +294,22 @@ public class TemplateResource {
 		}
 		return keywordSet;
 	}
+
+	private List<Item> findItemsToRetain(Item template, boolean retainAggregations) {
+		List<Item> items = new LinkedList<>();
+		if (retainAggregations) {
+			List<Item> children = template.getChildren();
+			if (children != null) {
+				for (Item child : children) {
+					if (child.getItemType() == Item.ItemType.aggregation ||
+							child.getItemType() == Item.ItemType.template) {
+						items.add(child);
+					}
+				}
+			}
+		}
+		return items;
+	}
+
+
 }
