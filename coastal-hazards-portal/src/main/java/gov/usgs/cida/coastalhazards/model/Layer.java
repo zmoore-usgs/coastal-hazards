@@ -31,7 +31,6 @@ public class Layer implements Serializable {
 	private String id;
 	private Bbox bbox;
 	private List<Service> services;
-	private Bbox bbox;
 
 	@Id
 	@Column(name = "id")
