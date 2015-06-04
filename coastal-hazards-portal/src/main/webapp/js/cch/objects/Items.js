@@ -50,7 +50,13 @@ CCH.Objects.Items = function (args) {
 			
 			// Tag the NOAA NowCOAST item
 			if (item.attr && $.inArray(item.attr.toUpperCase(), CCH.CONFIG.data.storm_track_attributes) !== -1) {
-				item.type = 'storm_track';
+				item.type = this.Types.TRACK;
+				
+				// A bit of a hack here but during the load process, there's no way
+				// for me to know that the parent of this item is a storm track item.
+				// I am assuming that the parent of this non-agg storm track item is
+				// a storm-track agg only item. 
+				item.parent.type = this.Types.TRACK;
 			}
 			
 			me.items[item.id] = item;
