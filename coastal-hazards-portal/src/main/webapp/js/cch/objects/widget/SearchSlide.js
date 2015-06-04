@@ -36,6 +36,7 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 	me.SLIDE_CONTAINER_ID = args.containerId;
 	me.$SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
 	me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div.application-slide-controlset';
+	me.MAP_DIV_ID = 'map';
 	me.CONTENT_ROW_ID = 'content-row';
 	me.LOCATION_CARD_TEMPLATE_ID = 'application-slide-search-location-card-template';
 	me.LOCATION_SLIDE_SEARCH_CONTAINER_ID = 'application-slide-search-location-results-content-container';
@@ -230,10 +231,11 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 		var $slideContainer = $('#application-slide-items-content-container'),
 				$firstAggregationBellow = $slideContainer.find('>div:nth-child(2)'),
 				$contentRow = $('#' + me.CONTENT_ROW_ID),
+				$mapDiv = $('#' + me.MAP_DIV_ID),
 				extents = {
 					large: {
 						top: $contentRow.offset().top,
-						left: $contentRow.outerWidth() / 2
+						left: $mapDiv.outerWidth() + $mapDiv.offset().left
 					},
 					small: {
 						top: $firstAggregationBellow.offset() ? $firstAggregationBellow.offset().top - 1 : 0,
