@@ -12,6 +12,7 @@ CCH.Objects.ClickControl = OpenLayers.Class(OpenLayers.Control, {
 	handler: null,
 	map: null,
 	iconLayer: CCH.CONFIG.map.layers.markerLayer,
+	
 	/**
 	 * Handles the event of the map adding a layer
 	 * 
@@ -19,12 +20,21 @@ CCH.Objects.ClickControl = OpenLayers.Class(OpenLayers.Control, {
 	 */
 	onAddLayer: function () {
 		"use strict";
+		
+		var markersLayer = this.getLayersByName('Markers')[0];
+		if (!markersLayer) {
+			return;
+		}
 		// Whenever a layer is added, it may be added on top of the marker layer. 
 		// I need to move the marker layer above all other layers
 		var baseLayers = this.getLayersBy('isBaseLayer', true),
-				markersLayer = this.getLayersByName('Markers')[0];
+				highestLayerInt = baseLayers.length;
 		
-		this.setLayerIndex(markersLayer, baseLayers.length);
+		if (this.getLayerIndex(markersLayer) !== highestLayerInt) {
+			this.setLayerIndex(markersLayer, highestLayerInt);
+		}
+		
+		return markersLayer;
 	},
 	/**
 	 * Handles the event of a click to identify response from the back-end
