@@ -37,11 +37,14 @@ import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.xml.parsers.ParserConfigurationException;
 import jersey.repackaged.com.google.common.collect.Lists;
@@ -56,9 +59,16 @@ import org.xml.sax.SAXException;
  */
 @Path(DataURI.TEMPLATE_PATH)
 public class TemplateResource {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(TemplateResource.class);
-	
+
+	@GET
+	@Path("/item/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getTemplate(@PathParam("id") String id, @Context Request request) {
+		return new ItemResource().getItem(id, false, request);
+	}
+
 	@POST
 	@Path("/item/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -74,7 +84,8 @@ public class TemplateResource {
 			List<Item> childItems = template.getChildren();
 			List<Item> newItemList = null;
 			List<Item> newAndOldList = null;
-			List<Item> retainedItems = null;
+			List<Item> retainedItems = new LinkedList<>();
+			List<String> displayed = new LinkedList<>();
 			
 			JsonParser parser = new JsonParser();
 			JsonObject parsed = parser.parse(content).getAsJsonObject();
@@ -93,20 +104,23 @@ public class TemplateResource {
 					} catch (IOException ex) {
 						log.error("Cannot create items", ex);
 					}
+					for (Item retained : retainedItems) {
+						displayed.add(retained.getId());
+					}
+					List<String> displayedIdByAttr = makeDisplayedChildren(newItemList);
+					displayed.addAll(displayedIdByAttr);
 				}
 			} else {
 				// TODO allow for displayed flag in children structure
+				Map<String, Item> childMap = makeChildItemMap(childItems);
 				JsonArray children = parsed.get("children").getAsJsonArray();
-				newItemList = makeItemsFromDocument(template, children, childItems, itemMan, layerMan);
+				newItemList = makeItemsFromDocument(template, children, childMap, itemMan, layerMan);
+				List<String> oldItems = visibleItems(children);
+				for (String oldId : oldItems) {
+					displayed.add(childMap.get(oldId).getId());
+				}
 				newAndOldList = newItemList;
 			}
-			
-			List<String> displayed = new LinkedList<>();
-			for (Item retained : retainedItems) {
-				displayed.add(retained.getId());
-			}
-			List<String> displayedIdByAttr = makeDisplayedChildren(newItemList);
-			displayed.addAll(displayedIdByAttr);
 			
 			itemMan.persistAll(newItemList);
 			template.setChildren(newAndOldList);
@@ -140,8 +154,7 @@ public class TemplateResource {
 		return result;
 	}
 	
-	private List<Item> makeItemsFromDocument(Item template, JsonArray children, List<Item> childItems, ItemManager itemMan, LayerManager layerMan) {
-		Map<String, Item> childMap = makeChildItemMap(childItems);
+	private List<Item> makeItemsFromDocument(Item template, JsonArray children, Map<String, Item> childMap, ItemManager itemMan, LayerManager layerMan) {
 		Iterator<JsonElement> iterator = children.iterator();
 
 		while (iterator.hasNext()) {
@@ -153,6 +166,7 @@ public class TemplateResource {
 			JsonElement childId = child.get("id");
 			JsonElement attrElement = child.get("attr");
 			JsonElement layerId = child.get("layerId");
+
 			String replaceId = null;
 			// Generate item JSON from metadata
 			if (layerId != null) {
@@ -171,12 +185,16 @@ public class TemplateResource {
 				} else {
 					throw new BadRequestException("Must specify child or attribute to replace/use");
 				}
+				Summary summary = makeSummary(layer, attr);
+				Item newItem = templateItem(template, attr, layer, summary);
+				childMap.put(replaceId, newItem);
+			} else if (childId != null) {
+				String retainedChildId = childId.getAsString();
+				Item retainedChild = itemMan.load(retainedChildId);
+				childMap.put(retainedChildId, retainedChild);
 			} else {
-				throw new BadRequestException("Layer does not exist");
+				throw new BadRequestException("Must specify childId if not including layerId");
 			}
-			Summary summary = makeSummary(layer, attr);
-			Item newItem = templateItem(template, attr, layer, summary);
-			childMap.put(replaceId, newItem);
 		}
 		return new LinkedList<>(childMap.values());
 	}
@@ -311,5 +329,22 @@ public class TemplateResource {
 		return items;
 	}
 
+	private List<String> visibleItems(JsonArray children) {
+		List<String> visibleChildren = new LinkedList<>();
+		Iterator<JsonElement> iterator = children.iterator();
 
+		while (iterator.hasNext()) {
+			JsonObject child = iterator.next().getAsJsonObject();
+			JsonElement childId = child.get("id");
+			JsonElement visibleElement = child.get("visible");
+			if (visibleElement != null && childId != null) {
+				boolean visible = visibleElement.getAsBoolean();
+				String id = childId.getAsString();
+				if (visible) {
+					visibleChildren.add(id);
+				}
+			}
+		}
+		return visibleChildren;
+	}
 }
