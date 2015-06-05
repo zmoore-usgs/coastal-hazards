@@ -433,6 +433,11 @@ CCH.Objects.Front.Map = function (args) {
 					map.setBaseLayer(baseLayers[0]);
 				}
 			}
+			
+			// It was reported that the scale control was sometimes not updating 
+			// on zoom. This is an attempt to force that to happen. 
+			map.getControlsByClass('OpenLayers.Control.ScaleLine')[0].update();
+						
 			CCH.session.updateSession();
 		},
 		moveendCallback: function () {
