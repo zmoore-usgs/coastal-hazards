@@ -8,7 +8,7 @@ html, body {
 	overflow-y: hidden;
 	overflow-x: hidden;
 	/* 
-	320 pixels is the minimum width and 600px is
+	320 pixels is the minimum width and 480px is
 	the minimum height that this application will support.
 	Anything smaller, scroll the app
 	*/
@@ -19,7 +19,7 @@ html, body {
 	padding: 0px;
 	font-size: 100%;
 	font-family: @cch-fontFamily;
-	color: #777;
+	color: @usgs-footerBar-background;
 }
 
 #application-container {
@@ -37,17 +37,15 @@ html, body {
 	height: 55px;
 }
 
-#content-row { 
-	> div:first-child > div:nth-child(2) {
-		padding-right: 0px;
-	}
+#application-slide-items-container {
+	padding-right: 0px;
 }
 
 #footer-row {
 	margin-left: auto;
 	margin-right: auto;
 	height: 25px;
-	> div {
+	.footer-col {
 		background-color: @cch-primaryColor !important;
 		height: 20px;
 		margin-top: 5px;
@@ -143,20 +141,19 @@ html, body {
 	}
 }
 
-.olControlZoom{
+.olControlZoom {
     border-radius:4px 4px 0 0 !important;
     height:47px !important;
+	a {
+		background: fade(color("@{cch-primaryColor}"), 70%) !important;
+		&:hover {
+			background: fade(color("@{cch-primaryColor}"), 70%) !important;
+		}
+	}
 }
 
 .olControlZoomOut{
     border-radius:0 !important;
-}
-
-.olControlZoom a {
-	background: fade(color("@{cch-primaryColor}"), 70%) !important;
-	&:hover {
-		background: fade(color("@{cch-primaryColor}"), 70%) !important;
-	}
 }
 
 #OpenLayers_Control_MinimizeDiv img {
@@ -174,44 +171,53 @@ html, body {
 
 #modal-share-summary-url-inputbox-div{
     width:100%;
-}
-
-#modal-share-summary-url-inputbox-div label{
-    width:100%;
-    margin-top:15px;
+	label{
+		width:100%;
+		margin-top:15px;
+	}
 }
 
 .catering{
     margin-bottom:0px;
 
-    & label{
+    label{
         width:78%;
     }
 }
 
-#multi-card-twitter-button{
+#multi-card-twitter-button {
     position: absolute;
     right: 90px;
     bottom: 10px;
 }
 
-.shareclosebutton{
+.shareclosebutton {
     padding:4px 12px;
 }
 
-@media (min-width: 992px) {
+#modal-share-summary-url-inputbox {
+	width: 97%;
+	font-size: 1em;
+	height: 34px;
+	line-height: 2em;
+}
+
+#modal-share-summary-text-label {
+	font-size : 1.5em;
+}
+
+#modal-share-summary-twitter-label{
+	font-size: 1.5em;
+	line-height: 1.5em;
+}
+
+@media @tablet, @desktop-medium, @desktop-large {
 	#application-container {
 		width: 100%;
 	}
 }
 
-@media (min-width: 768px) {
-	#application-container {
-		width: 100%;
-	}
-}
-
-@media (max-width: 991px) {
+@media @phone-profile, @phone-landscape, @tablet-small, @tablet  {
 	body {
 		padding:  0px !important;
 	}
@@ -228,12 +234,11 @@ html, body {
 		margin-right:  0px !important;
 		/* Set the content column to not have any padding, overriding bootstrap's
 	   15px margins on left/right */
-		> div.col-md-12 {
+		#content-column {
 			padding-left: 0px !important;
 			padding-right:  0px !important;
 		}
 	}
-
 
 	#footer-row {
 		display: none;
@@ -265,7 +270,7 @@ html, body {
 	}
 }
 
-@media (max-width: 440px) {
+@media @phone-profile, @phone-landscape {
 	#info-title {
 		font-size: 0.65em;
 	}
@@ -291,27 +296,10 @@ html, body {
 	}
 }
 
-
-@media (max-width: 320px) {
+@media @phone-profile {
 	overflow-x: auto;
 
 	.catering label{
 		width:60%;
 	}
-}
-
-#modal-share-summary-url-inputbox {
-	width: 97%;
-	font-size: 1em;
-	height: 34px;
-	line-height: 2em;
-}
-
-#modal-share-summary-text-label {
-	font-size : 1.5em;
-}
-
-#modal-share-summary-twitter-label{
-	font-size: 1.5em;
-	line-height: 1.5em;
 }
