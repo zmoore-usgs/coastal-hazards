@@ -75,7 +75,7 @@ CCH.Objects.Widget.Card = function (args) {
 					effect = args.effect || 'slide',
 					easing = args.easing || 'swing',
 					complete = args.complete || null;
-
+			
 			me.container.show({
 				effect: effect,
 				easing: easing,
@@ -83,13 +83,13 @@ CCH.Objects.Widget.Card = function (args) {
 				direction: 'up',
 				complete: complete
 			});
-
+			
 			$(window).trigger('cch.card.display.toggle', {
 				'display': true,
 				'item': me.item,
 				'card': me
 			});
-
+			
 			me.hideParent();
 		}
 
