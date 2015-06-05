@@ -355,7 +355,7 @@ CCH.Objects.Front.Map = function (args) {
 			CCH.LOG.info('Map.js::updateFromSession():Map being recreated from session');
 			var session = CCH.session.getSession(),
 				baselayer,
-				center;
+				center = new OpenLayers.LonLat(session.center[0], session.center[1]).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection);
 
 			// Becaue we don't want these events to write back to the session, 
 			// unhook the event handlers for map events tied to session writing.
@@ -383,10 +383,9 @@ CCH.Objects.Front.Map = function (args) {
 				}
 			}
 			
-			center = new OpenLayers.LonLat(session.center[0], session.center[1]).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection);
 			me.map.setCenter(center);
 			me.map.zoomToScale(session.scale);
-
+			
 			// We're done altering the map to fit the session. Let's re-register those 
 			// events we disconnected earlier
 			me.map.events.on({

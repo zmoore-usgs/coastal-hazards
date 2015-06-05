@@ -52,7 +52,7 @@ CCH.CONFIG.loadUberItem = function (args) {
 					// Unbind this one-time function
 					$(window).off('cch.ui.resized', resizeHandler);
 					// Is the user coming in from another part of the application?
-					if (CCH.session.isReturning() === true && CCH.session.getSession().center && !overridePreviousBounds) {
+					if (CCH.session.getSession().center && !overridePreviousBounds) {
 						// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
 						CCH.map.updateFromSession();
 					} else if (zoomToBbox) {

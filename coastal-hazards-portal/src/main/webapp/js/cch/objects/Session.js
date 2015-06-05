@@ -241,10 +241,6 @@ CCH.Objects.Session = function (args) {
 		return me.session;
 	};
 	
-	me.isReturning = function () {
-		return document.referrer.indexOf(location.pathname.split('/')[1]) !== -1;
-	};
-	
 	me.initSession();
 
 	return $.extend(me, {
