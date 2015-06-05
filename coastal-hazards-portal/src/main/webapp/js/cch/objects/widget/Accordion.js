@@ -230,11 +230,16 @@ CCH.Objects.Widget.Accordion = function (args) {
 		},
 		'cch.card.display.toggle': function (evt, obj) {
 			if (obj.display === true) {
-				var $container = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID);
-
-				$container.stop().animate({
-					scrollTop: $container[0].scrollHeight
-				}, 1000);
+				
+				// Removed scrolling to see what POs think
+				// TODO- Either remove commented out scrolling code or refactor
+				// to fix scrolling for good
+				
+//				var $container = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID);
+//				
+//				$container.stop().animate({
+//					scrollTop: $container[0].scrollHeight
+//				}, 1000);
 			}
 		}
 	});
