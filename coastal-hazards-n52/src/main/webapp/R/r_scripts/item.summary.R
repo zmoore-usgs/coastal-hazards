@@ -27,6 +27,8 @@ if (theme=='historical'){
 	summary	<- vulnerability.service(metadata,attr)
 } else if (theme=='storm'){
 	summary	<- storm.service(metadata,attr)
+} else if (theme=='realtime'){
+	summary <- realtime.service(metadata,attr)
 }
 
 sink('output.json')
