@@ -151,7 +151,7 @@
 		width: 15px;
 	}
 	.zoom-to-badge {
-		background-color: #003366;
+		background-color: @cch-primaryColor;
 		margin-left: 5px;
 		&:hover {
 			cursor: pointer;
@@ -288,20 +288,6 @@
 
 
 @media (min-width: 992px) {
-	/* Chrome issue
-	http://stackoverflow.com/questions/17508035/navigation-disappearing-in-chrome-after-scrolling-and-clicking
-	*/
-	#application-slide-items-content-container-inner-scrollable {
-		-webkit-transform: translateZ(0);
-		> .panel{
-			-webkit-transform: translateZ(0);
-			// Fixes an issue in the main panels where if a scrollbar appears for
-			// vertical scroll, the main panel container can now be scrolled 
-			// horizontally. We don't want this.
-			overflow: hidden;
-		} 
-	}  
-
 	/* No tab shown on large display. Toggled via button in bar */
 	#application-slide-items-tab {
 		display: none;
@@ -310,10 +296,6 @@
 	#application-slide-items-container {
 		top: auto;
 		left: auto;
-		> div:nth-child(2) > div > div {
-			overflow-y: auto;
-			height: 100%;
-		}
 	}
 
 	#application-slide-items-content {
@@ -328,6 +310,22 @@
 		.panel-title {
 			font-size: 1.7em;
 		}
+	}
+
+	/* Chrome issue
+	http://stackoverflow.com/questions/17508035/navigation-disappearing-in-chrome-after-scrolling-and-clicking
+	*/
+	#application-slide-items-content-container-inner-scrollable {
+		-webkit-transform: translateZ(0);
+		overflow-y: auto;
+		height: 100%;
+		> .panel{
+			-webkit-transform: translateZ(0);
+			// Fixes an issue in the main panels where if a scrollbar appears for
+			// vertical scroll, the main panel container can now be scrolled 
+			// horizontally. We don't want this.
+			overflow: hidden;
+		} 
 	}
 
 	#content-column {
@@ -375,34 +373,34 @@
 		z-index: 1006; /* 1005 is highest on map */
 		height: 98%;
 		overflow: hidden;
-		> div:nth-child(2) > div {
-			padding: 5px 5px 10px 5px;
-			overflow-y: hidden;
-			background-color: #F5F5F5;
-			height: 100%;
-			border-left: 2px solid #E3E3E3;
-			border-top: 2px solid #E3E3E3;
-			border-bottom: 2px solid #E3E3E3;
-			border-top-left-radius: 10px 10px;
-			-webkit-border-top-left-radius: 10px 10px;
-			border-bottom-left-radius: 10px 10px;
-			-webkit-border-bottom-left-radius: 10px 10px;
-			> div {
-				&:nth-child(2) {
-					overflow-y: auto;
-					height: 90%;
-				}
-				&:first-child {
-					margin-bottom: 10px;
-				}
-				&:not(:first-child) {
-					/* 
-						This fixes a bootstrap issue that causes the accordion to go beyond screen 
-						height, causing scroll bars when the items slide is open
-					*/
-					margin-bottom: 0px;
-				}
-			}
+	}
+
+	#application-slide-items-content-container {
+		padding: 5px 5px 10px 5px;
+		overflow-y: hidden;
+		background-color: #F5F5F5;
+		height: 100%;
+		border-left: 2px solid @slider-medium-grey;
+		border-top: 2px solid @slider-medium-grey;
+		border-bottom: 2px solid @slider-medium-grey;
+		border-top-left-radius: 10px 10px;
+		-webkit-border-top-left-radius: 10px 10px;
+		border-bottom-left-radius: 10px 10px;
+		-webkit-border-bottom-left-radius: 10px 10px;
+	}
+
+	#application-slide-items-content-container-inner-scrollable {
+		&:nth-child(2) {
+			overflow-y: auto;
+			height: 90%;
+		}
+		&:first-child {
+			margin-bottom: 10px;
+		}
+		&:not(:first-child) {
+			// This fixes a bootstrap issue that causes the accordion to go beyond screen 
+			// height, causing scroll bars when the items slide is open
+			margin-bottom: 0px;
 		}
 	}
 
@@ -465,7 +463,7 @@
 
     .application-card-title-row .application-card-title-container-medium {
 
-	font-size: 16px;
+		font-size: 16px;
     }
 
     .corner-ribbon-wrapper {
