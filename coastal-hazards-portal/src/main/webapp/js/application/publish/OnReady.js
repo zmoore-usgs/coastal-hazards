@@ -10,14 +10,12 @@
 /*global historicAttributes*/
 $(document).ready(function () {
 	"use strict";
-	
+
 	initializeLogging({
 		LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
 	});
-	
+
 	CCH.LOG = LOG;
-	
-	CCH.Auth.checkAuthStatus();
 
 	$(document).ajaxStart(function () {
 		$('body').css('cursor', 'wait');
@@ -26,106 +24,114 @@ $(document).ready(function () {
 		$('body').css('cursor', 'default');
 	});
 
-	CCH.ows = new CCH.Util.OWS().init();
+	// This is a promise set on the check-auth ajax call. Do not continue initializing
+	// unless we've successfully verified that the token sent by the client is valid
+	var continueLoading = function () {
+		CCH.ows = new CCH.Util.OWS().init();
 
-	CCH.ui = new CCH.Objects.Publish.UI();
+		CCH.ui = new CCH.Objects.Publish.UI();
 
-	CCH.ui.addUserInformationToForm({
-		data: CCH.CONFIG.user
-	});
+		CCH.ui.addUserInformationToForm({
+			data: CCH.CONFIG.user
+		});
 
-	CCH.search = new CCH.Util.Search();
+		CCH.search = new CCH.Util.Search();
 
-	// First load all of the items in the application.
-	// TODO This might prove to be an inefficient way of loading items.
-	CCH.search.submitItemSearch({
-		subtree: true,
-		showDisabled: true,
-		callbacks: {
-			success: [
-				function (itemsJSON) {
-					CCH.items = itemsJSON.items;
-					var rootOutChildren = function (item) {
-						if (item.itemType === 'aggregation') {
-							if (!CCH.items.find(function (itemsItem) {
-								return item.id === itemsItem.id;
-							})) {
-								CCH.items.push(item);
+		// First load all of the items in the application.
+		// TODO This might prove to be an inefficient way of loading items.
+		CCH.search.submitItemSearch({
+			subtree: true,
+			showDisabled: true,
+			callbacks: {
+				success: [
+					function (itemsJSON) {
+						CCH.items = itemsJSON.items;
+						var rootOutChildren = function (item) {
+							if (item.itemType === 'aggregation') {
+								if (!CCH.items.find(function (itemsItem) {
+									return item.id === itemsItem.id;
+								})) {
+									CCH.items.push(item);
+								}
+								if (item.children) {
+									item.children.each(function (child) {
+										rootOutChildren(child);
+									});
+								}
+							} else {
+								if (!CCH.items.find(function (itemsItem) {
+									return item.id === itemsItem.id;
+								})) {
+									CCH.items.push(item);
+								}
 							}
-							if (item.children) {
-								item.children.each(function (child) {
-									rootOutChildren(child);
-								});
-							}
-						} else {
-							if (!CCH.items.find(function (itemsItem) {
-								return item.id === itemsItem.id;
-							})) {
-								CCH.items.push(item);
-							}
-						}
-					},
-						$list = $('#publish-button-edit-existing-list'),
-						sortedItems,
-						sortedListItems;
+						},
+								$list = $('#publish-button-edit-existing-list'),
+								sortedItems,
+								sortedListItems;
 
-					CCH.items.each(function (item) {
-						rootOutChildren(item);
-					});
-
-					sortedItems = CCH.items.sortBy(function (i) {
-						return i.summary.full.title;
-					}),
-					sortedListItems = CCH.ui.templates.item_list({
-						items : sortedItems,
-						baseUrl : CCH.CONFIG.contextPath
-					});
-					
-					// Replace current list with new sorted list of items
-					$list.empty().append(sortedListItems);
-					
-					if (CCH.itemid) {
-						CCH.CONFIG.item = CCH.items.find(function (item) {
-							return item.id === CCH.itemid;
+						CCH.items.each(function (item) {
+							rootOutChildren(item);
 						});
 
-						// Figure out if a secondary call needs to be made
-						// to load this item. 
-						if (CCH.CONFIG.item) {
-							CCH.ui.addItemToForm({
-								data: CCH.CONFIG.item
+						sortedItems = CCH.items.sortBy(function (i) {
+							return i.summary.full.title;
+						}),
+								sortedListItems = CCH.ui.templates.item_list({
+									items: sortedItems,
+									baseUrl: CCH.CONFIG.contextPath
+								});
+
+						// Replace current list with new sorted list of items
+						$list.empty().append(sortedListItems);
+
+						if (CCH.itemid) {
+							CCH.CONFIG.item = CCH.items.find(function (item) {
+								return item.id === CCH.itemid;
 							});
-						} else {
-							CCH.search.submitItemSearch({
-								item: CCH.itemid,
-								displayNotification: false,
-								callbacks: {
-									success: [
-										function (itemJSON) {
-											CCH.CONFIG.item = itemJSON;
-											CCH.ui.addItemToForm({
-												data: CCH.CONFIG.item
-											});
-										}
-									],
-									error: [
-										function () {
-											// TODO- Not sure how to handle this error just yet
-										}
-									]
-								}
-							});
+
+							// Figure out if a secondary call needs to be made
+							// to load this item. 
+							if (CCH.CONFIG.item) {
+								CCH.ui.addItemToForm({
+									data: CCH.CONFIG.item
+								});
+							} else {
+								CCH.search.submitItemSearch({
+									item: CCH.itemid,
+									displayNotification: false,
+									callbacks: {
+										success: [
+											function (itemJSON) {
+												CCH.CONFIG.item = itemJSON;
+												CCH.ui.addItemToForm({
+													data: CCH.CONFIG.item
+												});
+											}
+										],
+										error: [
+											function () {
+												// TODO- Not sure how to handle this error just yet
+											}
+										]
+									}
+								});
+							}
 						}
 					}
-				}
-			],
-			error: [
-				function (err) {
-					// TODO- Not sure how to handle this error just yet
-				}
-			]
-		}
-	});
+				],
+				error: [
+					function (err) {
+						// TODO- Not sure how to handle this error just yet
+					}
+				]
+			}
+		});
+	};
+	
+	var checkAuth = CCH.Auth.checkAuthStatus();
+	
+	checkAuth.done(continueLoading);
 });
 
 var deriveTypeFromAttribute = function (name) {
