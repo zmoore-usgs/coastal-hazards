@@ -295,6 +295,10 @@
 		-webkit-transform: translateZ(0);
 		> .panel{
 			-webkit-transform: translateZ(0);
+			// Fixes an issue in the main panels where if a scrollbar appears for
+			// vertical scroll, the main panel container can now be scrolled 
+			// horizontally. We don't want this.
+			overflow: hidden;
 		} 
 	}  
 
