@@ -4,12 +4,12 @@
 window.CCH = CCH || {};
 CCH.Auth = {
 	authTokenLabel: 'CoastalHazardsAuthCookie',
+	cookiePath: '/',
 	checkAuthStatus: function () {
 		"use strict";
-		$.ajax({
+		return $.ajax({
 			url: CCH.CONFIG.contextPath + '/security/auth/check/',
-			type: 'GET',
-			dataType: 'json'
+			type: 'GET'
 		});
 	},
 	submitLogin: function (forward) {
@@ -25,7 +25,6 @@ CCH.Auth = {
 			success: function (data) {
 				//set authtoken
 				CCH.Auth.setAuthToken(data.tokenId);
-
 				//forward
 				window.location = forward || CCH.CONFIG.contextPath + '/publish/item';
 			},
@@ -56,9 +55,9 @@ CCH.Auth = {
 	setAuthToken: function (tokenId) {
 		"use strict";
 		if (!tokenId) {
-			$.removeCookie(this.authTokenLabel);
+			$.removeCookie(this.authTokenLabel, {path: this.cookiePath});
 		}
-		$.cookie(this.authTokenLabel, tokenId, {expires: 1});
+		$.cookie(this.authTokenLabel, tokenId, {expires: 1, path: this.cookiePath});
 	},
 	getAuthToken: function () {
 		"use strict";
@@ -66,14 +65,6 @@ CCH.Auth = {
 		return token;
 	}
 };
-
-$('document').ready(function () {
-	$('#password').on('keypress', function (evt) {
-		if (evt.keyCode === 13) {
-			$('#button-submit').click();
-		}
-	});
-});
 
 //set global JQuery handler to always intercept 401/403s
 $(document).ajaxError(function (event, jqxhr, settings, thrownError) {

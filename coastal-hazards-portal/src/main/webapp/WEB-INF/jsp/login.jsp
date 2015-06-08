@@ -71,7 +71,7 @@
 	<body>
 		<div id="application-container" class="container">
 			<div id="header-row" class="row">
-				<a id="app-navbar-coop-logo-img-container" class="app-navbar-item-container" href="null/">
+				<a id="app-navbar-coop-logo-img-container" class="app-navbar-item-container" href="<%=baseUrl%>">
 					<img id="app-navbar-coop-logo-img" src="<%= baseUrl%>/images/banner/cida-cmgp.svg" alt="Navigation Bar Cooperator Logo">
 				</a>
 				<div id="app-navbar-site-title-container" class="app-navbar-item-container">
@@ -151,5 +151,16 @@
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Auth.js"></script>
+		<script type="text/javascript">
+			$('document').ready(function () {
+				$.removeCookie(CCH.Auth.authTokenLabel, { path: '/' });
+
+				$('#password').on('keypress', function (evt) {
+					if (evt.keyCode === 13) {
+						$('#button-submit').click();
+					}
+				});
+			});
+		</script>
 	</body>
 </html>
