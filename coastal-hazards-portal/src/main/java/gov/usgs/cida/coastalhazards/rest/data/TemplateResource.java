@@ -111,14 +111,11 @@ public class TemplateResource {
 					displayed.addAll(displayedIdByAttr);
 				}
 			} else {
-				// TODO allow for displayed flag in children structure
 				Map<String, Item> childMap = makeChildItemMap(childItems);
 				JsonArray children = parsed.get("children").getAsJsonArray();
 				newItemList = makeItemsFromDocument(template, children, childMap, itemMan, layerMan);
-				List<String> oldItems = visibleItems(children);
-				for (String oldId : oldItems) {
-					displayed.add(childMap.get(oldId).getId());
-				}
+				List<String> visibleItems = visibleItems(children, newItemList, childMap);
+				displayed.addAll(visibleItems);
 				newAndOldList = newItemList;
 			}
 			
@@ -187,11 +184,16 @@ public class TemplateResource {
 				}
 				Summary summary = makeSummary(layer, attr);
 				Item newItem = templateItem(template, attr, layer, summary);
+				if (replaceId == null) {
+					replaceId = newItem.getId();
+				}
 				childMap.put(replaceId, newItem);
 			} else if (childId != null) {
 				String retainedChildId = childId.getAsString();
 				Item retainedChild = itemMan.load(retainedChildId);
-				childMap.put(retainedChildId, retainedChild);
+				if (retainedChild != null) {
+					childMap.put(retainedChildId, retainedChild);
+				}
 			} else {
 				throw new BadRequestException("Must specify childId if not including layerId");
 			}
@@ -256,8 +258,10 @@ public class TemplateResource {
 	
 	private Map<String, Item> makeChildItemMap(List<Item> children) {
 		Map<String, Item> result = new LinkedHashMap<>();
-		for (Item item : children) {
-			result.put(item.getId(), item);
+		if (children != null) {
+			for (Item item : children) {
+				result.put(item.getId(), item);
+			}
 		}
 		return result;
 	}
@@ -329,22 +333,40 @@ public class TemplateResource {
 		return items;
 	}
 
-	private List<String> visibleItems(JsonArray children) {
+	private List<String> visibleItems(JsonArray children, List<Item> items, Map<String, Item> existing) {
 		List<String> visibleChildren = new LinkedList<>();
 		Iterator<JsonElement> iterator = children.iterator();
 
 		while (iterator.hasNext()) {
 			JsonObject child = iterator.next().getAsJsonObject();
 			JsonElement childId = child.get("id");
+			JsonElement attrElement = child.get("attr");
 			JsonElement visibleElement = child.get("visible");
-			if (visibleElement != null && childId != null) {
+			String visibleId = "";
+			if (childId != null) {
+				String specified = childId.getAsString();
+				if (existing.containsKey(specified)) {
+					visibleId = existing.get(specified).getId();
+				} else {
+					visibleId = specified;
+				}
+			} else if (attrElement != null) {
+				String attr = attrElement.getAsString();
+				for (Item item : items) {
+					String existingAttr = item.getAttr();
+					if (null != existingAttr && attr.equals(existingAttr)) {
+						visibleId = item.getId();
+					}
+				}
+			}
+			if (visibleElement != null && StringUtils.isNotBlank(visibleId)) {
 				boolean visible = visibleElement.getAsBoolean();
-				String id = childId.getAsString();
 				if (visible) {
-					visibleChildren.add(id);
+					visibleChildren.add(visibleId);
 				}
 			}
 		}
 		return visibleChildren;
 	}
+
 }
