@@ -109,7 +109,7 @@
                                 <table cellspacing="6">
                                     <tr>
                                         <td>Username:</td>
-                                        <td><input type='text' tabindex="1" name='username' id='username'/></td>
+                                        <td><input type='text' tabindex="1" name='username' id='username' autofocus /></td>
                                     </tr>
                                     <tr>
                                         <td>Password:</td>
