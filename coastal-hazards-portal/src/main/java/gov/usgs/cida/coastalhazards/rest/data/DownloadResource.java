@@ -208,6 +208,10 @@ public class DownloadResource {
 	public Response deleteStagedItem(@PathParam("id") String itemId, @Context HttpServletRequest request) {
 		Response response = null;
 		try (DownloadService downloadService = new DownloadService()) {
+			Download download = downloadService.get(itemId);
+			if (download == null) {
+				throw new NotFoundException();
+			}
 			boolean deleted = downloadService.delete(itemId);
 			response = Response.ok("{\"deleted\":\"" + deleted + "\"}", MediaType.APPLICATION_JSON_TYPE).build();
 		}
