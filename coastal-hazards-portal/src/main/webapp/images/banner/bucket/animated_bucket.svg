@@ -76,7 +76,7 @@
 								} else {
 									var ele = document.getElementById('grow1');
 								}
-								ele.beginElement();
+								beginElement(ele);
 								document.getElementById('bucket-counter').textContent++;
 								jiggle();
 							}
