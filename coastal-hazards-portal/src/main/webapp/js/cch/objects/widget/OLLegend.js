@@ -182,16 +182,10 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 	updateSize: function () {
 		"use strict";
 		var size = this.map.size,
-			mWidth = size.w,
 			mHeight = size.h,
-			// If we are in the small form factor, I want the legend to take up half the map width. Otherwise, divide by 3. 
-			widthRatio = CCH.ui.isSmall() ? 0.5 : 0.3,
-			width,
 			height;
 
-		width = parseInt(mWidth * widthRatio, 10);
 		height = parseInt(mHeight * 0.25, 10);
-		this.legendContainerElement.style.width = width + 'px';
 		this.legendContainerElement.style.height = height + 'px';
 	},
 	show: function () {
