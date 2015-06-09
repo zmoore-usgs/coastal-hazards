@@ -20,6 +20,13 @@
 							
                             </style>
 							<script type="text/ecmascript"><![CDATA[
+								
+							function beginElement(ele) {
+								if (ele.beginElement) {
+									ele.beginElement()
+								}
+							}
+								
 							function init(evt)
 							{
 								bucketDump();
@@ -42,24 +49,24 @@
 							
 							function bucketDump(){
 							    var ele = document.getElementById('empty1');
-							    ele.beginElement();
+							    beginElement(ele);
 								document.getElementById('bucket-counter').textContent=0;
 
 							}
 								
 							function jiggle(){
 								var ele = document.getElementById('jiggle1');
-								ele.beginElement();
+								beginElement(ele);
 							}
 								
 							function bucketOpen(){
 								var ele = document.getElementById('jiggle1');
-								ele.beginElement();
+								beginElement(ele);
 							}
 								
 							function bucketClose(){
 								var ele = document.getElementById('jiggle1');
-								ele.beginElement();
+								beginElement(ele);
 							}
 								
 							function bucketAdd(){
