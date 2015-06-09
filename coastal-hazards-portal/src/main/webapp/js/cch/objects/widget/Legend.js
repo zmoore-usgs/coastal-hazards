@@ -402,7 +402,7 @@ CCH.Objects.Widget.Legend = function (args) {
 									this.legendTables.push(-1);
 									me.tableAdded({
 										legendTables: this.legendTables,
-										total: this.total
+										total: this.allItems.length
 									});
 									if (me.onError) {
 										me.onError.call(me, arguments);
@@ -469,8 +469,17 @@ CCH.Objects.Widget.Legend = function (args) {
 		// All legend tables have been attained so now I need to actually slice and dice the collection of tables into
 		// a nicely formatted single or set of legend tables
 		if (legendTables.length === total) {
-
-			// If I am ribboned, I want to group my legends if they're the same color range/measures
+			
+			// If an upstream call for an SLD for an item returned an error, the
+			// item in the legendTables array will be -1 (in order to satisfy matching
+			// the total). The call to groupBy will fail if those are still in 
+			// the legendTables array, so remove them before moving on. 
+			legendTables = legendTables.exclude(function (i) { 
+				return i === -1;
+			});
+			
+			// If I am ribboned, I want to group my legends if they're the same 
+			// color range/measures
 			legendGroups = legendTables.groupBy(function (lt) {
 				return $(lt).find('tbody').html().hashCode();
 			});
