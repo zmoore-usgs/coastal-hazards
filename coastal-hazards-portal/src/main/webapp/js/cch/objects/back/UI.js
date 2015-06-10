@@ -25,8 +25,7 @@ CCH.Objects.Back.UI = function (args) {
 			$downloadDataButton = $('#download-link-button'),
 			$applicationButton = $('#application-link-button'),
 			$addToBucketButton = $('#add-bucket-link-button'),
-			$printSnapshotButton = $('#print-snapshot-button'),
-			$computeAnalysissButton = $('#analysis-link-button'),
+			$computeAnalysisButton = $('#analysis-link-button'),
 			$qrImage = $('#qr-code-img'),
 			$infoTitle = $('#info-title'),
 			$infoSummary = $('#info-summary'),
@@ -76,11 +75,7 @@ CCH.Objects.Back.UI = function (args) {
 			alertify.log('Item added to bucket!');
 		});
 		
-		$printSnapshotButton.on('click', function () {
-			alertify.log('Not yet.');
-		});
-		
-		$computeAnalysissButton.on('click', function () {
+		$computeAnalysisButton.on('click', function () {
 			alertify.log('Not yet.');
 		});
 
