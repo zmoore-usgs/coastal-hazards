@@ -210,6 +210,7 @@ CCH.Objects.Publish.UI = function () {
 		$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
 		$isActiveStormRow.addClass('hidden');
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
+		$showChildrenCb.prop(CCH.CONFIG.strings.checked, true);
 	};
 
 	me.enableNewTemplateForm = function () {
