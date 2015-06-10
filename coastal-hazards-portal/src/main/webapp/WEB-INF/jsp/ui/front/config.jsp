@@ -47,9 +47,7 @@
 	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
 %>
 <script type="text/javascript">
-	if ( OpenLayers ) {
-		OpenLayers.ProxyHost = 'geoserver/';
-	};
+	OpenLayers.ProxyHost = 'geoserver/';
 	
 	var CCH = {
 		Objects : {
