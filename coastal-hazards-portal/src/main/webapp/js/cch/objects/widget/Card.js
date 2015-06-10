@@ -70,7 +70,7 @@ CCH.Objects.Widget.Card = function (args) {
 		});
 
 		//only show if we have no active children
-		if (!me.child) {
+		if (!me.child || !me.item.showChildren) {
 			var duration = args.duration !== undefined ? args.duration : 500,
 					effect = args.effect || 'slide',
 					easing = args.easing || 'swing',
@@ -92,7 +92,7 @@ CCH.Objects.Widget.Card = function (args) {
 			
 			me.hideParent();
 		}
-
+		
 		me.showChildren({
 			dontShowLayer: args.dontShowLayer || false
 		});
@@ -114,7 +114,7 @@ CCH.Objects.Widget.Card = function (args) {
 
 	me.showChildren = function (args) {
 		var dontShowLayer = args.dontShowLayer;
-		if (me.child) {
+		if (me.child && me.item.showChildren) {
 			me.child.show({
 				dontShowLayer: dontShowLayer
 			});
@@ -435,8 +435,9 @@ CCH.Objects.Widget.Card = function (args) {
 			mediumContentContainer.html(mediumContent);
 
 			// I have either aggregations or leaf nodes as children.
-			// I am not myself a child.
-			if (me.children.length) {
+			// I am not myself a child. If my flag of 'showChildren'
+			// is set to true, add children buttons. Otherwise, don't.
+			if (me.children.length && me.item.showChildren) {
 				// Do bindings
 				me.renderPropertyAggMenu($exploreRow);
 			} else {

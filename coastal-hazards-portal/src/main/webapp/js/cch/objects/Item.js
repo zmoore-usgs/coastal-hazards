@@ -19,6 +19,7 @@ CCH.Objects.Item = function (args) {
 	me.ribboned = args.ribboned || args.ribbonable || false; // Data may be coming in with the parameter named "ribboned" or "ribbonable" 
 	me.children = args.children || [];
 	me.displayedChildren = args.displayedChildren || [];
+	me.showChildren = args.showChildren;
 	me.attr = args.attr || null;
 	me.metadata = args.metadata || null;
 	me.bbox = args.bbox || me.UNITED_STATES_BBOX;
@@ -69,6 +70,7 @@ CCH.Objects.Item = function (args) {
 		me.summary = data.summary;
 		me.type = data.type;
 		me.services = data.services;
+		me.showChildren = data.showChildren;
 
 		CCH.items.add({item: me});
 
