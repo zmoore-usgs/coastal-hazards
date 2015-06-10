@@ -24,6 +24,10 @@ public class DownloadService implements AutoCloseable {
 	public DownloadService() {
 		manager = new DownloadManager();
 	}
+	
+	public Download get(String id) {
+		return manager.load(id);
+	}
 
 	public boolean delete(String id) {
 		boolean deleted = false;
