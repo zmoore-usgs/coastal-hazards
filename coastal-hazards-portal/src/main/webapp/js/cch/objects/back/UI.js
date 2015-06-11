@@ -68,7 +68,7 @@ CCH.Objects.Back.UI = function (args) {
 		
 		me.$addToBucketButton.on('click', function (evt) {
 			CCH.session.addItem({
-				item: item,
+				item: me.item,
 				visible: true
 			});
 			$(evt.target).addClass('disabled');
