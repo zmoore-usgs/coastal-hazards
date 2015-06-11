@@ -170,7 +170,12 @@ public class ItemResource {
 			Item dbItem = itemManager.load(id);
 			Item updatedItem = Item.fromJSON(content);
 			Item mergedItem = Item.copyValues(updatedItem, dbItem);
-			final String mergedId = itemManager.merge(mergedItem);
+			String mergedId = null;
+			if (dbItem == null) {
+				mergedId = itemManager.persist(mergedItem);
+			} else {
+				mergedId = itemManager.merge(mergedItem);
+			}
 			if (null != mergedId) {
 				response = Response.ok().build();
 			}
