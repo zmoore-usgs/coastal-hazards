@@ -28,7 +28,7 @@ $(document).ready(function () {
 		if (CCH.CONFIG.itemId === id) {
 			CCH.CONFIG.item = CCH.items.getById({id : id});
 			item = CCH.CONFIG.item;
-			CCH.ui = new CCH.Objects.Back.UI({item: item});
+			CCH.ui = new CCH.Objects.Back.UI().init({item: item});
 			
 			// Clear the overlay
 			$('#application-overlay').fadeOut(2000, function () {

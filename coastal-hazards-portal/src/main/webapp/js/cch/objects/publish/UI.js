@@ -210,6 +210,7 @@ CCH.Objects.Publish.UI = function () {
 		$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
 		$isActiveStormRow.addClass('hidden');
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
+		$showChildrenCb.prop(CCH.CONFIG.strings.checked, true);
 	};
 
 	me.enableNewTemplateForm = function () {
@@ -249,66 +250,65 @@ CCH.Objects.Publish.UI = function () {
 				if (me.isBlank($attributeSelect)) {
 					errors.push('An attribute was not selected');
 				}
-				if ($attributeSelect.val().length > CCH.CONFIG.limits.item.attribute) {
-					errors.push('Attribute was longer than ' + CCH.CONFIG.limits.item.attribute + ' characters');
+				
+				if (me.isBlank($attributeSelect)) {
+					errors.push('Attribute is missing');
+				} else if ($attributeSelect.val().length > CCH.CONFIG.limits.item.attribute) {
+						errors.push('Attribute was longer than ' + CCH.CONFIG.limits.item.attribute + ' characters');
 				}
 
 				if (me.isBlank($cswServiceInput)) {
 					errors.push('CSW service endpoint not entered');
+				} else if ($cswServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+						errors.push('CSW endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
-				if ($cswServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
-					errors.push('CSW endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
-				}
+				
 
 				if (me.isBlank($srcWfsServiceInput)) {
 					errors.push('Source WFS Endpoint not provided');
+				} else if ($srcWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+						errors.push('WFS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
-				if ($srcWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
-					errors.push('WFS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
-				}
+				
 				if (me.isBlank($srcWfsServiceParamInput)) {
 					errors.push('Source WFS parameter not provided');
-				}
-				if ($srcWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+				} else if ($srcWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
 					errors.push('WFS Source parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
 				if (me.isBlank($srcWmsServiceInput)) {
 					errors.push('Source WMS Endpoint not provided');
-				}
-				if ($srcWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+				} else if ($srcWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('WMS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
+				
 				if (me.isBlank($srcWmsServiceParamInput)) {
 					errors.push('Source WMS Endpoint not provided');
-				}
-				if ($srcWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+				} else if ($srcWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
 					errors.push('WMS Source parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
 				if (me.isBlank($proxyWfsServiceInput)) {
 					errors.push('Proxy WFS endpoint not provided');
-				}
-				if ($proxyWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+				} else if ($proxyWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('WFS Proxy endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
+				
 				if (me.isBlank($proxyWfsServiceParamInput)) {
 					errors.push('Proxy WFS parameter not provided');
-				}
-				if ($proxyWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+				} else if ($proxyWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
 					errors.push('WFS Proxy parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
 				if (me.isBlank($proxyWmsServiceInput)) {
 					errors.push('Proxy WMS endpoint not provided');
-				}
-				if ($proxyWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+				} else if ($proxyWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('WMS Proxy endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
+				
 				if (me.isBlank($proxyWmsServiceParamInput)) {
 					errors.push('Proxy WMS parameter not provided');
-				}
-				if ($proxyWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+				} else if ($proxyWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
 					errors.push('WMS Proxy parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
@@ -347,50 +347,43 @@ CCH.Objects.Publish.UI = function () {
 
 			if (me.isBlank($titleFullTextArea)) {
 				errors.push('Full title not provided');
-			}
-			if ($titleFullTextArea.val().length > CCH.CONFIG.limits.summary.full.title) {
+			} else if ($titleFullTextArea.val().length > CCH.CONFIG.limits.summary.full.title) {
 				errors.push('Full title was longer than ' + CCH.CONFIG.limits.summary.full.title + ' characters');
 			}
 
 			if (me.isBlank($titleMediumTextArea)) {
 				errors.push('Full medium not provided');
-			}
-			if ($titleMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.title) {
+			} else if ($titleMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.title) {
 				errors.push('Medium title was longer than ' + CCH.CONFIG.limits.summary.medium.title + ' characters');
 			}
 
 			if (me.isBlank($descriptionFullTextArea)) {
 				errors.push('Full description not provided');
-			}
-			if ($descriptionFullTextArea.val().length > CCH.CONFIG.limits.summary.full.text) {
+			} else if ($descriptionFullTextArea.val().length > CCH.CONFIG.limits.summary.full.text) {
 				errors.push('Full description was longer than ' + CCH.CONFIG.limits.summary.full.text + ' characters');
 			}
 
 			if (me.isBlank($descriptionMediumTextArea)) {
 				errors.push('Medium description not provided');
-			}
-			if ($descriptionMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.text) {
+			} else if ($descriptionMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.text) {
 				errors.push('Medium description was longer than ' + CCH.CONFIG.limits.summary.medium.text + ' characters');
 			}
 
 			if (me.isBlank($descriptionTinyTextArea)) {
 				errors.push('Tiny description not provided');
-			}
-			if ($descriptionTinyTextArea.val().length > CCH.CONFIG.limits.summary.tiny.text) {
+			} else if ($descriptionTinyTextArea.val().length > CCH.CONFIG.limits.summary.tiny.text) {
 				errors.push('Tiny description was longer than ' + CCH.CONFIG.limits.summary.tiny.text + ' characters');
 			}
 
 			if (me.isBlank($name)) {
 				errors.push('Name was not provided');
-			}
-			if ($name.val().length > CCH.CONFIG.limits.item.name) {
+			} else if ($name.val().length > CCH.CONFIG.limits.item.name) {
 				errors.push('Item name was longer than ' + CCH.CONFIG.limits.item.name + ' characters');
 			}
 
 			if (me.isBlank($typeSb)) {
 				errors.push('Item type not provided');
-			}
-			if ($typeSb.val().length > CCH.CONFIG.limits.item.attribute) {
+			} else if ($typeSb.val().length > CCH.CONFIG.limits.item.attribute) {
 				errors.push('Item type was longer than ' + CCH.CONFIG.limits.item.attribute + ' characters');
 			}
 
@@ -1836,8 +1829,8 @@ CCH.Objects.Publish.UI = function () {
 			$ul = $('<ul />'),
 			$li,
 			item;
-			
-		if (errors.length === 0) {
+		
+		var performSave = function () {
 			item = me.buildItemFromForm();
 			me.saveItem({
 				item: item,
@@ -1873,14 +1866,33 @@ CCH.Objects.Publish.UI = function () {
 					]
 				}
 			});
+		};
+		
+		if (errors.length === 0) {
+			performSave();
 		} else {
 			errors.each(function (error) {
 				$li = $('<li />').html(error);
 				$ul.append($li);
 			});
+			var $modalSaveButton = $('<button />')
+					.attr({
+						id : 'alert-modal-save-button',
+						type : 'button',
+						'data-dismiss' : 'modal'
+					})
+					.addClass("btn btn-default")
+					.html('Save Anyway')
+					.off('click')
+					.on('click', function (evt) {
+						performSave();
+						$(evt.target).remove();
+					});
+			
 			$alertModal.modal(CCH.CONFIG.strings.hide);
 			$alertModalTitle.html('Errors Found In Publish Form');
 			$alertModalBody.html($ul);
+			$alertModalFooter.append($modalSaveButton);
 			$alertModal.modal(CCH.CONFIG.strings.show);
 		}
 	});

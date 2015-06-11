@@ -98,7 +98,7 @@
 		</jsp:include>
 		<title>USGS Coastal Change Hazards Portal - <%= item.getSummary().getMedium().getTitle()%></title>
 
-		<link rel="stylesheet" media="all" href="<%=baseUrl%>/css/back/print<%= development ? "" : ".min"%>.css" />
+		<link rel="stylesheet" media="all" href="<%=baseUrl%>/css/back/print<%= resourceSuffix%>.css" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
 		<script type="text/javascript">
 			<jsp:include page="../common/google-analytics.jsp" />

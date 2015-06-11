@@ -504,7 +504,7 @@
 							<div class="row row-showchildren">
 								<div class="form-group">
 									<div class="checkbox">
-										<input id="form-publish-item-showchildren" type="checkbox" disabled="disabled">
+										<input id="form-publish-item-showchildren" type="checkbox" disabled="disabled" checked="checked">
 										<label for="form-publish-item-showchildren">Show Children</label>
 									</div>
 								</div>
