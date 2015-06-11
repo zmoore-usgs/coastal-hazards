@@ -34,7 +34,9 @@ CCH.Objects.Back.UI = function (args) {
 			cswService,
 			$publist,
 			item = args.item;
-
+	
+		me.$mapServicesButton = $('#map-services-link-button');
+	
 		me.serviceTemplate = null; // Lazy loaded
 
 		$infoButton.on('click', function () {
@@ -96,7 +98,7 @@ CCH.Objects.Back.UI = function (args) {
 		} else {
 			$metadataButton.remove();
 		}
-
+		
 		// Build the publications list for the item
 		if (item.summary.full.publications) {
 			$publist = $('<ul />').attr('id', 'info-container-publications-list');
@@ -283,6 +285,19 @@ CCH.Objects.Back.UI = function (args) {
 				return data;
 			};
 			
+		// Before I go too far, check that either this item has services or displays
+		// any children with services. If not, hide the map services button and bail
+		var childMapServiceEnabled = CCH.CONFIG.item.children.some(function (id) {
+			var child = CCH.items.getById({ id : id });
+			return child.services.length && child.services.some(function (s) {
+				return s.type === 'source_wfs' || s.type === 'proxy_wfs';
+			});
+		});
+		
+		if (!CCH.CONFIG.item.services.length && !childMapServiceEnabled) {
+			this.$mapServicesButton.addClass('hidden');
+		}
+		
 		Handlebars.registerHelper('list_translation', function (serviceType) {
 			var serviceString = '';
 			switch (serviceType) {
@@ -348,7 +363,6 @@ CCH.Objects.Back.UI = function (args) {
 						},
 						'plugins': ['types']
 					});
-				
 			}
 		});
 	};
@@ -361,5 +375,7 @@ CCH.Objects.Back.UI = function (args) {
 		}
 	});
 
-	return me.init(args);
+	return $.extend({}, me, {
+		
+	});
 };
