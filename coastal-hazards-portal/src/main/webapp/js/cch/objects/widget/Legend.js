@@ -93,7 +93,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				$rangeTd,
 				bins = sld.bins,
 				uom = sld.units || '',
-				title = sld.title || '',
+				title = (args.item && args.item.summary && args.item.summary && args.item.summary.medium) ? args.item.summary.medium.title : sld.title || '',
 				upperBound,
 				lowerBound,
 				category,
@@ -162,7 +162,8 @@ CCH.Objects.Widget.Legend = function (args) {
 
 
 		$legendTable = me.generateGenericLegendTable({
-			sld: sld
+			sld: sld,
+			item : item
 		});
 
 		$legendTable.attr({
@@ -239,7 +240,8 @@ CCH.Objects.Widget.Legend = function (args) {
 				$yearRows;
 
 		$legendTable = me.generateGenericLegendTable({
-			sld: sld
+			sld: sld,
+			item : item
 		});
 
 		$legendTable.attr({
@@ -305,8 +307,9 @@ CCH.Objects.Widget.Legend = function (args) {
 			index = args.index,
 			attr = item.attr,
 			$legendTable = me.generateGenericLegendTable({
-				sld: sld
-		});
+				sld: sld,
+				item : item
+			});
 
 		$legendTable.attr({
 			'legend-attribute': attr,
@@ -341,7 +344,8 @@ CCH.Objects.Widget.Legend = function (args) {
 			index = args.index,
 			attr = item.attr,
 			$legendTable = me.generateGenericLegendTable({
-				sld: sld
+				sld: sld,
+				item : item
 			});
 		
 		$legendTable.attr({
