@@ -11,7 +11,9 @@ CCH.Objects.Widget = CCH.Objects.Widget || {};
 CCH.Objects.Widget.Legend = function (args) {
 	"use strict";
 	var me = (this === window) ? {} : this;
+	
 	$.extend(true, me, args);
+	
 	me.errorMessage = 'Legend.js:: %s Legend could not be created.';
 	me.$container = null;
 	me.$legendDiv = $('<div />').html('Loading...');
@@ -54,8 +56,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			me.generateHistoricalLegendTables({
 				item: item
 			});
-		}
-		else if (itemType === me.itemTypes.STORMS) {
+		} else if (itemType === me.itemTypes.STORMS) {
 			me.generateStormLegendTables({
 				item: item
 			});
@@ -263,7 +264,13 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.generateStormLegendTables = function (args) {
 		args = args || {};
 		var item = args.item,
-				childItems;
+				childItems,
+				// A storm item may have children that are active storms.
+				// If so, I want to display the active storm legend if it 
+				// does not yet exist
+				containsTrackItems = item.getChildren().some(function (c) {
+					return c.type === me.itemTypes.TRACK;
+				});
 
 		if ('aggregation' === item.itemType.toLowerCase() ||
 			'template' === item.itemType.toLowerCase()) {
@@ -276,17 +283,30 @@ CCH.Objects.Widget.Legend = function (args) {
 			items: childItems,
 			generateLegendTable: me.generateStormLegendTable
 		});
+		
+		if (containsTrackItems) {
+			$(window).on('legend-tables-added', function (legend) {
+				// The legend is now built so I just want to tack on this storm
+				// track legend to the bottom of it
+				var stormTrackTable = CCH.Objects.Widget.Legend.prototype.templates.rts_legend({
+					id: "storm_track",
+					title: "Storm Track",
+					baseUrl: CCH.CONFIG.contextPath
+				});
+				me.$legendDiv.append(stormTrackTable);
+			});
+		}
 	};
 
 	me.generateStormLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
-				item = args.item,
-				index = args.index,
-				attr = item.attr,
-				$legendTable = me.generateGenericLegendTable({
-					sld: sld
-				});
+			item = args.item,
+			index = args.index,
+			attr = item.attr,
+			$legendTable = me.generateGenericLegendTable({
+				sld: sld
+		});
 
 		$legendTable.attr({
 			'legend-attribute': attr,
@@ -317,12 +337,13 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.generateVulnerabilityLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
-				item = args.item,
-				index = args.index,
-				attr = item.attr,
-				$legendTable = me.generateGenericLegendTable({
-					sld: sld
-				});
+			item = args.item,
+			index = args.index,
+			attr = item.attr,
+			$legendTable = me.generateGenericLegendTable({
+				sld: sld
+			});
+		
 		$legendTable.attr({
 			'legend-attribute': attr,
 			'legend-index': index,
@@ -338,10 +359,9 @@ CCH.Objects.Widget.Legend = function (args) {
 				legendTables = [],
 				generateLegendTable = args.generateLegendTable,
 				tableAddedCallback = args.tableAddedCallback;
-		
+				
 		items.each(function (childId, index, allItems) {
 			if (!me.destroyed) {
-				
 				xhrRequest = CCH.Util.Util.getSLD({
 					contextPath: CCH.CONFIG.contextPath,
 					itemId: childId,
@@ -564,6 +584,7 @@ CCH.Objects.Widget.Legend = function (args) {
 
 			if (me.onComplete) {
 				me.onComplete.call(me);
+				$(window).trigger('legend-tables-added', me);
 			}
 
 		}
@@ -613,6 +634,7 @@ CCH.Objects.Widget.Legend = function (args) {
 };
 
 (function () {
+	"use strict";
 	$.ajax({
 		url: CCH.CONFIG.contextPath + '/resource/template/handlebars/legend/real_time_storms.html',
 		success: function (data) {
