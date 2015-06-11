@@ -431,6 +431,29 @@ CCH.Objects.Item = function (args) {
 		}
 		return me.parent.getAncestor();
 	};
+	
+	/**
+	 * Performs a deep dive into an item and returns all of the item's children
+	 */
+	me.getChildren = function (args) {
+		args = args || {};
+		var children = args.children || [],
+				item = args.item || me,
+				itemChildren = item.children;
+				children.add(item);
+				
+		if (itemChildren.length) {
+			for (var cIdx = 0; cIdx < itemChildren.length; cIdx++) {
+				var child = CCH.items.getById({ id : itemChildren[cIdx] });
+				children.union(me.getChildren({
+					children : children,
+					item : child
+				}));
+			}
+		}
+		
+		return children;
+	};
 
 	me.getService = function (type) {
 		var defaultServiceObject = {

@@ -20,16 +20,14 @@ CCH.Objects.Back.UI = function (args) {
 	};
 	
 	me.init = function (args) {
-		var $metadataButton = $('#metadata-link-button'),
-			$qrImage = $('#qr-code-img'),
-			$infoTitle = $('#info-title'),
-			$infoSummary = $('#info-summary'),
-			$infoPubListSpan = $('#info-container-publications-list-span'),
-			$labelActionCenter = $('#label-action-center'),
-			cswService,
-			$publist,
-			item = args.item;
-	
+		me.$qrImage = $('#qr-code-img');
+		me.$infoTitle = $('#info-title');
+		me.$infoSummary = $('#info-summary');
+		me.$infoPubListSpan = $('#info-container-publications-list-span');
+		me.$labelActionCenter = $('#label-action-center');
+		me.cswService;
+		me.$publist;
+		me.item = args.item;
 		me.$mapServicesButton = $('#map-services-link-button');
 		me.$downloadDataButton = $('#download-link-button');
 		me.$printFormWrapper = $('#print-route-form');
@@ -37,8 +35,8 @@ CCH.Objects.Back.UI = function (args) {
 		me.$applicationButton = $('#application-link-button');
 		me.$addToBucketButton = $('#add-bucket-link-button');
 		me.$computeAnalysisButton = $('#analysis-link-button');
+		me.$metadataButton = $('#metadata-link-button');
 		me.serviceTemplate = null; // Lazy loaded
-
 		me.$infoButton.on('click', function () {
 			window.location.href = CCH.CONFIG.contextPath + '/info/#helpModal';
 		});
@@ -70,7 +68,7 @@ CCH.Objects.Back.UI = function (args) {
 		
 		me.$addToBucketButton.on('click', function (evt) {
 			CCH.session.addItem({
-				item: item,
+				item: me.item,
 				visible: true
 			});
 			$(evt.target).addClass('disabled');
@@ -82,28 +80,28 @@ CCH.Objects.Back.UI = function (args) {
 		});
 
 		me.createModalServicesTab({
-			item: item
+			item: me.item
 		});
 
 		// Create a "View Metadata" button
-		cswService = CCH.CONFIG.item.services.find(function (service) {
+		me.cswService = CCH.CONFIG.item.services.find(function (service) {
 			return service.type === 'csw';
 		});
 
 		// If item has a metadata service behind it, wire up the button. Otherwise, remove it.
-		if (cswService && cswService.endpoint) {
-			$metadataButton.on('click', function () {
-				window.location.href = cswService.endpoint + '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
+		if (me.cswService && me.cswService.endpoint) {
+			me.$metadataButton.on('click', function () {
+				window.location.href = me.cswService.endpoint + '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
 			});
 		} else {
-			$metadataButton.remove();
+			me.$metadataButton.remove();
 		}
 		
 		// Build the publications list for the item
-		if (item.summary.full.publications) {
-			$publist = $('<ul />').attr('id', 'info-container-publications-list');
-			Object.keys(item.summary.full.publications, function (type) {
-				var pubTypeArray = item.summary.full.publications[type],
+		if (me.item.summary.full.publications) {
+			me.$publist = $('<ul />').attr('id', 'info-container-publications-list');
+			Object.keys(me.item.summary.full.publications, function (type) {
+				var pubTypeArray = me.item.summary.full.publications[type],
 					pubTypeListHeader = $('<li />')
 							.addClass('publist-header')
 							.html(type),
@@ -111,8 +109,8 @@ CCH.Objects.Back.UI = function (args) {
 					pubLink;
 				if (pubTypeArray.length) {
 					pubTypeListHeader.append(subList);
-					$publist.append(pubTypeListHeader);
-					item.summary.full.publications[type].each(function (publication) {
+					me.$publist.append(pubTypeListHeader);
+					me.item.summary.full.publications[type].each(function (publication) {
 						pubLink = $('<a />').attr({
 							'href': publication.link,
 							'target': 'portal_publication_window'
@@ -122,20 +120,20 @@ CCH.Objects.Back.UI = function (args) {
 				}
 			});
 		} else {
-			$infoPubListSpan.remove();
+			me.$infoPubListSpan.remove();
 		}
 
-		$infoTitle.html(item.summary.full.title);
-		$qrImage.attr({
+		me.$infoTitle.html(me.item.summary.full.title);
+		me.$qrImage.attr({
 			src: CCH.CONFIG.contextPath + '/data/qr/info/item/' + CCH.CONFIG.itemId + '?width=250&height=250'
 		});
-		$infoSummary.html(item.summary.full.text);
-		$infoPubListSpan.append($publist);
+		me.$infoSummary.html(me.item.summary.full.text);
+		me.$infoPubListSpan.append(me.$publist);
 
-		$labelActionCenter.on('click', me.toggleControlCenterVisibility);
-		$labelActionCenter.on('click', me.toggleArrowRotation);
+		me.$labelActionCenter.on('click', me.toggleControlCenterVisibility);
+		me.$labelActionCenter.on('click', me.toggleArrowRotation);
 		if (me.isSmall()) {
-			$labelActionCenter.click();
+			me.$labelActionCenter.click();
 		}
 
 		var minificationCallback = function (data) {
@@ -180,8 +178,8 @@ CCH.Objects.Back.UI = function (args) {
 		});
 
 		// Is this item already in the bucket? If so, disable the add to bucket button
-		if (CCH.session.getItemById(item.id)) {
-			$addToBucketButton.addClass('disabled');
+		if (CCH.session.getItemById(me.item.id)) {
+			me.$addToBucketButton.addClass('disabled');
 		}
 
 		// To start, I only want tooltips when the app is in desktop mode.
