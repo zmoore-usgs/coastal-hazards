@@ -15,6 +15,7 @@ import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -209,7 +210,7 @@ public class Item implements Serializable, Cacheable {
 	}
 
 	public void setServices(List<Service> services) {
-		this.services = services;
+		this.services = (services == null) ? new LinkedList<Service>() : services;
 	}
 
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -324,17 +325,25 @@ public class Item implements Serializable, Cacheable {
 	 */
 	public static Item copyValues(final Item from, final Item to) {
 		Item item = new Item();
-
-		if (to.getItemType() != from.getItemType()) {
+		
+		if (to != null && to.getItemType() != from.getItemType()) {
 			throw new UnsupportedOperationException("Cannot change item type");
 		}
-		item.setId(to.getId());
+		String id = from.getId();
+		Bbox toBbox = null;
+		Summary toSummary = null;
+		if (to != null) {
+			id = to.getId();
+			toBbox = to.getBbox();
+			toSummary = to.getSummary();
+		}
+		item.setId(id);
 		item.setItemType(from.getItemType());
 		item.setType(from.getType());
 		item.setName(from.getName());
 		item.setAttr(from.getAttr());
-		item.setBbox(Bbox.copyValues(from.getBbox(), to.getBbox()));
-		item.setSummary(Summary.copyValues(from.getSummary(), to.getSummary()));
+		item.setBbox(Bbox.copyValues(from.getBbox(), toBbox));
+		item.setSummary(Summary.copyValues(from.getSummary(), toSummary));
 		item.setRibbonable(from.isRibbonable());
 		item.setShowChildren(from.isShowChildren());
 		item.setEnabled(from.isEnabled());
