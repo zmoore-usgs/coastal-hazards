@@ -128,7 +128,7 @@ public class SLDGenerator {
 	}
 
 	public Response generateSLDInfo() {
-		Map<String, Object> sldInfo = new LinkedHashMap<>();
+		Map<String, Object> sldInfo = new LinkedHashMap<>(1);
 		sldInfo.put("title", this.item.getSummary().getTiny().getText());
 		sldInfo.put("units", this.config.getUnits());
 		sldInfo.put("style", this.config.getStyle());
