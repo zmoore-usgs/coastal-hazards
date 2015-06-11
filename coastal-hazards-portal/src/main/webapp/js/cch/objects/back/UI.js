@@ -21,11 +21,6 @@ CCH.Objects.Back.UI = function (args) {
 	
 	me.init = function (args) {
 		var $metadataButton = $('#metadata-link-button'),
-			$infoButton = $('#application-info-button'),
-			$downloadDataButton = $('#download-link-button'),
-			$applicationButton = $('#application-link-button'),
-			$addToBucketButton = $('#add-bucket-link-button'),
-			$computeAnalysisButton = $('#analysis-link-button'),
 			$qrImage = $('#qr-code-img'),
 			$infoTitle = $('#info-title'),
 			$infoSummary = $('#info-summary'),
@@ -36,18 +31,23 @@ CCH.Objects.Back.UI = function (args) {
 			item = args.item;
 	
 		me.$mapServicesButton = $('#map-services-link-button');
-	
+		me.$downloadDataButton = $('#download-link-button');
+		me.$printFormWrapper = $('#print-route-form');
+		me.$infoButton = $('#application-info-button');
+		me.$applicationButton = $('#application-link-button');
+		me.$addToBucketButton = $('#add-bucket-link-button');
+		me.$computeAnalysisButton = $('#analysis-link-button');
 		me.serviceTemplate = null; // Lazy loaded
 
-		$infoButton.on('click', function () {
+		me.$infoButton.on('click', function () {
 			window.location.href = CCH.CONFIG.contextPath + '/info/#helpModal';
 		});
 		
-		$applicationButton.on('click', function () {
+		me.$applicationButton.on('click', function () {
 			window.location.href = CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId;
 		});
 
-		$downloadDataButton.on('click', function () {
+		me.$downloadDataButton.on('click', function () {
 			var cacheError = function () {
 				alertify.error(CCH.CONFIG.data.messages.cacheInterrogationError);
 			};
@@ -68,16 +68,16 @@ CCH.Objects.Back.UI = function (args) {
 			CCH.Util.Util.interrogateDownloadCache(cacheError, cacheHit, CCH.CONFIG.itemId);
 		});
 		
-		$addToBucketButton.on('click', function () {
+		me.$addToBucketButton.on('click', function (evt) {
 			CCH.session.addItem({
 				item: item,
 				visible: true
 			});
-			$addToBucketButton.addClass('disabled');
+			$(evt.target).addClass('disabled');
 			alertify.log('Item added to bucket!');
 		});
 		
-		$computeAnalysisButton.on('click', function () {
+		me.$computeAnalysisButton.on('click', function () {
 			alertify.log('Not yet.');
 		});
 
@@ -295,7 +295,9 @@ CCH.Objects.Back.UI = function (args) {
 		});
 		
 		if (!CCH.CONFIG.item.services.length && !childMapServiceEnabled) {
-			this.$mapServicesButton.addClass('hidden');
+			[this.$mapServicesButton, this.$printFormWrapper, this.$downloadDataButton].each(function ($i) {
+				$i.addClass('hidden');
+			});
 		}
 		
 		Handlebars.registerHelper('list_translation', function (serviceType) {
