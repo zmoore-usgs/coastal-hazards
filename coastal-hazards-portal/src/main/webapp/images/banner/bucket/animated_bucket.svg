@@ -44,7 +44,10 @@
 							}
 								
 							function triggerBucketOnClick() {
-								window.parent.dispatchEvent(new Event('app-navbar-button-clicked'));
+								// http://stackoverflow.com/a/9714717
+								var event = document.createEvent("HTMLEvents");
+								event.initEvent('app-navbar-button-clicked', true, false);
+								window.parent.dispatchEvent(event);
 							}	
 							
 							function bucketDump(){
