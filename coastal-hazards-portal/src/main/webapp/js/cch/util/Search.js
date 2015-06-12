@@ -114,7 +114,7 @@ CCH.Util.Search = function (args) {
 			}
 		}
 
-		$.ajax({
+		var search = $.ajax({
 			url: url,
 			dataType: 'json',
 			data: data,
@@ -134,6 +134,8 @@ CCH.Util.Search = function (args) {
 				});
 			}
 		});
+
+		return search;
 	};
 
 	return {

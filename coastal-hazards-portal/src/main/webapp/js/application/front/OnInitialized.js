@@ -85,14 +85,15 @@ CCH.CONFIG.loadUberItem = function (args) {
 		new CCH.Objects.Item(data).loadFromData(data);
 	});
 
-	new CCH.Util.Search().submitItemSearch({
+	var search = CCH.Util.Search().submitItemSearch({
 		item: 'uber',
-		subtree: subtree,
-		callbacks: {
-			'success': callbacks.success,
-			'error': callbacks.error
-		}
+		subtree: subtree
 	});
+	
+	search.done(callbacks.success);
+	search.fail(callbacks.error);
+	
+	return search;
 };
 
 CCH.CONFIG.onAppInitialize = function () {
@@ -129,9 +130,8 @@ CCH.CONFIG.onAppInitialize = function () {
 									'bbox': session.bbox,
 									'fromProjection': CCH.CONFIG.map.modelProjection
 								});
-							};
-							$(window).on('cch.ui.resized', resizeHandler);
-							$(window).on('cch.ui.overlay.removed', function () {
+							},
+							manipulateBucketOpening = function () {
 								// User is coming in with a view (from a shared bucket)
 								// so open the bucket when the app is finished loading.
 								// Only do this if bucket has items in it
@@ -150,7 +150,10 @@ CCH.CONFIG.onAppInitialize = function () {
 									$(document).on(CCH.ui.bucket.bucketLoadEvent, openBucketFunction);
 								}
 								
-							});
+							};
+							
+							$(window).on('cch.ui.resized', resizeHandler);
+							$(window).on('cch.ui.overlay.removed', manipulateBucketOpening);
 							
 							CCH.ui.addItemsToBucketOnLoad(items);
 
@@ -168,14 +171,9 @@ CCH.CONFIG.onAppInitialize = function () {
 							CCH.CONFIG.loadUberItem({
 								zoomToUberBbox: true,
 								subtree: true,
-								overridePreviousBbox: false,
-								callbacks: {
-									success: [
-										function () {
-											alertify.error('The Coastal Change Hazards Portal could not find your session.', 6000);
-										}
-									]
-								}
+								overridePreviousBbox: false
+							}).done(function () {
+								alertify.error('The Coastal Change Hazards Portal could not find your session.', 6000);
 							});
 
 							ga('send', 'exception', {
