@@ -252,24 +252,24 @@ CCH.CONFIG.onAppInitialize = function () {
 	} else {
 		// The user is not coming in from a view and is not viewing an item.
 		CCH.ui.addItemsToBucketOnLoad(sessionItems);
-		if (CCH.CONFIG.referer.indexOf("/info") === -1) {
-			// The user is initially loading the application. I do not have any items or views
-			// to load, nor do I have any session to load, so just start with the top level item
-			CCH.CONFIG.loadUberItem({
-				subtree: true,
-				zoomToUberBbox: true,
-				overridePreviousBounds: true
-			});
-		} else {
+		
+		// The user is initially loading the application. I do not have any items or views
+		// to load, nor do I have any session to load, so just start with the top level item
+		// and no pre-defined zoom level
+		var doNotUsePreviousBounds = true;
+		
+		if (CCH.CONFIG.referer.indexOf("/info") !== -1) {
 			// The user is coming in from the info page so it is possible that they
 			// have a bounding box in their cache. If so, jump to that. 
 			// If there isn't anything in the session, uber bbox will be used anyway
-			CCH.CONFIG.loadUberItem({
-				subtree: true,
-				zoomToUberBbox: true,
-				overridePreviousBounds: false
-			});
+			doNotUsePreviousBounds = false;
 		}
+		
+		CCH.CONFIG.loadUberItem({
+			subtree: true,
+			zoomToUberBbox: true,
+			overridePreviousBounds: doNotUsePreviousBounds
+		});
 
 		ga('send', 'event', {
 			'eventCategory': 'load',
