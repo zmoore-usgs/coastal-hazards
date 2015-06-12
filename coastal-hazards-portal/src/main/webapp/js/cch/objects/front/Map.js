@@ -202,7 +202,6 @@ CCH.Objects.Front.Map = function (args) {
 			CCH.LOG.debug('Map.js::init():Building map object');
 			me.map = new OpenLayers.Map(me.mapDivId, {
 				projection: me.mapProjection,
-				initialExtent: me.initialExtent,
 				displayProjection: me.displayProjection,
 				tileManager : new CCH.Objects.FixedTileManager({
 					maps : [me.map]
@@ -302,12 +301,13 @@ CCH.Objects.Front.Map = function (args) {
 			args = args || {};
 			var bbox = args.bbox,
 				fromProjection = args.fromProjection || me.displayProjection,
-				layerBounds = OpenLayers.Bounds.fromArray(bbox);
+				layerBounds = OpenLayers.Bounds.fromArray(bbox),
+				attemptClosest = args.attemptCloses || false;
 
 			if (fromProjection) {
 				layerBounds.transform(new OpenLayers.Projection(fromProjection), me.displayProjection);
 			}
-			me.map.zoomToExtent(layerBounds, false);
+			me.map.zoomToExtent(layerBounds, attemptClosest);
 		},
 		zoomToActiveLayers: function () {
 			var activeLayers = me.getLayersBy('type', 'cch'),

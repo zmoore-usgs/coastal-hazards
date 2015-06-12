@@ -15,16 +15,18 @@ CCH.CONFIG.loadUberItem = function (args) {
 	"use strict";
 	args = args || {};
 
-	var zoomToBbox = args.zoomToBbox === true ? true : false,
+	// Will the application zoom to the bounding box of uber? 
+	var zoomToUberBbox = args.zoomToUberBbox === true ? true : false,
+		// This will override the zoomToUberBbox setting 
+		overridePreviousBounds = args.overridePreviousBounds,
 		// Do I load the entire item with all its children? 
 		subtree = args.subtree || false,
-		overridePreviousBounds = args.overridePreviousBounds,
 		callbacks = {};
 		
-		$.extend(true, callbacks, args.callbacks, {
-			success: [],
-			error: []
-		});
+	$.extend(true, callbacks, args.callbacks, {
+		success: [],
+		error: []
+	});
 
 	if (callbacks.error) {
 		callbacks.error.unshift(CCH.ui.errorResponseHandler);
@@ -55,11 +57,19 @@ CCH.CONFIG.loadUberItem = function (args) {
 					if (CCH.session.getSession().center && !overridePreviousBounds) {
 						// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
 						CCH.map.updateFromSession();
-					} else if (zoomToBbox) {
+					} else if (zoomToUberBbox) {
 						CCH.map.zoomToBoundingBox({
 							bbox: data.bbox,
-							fromProjection: CCH.CONFIG.map.modelProjection
+							fromProjection: CCH.CONFIG.map.modelProjection,
+							attemptClosest : true
 						});
+					} else {
+						// User is loading the app fresh and we want to zoom to the 
+						// lower 48 (or get as close as possible). The OL docs mention
+						// that setting the second argument to true (getting as close
+						// as possible) may be problematic though I have not seen
+						// this to be the case so I am leaving it for now.
+						CCH.map.getMap().zoomToExtent(CCH.map.initialExtent, true);
 					}
 				};
 				$(window).on('cch.ui.resized', resizeHandler);
@@ -104,8 +114,6 @@ CCH.CONFIG.onAppInitialize = function () {
 	if (viewType) {
 		// User is coming in with either an item or a view, check which
 		if (viewType === 'view') {
-			splashUpdate("Loading View...");
-
 			// Begin by trying to load the session from the incoming url
 			CCH.session.load({
 				sid: CCH.CONFIG.params.id,
@@ -147,7 +155,7 @@ CCH.CONFIG.onAppInitialize = function () {
 							CCH.ui.addItemsToBucketOnLoad(items);
 
 							CCH.CONFIG.loadUberItem({
-								zoomToBbox: false,
+								zoomToUberBbox: false,
 								subtree: true,
 								overridePreviousBbox: true
 							});
@@ -158,7 +166,7 @@ CCH.CONFIG.onAppInitialize = function () {
 							// The session couldn't be loaded for whatever reason
 							// so just load the top level item and move forward
 							CCH.CONFIG.loadUberItem({
-								zoomToBbox: true,
+								zoomToUberBbox: true,
 								subtree: true,
 								overridePreviousBbox: false,
 								callbacks: {
@@ -204,7 +212,7 @@ CCH.CONFIG.onAppInitialize = function () {
 						
 						$(window).on('cch.ui.resized', function () {
 							CCH.map.zoomToBoundingBox({
-								'bbox': CCH.items.getById({id:id}).bbox,
+								'bbox': CCH.items.getById({ id : id }).bbox,
 								'fromProjection': CCH.CONFIG.map.modelProjection.projCode
 							});
 						});
@@ -231,7 +239,7 @@ CCH.CONFIG.onAppInitialize = function () {
 
 			CCH.CONFIG.loadUberItem({
 				subtree: true,
-				zoomToBbox: true,
+				zoomToUberBbox: true,
 				overridePreviousBounds: false
 			});
 
@@ -242,15 +250,26 @@ CCH.CONFIG.onAppInitialize = function () {
 			});
 		}
 	} else {
-		// The user is initially loading the application. I do not have any items or views
-		// to load, nor do I have any session to load, so just start with the top level item
+		// The user is not coming in from a view and is not viewing an item.
 		CCH.ui.addItemsToBucketOnLoad(sessionItems);
-
-		CCH.CONFIG.loadUberItem({
-			subtree: true,
-			zoomToBbox: true,
-			overridePreviousBounds: false
-		});
+		if (CCH.CONFIG.referer.indexOf("/info") === -1) {
+			// The user is initially loading the application. I do not have any items or views
+			// to load, nor do I have any session to load, so just start with the top level item
+			CCH.CONFIG.loadUberItem({
+				subtree: true,
+				zoomToUberBbox: true,
+				overridePreviousBounds: true
+			});
+		} else {
+			// The user is coming in from the info page so it is possible that they
+			// have a bounding box in their cache. If so, jump to that. 
+			// If there isn't anything in the session, uber bbox will be used anyway
+			CCH.CONFIG.loadUberItem({
+				subtree: true,
+				zoomToUberBbox: true,
+				overridePreviousBounds: false
+			});
+		}
 
 		ga('send', 'event', {
 			'eventCategory': 'load',

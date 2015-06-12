@@ -1,3 +1,4 @@
+<%@page import="javax.ws.rs.core.MultivaluedMap"%>
 <%@page import="java.io.File"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -38,7 +39,6 @@
 	if (requestUrl.toLowerCase().contains("https")) {
 		baseUrlJndiString = secureBaseUrlJndiString;
 	}
-	
 	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
 	String relPath = baseUrl + "/";
 	String referer = request.getHeader("referer");
@@ -122,6 +122,7 @@
 			<jsp:param name="idType" value="${it.type}" /> 
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
 			<jsp:param name="version" value="<%=version%>" /> 
+			<jsp:param name="referer" value="<%=referer%>" /> 
 		</jsp:include>
 		<jsp:include page="/js/log4javascript/log4javascript.jsp">
 			<jsp:param name="relPath" value="<%=relPath%>" /> 

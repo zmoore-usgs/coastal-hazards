@@ -17,7 +17,6 @@ CCH.Objects.Widget = CCH.Objects.Widget || {};
  */
 CCH.Objects.Widget.CombinedSearch = function (args) {
 	"use strict";
-	splashUpdate("Initializing Search Subsystem...");
 	CCH.LOG.trace('CCH.Objects.Widget.CombinedSearch::constructor: CombinedSearch class is initializing.');
 
 	var me = (this === window) ? {} : this;

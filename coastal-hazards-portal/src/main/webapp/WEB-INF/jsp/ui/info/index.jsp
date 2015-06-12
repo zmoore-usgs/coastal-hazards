@@ -50,11 +50,9 @@
 			<div id="content">
 				<%-- Back To Portal Button --%>
 				<div id="title">
-					<a id="cch-back-to-portal-button" href="<%=baseUrl%>">
-						<div id="close">
-							<p>Return to Portal</p>
-						</div>
-					</a>
+					<form action="<%=baseUrl%>">
+						<button id="cch-back-to-portal-button" type="submit">Return to Portal</button>
+					</form>
 				</div>
 
 				<%-- Portal Description --%>
