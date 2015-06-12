@@ -56,6 +56,7 @@
 		items : [],
 		CONFIG: {
 			version : '${param.version}',
+			referer : '${param.referer}',
 			item : null,
 			development: <%= development%>,
 			ajaxTimeout: 300000,

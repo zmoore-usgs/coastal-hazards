@@ -10,7 +10,6 @@
 $(document).ready(function () {
 	"use strict";
 	try {
-		splashUpdate("Initializing Logging...");
 		initializeLogging({
 			LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
 		});
@@ -27,21 +26,16 @@ $(document).ready(function () {
 			$('body').css('cursor', 'default');
 		});
 
-		splashUpdate("Initializing Session Subsystem...");
 		CCH.session = new CCH.Objects.Session();
 
-		splashUpdate("Initializing Map...");
 		CCH.map = new CCH.Objects.Front.Map({
 			mapDiv: 'map'
 		}).init();
 
-		splashUpdate("Initializing OWS Services...");
 		CCH.ows = new CCH.Util.OWS().init();
 
-		splashUpdate("Initializing Items...");
 		CCH.items = new CCH.Objects.Items();
 
-		splashUpdate("Initializing UI...");
 		CCH.ui = CCH.Objects.Front.UI({
 			applicationOverlayId: 'application-overlay',
 			headerRowId: 'header-row',
