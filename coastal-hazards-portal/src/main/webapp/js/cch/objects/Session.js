@@ -128,31 +128,14 @@ CCH.Objects.Session = function (args) {
 		CCH.LOG.debug('Session.js::read');
 
 		var sid = args.sid,
-			callbacks = args.callbacks || {
-				success: [],
-				error: []
-			},
 			context = args.context;
 
 		if (sid) {
-			$.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint + sid, {
+			return $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint + sid, {
 				type: 'GET',
 				contentType: 'application/json;charset=utf-8',
 				dataType: 'json',
-				success: function (json, textStatus, jqXHR) {
-					if (callbacks.success && callbacks.success.length > 0) {
-						callbacks.success.each(function (callback) {
-							callback.call(context, json, textStatus, jqXHR);
-						});
-					}
-				},
-				error: function (data, textStatus, jqXHR) {
-					if (callbacks.error && callbacks.error.length > 0) {
-						callbacks.error.each(function (callback) {
-							callback.call(context, data, textStatus, jqXHR);
-						});
-					}
-				}
+				context : context
 			});
 		}
 	};
@@ -164,30 +147,32 @@ CCH.Objects.Session = function (args) {
 			callbacks = args.callbacks || {
 				success: [],
 				error: []
-			};
+			},
+			read = me.read({
+				sid: sid
+			});
+		
+		if (read) {
+			read.done(callbacks.success, function (json) {
+				if (json) {
+					CCH.LOG.info("Session.js::load: Session found on server. Updating current session.");
+					$.extend(true, me.session, json);
 
-		callbacks.success.unshift(function (json) {
-			if (json) {
-				CCH.LOG.info("Session.js::load: Session found on server. Updating current session.");
-				$.extend(true, me.session, json);
+					me.persistSession();
 
-				me.persistSession();
+					$(window).trigger('cch.data.session.loaded.true');
+				} else {
+					CCH.LOG.info("Session.js::load: Session not found on server.");
+					$(window).trigger('cch.data.session.loaded.false');
+				}
+			});
 
-				$(window).trigger('cch.data.session.loaded.true');
-			} else {
-				CCH.LOG.info("Session.js::load: Session not found on server.");
-				$(window).trigger('cch.data.session.loaded.false');
-			}
-		});
-
+			read.fail(callbacks.error);
+		}
+		
 		CCH.LOG.info("Session.js::load: Will try to load session '" + sid + "' from server");
-		me.read({
-			sid: sid,
-			callbacks: {
-				success: callbacks.success,
-				error: callbacks.error
-			}
-		});
+		
+		return read;
 	};
 
 	me.getItemById = function (id) {
