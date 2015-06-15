@@ -16,6 +16,7 @@
 		<version.jqueryui>1.10.4</version.jqueryui>
 		<version.handlebars>3.0.0-1</version.handlebars>
 		<version.jstree>3.0.9</version.jstree>
+		<version.introjs>1.0.0</version.introjs>
 		<gt.version>10.1</gt.version>
 	</properties>
 
@@ -229,6 +230,11 @@
 			<artifactId>jstree</artifactId>
 			<version>${version.jstree}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>intro.js</artifactId>
+			<version>${version.introjs}</version>
+		</dependency>
 
 		<!-- QR Generation --> 
 		<dependency>
@@ -276,6 +282,7 @@
 					<outputDirectory>${project.basedir}/src/main/webapp/css</outputDirectory>
 					<excludes>
 						<exclude>
+							
 							webjars/META-INF/resources/webjars/bootstrap/${version.bootstrap}/less/*.less
 						</exclude>
 					</excludes>
@@ -306,6 +313,7 @@
 					<excludes>
 						<exclude>**/js/third-party/</exclude>
 						<exclude>**/less/webjars/</exclude>
+						<exclude>**/intro.js/</exclude>
 					</excludes>
 				</configuration>  
 			</plugin>

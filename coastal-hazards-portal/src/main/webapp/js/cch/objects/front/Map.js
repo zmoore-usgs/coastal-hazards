@@ -344,7 +344,7 @@ CCH.Objects.Front.Map = function (args) {
 			];
 			session.scale = map.getScale();
 			session.bbox = map.getExtent().transform(CCH.map.getMap().displayProjection, CCH.CONFIG.map.modelProjection).toArray();
-			return true;
+			return session;
 		},
 		/**
 		 * Updates the map based on the information contained in the session object
