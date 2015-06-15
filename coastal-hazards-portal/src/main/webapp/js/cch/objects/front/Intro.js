@@ -12,7 +12,7 @@ CCH.intro = (function () {
 				highlightClass : 'half-opacity'
 			},
 			{
-				element: '#panel-heading-DEufAojr',
+				element: '.panel:nth-child(1)',
 				intro: 'This is an item',
 				position: 'bottom'
 			}
