@@ -135,7 +135,6 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 
 		var criteria = args.criteria + String(),
 				types = args.types,
-				callbacks = args.callbacks,
 				bbox = null,
 				scope = args.scope || me;
 
@@ -143,17 +142,16 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 			bbox = CCH.map.getMap().
 					getExtent().
 					transform(
-							CCH.map.getMap().displayProjection,
-							CCH.CONFIG.map.modelProjection).
+						CCH.map.getMap().displayProjection,
+						CCH.CONFIG.map.modelProjection).
 					toArray().
 					join(',');
 		}
 
-		me.search.submitItemSearch({
+		return me.search.submitItemSearch({
 			criteria: criteria,
 			scope: scope,
 			bbox: bbox,
-			callbacks: callbacks,
 			types: types
 		});
 	};
@@ -221,46 +219,40 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 					}
 				});
 
+				var itemSearchSuccess = function (data, status) {
+					if (status === 'success') {
+						CCH.LOG.info('CCH.Objects.Widget.CombinedSearch:: Item search has completed successfully');
+						$(me).trigger('combined-searchbar-search-performed', {
+							'type': 'item',
+							'data': data,
+							'criteria': me.getCriteria()
+						});
+					} else {
+						CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Item search could not complete items search');
+					}
+				};
+				
+				var itemSearchFail = function (jqXHR, textStatus, errorThrown) {
+					CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Item search could not complete items search:' + errorThrown);
+					$(me).trigger('combined-searchbar-search-performed', {
+						'type': 'item',
+						'data': {
+							'products': []
+						},
+						'criteria': me.getCriteria()
+					});
+					ga('send', 'exception', {
+						'exDescription': 'ItemSearchFailed',
+						'exFatal': false
+					});
+				};
+
 				me.performItemSearch({
 					scope: me,
 					types: itemsArray,
 					criteria: criteria,
-					count: count,
-					callbacks: {
-						success: [
-							me.hideSpinner,
-							function (data, status) {
-								if (status === 'success') {
-									CCH.LOG.info('CCH.Objects.Widget.CombinedSearch:: Item search has completed successfully');
-									$(me).trigger('combined-searchbar-search-performed', {
-										'type': 'item',
-										'data': data,
-										'criteria': me.getCriteria()
-									});
-								} else {
-									CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Item search could not complete items search');
-								}
-							}
-						],
-						error: [
-							me.hideSpinner,
-							function (jqXHR, textStatus, errorThrown) {
-								CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Item search could not complete items search:' + errorThrown);
-								$(me).trigger('combined-searchbar-search-performed', {
-									'type': 'item',
-									'data': {
-										'products': []
-									},
-									'criteria': me.getCriteria()
-								});
-								ga('send', 'exception', {
-									'exDescription': 'ItemSearchFailed',
-									'exFatal': false
-								});
-							}
-						]
-					}
-				});
+					count: count
+				}).then(itemSearchSuccess, itemSearchFail).always(me.hideSpinner);
 
 			} else if (type === allSpatialType) {
 				me.performSpatialSearch({
@@ -300,39 +292,29 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 					types = [type];
 				}
 
-				me.performItemSearch({
+				var search = me.performItemSearch({
 					scope: me,
 					types: types,
 					criteria: criteria,
-					count: args.count || 20,
-					callbacks: {
-						success: [
-							me.hideSpinner,
-							function (data, status) {
-								if (status === 'success') {
-									CCH.LOG.info('CCH.Objects.Widget.CombinedSearch:: Item search has completed successfully');
-									$(me).trigger('combined-searchbar-search-performed', {
-										'type': 'item',
-										'data': data,
-										'criteria': me.getCriteria()
-									});
-								} else {
-									CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Item search could not complete items search');
-								}
-							}
-						],
-						error: [
-							me.hideSpinner,
-							function (jqXHR, textStatus, errorThrown) {
-								CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Item search could not complete items search:' + errorThrown);
-								ga('send', 'exception', {
-									'exDescription': 'ItemSearchFailed',
-									'exFatal': false
-								});
-							}
-						]
+					count: args.count || 20
+				}),
+				searchSucceeded = function (data, status) {
+					if (status === 'success') {
+						CCH.LOG.info('CCH.Objects.Widget.CombinedSearch:: Item search has completed successfully');
+						$(me).trigger('combined-searchbar-search-performed', {
+							'type': 'item',
+							'data': data,
+							'criteria': me.getCriteria()
+						});
+					} else {
+						CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Item search could not complete items search');
 					}
-				});
+				},
+				searchFailed = function (jqXHR, textStatus, errorThrown) {
+					CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Item search could not complete items search:' + errorThrown);
+				};
+				
+				search.then(searchSucceeded, searchFailed).always(me.hideSpinner);
 			}
 		} else {
 			CCH.LOG.debug('CCH.Objects.Widget.CombinedSearch:: Missing criteria');

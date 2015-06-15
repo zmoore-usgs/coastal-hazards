@@ -21,78 +21,66 @@ CCH.CONFIG.loadUberItem = function (args) {
 		overridePreviousBounds = args.overridePreviousBounds,
 		// Do I load the entire item with all its children? 
 		subtree = args.subtree || false,
-		callbacks = {};
-		
-	$.extend(true, callbacks, args.callbacks, {
-		success: [],
-		error: []
-	});
+		search = CCH.Util.Search().submitItemSearch({
+			item: 'uber',
+			subtree: subtree
+		}),
+		searchSuccessHandler = function (data) {
+			$(window).on('cch.item.loaded', function (evt, obj) {
+				var item;
 
-	if (callbacks.error) {
-		callbacks.error.unshift(CCH.ui.errorResponseHandler);
-	}
-	
-	callbacks.success.unshift(function (data) {
-		$(window).on('cch.item.loaded', function (evt, obj) {
-			var item;
+				// If the incoming item is the uber item, that means that by now, everything under it has been
+				// fully hydrated, so I can now add sub items to the accordion and remove the overlay
+				if (obj.id === 'uber') {
+					data.children.each(function (id, index) {
+						item = CCH.items.getById({id: id});
 
-			// If the incoming item is the uber item, that means that by now, everything under it has been
-			// fully hydrated, so I can now add sub items to the accordion and remove the overlay
-			if (obj.id === 'uber') {
-				data.children.each(function (id, index) {
-					item = CCH.items.getById({id: id});
-
-					// Add it to the accordion...
-					CCH.ui.accordion.addCard({
-						item: item,
-						index: index
-					});
-					item = CCH.items.getById({id: id});
-				});
-
-				var resizeHandler = function () {
-					// Unbind this one-time function
-					$(window).off('cch.ui.resized', resizeHandler);
-					// Is the user coming in from another part of the application?
-					if (CCH.session.getSession().center && !overridePreviousBounds) {
-						// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
-						CCH.map.updateFromSession();
-					} else if (zoomToUberBbox) {
-						CCH.map.zoomToBoundingBox({
-							bbox: data.bbox,
-							fromProjection: CCH.CONFIG.map.modelProjection,
-							attemptClosest : true
+						// Add it to the accordion...
+						CCH.ui.accordion.addCard({
+							item: item,
+							index: index
 						});
-					} else {
-						// User is loading the app fresh and we want to zoom to the 
-						// lower 48 (or get as close as possible). The OL docs mention
-						// that setting the second argument to true (getting as close
-						// as possible) may be problematic though I have not seen
-						// this to be the case so I am leaving it for now.
-						CCH.map.getMap().zoomToExtent(CCH.map.initialExtent, true);
-					}
-				};
-				$(window).on('cch.ui.resized', resizeHandler);
-				$(window).resize();
-				$(window).trigger('cch.item.loaded.all');
-				splashUpdate("Starting Application...");
-				CCH.ui.removeOverlay();
-				$(window).off('cch.app.initialized', CCH.CONFIG.onAppInitialize); // Remove handler
-				delete CCH.CONFIG.onAppInitialize; // no longer needed
-			}
-		});
+						item = CCH.items.getById({id: id});
+					});
+
+					var resizeHandler = function () {
+						// Unbind this one-time function
+						$(window).off('cch.ui.resized', resizeHandler);
+						// Is the user coming in from another part of the application?
+						if (CCH.session.getSession().center && !overridePreviousBounds) {
+							// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
+							CCH.map.updateFromSession();
+						} else if (zoomToUberBbox) {
+							CCH.map.zoomToBoundingBox({
+								bbox: data.bbox,
+								fromProjection: CCH.CONFIG.map.modelProjection,
+								attemptClosest : true
+							});
+						} else {
+							// User is loading the app fresh and we want to zoom to the 
+							// lower 48 (or get as close as possible). The OL docs mention
+							// that setting the second argument to true (getting as close
+							// as possible) may be problematic though I have not seen
+							// this to be the case so I am leaving it for now.
+							CCH.map.getMap().zoomToExtent(CCH.map.initialExtent, true);
+						}
+					};
+					$(window).on('cch.ui.resized', resizeHandler);
+					$(window).resize();
+					$(window).trigger('cch.item.loaded.all');
+					splashUpdate("Starting Application...");
+					CCH.ui.removeOverlay();
+					$(window).off('cch.app.initialized', CCH.CONFIG.onAppInitialize); // Remove handler
+					delete CCH.CONFIG.onAppInitialize; // no longer needed
+				}
+			});
 
 		new CCH.Objects.Item(data).loadFromData(data);
-	});
-
-	new CCH.Util.Search().submitItemSearch({
-		item: 'uber',
-		subtree: subtree,
-		callbacks: {
-			'success': callbacks.success,
-			'error': callbacks.error
-		}
-	});
+	};
+	
+	search.then(searchSuccessHandler, CCH.ui.errorResponseHandler);
+	
+	return search;
 };
 
 CCH.CONFIG.onAppInitialize = function () {
@@ -129,9 +117,8 @@ CCH.CONFIG.onAppInitialize = function () {
 									'bbox': session.bbox,
 									'fromProjection': CCH.CONFIG.map.modelProjection
 								});
-							};
-							$(window).on('cch.ui.resized', resizeHandler);
-							$(window).on('cch.ui.overlay.removed', function () {
+							},
+							manipulateBucketOpening = function () {
 								// User is coming in with a view (from a shared bucket)
 								// so open the bucket when the app is finished loading.
 								// Only do this if bucket has items in it
@@ -150,7 +137,10 @@ CCH.CONFIG.onAppInitialize = function () {
 									$(document).on(CCH.ui.bucket.bucketLoadEvent, openBucketFunction);
 								}
 								
-							});
+							};
+							
+							$(window).on('cch.ui.resized', resizeHandler);
+							$(window).on('cch.ui.overlay.removed', manipulateBucketOpening);
 							
 							CCH.ui.addItemsToBucketOnLoad(items);
 
@@ -168,14 +158,9 @@ CCH.CONFIG.onAppInitialize = function () {
 							CCH.CONFIG.loadUberItem({
 								zoomToUberBbox: true,
 								subtree: true,
-								overridePreviousBbox: false,
-								callbacks: {
-									success: [
-										function () {
-											alertify.error('The Coastal Change Hazards Portal could not find your session.', 6000);
-										}
-									]
-								}
+								overridePreviousBbox: false
+							}).done(function () {
+								alertify.error('The Coastal Change Hazards Portal could not find your session.', 6000);
 							});
 
 							ga('send', 'exception', {
@@ -252,24 +237,24 @@ CCH.CONFIG.onAppInitialize = function () {
 	} else {
 		// The user is not coming in from a view and is not viewing an item.
 		CCH.ui.addItemsToBucketOnLoad(sessionItems);
-		if (CCH.CONFIG.referer.indexOf("/info") === -1) {
-			// The user is initially loading the application. I do not have any items or views
-			// to load, nor do I have any session to load, so just start with the top level item
-			CCH.CONFIG.loadUberItem({
-				subtree: true,
-				zoomToUberBbox: true,
-				overridePreviousBounds: true
-			});
-		} else {
+		
+		// The user is initially loading the application. I do not have any items or views
+		// to load, nor do I have any session to load, so just start with the top level item
+		// and no pre-defined zoom level
+		var doNotUsePreviousBounds = true;
+		
+		if (CCH.CONFIG.referer.indexOf("/info") !== -1) {
 			// The user is coming in from the info page so it is possible that they
 			// have a bounding box in their cache. If so, jump to that. 
 			// If there isn't anything in the session, uber bbox will be used anyway
-			CCH.CONFIG.loadUberItem({
-				subtree: true,
-				zoomToUberBbox: true,
-				overridePreviousBounds: false
-			});
+			doNotUsePreviousBounds = false;
 		}
+		
+		CCH.CONFIG.loadUberItem({
+			subtree: true,
+			zoomToUberBbox: true,
+			overridePreviousBounds: doNotUsePreviousBounds
+		});
 
 		ga('send', 'event', {
 			'eventCategory': 'load',

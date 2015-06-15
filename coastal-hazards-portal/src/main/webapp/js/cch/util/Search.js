@@ -114,7 +114,7 @@ CCH.Util.Search = function (args) {
 			}
 		}
 
-		$.ajax({
+		var search = $.ajax({
 			url: url,
 			dataType: 'json',
 			data: data,
@@ -134,6 +134,28 @@ CCH.Util.Search = function (args) {
 				});
 			}
 		});
+		
+		var gaSuccess = function () {
+			if (window.ga) {
+				ga('send', 'event', {
+					'eventCategory': 'search',
+					'eventAction': 'ItemSearchSucceeded'
+				});
+			}
+		};
+		
+		var gaFail = function () {
+			if (window.ga) {
+				ga('send', 'exception', {
+					'exDescription': 'ItemSearchFailed',
+					'exFatal': false
+				});
+			}
+		};
+		
+		search.then(gaSuccess, gaFail);
+		
+		return search;
 	};
 
 	return {

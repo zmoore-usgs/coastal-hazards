@@ -18,7 +18,16 @@ CCH.Objects.Bucket = function (args) {
 	me.MARGIN_WIDTH = 0;
 	me.bucket = [];
 	me.bucketContainer = document.getElementById('animated-bucket-object');
-	me.bucketSVG = me.bucketContainer.getSVGDocument();
+	me.bucketSVG = null;
+	
+	try {
+		me.bucketSVG = me.bucketContainer.getSVGDocument();
+	} catch (err) {
+		// This is a fix primarily for Internet Explorer 9 and its issues with 
+		// loading SVGs. It fires an exception on .getSVGDocument() and seems to 
+		// load it down the line (in the .onload() event). http://i.imgur.com/gyYuele.png
+		CCH.LOG.debug("SVG loading issue encountered. Can probably keep going");
+	}
 	
 	// Depending on the browser, the bucket SVG may be loaded at this time
 	if (me.bucketSVG) {
