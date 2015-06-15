@@ -67,24 +67,23 @@ CCH.Objects.Session = function (args) {
 
 	me.update = function (args) {
 		CCH.LOG.trace('Session.js::update');
+		
+		CCH.map.updateSession()
 
-		if (CCH.map.updateSession()) {
+		args = args || {};
 
-			args = args || {};
+		var itemid = args.itemid,
+			visible = args.visible,
+			itemIndex;
 
-			var itemid = args.itemid,
-				visible = args.visible,
-				itemIndex;
-
-			itemIndex = me.getItemIndex({
-				id: itemid
-			});
-			if (itemIndex !== -1) {
-				me.session.items[itemIndex].visible = visible;
-			}
-
-			me.persistSession();
+		itemIndex = me.getItemIndex({
+			id: itemid
+		});
+		if (itemIndex !== -1) {
+			me.session.items[itemIndex].visible = visible;
 		}
+
+		me.persistSession();
 	};
 	
 	me.write = function (args) {
