@@ -1,8 +1,7 @@
 /*global CCH*/
-/*global splashUpdate*/
 /*global alertify*/
 /*global ga*/
-window.CCH = CCH || {};
+window.CCH = (window.CCH === undefined ) ? {} : window.CCH;
 CCH.CONFIG = CCH.CONFIG || {};
 
 /**
@@ -68,7 +67,7 @@ CCH.CONFIG.loadUberItem = function (args) {
 					$(window).on('cch.ui.resized', resizeHandler);
 					$(window).resize();
 					$(window).trigger('cch.item.loaded.all');
-					splashUpdate("Starting Application...");
+					CCH.splashUpdate("Starting Application...");
 					CCH.ui.removeOverlay();
 					$(window).off('cch.app.initialized', CCH.CONFIG.onAppInitialize); // Remove handler
 					delete CCH.CONFIG.onAppInitialize; // no longer needed

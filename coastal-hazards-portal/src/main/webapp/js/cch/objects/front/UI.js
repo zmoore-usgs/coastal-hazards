@@ -236,6 +236,8 @@ CCH.Objects.Front.UI = function (args) {
 			// For whatever reason, overlay didn't exist so just trigger that it was
 			$(window).trigger(removedTriggerNamespace);
 		}
+		delete CCH.splashUpdate;
+		delete CCH.splashAppend;
 	};
 
 	me.displayLoadingError = function (args) {
@@ -246,7 +248,6 @@ CCH.Objects.Front.UI = function (args) {
 			'?subject=Application Failed To Load Item (URL: ' +
 			window.location.toString() + ' Error: ' + errorThrown + ')',
 			splashMessage = args.splashMessage,
-			status = args.status,
 			continueLink = $('<a />').attr({
 			'href': CCH.CONFIG.contextPath,
 			'role': 'button'
@@ -266,9 +267,9 @@ CCH.Objects.Front.UI = function (args) {
 			'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
 			'Either try to reload the application or let us know that this happened.</div>';
 
-		splashUpdate(splashMessage);
-		splashAppend($('<span />').append(continueLink));
-		splashAppend(emailLink);
+		CCH.splashUpdate(splashMessage);
+		CCH.splashAppend($('<span />').append(continueLink));
+		CCH.splashAppend(emailLink);
 		$('.splash-spinner').remove();
 	};
 

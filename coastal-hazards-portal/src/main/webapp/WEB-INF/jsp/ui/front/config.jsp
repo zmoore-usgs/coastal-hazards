@@ -49,7 +49,9 @@
 <script type="text/javascript">
 	OpenLayers.ProxyHost = 'geoserver/';
 	
-	var CCH = {
+	window.CCH = (window.CCH === undefined ? {} : window.CCH);
+	
+	$.extend(CCH, {
 		Objects : {
 			Front : {}
 		},
@@ -177,7 +179,7 @@
 				'storm_track_attributes' : [<%=stormTrackAttrs%>]
 			}
 		}
-	};
+	});
 	
 	// Update the config object with possible
 	(function () {

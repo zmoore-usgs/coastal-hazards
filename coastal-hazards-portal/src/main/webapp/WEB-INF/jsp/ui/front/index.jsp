@@ -50,6 +50,18 @@
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
 		</jsp:include>
 		<title>USGS Coastal Change Hazards Portal</title>
+	
+		<%-- We do not support Internet Explorer at versions below 9 --%>
+		<script type="text/javascript">
+			/* This application does not support <IE9 - Stop early if <IE9*/
+			if (navigator.appName === 'Microsoft Internet Explorer') {
+				var ua = navigator.userAgent;
+				if (ua.toLowerCase().indexOf('msie 6') !== -1 || ua.toLowerCase().indexOf('msie 7') !== -1 || ua.toLowerCase().indexOf('msie 8') !== -1) {
+					alert("We apologize, but this application does not support Internet Explorer versions lower than 9.0.\n\nOther supported browsers are Firefox, Chrome and Safari.");
+					window.open('http://windows.microsoft.com/en-us/internet-explorer/downloads/ie-9/worldwide-languages');
+				}
+			}
+		</script>
 
 		<%-- https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html --%>
 		<link rel="apple-touch-icon" sizes="57x57" href="<%=baseUrl%>/images/mobileIcons/iphone_usgs_57x57.jpg" />

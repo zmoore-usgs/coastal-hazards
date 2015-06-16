@@ -1,7 +1,6 @@
 /*jslint browser: true*/
 /*jslint plusplus: true */
 /*global $*/
-/*global splashUpdate*/
 /*global initializeLogging*/
 /*global CCH*/
 /*global LOG*/
@@ -60,7 +59,7 @@ $(document).ready(function () {
 
 		$(window).trigger('cch.app.initialized');
 	} catch (err) {
-		splashUpdate("There was a problem loading the page. Please try to reload or <a href='mailto:CCH_Help@usgs.gov?subject=Page%20Load%20Error&body=Error:%20" + err.stack + "%0D%0A%0D%0ADescribe%20what%20you%20were%20doing%20when%20this%20error%20occcurred:%20'>contact us</a>");
+		CCH.splashUpdate("There was a problem loading the page. Please try to reload or <a href='mailto:CCH_Help@usgs.gov?subject=Page%20Load%20Error&body=Error:%20" + err.stack + "%0D%0A%0D%0ADescribe%20what%20you%20were%20doing%20when%20this%20error%20occcurred:%20'>contact us</a>");
 		$('.splash-spinner').fadeOut();
 		console.log(err.stack);
 	}

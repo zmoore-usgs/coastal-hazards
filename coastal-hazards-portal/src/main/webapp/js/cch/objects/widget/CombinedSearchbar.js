@@ -1,7 +1,6 @@
 /* jslint browser: true */
 /* jslint plusplus: true */
 /* global $ */
-/* global splashUpdate */
 /* global CCH */
 /* global OpenLayers */
 

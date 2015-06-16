@@ -3,14 +3,13 @@
 /*global $*/
 /*global CCH*/
 /*global alertify*/
-/*global splashUpdate*/
 /*global OpenLayers*/
 
 /**
  * @param {type} args
  * @returns 
  */
-window.CCH = CCH || {};
+window.CCH = (window.CCH === undefined ) ? {} : window.CCH;
 CCH.Objects = CCH.Objects || {};
 CCH.Objects.Widget = CCH.Objects.Widget || {};
 CCH.Objects.Widget.BucketSlide = function (args) {
