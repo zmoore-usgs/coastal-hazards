@@ -13,17 +13,23 @@
 <%
 	String description = ifBlankThenDefaultString(request, "description", "USGS coastal change hazards research produces data, knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available here. They can be used to increase awareness and provide a basis for decision making.");
 %>
+<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
 <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes" /> 
+<meta name="application-name" content="The Coastal Change Hazards Portal" />
 <meta name="description" content="<%= StringEscapeUtils.escapeJavaScript(description) %>" />
 <meta name="author" content="Ivan Suftin, Tom Kunicki, Jordan Walker, Jordan Read, Carl Schroedl" />
 <meta name="keywords" content="${param.keywords}" />
 <meta name="publisher" content="${param.publisher}" />
-<meta name="country" content="USA" />
-<meta name="language" content="en" />
-<meta name="revised" content="${param.revised}" />
-<meta name="review" content="${param.review}" />
-<meta name="expires" content="never" />
+
+<%-- http://ogp.me/ --%>
+<meta property="og:title" content="The Coastal Change Hazards Portal" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="${param['baseUrl']}" />
+<meta property="og:image" content="${param['baseUrl']}/images/banner/cida-cmgp.svg" />
+<meta property="og:description" content="<%= StringEscapeUtils.escapeJavaScript(description) %>" />
+<meta property="og:locale" content="en_US" />
+
 <link rel="icon" href="${param['baseUrl']}/favicon.ico" type="image/x-icon" />
