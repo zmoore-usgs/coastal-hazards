@@ -178,6 +178,20 @@
 			}
 		}
 	};
+	
+	// Update the config object with possible
+	(function () {
+		var params = window.location.search.substring(1).split('&');
+		
+		$.each(params, function(idx, p) {
+			var k = p.split('=')[0].toLowerCase(),
+				v = p.split('=')[1];
+				
+			if (k && !CCH.CONFIG.params.hasOwnProperty(k) && k !== 'id' && k !== 'type') {
+				CCH.CONFIG.params[k] = v;
+			}
+		});
+	})();
 
 	JSON.stringify = JSON.stringify || function(obj) {
 		var t = typeof (obj);
