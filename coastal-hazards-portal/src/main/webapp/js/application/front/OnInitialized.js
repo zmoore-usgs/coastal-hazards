@@ -233,9 +233,30 @@ CCH.CONFIG.onAppInitialize = function () {
 				'eventAction': 'loadItem',
 				'eventLabel': '"' + id + '"'
 			});
+		}  else if (viewType === 'tour') {
+			var doNotUsePreviousBounds = true;
+			CCH.ui.addItemsToBucketOnLoad(sessionItems);
+			if (CCH.CONFIG.referer.indexOf("/info") !== -1) {
+				doNotUsePreviousBounds = false;
+			}
+			
+			CCH.CONFIG.loadUberItem({
+				subtree: true,
+				zoomToUberBbox: true,
+				overridePreviousBounds: doNotUsePreviousBounds
+			});
+			
+			ga('send', 'event', {
+				'eventCategory': 'load',
+				'eventAction': 'loadTour'
+			});
+			
+			$(window).on('cch.ui.overlay.removed', function () {
+				// The tour begins here
+				CCH.intro.start(CCH.CONFIG.params.id);
+			});
 		}
 	} else {
-		// The user is not coming in from a view and is not viewing an item.
 		CCH.ui.addItemsToBucketOnLoad(sessionItems);
 		
 		// The user is initially loading the application. I do not have any items or views

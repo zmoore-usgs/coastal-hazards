@@ -19,7 +19,8 @@ public class Identifier {
     public enum IdentifierType {
         VIEW,
         ITEM,
-        INFO;
+        INFO,
+		TOUR;
     }
     
     private String id;
