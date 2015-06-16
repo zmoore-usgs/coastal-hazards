@@ -17,7 +17,7 @@
 				<div id="application-overlay-description-container-title">Coastal Change Hazards Portal</div>
 				<div id="application-overlay-description-container-version">Version <%=request.getParameter("version")%></div>
 				<div class="application-overlay-description-container-spinner-container">
-					<img class="splash-spinner" src="<%=baseUrl%>/images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/><span class="splash-status-update"></span>
+					<img class="splash-spinner img-responsive" src="<%=baseUrl%>/images/spinner/spinner3.gif" alt="Spinner Image"/><span class="splash-status-update"></span>
 				</div>
 			</div>
 		</div>
@@ -25,7 +25,7 @@
 	<div id="application-subsequent-load-splash" class="<%= isOnSiteRequest ? "" : "hidden"%>">
 		<div class="application-overlay-content-wrap">
 			<div class="application-overlay-description-container-spinner-container">
-				<img class="splash-spinner" src="<%=baseUrl%>/images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
+				<img class="splash-spinner img-responsive" src="<%=baseUrl%>/images/spinner/spinner3.gif" alt="Spinner Image"/>
 				<span class="splash-status-update"></span>
 			</div>
 		</div>
@@ -33,14 +33,16 @@
 </div>
 
 <script type="text/javascript">
-    var splashUpdate = function(message) {
+	window.CCH = (window.CCH === undefined ? {} : window.CCH);
+	
+    window.CCH.splashUpdate = function(message) {
 		if('function' === typeof message.html){
 			message = message.html();
 		}
         $('.splash-status-update').html(message);
     };
-	var splashAppend = function(elements) {
+	window.CCH.splashAppend = function(elements) {
 		$('.splash-status-update').append(elements);
 	};
-	splashUpdate("Working...");
+	CCH.splashUpdate("Working...");
 </script>

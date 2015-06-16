@@ -2,7 +2,6 @@
 /*jslint plusplus: true */
 /*global $*/
 /*global CCH*/
-/*global splashUpdate*/
 
 window.CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
