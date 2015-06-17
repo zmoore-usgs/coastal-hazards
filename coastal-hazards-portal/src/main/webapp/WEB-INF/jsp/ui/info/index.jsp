@@ -158,7 +158,7 @@
 						</tbody>
 					</table>
 					<span class="descriptive-text-title">
-						<a name="helpModal">More Info Action Center Descriptions</a>
+						<a id="helpModal">More Info Action Center Descriptions</a>
 					</span>
 					<table id="application-icon-table-action" class="application-icon-table">
 						<thead>
