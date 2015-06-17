@@ -97,6 +97,7 @@
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
 			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/cida-cmgp.svg" %>' />
 		</jsp:include>
+		<%@ include file="../common/ie-check.jsp" %>
 		<title>USGS Coastal Change Hazards Portal - <%= item.getSummary().getMedium().getTitle()%></title>
 
 		<link rel="stylesheet" media="all" href="<%=baseUrl%>/css/back/print<%= resourceSuffix%>.css" />

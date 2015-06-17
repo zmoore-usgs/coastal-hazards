@@ -82,6 +82,7 @@
 			<jsp:param name="img_type" value='image/png' />
 			<jsp:param name="keywords" value='<%= item.getSummary().getKeywords().replaceAll("\\\\|", ", ") %>' />
 		</jsp:include>
+		<%@ include file="../common/ie-check.jsp" %>
 		<title>USGS Coastal Change Hazards Portal - <%= item.getSummary().getMedium().getTitle()%></title>
 
 		<link type="text/css" rel="stylesheet" media="all" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
