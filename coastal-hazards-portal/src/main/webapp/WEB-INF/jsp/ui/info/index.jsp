@@ -28,6 +28,7 @@
 	<head>
 		<jsp:include page="/WEB-INF/jsp/ui/common/meta-tags.jsp">
 			<jsp:param name="base-url" value="<%=baseUrl%>" />
+			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/cida-cmgp.svg" %>' />
 		</jsp:include>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
 		<title>Coastal Change Hazards Information</title>

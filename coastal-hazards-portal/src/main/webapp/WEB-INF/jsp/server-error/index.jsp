@@ -29,7 +29,9 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<jsp:include page="../ui/common/meta-tags.jsp"></jsp:include>
+		<jsp:include page="../ui/common/meta-tags.jsp">
+			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/cida-cmgp.svg" %>' />
+		</jsp:include>
 			<title>USGS Coastal Change Hazards Portal - Error Encountered</title>
 			<script type="text/javascript">
 				<jsp:include page="../ui/common/google-analytics.jsp" />
