@@ -10,6 +10,7 @@ import gov.usgs.cida.coastalhazards.Attributes;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.jpa.LayerManager;
+import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Layer;
@@ -17,6 +18,7 @@ import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.summary.Full;
 import gov.usgs.cida.coastalhazards.model.summary.Publication;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
+import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.coastalhazards.util.ogc.OGCService;
@@ -126,6 +128,12 @@ public class TemplateResource {
 			String mergeId = itemMan.merge(template);
 			if (mergeId != null) {
 				response = Response.ok().build();
+				
+				try (StatusManager statusMan = new StatusManager();) {
+					Status status = new Status();
+					status.setStatusName(Status.StatusName.ITEM_UPDATE);
+					statusMan.save(status);
+				}
 			} else {
 				response = Response.serverError().build();
 			}
@@ -157,7 +165,7 @@ public class TemplateResource {
 		while (iterator.hasNext()) {
 			
 			String attr = "";
-			Layer layer = null;
+			Layer layer;
 
 			JsonObject child = iterator.next().getAsJsonObject();
 			JsonElement childId = child.get("id");
@@ -257,8 +265,9 @@ public class TemplateResource {
 	}
 	
 	private Map<String, Item> makeChildItemMap(List<Item> children) {
-		Map<String, Item> result = new LinkedHashMap<>();
+		Map<String, Item> result = new LinkedHashMap<>(0);
 		if (children != null) {
+			 result = new LinkedHashMap<>(children.size());
 			for (Item item : children) {
 				result.put(item.getId(), item);
 			}

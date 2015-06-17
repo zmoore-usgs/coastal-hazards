@@ -31,6 +31,7 @@
 			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/cida-cmgp.svg" %>' />
 		</jsp:include>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
+		<%@ include file="../common/ie-check.jsp" %>
 		<title>Coastal Change Hazards Information</title>
 		<%-- Google Analytics for CCH --%>
 		<script type="text/javascript">

@@ -97,6 +97,7 @@
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
 			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/cida-cmgp.svg" %>' />
 		</jsp:include>
+		<%@ include file="../common/ie-check.jsp" %>
 		<title>USGS Coastal Change Hazards Portal - <%= item.getSummary().getMedium().getTitle()%></title>
 
 		<link rel="stylesheet" media="all" href="<%=baseUrl%>/css/back/print<%= resourceSuffix%>.css" />
@@ -130,7 +131,7 @@
 			</header> 
 			<main>
 				<h2 id="title"><%= item.getSummary().getFull().getTitle()%></h2>
-				<div id="map-pic-container"><img src="<%= baseUrl + "/data/thumbnail/item/" + item.getId()%>" /></div>
+				<div id="map-pic-container"><img src="<%= baseUrl + "/data/thumbnail/item/" + item.getId()%>" alt="Map picture"/></div>
 				<div id="description-container" class="info-container">
 					<h3>Description</h3>
 					<p id="brief_description">
