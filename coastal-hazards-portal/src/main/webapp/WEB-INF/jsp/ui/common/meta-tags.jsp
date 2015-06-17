@@ -29,6 +29,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${param['baseUrl']}" />
 <meta property="og:image" content="${param['thumb']}" />
+<meta property="og:image:url" content="${param['thumb']}" />
+<meta property="og:image:height" content="${param['img_height']}" />
+<meta property="og:image:width" content="${param['img_width']}" />
+<meta property="og:image:type" content="${param['img_type']}" />
 <meta property="og:description" content="<%= StringEscapeUtils.escapeJavaScript(description) %>" />
 <meta property="og:locale" content="en_US" />
 

@@ -38,7 +38,9 @@
 %>
 <html lang="en"> 
 	<head>
-		<jsp:include page="/WEB-INF/jsp/ui/common/meta-tags.jsp" />
+		<jsp:include page="/WEB-INF/jsp/ui/common/meta-tags.jsp">
+			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/cida-cmgp.svg" %>' />
+		</jsp:include>
 		<title>USGS Coastal Change Hazards Portal Login Page</title>
 
 		<%-- https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html --%>

@@ -60,6 +60,7 @@
 		</script>
 		<jsp:include page="../../ui/common/meta-tags.jsp">
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
+			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/cida-cmgp.svg" %>' />
 		</jsp:include>
 			<title>USGS Coastal Change Hazards Portal - Publish</title>
 			<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>

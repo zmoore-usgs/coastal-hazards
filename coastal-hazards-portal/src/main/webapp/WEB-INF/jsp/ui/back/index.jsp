@@ -75,8 +75,12 @@
 	<head>
 		<jsp:include page="../common/meta-tags.jsp">
 			<jsp:param name="description" value="<%= item.getSummary().getFull().getText()%>" />
-			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
-			<jsp:param name="thumb" value='<%=baseUrl + "/data/thumbnail/item/" + item.getId()%>' />
+			<jsp:param name="baseUrl" value='<%= baseUrl + "/ui/info/item/" + item.getId() %>' />
+			<jsp:param name="thumb" value='<%= baseUrl + "/data/thumbnail/item/" + item.getId() %>' />
+			<jsp:param name="img_height" value='300' />
+			<jsp:param name="img_width" value='300' />
+			<jsp:param name="img_type" value='image/png' />
+			<jsp:param name="keywords" value='<%= item.getSummary().getKeywords().replaceAll("\\\\|", ", ") %>' />
 		</jsp:include>
 		<title>USGS Coastal Change Hazards Portal - <%= item.getSummary().getMedium().getTitle()%></title>
 
@@ -92,6 +96,7 @@
 		<c:choose>
 			<c:when test="${not textOnlyClient}">
 				<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
+				
 				<jsp:include page="../common/application-overlay.jsp">
 					<jsp:param name="application-overlay-description" value="USGS coastal change hazards research produces data, 
 							   knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
@@ -181,12 +186,12 @@
 				</div>
 
 				<%-- Services Modal Window --%>	
-				<div id="modal-services-view" class="modal fade" tabindex ="-1" role="dialog" aria-labelledby="modal-label" aria-hidden="true">
+				<div id="modal-services-view" class="modal fade" tabindex ="-1" role="dialog" aria-labelledby="modal-label-services" aria-hidden="true">
 					<div class="modal-dialog">
 						<div class="modal-content">
 							<div class="modal-header">
 								<button class="close" aria-hidden="true" data-dismiss="modal" type="button"><i class="fa fa-times"></i></button>
-								<h4 id="modal-label">Available Services</h4>
+								<h4 id="modal-label-services">Available Services</h4>
 							</div>
 							<div class="modal-body">
 								<div id="modal-services-view-tree" class="row">
@@ -202,12 +207,12 @@
 				</div>
 
 				<%-- Social Sharing Modal Window --%>	
-				<div id="modal-sharing-view" class="modal fade" tabindex ="-1" role="dialog" aria-labelledby="modal-label" aria-hidden="true">
+				<div id="modal-sharing-view" class="modal fade" tabindex ="-1" role="dialog" aria-labelledby="modal-label-share" aria-hidden="true">
 					<div class="modal-dialog">
 						<div class="modal-content">
 							<div class="modal-header">
 								<button class="close" aria-hidden="true" data-dismiss="modal" type="button"><i class="fa fa-times"></i></button>
-								<h4 id="modal-label">Share Your Coastal Change Hazards Portal View With Others</h4>
+								<h4 id="modal-label-share">Share Your Coastal Change Hazards Portal View With Others</h4>
 							</div>
 							<div class="modal-body">
 								<div class="row">
