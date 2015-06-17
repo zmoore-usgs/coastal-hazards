@@ -73,10 +73,28 @@ public class ItemResource {
 				throw new NotFoundException();
 			}
 			else {
-				Status lastUpdate = statusMan.load(Status.StatusName.ITEM_UPDATE);
+				// Check when the item and/or structure was last modified, if at all.
+				// - If both are null, use today's date. 
+				// - If one of the two is not null, use that. 
+				// - Else, if both are not null, use the latest between them.
+				Status lastItemUpdate = statusMan.load(Status.StatusName.ITEM_UPDATE);
+				Status lastStructureUpdate = statusMan.load(Status.StatusName.STRUCTURE_UPDATE);
 				Date modified = new Date();
-				if (lastUpdate != null) {
-					modified = lastUpdate.getLastUpdate();
+				if (lastItemUpdate != null && lastStructureUpdate != null) {
+					// Both updates exist, so compare between them and choose the latest
+					Date lastItemUpdateDate = lastItemUpdate.getLastUpdate();
+					Date lastStructureUpdateDate = lastStructureUpdate.getLastUpdate();
+					
+					modified = lastItemUpdateDate.after(lastStructureUpdateDate) ? lastItemUpdateDate : lastStructureUpdateDate;
+				} else {
+					// At least one of the two do not exist, so find out if at 
+					// least one exists and use that. 
+					if (lastItemUpdate != null) {
+						modified = lastItemUpdate.getLastUpdate();
+					}
+					if (lastStructureUpdate != null) {
+						modified = lastStructureUpdate.getLastUpdate();
+					}
 				}
 				
 				Response unmodified = HTTPCachingUtil.checkModified(request, modified);
