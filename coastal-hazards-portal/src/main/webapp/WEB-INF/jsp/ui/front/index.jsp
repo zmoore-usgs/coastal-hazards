@@ -48,6 +48,7 @@
 	<head>
 		<jsp:include page="../common/meta-tags.jsp">
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
+			<jsp:param name="thumb" value='<%= baseUrl + "/images/banner/cida-cmgp.svg" %>' />
 		</jsp:include>
 		<title>USGS Coastal Change Hazards Portal</title>
 	
