@@ -130,7 +130,7 @@
 			</header> 
 			<main>
 				<h2 id="title"><%= item.getSummary().getFull().getTitle()%></h2>
-				<div id="map-pic-container"><img src="<%= baseUrl + "/data/thumbnail/item/" + item.getId()%>" /></div>
+				<div id="map-pic-container"><img src="<%= baseUrl + "/data/thumbnail/item/" + item.getId()%>" alt="Map picture"/></div>
 				<div id="description-container" class="info-container">
 					<h3>Description</h3>
 					<p id="brief_description">
