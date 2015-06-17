@@ -31,7 +31,7 @@
 <div id="application-slide-bucket-container-card-template" class="hidden">
     <div class="application-slide-bucket-container-card well well-small">
         <div class="application-slide-bucket-container-card-image-container">
-            <img class="application-slide-bucket-container-card-image img-responsive" alt="Bucket Card Image" />
+            <img class="application-slide-bucket-container-card-image img-responsive" src="" alt="Bucket Card Image" />
         </div>
         <div class="application-slide-bucket-container-card-title-description-container">
             <div>
@@ -42,26 +42,26 @@
             </div>
         </div>
         <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
-			<img src="${param['baseUrl']}/images/bucket/trashcan.svg" />
+			<img src="${param['baseUrl']}/images/bucket/trashcan.svg" alt="[Bucket Image]" />
         </button>
         <div class="application-slide-bucket-container-card-navigation-container">
             <button class="application-slide-bucket-container-card-button-up btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-up" type="button">
-                <i class="fa fa-caret-up" alt="arrow facing upwards"></i>
+                <i class="fa fa-caret-up"></i>
             </button>
             <div class="application-slide-bucket-container-card-label-order">Order</div>
             <button class="application-slide-bucket-container-card-button-down btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-down" type="button">
-                <i class="fa fa-caret-down" alt="downward facing arrow"></i>
+                <i class="fa fa-caret-down"></i>
             </button>
         </div>
         <div class="application-slide-bucket-container-card-controlset-container">
             <div class="application-slide-bucket-container-card-button-layer application-slide-bucket-container-card-template-button active">
-                <i class="fa fa-eye-slash" alt="layer off icon"></i>
+                <i class="fa fa-eye-slash"></i>
             </div>
             <button class="application-slide-bucket-container-card-button-download application-slide-bucket-container-card-template-button btn btn-link " type="button">
-                <i class="fa fa-cloud-download" alt="download icon"></i>
+                <i class="fa fa-cloud-download"></i>
             </button>
             <button class="application-slide-bucket-container-card-button-info application-slide-bucket-container-card-template-button btn btn-link " type="button">
-                <i class="fa fa-info" alt="the letter i"></i>
+                <i class="fa fa-info"></i>
             </button>
             <button class="application-slide-bucket-container-card-button-shareapplication-slide-bucket-container-card-template-button btn btn-link " type="button">
                 <img alt="Share Icon" src="${param['baseUrl']}/images/bucket/share.svg"/>

@@ -39,12 +39,10 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="well well-small catering">
-                        <label for="modal-share-summary-url-inputbox-div">
-							<div id="modal-share-summary-url-inputbox-div">
-								<label for="modal-share-summary-url-inputbox">
-									<input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." title="modal-share-summary-url-inputbox"/>
-								</label>
-							</div>
+                        <label for="modal-share-summary-url-inputbox">
+							<span id="modal-share-summary-url-inputbox-div">
+								<input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." title="modal-share-summary-url-inputbox"/>
+							</span>
 						</label>
                         <a id="modal-share-summary-url-button" class="btn btn-default" target="portal_view_window" role="button">View In Portal</a>
                     </div>
