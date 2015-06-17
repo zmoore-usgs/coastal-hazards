@@ -28,7 +28,7 @@
 <meta property="og:title" content="The Coastal Change Hazards Portal" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${param['baseUrl']}" />
-<meta property="og:image" content="${param['baseUrl']}/images/banner/cida-cmgp.svg" />
+<meta property="og:image" content="${param['thumb']}" />
 <meta property="og:description" content="<%= StringEscapeUtils.escapeJavaScript(description) %>" />
 <meta property="og:locale" content="en_US" />
 
