@@ -31,7 +31,8 @@
 <div id="application-slide-bucket-container-card-template" class="hidden">
     <div class="application-slide-bucket-container-card well well-small">
         <div class="application-slide-bucket-container-card-image-container">
-            <img class="application-slide-bucket-container-card-image img-responsive" src="" alt="Bucket Card Image" />
+			<%-- The source for this image tag gets filled programatically. I'm stuffing a value in there to get this past W3C validation --%>
+            <img class="application-slide-bucket-container-card-image img-responsive" src="${param['baseUrl']}/images/bucket/share.svg" alt="Bucket Card Image" />
         </div>
         <div class="application-slide-bucket-container-card-title-description-container">
             <div>
