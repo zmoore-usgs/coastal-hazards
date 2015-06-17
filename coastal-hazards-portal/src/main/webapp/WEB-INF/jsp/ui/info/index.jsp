@@ -87,15 +87,12 @@
 					</p>
 					<div class="tubewrapper">
 						<iframe src="https://www.youtube-nocookie.com/embed/ZvlITDs9PII?rel=0" 
-								frameborder="0" title="YouTube video: Coastal Change Hazards Rodanthe Tutorial" name="YouTube video frame" allowfullscreen>
+								title="YouTube video: Coastal Change Hazards Rodanthe Tutorial" name="YouTube video frame" allowfullscreen>
 						[Link to video can be found at <a href="https://www.youtube-nocookie.com/embed/ZvlITDs9PII">https://www.youtube-nocookie.com/embed/ZvlITDs9PII</a>]</iframe>
 					</div>
 					<%-- Icon Description Table --%>
-					<table id="application-icon-table">
+					<table id="application-icon-table-icon" class="application-icon-table">
 						<thead>
-						<p>
-
-						</p>
 						<tr>
 							<th>Icon</th>
 							<th>Description</th>
@@ -163,11 +160,8 @@
 					<span class="descriptive-text-title">
 						<a name="helpModal">More Info Action Center Descriptions</a>
 					</span>
-					<table id="application-icon-table">
+					<table id="application-icon-table-action" class="application-icon-table">
 						<thead>
-						<p>
-
-						</p>
 						<tr>
 							<th>Name</th>
 							<th>Description</th>
@@ -277,7 +271,7 @@
 				</div><!--holder-->
 			</div><!--content-->
 
-		</div><!—wrapper—>
+		</div><!-- wrapper -->
 
 		<footer>
 			<p id="usgsfooterbar">
