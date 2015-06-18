@@ -212,19 +212,19 @@
 								$cbLabel = $('label[for="'+cbName+'"]'),
 								unavailText = 'Not Available';
 								
+							// Uncheck the checked checkbox and disable it
 							if ($cb.is(':checked')) {
-								// Uncheck the checked checkbox and disable it
-								$cb.prop({
-									'checked' : false,
-									'disabled' : 'disabled',
-									'title' : unavailText
-								});
-								$cbLabel.prop('title', unavailText);
-								$cbLabel.html($cbLabel.html() + ' (' + unavailText + ')');
-								$cbLabel.addClass('disabled');
+								$cb.prop('checked', false);
 								$cb.trigger('change');
-								$cb.tooltip();
-							}
+							}	
+								
+							$cb.prop({
+								'disabled' : 'disabled',
+								'title' : unavailText
+							});
+							$cbLabel.prop('title', unavailText);
+							$cbLabel.html($cbLabel.html() + ' (' + unavailText + ')');
+							$cbLabel.addClass('disabled');
 						});
 				
 				CCH.Util.Util.getMinifiedEndpoint({
