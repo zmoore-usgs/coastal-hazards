@@ -80,7 +80,7 @@ CCH.Util.Util = {
 			error: []
 		};
 
-		$.ajax(CCH.CONFIG.contextPath + '/data/minifier/minify/' + location, {
+		return $.ajax(CCH.CONFIG.contextPath + '/data/minifier/minify/' + location, {
 			type: 'GET',
 			dataType: 'json',
 			success: function (json, textStatus, jqXHR) {
