@@ -64,7 +64,7 @@
             <button class="application-slide-bucket-container-card-button-info application-slide-bucket-container-card-template-button btn btn-link " type="button">
                 <i class="fa fa-info"></i>
             </button>
-            <button class="application-slide-bucket-container-card-button-shareapplication-slide-bucket-container-card-template-button btn btn-link " type="button">
+            <button class="application-slide-bucket-container-card-button-share application-slide-bucket-container-card-template-button btn btn-link " type="button">
                 <img alt="Share Icon" src="${param['baseUrl']}/images/bucket/share.svg"/>
             </button>
         </div>
