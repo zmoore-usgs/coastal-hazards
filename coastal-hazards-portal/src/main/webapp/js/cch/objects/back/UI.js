@@ -170,12 +170,8 @@ CCH.Objects.Back.UI = function (args) {
 
 		// Build the share modal
 		CCH.Util.Util.getMinifiedEndpoint({
-			location: CCH.CONFIG.publicUrl + '/ui/info/item/' + CCH.CONFIG.itemId,
-			callbacks: {
-				success: [minificationCallback],
-				error: [minificationCallback]
-			}
-		});
+			location: CCH.CONFIG.publicUrl + '/ui/info/item/' + CCH.CONFIG.itemId
+		}).always(minificationCallback);
 
 		// Is this item already in the bucket? If so, disable the add to bucket button
 		if (CCH.session.getItemById(me.item.id)) {

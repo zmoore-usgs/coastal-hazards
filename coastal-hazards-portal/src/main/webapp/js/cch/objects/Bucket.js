@@ -11,8 +11,6 @@ CCH.Objects.Bucket = function (args) {
 	me.$BUCKET_CONTAINER_CONTROL_CONTAINER_ID = $('#app-navbar-bucket-control-container');
 	me.BUCKET_COUNT_CONTAINER_ID = 'app-navbar-bucket-button-count';
 	me.BUCKET_CONTAINER_ID = 'app-navbar-bucket-button-container';
-	me.IMAGE_LOCATION_BUCKET_WITH_SAND = CCH.CONFIG.contextPath + '/images/banner/bucket/bucket.svg';
-	me.IMAGE_LOCATION_BUCKET_WITHOUT_SAND = CCH.CONFIG.contextPath + '/images/banner/bucket/bucket-no-sand.svg';
 	me.BUCKET_POPULATED_CLASS = 'app-navbar-bucket-button-container-populated';
 	me.BUCKET_UNPOPULATED_CLASS = 'app-navbar-bucket-button-container-unpopulated';
 	me.MARGIN_WIDTH = 0;
@@ -106,11 +104,6 @@ CCH.Objects.Bucket = function (args) {
 			'cch.slide.bucket.closing' : function ()  { me.bucketSVG.bucketClose(); }
 		});
 	});
-
-	// Preload required images
-	CCH.LOG.trace('CCH.Objects.Bucket::constructor: Pre-loading images.');
-	$.get(me.IMAGE_LOCATION_BUCKET_WITH_SAND);
-	$.get(me.IMAGE_LOCATION_BUCKET_WITHOUT_SAND);
 
 	CCH.LOG.trace('CCH.Objects.Bucket::constructor: Bucket class initialized.');
 
