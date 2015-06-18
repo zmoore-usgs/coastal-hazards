@@ -118,7 +118,7 @@
 				<input type="checkbox" name="publications" value="publications" id="choice_publications" class="pubschoice" checked> Publications<br>
 				<input type="checkbox" name="resources" value="resources" id="choice_resources" class="pubschoice" checked> Resources<br>
 				<input type="checkbox" name="data" value="data" id="choice_data" class="pubschoice" checked> Data<br>
-				<input type="checkbox" name="thumbnail" value="map_thumbnail" id="map-thumb-cb" checked> Map Thumbnail<br>
+				<input type="checkbox" name="thumbnail" value="map_thumbnail" id="map-thumb-cb" checked><label for="map-thumb-cb">Map Thumbnail</label><br>
 				<input type="checkbox" name="link" value="link" id="more-info-cb" checked> More Information Link<br>
 			</div>
 			<header id="header">
@@ -202,14 +202,34 @@
 						$('#tiny-url').append(link);
 					}
 				};
-
+				
+				// Test to check if a thumbnail exists for this item
+				$.ajax('<%= baseUrl + "/data/thumbnail/item/" + item.getId()%>', { method: "HEAD" })
+						.fail(function () {
+							// The thumbnail for this item does not exist
+							var cbName = 'map-thumb-cb',
+								$cb = $('#' + cbName),
+								$cbLabel = $('label[for="'+cbName+'"]'),
+								unavailText = 'Not Available';
+								
+							if ($cb.is(':checked')) {
+								// Uncheck the checked checkbox and disable it
+								$cb.prop({
+									'checked' : false,
+									'disabled' : 'disabled',
+									'title' : unavailText
+								});
+								$cbLabel.prop('title', unavailText);
+								$cbLabel.html($cbLabel.html() + ' (' + unavailText + ')');
+								$cbLabel.addClass('disabled');
+								$cb.trigger('change');
+								$cb.tooltip();
+							}
+						});
+				
 				CCH.Util.Util.getMinifiedEndpoint({
-					location: CCH.CONFIG.infoItemUrl,
-					callbacks: {
-						success: [CCH.CONFIG.minifyCallback],
-						error: [CCH.CONFIG.minifyCallback]
-					}
-				});
+					location: CCH.CONFIG.infoItemUrl
+				}).always(CCH.CONFIG.minifyCallback);
 				
 				$("#item_title").on("change", function (evt) {
 					var $title = $('#title');
