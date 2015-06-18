@@ -8,8 +8,8 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
-import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import gov.usgs.cida.coastalhazards.exceptions.UnsupportedFeatureTypeException;
+import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -226,7 +226,7 @@ public class RibboningProcess implements GeoServerProcess {
 		}
 
 		private SimpleFeatureCollection execute() throws Exception {
-			ListFeatureCollection result = null;
+			ListFeatureCollection result;
 			
 			SimpleFeatureType sft = this.featureCollection.getSchema();
 			SimpleFeatureTypeBuilder sftb = new SimpleFeatureTypeBuilder();
@@ -246,7 +246,7 @@ public class RibboningProcess implements GeoServerProcess {
 
 					MultiLineString lines = getMultiLineString(feature);
 					if (null != lines) {
-						List<Geometry> ribbonLines = new ArrayList<Geometry>();
+						List<Geometry> ribbonLines = new ArrayList<>(ribbonCount);
 						for (int ribbonNum = 0; ribbonNum < ribbonCount; ribbonNum++) {
 							ribbonLines.add((Geometry) lines.clone());
 						}
@@ -266,12 +266,12 @@ public class RibboningProcess implements GeoServerProcess {
 							prevLineOffset = lineOffset;
 						}
 
-						List<SimpleFeature> ribbonedFeature = new ArrayList<SimpleFeature>();
+						List<SimpleFeature> ribbonedFeature = new ArrayList<>(ribbonCount);
 
 						for (int ribbonNum = 0; ribbonNum < ribbonCount; ribbonNum++) {
 							SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
 							fb.addAll(feature.getAttributes());
-							fb.set(ribbonAttr, new Integer(ribbonNum + 1));
+							fb.set(ribbonAttr, ribbonNum + 1);
 							fb.set(feature.getDefaultGeometryProperty().getName(), ribbonLines.get(ribbonNum));
 							ribbonedFeature.add(fb.buildFeature(null));
 						}
@@ -291,7 +291,7 @@ public class RibboningProcess implements GeoServerProcess {
 		}
 		
 		private double[] computeXYOffset(LineString prevLine, double[] prevLineOffset, LineString currLine) {
-			double[] result = null;
+			double[] result;
 			
 			Point prevStart = null;
 			Point prevEnd = null;
@@ -358,8 +358,8 @@ public class RibboningProcess implements GeoServerProcess {
 			double[] result = null;
 			
 			if (null != angle) {
-				double xOffset = 0.0;
-				double yOffset = 0.0;
+				double xOffset;
+				double yOffset;
 
 				xOffset = getXOffset(angle, xyOffset[0]);
 				yOffset = getYOffset(angle, xyOffset[1]);
@@ -509,8 +509,8 @@ public class RibboningProcess implements GeoServerProcess {
         }
 
         public void filter(CoordinateSequence seq, int i) {
-			double offsetX = 0.0;
-			double offsetY = 0.0;
+			double offsetX;
+			double offsetY;
 			
 			if (i < pointOffsets.length) {
 				offsetX = pointOffsets[i][0] * ribbonNum;
@@ -524,10 +524,12 @@ public class RibboningProcess implements GeoServerProcess {
 			seq.setOrdinate(i, 1, seq.getOrdinate(i, 1) + offsetY);
         }
 
+		@Override
         public boolean isDone() {
             return false;
         }
 
+		@Override
         public boolean isGeometryChanged() {
             return true;
         }
