@@ -172,12 +172,8 @@ CCH.Objects.Front.UI = function (args) {
 		};
 
 		CCH.Util.Util.getMinifiedEndpoint({
-			location: url,
-			callbacks: {
-				success: [callback],
-				error: [callback]
-			}
-		});
+			location: url
+		}).always(callback);
 	};
 
 	me.sharemodalDisplayHandler = function (evt, args) {
