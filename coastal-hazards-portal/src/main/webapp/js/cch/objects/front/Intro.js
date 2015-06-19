@@ -1,3 +1,6 @@
+/**
+ * Represents the functionality used to walk through the tutorial on the front 
+ */
 var CCH = CCH === undefined ? {} : CCH;
 
 CCH.intro = (function () {

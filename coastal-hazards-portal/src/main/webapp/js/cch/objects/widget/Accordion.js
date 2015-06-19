@@ -179,13 +179,14 @@ CCH.Objects.Widget.Accordion = function (args) {
 				card.show({
 					duration: 0
 				});
-                                downFacingArrow.addClass('downwardfacingarrow');
+				
+				downFacingArrow.addClass('downwardfacingarrow');
 				$(window).trigger('cch.accordion.show', evt);
 			},
 			'shown.bs.collapse': function (evt) {
 				var $this = $(this),
 						abId = $this.data('id');
-
+				
 				ga('send', 'event', {
 					'eventCategory': 'accordion',
 					'eventAction': 'show',
@@ -196,7 +197,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 			'hide.bs.collapse': function (evt) {
 				card.closeChild();
 				card.hide();
-                                downFacingArrow.removeClass('downwardfacingarrow');
+				downFacingArrow.removeClass('downwardfacingarrow');
 				$(window).trigger('cch.accordion.hide', evt);
 			},
 			'hidden.bs.collapse': function (evt) {

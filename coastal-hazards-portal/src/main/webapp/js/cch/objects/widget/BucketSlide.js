@@ -95,6 +95,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			me.reorderLayers();
 			$(window).trigger('cch.slide.bucket.opened');
 		}
+		CCH.session.setBucketSlideOpen(true);
 	};
 
 	me.close = function (dontEmoteClosing, bindItemsOpening) {
@@ -138,6 +139,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		} else {
 			$(window).trigger('cch.slide.bucket.closed');
 		}
+		CCH.session.setBucketSlideOpen(true);
 	};
 
 	me.toggle = function () {

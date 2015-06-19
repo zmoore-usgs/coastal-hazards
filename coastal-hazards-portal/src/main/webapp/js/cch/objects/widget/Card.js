@@ -101,6 +101,8 @@ CCH.Objects.Widget.Card = function (args) {
 
 		// Remove the active class on every container and add it to the currently open card (me)
 		me.container.find('.application-card-body-container').addClass(me.ACTIVE_CARD_CLASS);
+		
+		CCH.session.setOpenItemId(me.id);
 
 		CCH.LOG.trace('CCH.Objects.Widget.Card:: Card ' + me.id + ' was shown');
 	};
@@ -127,6 +129,16 @@ CCH.Objects.Widget.Card = function (args) {
 
 	me.hide = function (args) {
 		args = args || {};
+	
+		// There's a bit of a timing game for when items are opened/closed.
+		// There may be an item that's opening that may close this as a callback.
+		// If that happens, the session open item will be nothing. Instead, it
+		// should be the item id of the item that opened and triggered this closed.
+		// Checking to make sure I'm being polite and only wiping my own id from the
+		// session open item tackles that issue.
+		if (CCH.session.getOpenItemId() === me.id) {
+			CCH.session.setOpenItemId('');
+		}
 
 		ga('send', 'event', {
 			'eventCategory': 'card',
