@@ -193,17 +193,22 @@ CCH.CONFIG = CCH.CONFIG || {};
 		});
 	},
 	loadTour = function () {
-		loadDefault();
+		$(window).on('cch.ui.overlay.removed', function () {
+			// The tour begins here
+			CCH.intro.start(CCH.CONFIG.params.id);
+		});
+		
+		loadUberItem({
+			subtree: true,
+			zoomToUberBbox: true,
+			overridePreviousBounds: true
+		});
 
 		ga('send', 'event', {
 			'eventCategory': 'load',
 			'eventAction': 'loadTour'
 		});
-
-		$(window).on('cch.ui.overlay.removed', function () {
-			// The tour begins here
-			CCH.intro.start(CCH.CONFIG.params.id);
-		});
+		
 	},
 	loadDefault = function () {
 		CCH.ui.addItemsToBucketOnLoad(CCH.session.getSession().items);
@@ -218,15 +223,27 @@ CCH.CONFIG = CCH.CONFIG || {};
 			// have a bounding box in their cache. If so, jump to that. 
 			// If there isn't anything in the session, uber bbox will be used anyway
 			doNotUsePreviousBounds = false;
+			
+			$(window).one('cch.loaded.uber', function () {
+				var lastOpenItem = CCH.session.getOpenItemId();
+				if (lastOpenItem) {
+					// There was an item open when the user went to the info page.
+					// Open that item again
+					CCH.ui.accordion.explore(null, { id : lastOpenItem });
+				}
+			});
 		}
-
+		
 		loadUberItem({
 			subtree: true,
 			zoomToUberBbox: true,
 			overridePreviousBounds: doNotUsePreviousBounds
 		});
-
 		
+		ga('send', 'event', {
+			'eventCategory': 'load',
+			'eventAction': 'loadDefault'
+		});
 	};
 
 	CCH.CONFIG.onAppInitialize = function () {
@@ -254,10 +271,6 @@ CCH.CONFIG = CCH.CONFIG || {};
 				break;
 			default :
 				loadDefault();
-				ga('send', 'event', {
-					'eventCategory': 'load',
-					'eventAction': 'loadDefault'
-				});
 		}
 		delete CCH.CONFIG.onAppInitialize;
 	};

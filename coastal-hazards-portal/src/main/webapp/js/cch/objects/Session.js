@@ -23,6 +23,9 @@ CCH.Objects.Session = function (args) {
 		scale: 55467893.20,
 		bbox: [-138.48502349853044, 7.986650381678925, -55.86783599853124, 56.56752394039768],
 		center: [-95.76961135864461, 37.0182344690233],
+		// NOTE: I'm moving towards smaller variable names here to save space in 
+		// cookies. (This is not so much an issue for browser storage). This naming
+		// scheme is internal to this object with intelligently named accessor methods
 		// view
 		v: {
 			// item slide
