@@ -3,7 +3,7 @@
 /*global $*/
 /*global CCH*/
 /*global alertify*/
-/*global OpenLayers*/
+/*global Handlebars*/
 
 /**
  * @param {type} args
@@ -40,7 +40,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 	me.$TOP_LEVEL_DOWNLOAD = me.$TOP_LEVEL_LIST.find('> li:nth-child(3)');
 	me.$EMPTY_TEXT_CONTAINER = me.$SLIDE_CONTAINER.find('> div > div > #application-slide-bucket-content-empty');
 	me.LABEL_ORDER_CLASS = '.application-slide-bucket-container-card-label-order';
-
+	me.cardTemplate = null;
+	
 	me.borderWidth = 2;
 	me.animationTime = 500;
 	me.placement = 'right';
@@ -49,6 +50,12 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 	me.isInitialized = false;
 	me.isClosed = me.startClosed;
 	me.cards = [];
+	
+	// Load handlebars template for bucket card
+	$.ajax(CCH.CONFIG.contextPath + '/resource/template/handlebars/bucket/bucket-card.mustache')
+			.done(function (data) {
+				me.cardTemplate = Handlebars.compile(data);
+			});
 
 	me.openSlide = function () {
 		var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
@@ -526,57 +533,42 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			itemSummary = item.summary || {},
 			itemSummaryFull = itemSummary.full || {},
 			title = itemSummaryFull.title || 'Title Not Provided',
-			titleContainerClass = 'application-slide-bucket-container-card-title',
-			$card = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
-			$titleContainer = $card.find('.' + titleContainerClass),
-			$titleContainerPNode = $card.find('.' + titleContainerClass + ' p'),
-			$imageContainer = $card.find('.application-slide-bucket-container-card-image').first(),
-			$bottomControlRow = $card.find('.application-slide-bucket-container-card-controlset-container'),
-			$viewButton = $bottomControlRow.find('.application-slide-bucket-container-card-button-layer'),
-			$downloadButton = $bottomControlRow.find('.application-slide-bucket-container-card-button-download'),
-			$infoButton = $bottomControlRow.find('.application-slide-bucket-container-card-button-info'),
-			$shareButton = $bottomControlRow.find('.application-slide-bucket-container-card-button-share'),
-			$removeButton = $card.find('.application-slide-bucket-container-card-button-remove'),
-			$upButton = $card.find('.application-slide-bucket-container-card-button-up'),
-			$downButton = $card.find('.application-slide-bucket-container-card-button-down'),
-			layerArray;
-
-		$card.attr('id', 'application-slide-bucket-container-card-' + id);
-		$imageContainer.
-			attr({
-				'src': CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id,
-				'title': 'Explore and zoom to this dataset'
-			}).
-			on('click', function () {
-				$(window).trigger('cch.slide.bucket.item.thumbnail.click');
-				CCH.map.zoomToBoundingBox({
-					bbox: item.bbox,
-					fromProjection: CCH.CONFIG.map.modelProjection
-				});
-			}).error(function () {
-			$(this).hide();
-		});
-		$titleContainer.attr('id', titleContainerClass + '-' + id);
-		$titleContainerPNode.html(title);
-		$card.data('id', id);
+			$cardHtml = $(me.cardTemplate({
+				baseUrl : CCH.CONFIG.publicUrl,
+				title : title,
+				id : id,
+				visibility : visibility
+			})).data('id', id),
+			$removeButton = $cardHtml.find('.application-slide-bucket-container-card-button-remove'),
+			$downloadButton = $cardHtml.find('.application-slide-bucket-container-card-button-download'),
+			$viewButton = $cardHtml.find('.application-slide-bucket-container-card-button-layer'),
+			$upButton = $cardHtml.find('.application-slide-bucket-container-card-button-up'),
+			$downButton = $cardHtml.find('.application-slide-bucket-container-card-button-down'),
+			$shareButton = $cardHtml.find('.application-slide-bucket-container-card-button-share'),
+			$infoButton = $cardHtml.find('.application-slide-bucket-container-card-button-info'),
+			$imageContainer = $cardHtml.find('.application-slide-bucket-container-card-image');
 
 		// Test if the layer is currently visible. If not, set view button to off 
 		layerCurrentlyInMap = item.getLayerList().layers.every(function (id) {
-			layerArray = CCH.map.getLayersBy('name', id);
+			var layerArray = CCH.map.getLayersBy('name', id);
 			return layerArray.length > 0 && layerArray[0].getVisibility();
 		});
-
+		// This is probably the wrong location to be doing this functionality.
 		if (visibility === true && !layerCurrentlyInMap) {
 			item.showLayer({
 				visible: false
 			});
 		}
 
-		if (visibility === true) {
-			$viewButton.find('> i').removeClass('fa-eye-slash').addClass('fa-eye');
-		} else {
-			$viewButton.find('> i').removeClass('fa-eye').addClass('fa-eye-slash');
-		}
+		$imageContainer.on('click', function () {
+			$(window).trigger('cch.slide.bucket.item.thumbnail.click');
+			CCH.map.zoomToBoundingBox({
+				bbox: item.bbox,
+				fromProjection: CCH.CONFIG.map.modelProjection
+			});
+		}).error(function () {
+			$(this).hide();
+		});
 
 		$removeButton.
 			on('click', function ($evt) {
@@ -587,29 +579,20 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 					id: id
 				});
 				me.reorderLayers();
-			}).
-			attr({
-				'title': 'Remove From Bucket'
 			});
 
 		$downloadButton.
-			attr({
-				'title': 'Download'
-			}).
 			on('click', function () {
 				window.location = CCH.CONFIG.contextPath + '/data/download/item/' + id;
 			});
 
 		$viewButton.
-			attr({
-				'title': 'Visibility On/Off'
-			}).
 			on('click', function () {
 				var isAggregation = item.itemType === 'aggregation' || item.itemType === 'template',
 					isLayerInMap = false;
 
 				isLayerInMap = item.getLayerList().layers.every(function (id) {
-					layerArray = CCH.map.getLayersBy('name', id);
+					var layerArray = CCH.map.getLayersBy('name', id);
 					return layerArray.length > 0 && layerArray[0].getVisibility();
 				});
 
@@ -679,9 +662,6 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 					id: id,
 					direction: -1
 				});
-			}).
-			attr({
-				'title': 'Sort Layer Up'
 			});
 
 		$downButton.
@@ -690,15 +670,9 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 					id: id,
 					direction: 1
 				});
-			}).
-			attr({
-				'title': 'Sort Layer Down'
 			});
 
 		$shareButton.
-			attr({
-				'title': 'Share '
-			}).
 			on('click', function () {
 				$(window).trigger('slide.bucket.button.click.share', {
 					'type': 'item',
@@ -711,18 +685,14 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				$(window).trigger('slide.bucket.button.click.info', {
 					'id': id
 				});
-				window.open(CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_self');
-			}).
-			attr({
-				'href': CCH.CONFIG.contextPath + '/ui/info/item/' + id,
-				'title': 'More Info'
+				window.open($(this).attr('href'), '_self');
 			});
 
-		$card.getContainer = function () {
+		$cardHtml.getContainer = function () {
 			return $('#' + this.attr('id'));
 		};
 
-		return $card;
+		return $cardHtml;
 	};
 
 	me.$TOP_LEVEL_DROPDOWN_TRIGGER.on('click', function (evt) {
