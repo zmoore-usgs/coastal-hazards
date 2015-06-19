@@ -49,7 +49,7 @@
             <button class="application-slide-bucket-container-card-button-up btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-up" type="button">
                 <i class="fa fa-caret-up"></i>
             </button>
-            <div class="application-slide-bucket-container-card-label-order">Order</div>
+            <div class="application-slide-bucket-container-card-label-order">Move</div>
             <button class="application-slide-bucket-container-card-button-down btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-down" type="button">
                 <i class="fa fa-caret-down"></i>
             </button>
