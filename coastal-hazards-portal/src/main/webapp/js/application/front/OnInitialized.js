@@ -19,56 +19,55 @@ CCH.CONFIG = CCH.CONFIG || {};
 					item: 'uber',
 					subtree: args.subtree
 				}),
-			searchSuccessHandler = function (data) {
-				$(window).on('cch.item.loaded', function (evt, obj) {
-					var item;
+				searchSuccessHandler = function (data) {
+					$(window).on('cch.item.loaded', function (evt, obj) {
+						
+						CCH.LOG.trace("Loaded " + obj.id);
+						
+						// If the incoming item is the uber item, that means that by now, everything under it has been
+						// fully hydrated, so I can now add sub items to the accordion and remove the overlay
+						if (obj.id === 'uber') {
+							data.children.each(function (id, index) {
+								var item = CCH.items.getById({id: id});
 
-					// If the incoming item is the uber item, that means that by now, everything under it has been
-					// fully hydrated, so I can now add sub items to the accordion and remove the overlay
-					if (obj.id === 'uber') {
-						data.children.each(function (id, index) {
-							item = CCH.items.getById({id: id});
-
-							// Add it to the accordion...
-							CCH.ui.accordion.addCard({
-								item: item,
-								index: index
-							});
-							item = CCH.items.getById({id: id});
-						});
-
-						var resizeHandler = function () {
-							// Unbind this one-time function
-							$(window).off('cch.ui.resized', resizeHandler);
-							// Is the user coming in from another part of the application?
-							if (CCH.session.getSession().center && !overridePreviousBounds) {
-								// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
-								CCH.map.updateFromSession();
-							} else if (zoomToUberBbox) {
-								CCH.map.zoomToBoundingBox({
-									bbox: data.bbox,
-									fromProjection: CCH.CONFIG.map.modelProjection,
-									attemptClosest: true
+								// Add it to the accordion...
+								CCH.ui.accordion.addCard({
+									item: item,
+									index: index
 								});
-							} else {
-								// User is loading the app fresh and we want to zoom to the 
-								// lower 48 (or get as close as possible). The OL docs mention
-								// that setting the second argument to true (getting as close
-								// as possible) may be problematic though I have not seen
-								// this to be the case so I am leaving it for now.
-								CCH.map.getMap().zoomToExtent(CCH.map.initialExtent, true);
-							}
-						};
-						$(window).on('cch.ui.resized', resizeHandler);
-						$(window).resize();
-						$(window).trigger('cch.loaded.uber');
-						CCH.splashUpdate("Starting Application...");
-						CCH.ui.removeOverlay();
-					}
-				});
+								item = CCH.items.getById({id: id});
+							});
 
-				new CCH.Objects.Item(data).loadFromData(data);
-			};
+							var resizeHandler = function () {
+								// Is the user coming in from another part of the application?
+								if (CCH.session.getSession().center && !overridePreviousBounds) {
+									// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
+									CCH.map.updateFromSession();
+								} else if (zoomToUberBbox) {
+									CCH.map.zoomToBoundingBox({
+										bbox: data.bbox,
+										fromProjection: CCH.CONFIG.map.modelProjection,
+										attemptClosest: true
+									});
+								} else {
+									// User is loading the app fresh and we want to zoom to the 
+									// lower 48 (or get as close as possible). The OL docs mention
+									// that setting the second argument to true (getting as close
+									// as possible) may be problematic though I have not seen
+									// this to be the case so I am leaving it for now.
+									CCH.map.getMap().zoomToExtent(CCH.map.initialExtent, true);
+								}
+							};
+							$(window).one('cch.ui.resized', resizeHandler);
+							$(window).resize();
+							$(window).trigger('cch.loaded.uber');
+							CCH.splashUpdate("Starting Application...");
+							CCH.ui.removeOverlay();
+						}
+					});
+
+					new CCH.Objects.Item(data).loadFromData(data);
+				};
 
 		return search.then(searchSuccessHandler, CCH.ui.errorResponseHandler);
 	},
@@ -142,7 +141,7 @@ CCH.CONFIG = CCH.CONFIG || {};
 	loadItem = function () {
 		var id = CCH.CONFIG.params.id;
 		// User is coming in with an item, so load that item
-		$(window).on('cch.loaded.uber', function (evt) {
+		$(window).one('cch.loaded.uber', function (evt) {
 			var item = CCH.items.getById({id: id});
 			if (item) {
 				// All items have been loaded and my item exists. Show my item in the accordion.

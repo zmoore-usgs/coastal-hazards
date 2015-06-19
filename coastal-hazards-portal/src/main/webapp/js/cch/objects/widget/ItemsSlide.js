@@ -70,18 +70,23 @@ CCH.Objects.Widget.ItemsSlide = function (args) {
 			$('body').css({
 				overflow: 'hidden'
 			});
+			
 			$slideTab.find('i').removeClass('fa-chevron-left').addClass('fa-chevron-right');
+			
 			slideContainer.css({
 				width: windowWidth - toExtent.left
 			});
+			
 			slideContent.css({
 				display: '',
 				width: slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth
 			});
+			
 			slideContent.offset({
 				left: windowWidth - me.borderWidth,
 				top: slideContainer.offset().top
 			});
+			
 			slideContainer.animate({
 				left: toExtent.left
 			}, me.animationTime, function () {
@@ -94,6 +99,8 @@ CCH.Objects.Widget.ItemsSlide = function (args) {
 		} else {
 			$(window).trigger('cch.slide.items.opened');
 		}
+		// Set the session
+		CCH.session.setItemSlideOpen(true);
 	};
 
 	me.close = function () {
@@ -132,6 +139,8 @@ CCH.Objects.Widget.ItemsSlide = function (args) {
 		} else {
 			$(window).trigger('cch.slide.items.closed');
 		}
+		// Set the session
+		CCH.session.setItemSlideOpen(false);
 	};
 
 	// Toggles the container open/closed. This is only valid for when the 

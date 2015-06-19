@@ -9,11 +9,12 @@ CCH.Objects.Session = function (args) {
 
 	CCH.LOG.trace('Session.js::constructor: Session class is initializing.');
 
-	var me = (this === window) ? {} : this;
-
 	args = args || {};
 
+	var me = (this === window) ? {} : this;
+
 	me.storageName = 'cch';
+	
 	me.hasLocalStorage = 'localStorage' in window && window['localStorage'] !== null;
 	
 	me.session = {
@@ -21,7 +22,21 @@ CCH.Objects.Session = function (args) {
 		baselayer: '',
 		scale: 55467893.20,
 		bbox: [-138.48502349853044, 7.986650381678925, -55.86783599853124, 56.56752394039768],
-		center: [-95.76961135864461, 37.0182344690233]
+		center: [-95.76961135864461, 37.0182344690233],
+		// view
+		v: {
+			// item slide
+			// open = true
+			// closed = false
+			i : false,
+			// bucket slide 
+			// open = true
+			// close = true
+			b : false,
+			// item id of an item
+			// currently being viewed
+			oi : ''
+		}
 	};
 	
 	me.initSession = function () {
@@ -68,7 +83,7 @@ CCH.Objects.Session = function (args) {
 	me.update = function (args) {
 		CCH.LOG.trace('Session.js::update');
 		
-		CCH.map.updateSession()
+		CCH.map.updateSession();
 
 		args = args || {};
 
@@ -101,7 +116,7 @@ CCH.Objects.Session = function (args) {
 			CCH.LOG.debug("Session.js::write: " + json.sid);
 		});
 
-		$.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint, {
+		return $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint, {
 			type: 'POST',
 			contentType: 'application/json;charset=utf-8',
 			dataType: 'json',
@@ -225,6 +240,39 @@ CCH.Objects.Session = function (args) {
 		return me.session;
 	};
 	
+	me.setBucketSlideOpen = function (open) {
+		if (typeof open === "boolean") {
+			me.session.v.b = open;
+			me.persistSession();
+		}
+	};
+	
+	me.setItemSlideOpen = function (open) {
+		if (typeof open === "boolean") {
+			me.session.v.i = open;
+			me.persistSession();
+		}
+	};
+	
+	me.isBucketSlideOpen = function () {
+		return me.session.v.b;
+	};
+	
+	me.isItemSlideOpen = function () {
+		return me.session.v.i;
+	};
+	
+	me.getOpenItemId = function () {
+		return me.session.v.oi || '';
+	};
+	
+	me.setOpenItemId = function (id) {
+		if (typeof id === 'string') {
+			me.session.v.oi = id;
+			me.persistSession();
+		}
+	};
+	
 	me.initSession();
 
 	return $.extend(me, {
@@ -238,6 +286,12 @@ CCH.Objects.Session = function (args) {
 		getItemIndex: me.getItemIndex,
 		addItem: me.addItem,
 		removeItem: me.removeItem,
-		isReturning : me.isReturning
+		isReturning : me.isReturning,
+		setBucketSlideOpen : me.setBucketSlideOpen,
+		isBucketSlideOpen : me.isBucketSlideOpen,
+		setItemSlideOpen : me.setItemSlideOpen,
+		isItemSlideOpen : me.isItemSlideOpen,
+		getOpenItemId : me.getOpenItemId,
+		setOpenItemId : me.setOpenItemId
 	});
 };
