@@ -13,12 +13,12 @@ CCH.CONFIG = CCH.CONFIG || {};
 
 		// Will the application zoom to the bounding box of uber? 
 		var zoomToUberBbox = args.zoomToUberBbox === true ? true : false,
-				// This will override the zoomToUberBbox setting 
-				overridePreviousBounds = args.overridePreviousBounds,
-				search = CCH.Util.Search().submitItemSearch({
-					item: 'uber',
-					subtree: args.subtree
-				}),
+			// This will override the zoomToUberBbox setting 
+			overridePreviousBounds = args.overridePreviousBounds,
+			search = CCH.Util.Search().submitItemSearch({
+				item: 'uber',
+				subtree: args.subtree
+			}),
 				searchSuccessHandler = function (data) {
 					$(window).on('cch.item.loaded', function (evt, obj) {
 						
@@ -141,7 +141,7 @@ CCH.CONFIG = CCH.CONFIG || {};
 	loadItem = function () {
 		var id = CCH.CONFIG.params.id;
 		// User is coming in with an item, so load that item
-		$(window).one('cch.loaded.uber', function (evt) {
+		$(window).one('cch.loaded.uber', function () {
 			var item = CCH.items.getById({id: id});
 			if (item) {
 				// All items have been loaded and my item exists. Show my item in the accordion.
@@ -260,17 +260,17 @@ CCH.CONFIG = CCH.CONFIG || {};
 		// Most of the application is now initialized, so I'm going to try and load
 		// either one item, a view or all top level items. First I check if idType exists
 		switch (viewType) {
-			case 'view':
-				loadView();
-				break;
-			case 'item':
-				loadItem();
-				break;
-			case 'tour':
-				loadTour();
-				break;
-			default :
-				loadDefault();
+		case 'view':
+			loadView();
+			break;
+		case 'item':
+			loadItem();
+			break;
+		case 'tour':
+			loadTour();
+			break;
+		default :
+			loadDefault();
 		}
 		delete CCH.CONFIG.onAppInitialize;
 	};
