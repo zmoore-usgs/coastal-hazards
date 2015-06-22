@@ -363,7 +363,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				legendTables = [],
 				generateLegendTable = args.generateLegendTable,
 				tableAddedCallback = args.tableAddedCallback;
-				
+		
 		items.each(function (childId, index, allItems) {
 			if (!me.destroyed) {
 				xhrRequest = CCH.Util.Util.getSLD({
@@ -573,7 +573,7 @@ CCH.Objects.Widget.Legend = function (args) {
 					// I have one table left after running unique(). However, I started out with multiple tables. This
 					// means that the title of this table will be the last table to make it through unique(). If that's the 
 					// case, use the title of the parent aggregation for this item
-					legendTables[0].find('caption').html(item.getAncestor().summary.full.title);
+					legendTables[0].find('caption').html(me.item.summary.full.title);
 				} else {
 					// If there's multiple tables, sort them according to index, leaving
 					// titles as is
@@ -624,6 +624,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		me.$legendDiv.remove();
 		return me;
 	};
+	
 	// Verify that everything we need was passed in and create the item. Otherwise, error out.
 	if (!me.containerId) {
 		throw me.errorMessage.replace('%s', 'Argument "containerId" was not provided.');
