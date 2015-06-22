@@ -228,22 +228,9 @@ CCH.Objects.Widget.Accordion = function (args) {
 	$(window).on({
 		'cch.slide.search.button.click.explore': function (evt, args) {
 			me.explore(evt, args);
-		},
-		'cch.card.display.toggle': function (evt, obj) {
-			if (obj.display === true) {
-				
-				// Removed scrolling to see what POs think
-				// TODO- Either remove commented out scrolling code or refactor
-				// to fix scrolling for good
-				
-//				var $container = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID);
-//				
-//				$container.stop().animate({
-//					scrollTop: $container[0].scrollHeight
-//				}, 1000);
-			}
 		}
 	});
+	
 	me.explore = function (evt, args) {
 		// When a user clicks explore, I want to be able to search through every
 		// item currently in the accordion slider starting with top level items
