@@ -27,7 +27,7 @@
 <html>
 	<head>
 		<jsp:include page="/WEB-INF/jsp/ui/common/meta-tags.jsp">
-			<jsp:param name="base-url" value="<%=baseUrl%>" />
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
 			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/cida-cmgp.svg" %>' />
 		</jsp:include>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
@@ -139,7 +139,7 @@
                             <div id="mapContentArea" class="topicContentArea">
                                 <h1>Map</h1>
                                 
-                                <button>Take a Tour</button>
+                                <button class="button-tour">Take a Tour</button>
                                 
                                 <h2>Navigate Data Themes</h2>
                                 
@@ -211,7 +211,7 @@
                             <div id="bucketContentArea" class="topicContentArea">
                                 <h1>Bucket</h1>
                                 
-                                <button>Take a Tour</button>
+                                <button class="button-tour">Take a Tour</button>
                                 
                                 <h2>Adjust Data Visibility/Order</h2>
                                 
@@ -275,7 +275,7 @@
                             <div id="acContentArea" class="topicContentArea">
                                 <h1>Action Center</h1>
                                 
-                                <button>Take a Tour</button>
+                                <button class="button-tour">Take a Tour</button>
                                 
                                 <h2>Review Data Detail</h2>
                                 
