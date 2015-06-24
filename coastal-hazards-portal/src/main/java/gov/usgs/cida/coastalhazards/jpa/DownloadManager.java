@@ -1,12 +1,10 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
 import gov.usgs.cida.coastalhazards.model.util.Download;
-import gov.usgs.cida.coastalhazards.service.data.DownloadService;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.logging.Level;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
