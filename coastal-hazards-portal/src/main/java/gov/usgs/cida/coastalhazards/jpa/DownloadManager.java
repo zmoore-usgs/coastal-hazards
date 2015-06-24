@@ -1,6 +1,9 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
 import gov.usgs.cida.coastalhazards.model.util.Download;
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -13,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class DownloadManager implements AutoCloseable {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(DownloadManager.class);
 
 	private static final String HQL_SELECT_BY_ID = "select d from Download d where d.itemId = :id or d.sessionId = :id";
@@ -26,6 +29,13 @@ public class DownloadManager implements AutoCloseable {
 		em = JPAHelper.getEntityManagerFactory().createEntityManager();
 	}
 
+	/**
+	 * Attempts to load the Download object which specifies, among other things,
+	 * where on the file system the file sits.
+	 * 
+	 * @param id
+	 * @return 
+	 */
 	public Download load(String id) {
 		Download download = null;
 
@@ -36,6 +46,27 @@ public class DownloadManager implements AutoCloseable {
 			download = resultList.get(0);
 		}
 		return download;
+	}
+
+	/**
+	 * Check that the download location in the database actually exists on the file system
+	 * @param download
+	 * @return whether the file exists
+	 * @throws URISyntaxException If the URI is mangled
+	 */
+	public boolean downloadFileExistsOnFilesystem(Download download) {
+		boolean exists = false;
+		if (null != download.getPersistanceURI()) {
+			File checkFile;
+			try {
+				checkFile = new File(new URI(download.getPersistanceURI()));
+				exists = checkFile.exists();
+			} catch (URISyntaxException ex) {
+				log.info("Item download exists in database but not on disk.");
+			}
+			
+		}
+		return exists;
 	}
 
 	public void save(Download download) {
@@ -50,7 +81,7 @@ public class DownloadManager implements AutoCloseable {
 			}
 		}
 	}
-	
+
 	public void update(Download download) {
 		EntityTransaction transaction = em.getTransaction();
 		try {
@@ -67,12 +98,13 @@ public class DownloadManager implements AutoCloseable {
 
 	/**
 	 * This needs to be wrapped in transaction or it will fail
-	 * @param download 
+	 *
+	 * @param download
 	 */
 	public void delete(Download download) {
 		em.remove(download);
 	}
-	
+
 	public void deleteAllMissing() {
 		Query deleteQuery = em.createQuery(HQL_DELETE_MISSING);
 		EntityTransaction transaction = em.getTransaction();
@@ -86,7 +118,7 @@ public class DownloadManager implements AutoCloseable {
 				transaction.rollback();
 			}
 		}
-		
+
 	}
 
 	public List<Download> getAllStagedDownloads() {
@@ -95,7 +127,7 @@ public class DownloadManager implements AutoCloseable {
 		resultList = selectQuery.getResultList();
 		return resultList;
 	}
-	
+
 	public EntityTransaction getTransaction() {
 		return em.getTransaction();
 	}

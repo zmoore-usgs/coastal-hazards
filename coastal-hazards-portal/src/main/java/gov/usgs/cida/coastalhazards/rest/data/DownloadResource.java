@@ -35,10 +35,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import static javax.ws.rs.core.Response.Status.ACCEPTED;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.OK;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static javax.ws.rs.core.Response.Status.*;
 
 /**
  *
@@ -65,7 +66,13 @@ public class DownloadResource {
 				Download download = downloadManager.load(id);
 				if (download != null) {
 					if (download.getPersistanceURI() != null) {
-						response = Response.status(OK).build();
+						if (!downloadManager.downloadFileExistsOnFilesystem(download)) {
+							new DownloadService().delete(id);
+							DownloadUtility.stageAsyncItemDownload(id);
+							response = Response.status(ACCEPTED).build();
+						} else {
+							response = Response.status(OK).build();
+						}
 					} else {
 						response = Response.status(ACCEPTED).build();
 					}
