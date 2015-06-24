@@ -65,7 +65,12 @@ public class DownloadResource {
 				Download download = downloadManager.load(id);
 				if (download != null) {
 					if (download.getPersistanceURI() != null) {
-						response = Response.status(OK).build();
+						if (!downloadManager.downloadFileExistsOnFilesystem(download)) {
+							new DownloadService().delete(id);
+							response = Response.status(ACCEPTED).build();
+						} else {
+							response = Response.status(OK).build();
+						}
 					} else {
 						response = Response.status(ACCEPTED).build();
 					}
