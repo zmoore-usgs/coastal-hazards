@@ -34,7 +34,7 @@ CCH.Util.Search = function (args) {
 		scope = args.scope || this,
 			displayNotification = args.displayNotification === false ? false : true;
 
-		$.ajax({
+		var search = $.ajax({
 			type: 'GET',
 			url: me.GEOCODE_SERVICE_ENDPOINT,
 			context: scope,
@@ -49,9 +49,6 @@ CCH.Util.Search = function (args) {
 			contentType: 'application/json',
 			dataType: 'jsonp',
 			success: function (data, statusText, xhrResponse) {
-				if (displayNotification && data.locations.length) {
-					$(window).trigger('cch.data.locations.searched', {items: data.locations});
-				}
 				callbacks.success.each(function (cb) {
 					cb.apply(this, [data, statusText, xhrResponse]);
 				});
@@ -60,6 +57,12 @@ CCH.Util.Search = function (args) {
 				callbacks.error.each(function (cb) {
 					cb.apply(this, [xhr, status, error]);
 				});
+			}
+		});
+		
+		search.done(function (data) {
+			if (displayNotification && data.locations.length) {
+				$(window).trigger('cch.data.locations.searched', {items: data.locations});
 			}
 		});
 	};

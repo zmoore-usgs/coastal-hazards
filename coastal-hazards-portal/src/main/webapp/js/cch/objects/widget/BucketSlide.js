@@ -583,7 +583,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 
 		$downloadButton.
 			on('click', function () {
-				window.location = CCH.CONFIG.contextPath + '/data/download/item/' + id;
+				window.open(CCH.CONFIG.contextPath + '/data/download/item/' + id, '_blank', "", true);
 			});
 
 		$viewButton.
@@ -685,7 +685,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				$(window).trigger('slide.bucket.button.click.info', {
 					'id': id
 				});
-				window.open($(this).attr('href'), '_self');
+				window.open(CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_self');
 			});
 
 		$cardHtml.getContainer = function () {
