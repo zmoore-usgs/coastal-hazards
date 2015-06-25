@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +66,17 @@ public class DownloadResource {
 			} else {
 				Download download = downloadManager.load(id);
 				if (download != null) {
-					if (download.getPersistanceURI() != null) {
+					String persistenceURI = download.getPersistanceURI();
+					
+					// Check if the file location in the database 
+					// If it is null or blank, the download has been accepted
+					if (StringUtils.isBlank(persistenceURI)) {
+						response = Response.status(ACCEPTED).build();
+					} else {
+						// If it is has content, check whether the file exists on the server
+						// If it does not, that means this is a desynchronized entry in the datbase
+						// and it should be deleted and reinitialized. Otherwise, this is 
+						// is good to go and send an OK response
 						if (!downloadManager.downloadFileExistsOnFilesystem(download)) {
 							new DownloadService().delete(id);
 							DownloadUtility.stageAsyncItemDownload(id);
@@ -73,8 +84,6 @@ public class DownloadResource {
 						} else {
 							response = Response.status(OK).build();
 						}
-					} else {
-						response = Response.status(ACCEPTED).build();
 					}
 				} else {
 					DownloadUtility.stageAsyncItemDownload(id);
