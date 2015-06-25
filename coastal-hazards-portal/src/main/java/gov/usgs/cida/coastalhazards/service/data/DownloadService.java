@@ -24,7 +24,7 @@ public class DownloadService implements AutoCloseable {
 	public DownloadService() {
 		manager = new DownloadManager();
 	}
-	
+
 	public Download get(String id) {
 		return manager.load(id);
 	}
@@ -75,13 +75,16 @@ public class DownloadService implements AutoCloseable {
 
 	private boolean deleteDownload(Download download) {
 		boolean deleted = false;
-		try {
-			manager.delete(download);
+		manager.delete(download);
+		File zipFile = download.fetchZipFile();
+
+		if (zipFile == null) {
+			log.error("Invalid file pointer");
+		} else {
 			File stagingFolder = download.fetchZipFile().getParentFile();
 			deleted = FileUtils.deleteQuietly(stagingFolder);
-		} catch (URISyntaxException ex) {
-			log.error("Invalid file pointer", ex);
 		}
+
 		return deleted;
 	}
 
