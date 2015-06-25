@@ -15,6 +15,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,6 +25,7 @@ import javax.persistence.TemporalType;
 @Table(name="downloads")
 public class Download implements Serializable {
     
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(Download.class);
     private static final long serialVersionUID = 1L;
 
     private int id;
@@ -98,8 +100,14 @@ public class Download implements Serializable {
         this.problem = problem;
     }
     
-    public File fetchZipFile() throws URISyntaxException {
-        return new File(new URI(getPersistanceURI()));
+    public File fetchZipFile() {
+		File zipFile = null;
+		try {
+			zipFile = new File(new URI(getPersistanceURI()));
+		} catch (URISyntaxException ex) {
+			log.info("Could not parse persistance URI", ex); 
+		}
+		return zipFile;
     }
     
 }

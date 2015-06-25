@@ -4,6 +4,7 @@ import gov.usgs.cida.coastalhazards.model.util.Download;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -52,7 +53,6 @@ public class DownloadManager implements AutoCloseable {
 	 * Check that the download location in the database actually exists on the file system
 	 * @param download
 	 * @return whether the file exists
-	 * @throws URISyntaxException If the URI is mangled
 	 */
 	public boolean downloadFileExistsOnFilesystem(Download download) {
 		boolean exists = false;
@@ -111,6 +111,7 @@ public class DownloadManager implements AutoCloseable {
 		try {
 			transaction.begin();
 			int deleted = deleteQuery.executeUpdate();
+			log.debug(MessageFormat.format("Deleted {0} missing downloads", deleted));
 			transaction.commit();
 		} catch (Exception ex) {
 			log.error("Error deleting downloads", ex);
@@ -122,10 +123,8 @@ public class DownloadManager implements AutoCloseable {
 	}
 
 	public List<Download> getAllStagedDownloads() {
-		List<Download> resultList;
 		Query selectQuery = em.createQuery(HQL_SELECT_ALL);
-		resultList = selectQuery.getResultList();
-		return resultList;
+		return selectQuery.getResultList();
 	}
 
 	public EntityTransaction getTransaction() {

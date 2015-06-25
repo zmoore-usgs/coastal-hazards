@@ -36,6 +36,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.ACCEPTED;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 import org.apache.commons.lang.StringUtils;
@@ -67,7 +68,7 @@ public class DownloadResource {
 				Download download = downloadManager.load(id);
 				if (download != null) {
 					String persistenceURI = download.getPersistanceURI();
-					
+
 					// Check if the file location in the database 
 					// If it is null or blank, the download has been accepted
 					if (StringUtils.isBlank(persistenceURI)) {
@@ -113,35 +114,49 @@ public class DownloadResource {
 		try (ItemManager itemManager = new ItemManager(); DownloadManager downloadManager = new DownloadManager()) {
 			Item item = itemManager.load(id);
 			if (item == null) {
-				throw new NotFoundException();
+				response = Response.status(NOT_FOUND).build();
 			} else {
 				File zipFile = null;
+				Download download = downloadManager.load(id);
 
-				try {
-					Download download = downloadManager.load(id);
-					if (download != null && download.getPersistanceURI() != null) {
-						// if we switch this to external file server or S3,
-						// redirect to this uri as a url
-						zipFile = download.fetchZipFile();
-						if (zipFile == null || !zipFile.exists()) {
-							throw new FileNotFoundException();
-						}
-					} else if (download != null) {
+				if (download != null) {
+					String persistenceURI = download.getPersistanceURI();
+					if (StringUtils.isBlank(persistenceURI)) {
+						// Download is still being created
 						response = Response.status(ACCEPTED).build();
 					} else {
-						Future<Download> future = DownloadUtility.stageAsyncItemDownload(id);
-						download = future.get();
-						if (download.isProblem()) {
-							throw new DownloadStagingUnsuccessfulException();
+						// Download should be on the file system. Check that it does exist
+						if (!downloadManager.downloadFileExistsOnFilesystem(download)) {
+							// File is not actually on the file system. Re-stage.
+							new DownloadService().delete(id);
+							DownloadUtility.stageAsyncItemDownload(id);
+							response = Response.status(ACCEPTED).build();
+						} else {
+							// File was found. Load the zip file 
+							zipFile = download.fetchZipFile();
+							if (zipFile == null) {
+								response = Response.status(INTERNAL_SERVER_ERROR).entity("Problem getting persisted download").build();
+							}
 						}
-						zipFile = download.fetchZipFile();
 					}
-					if (zipFile != null) {
-						String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
-						response = Response.status(OK).entity(zipFile).type("application/zip").header("Content-Disposition", contentDisposition).build();
+				} else {
+					// Download was null, so we it was not previously staged. Do so now
+					// and wait for it to finish, grabbing the zip file at the end
+					Future<Download> future = DownloadUtility.stageAsyncItemDownload(id);
+					download = future.get();
+					if (download.isProblem()) {
+						throw new DownloadStagingUnsuccessfulException();
 					}
-				} catch (URISyntaxException ex) {
-					log.error("Problem getting persisted download", ex);
+					
+					zipFile = download.fetchZipFile();
+					if (zipFile == null) {
+						response = Response.status(INTERNAL_SERVER_ERROR).entity("Problem getting persisted download").build();
+					}
+				}
+
+				if (zipFile != null) {
+					String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
+					response = Response.status(OK).entity(zipFile).type("application/zip").header("Content-Disposition", contentDisposition).build();
 				}
 			}
 		}
@@ -156,6 +171,7 @@ public class DownloadResource {
 	 * @param id identifier of requested item
 	 * @return JSON representation of the item(s)
 	 * @throws java.io.IOException
+	 * @throws java.security.NoSuchAlgorithmException
 	 */
 	@GET
 	@Path("/view/{id}")
@@ -169,12 +185,12 @@ public class DownloadResource {
 			} else {
 
 				File zipFile = null;
-				Download download = null;
+				Download download;
 				try {
 					download = downloadManager.load(id);
 					if (download != null && download.getPersistanceURI() != null) {
 						zipFile = new File(new URI(download.getPersistanceURI()));
-						if (zipFile == null || !zipFile.exists()) {
+						if (!zipFile.exists()) {
 							throw new FileNotFoundException();
 						}
 					} else {
@@ -188,11 +204,12 @@ public class DownloadResource {
 						download = new Download();
 						download = DownloadUtility.zipStagingAreaForDownload(stagingDir, download);
 						download.setSessionId(id);
-						try {
-							zipFile = download.fetchZipFile();
-						} catch (URISyntaxException ex2) {
+						zipFile = download.fetchZipFile();
+						
+						if (zipFile == null) {
 							throw new DownloadStagingUnsuccessfulException();
 						}
+						
 						downloadManager.save(download);
 					} else {
 						throw new DownloadStagingUnsuccessfulException();
@@ -208,7 +225,7 @@ public class DownloadResource {
 	@GET
 	@Produces("application/json")
 	public Response displayStagedItems() {
-		String downloadJson = null;
+		String downloadJson;
 		try (DownloadManager downloadManager = new DownloadManager()) {
 			List<Download> allStagedDownloads = downloadManager.getAllStagedDownloads();
 			Gson serializer = GsonUtil.getDefault();

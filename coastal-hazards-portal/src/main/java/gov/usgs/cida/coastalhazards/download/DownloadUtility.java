@@ -116,7 +116,7 @@ public class DownloadUtility {
 		try {
 			Map<WFSService, SingleDownload> downloadMap = new HashMap<>();
 			populateDownloadMap(downloadMap, stageThis);
-			List<String> namesUsed = new ArrayList<>();
+			List<String> namesUsed = new ArrayList<>(downloadMap.values().size());
 
 			for (SingleDownload stagedDownload : downloadMap.values()) {
 				while (namesUsed.contains(stagedDownload.getName())) {
@@ -145,6 +145,8 @@ public class DownloadUtility {
 	 *
 	 * @param stageThis
 	 * @param stagingDir
+	 * @return 
+	 * @throws java.io.IOException
 	 */
 	public static boolean stageSessionDownload(Session stageThis, File stagingDir) throws IOException, ConcurrentModificationException {
 		boolean success = false;
@@ -153,12 +155,12 @@ public class DownloadUtility {
 		List<String> missing = new LinkedList<>();
 
 		try (ItemManager itemManager = new ItemManager()) {
-			Map<WFSService, SingleDownload> downloadMap = new HashMap<>();
+			Map<WFSService, SingleDownload> downloadMap = new HashMap<>(stageThis.getItems().size());
 			for (SessionItem sessionItem : stageThis.getItems()) {
 				Item item = itemManager.load(sessionItem.getItemId());
 				populateDownloadMap(downloadMap, item);
 			}
-			List<String> namesUsed = new ArrayList<>();
+			List<String> namesUsed = new ArrayList<>(downloadMap.size());
 
 			for (SingleDownload stagedDownload : downloadMap.values()) {
 				while (namesUsed.contains(stagedDownload.getName())) {
@@ -218,7 +220,7 @@ public class DownloadUtility {
 	}
 
 	private static void populateDownloadMap(Map<WFSService, SingleDownload> downloadMap, Item item) {
-		SingleDownload download = null;
+		SingleDownload download;
 
 		Queue<Item> itemQueue = new LinkedList<>();
 		itemQueue.add(item);
