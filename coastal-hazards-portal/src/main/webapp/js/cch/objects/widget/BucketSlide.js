@@ -583,7 +583,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 
 		$downloadButton.
 			on('click', function () {
-				window.open(CCH.CONFIG.contextPath + '/data/download/item/' + id, '_blank', "", true);
+				window.location.href = CCH.CONFIG.contextPath + '/data/download/item/' + id;
 			});
 
 		$viewButton.
