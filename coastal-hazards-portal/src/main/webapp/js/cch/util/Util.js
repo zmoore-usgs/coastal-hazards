@@ -10,23 +10,19 @@ CCH.Util.Util = {
 	 * - Return 202 is the item exists but the cache does not yet exist. This 
 	 *   effectively primes the cache and a saturated cache may be expected 'soon'
 	 * - Return 404 if the item does not exist
-	 * @param {type} err Error callback
-	 * @param {type} callback Success callback
 	 * @param {type} itemId The item id 
-	 * @returns {undefined}
+	 * @returns {}
 	 */
-	interrogateDownloadCache: function (err, callback, itemId) {
+	interrogateDownloadCache: function (itemId) {
 		"use strict";
 		
 		if (!itemId) {
 			throw new TypeError('Item ID is mandatory');
 		}
 		
-		$.ajax({
+		return $.ajax({
 			'url' : CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.download.endpoint + itemId,
-			'type' : 'HEAD',
-			'success' : callback,
-			'err' : err
+			'type' : 'HEAD'
 		});
 	},
 	

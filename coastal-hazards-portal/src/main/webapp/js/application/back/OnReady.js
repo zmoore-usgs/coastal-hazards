@@ -36,7 +36,7 @@ $(document).ready(function () {
 			});
 			
 			// Kick off a request to the server-side cache to prime the download data for this item
-			CCH.Util.Util.interrogateDownloadCache(null, null, CCH.CONFIG.itemId);
+			CCH.Util.Util.interrogateDownloadCache(CCH.CONFIG.itemId);
 		}
 	});
 
