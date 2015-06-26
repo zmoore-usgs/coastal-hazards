@@ -116,20 +116,25 @@ public class DownloadUtility {
 		try {
 			Map<WFSService, SingleDownload> downloadMap = new HashMap<>();
 			populateDownloadMap(downloadMap, stageThis);
-			List<String> namesUsed = new ArrayList<>(downloadMap.values().size());
+			
+			if (downloadMap.isEmpty()) {
+				missing.add(stageThis.getName());
+			} else {
+				List<String> namesUsed = new ArrayList<>(downloadMap.values().size());
 
-			for (SingleDownload stagedDownload : downloadMap.values()) {
-				while (namesUsed.contains(stagedDownload.getName())) {
-					stagedDownload.incrementName();
-				}
-				namesUsed.add(stagedDownload.getName());
+				for (SingleDownload stagedDownload : downloadMap.values()) {
+					while (namesUsed.contains(stagedDownload.getName())) {
+						stagedDownload.incrementName();
+					}
+					namesUsed.add(stagedDownload.getName());
 
-				// TODO try/catch this to isolate/retry problem downloads
-				try {
-					boolean staged = stagedDownload.stage(stagingDir, missing);
-					success = success || staged;
-				} catch (Exception ex) {
-					LOG.error("unable to stage {} for download", stagedDownload.getName());
+					// TODO try/catch this to isolate/retry problem downloads
+					try {
+						boolean staged = stagedDownload.stage(stagingDir, missing);
+						success = success || staged;
+					} catch (Exception ex) {
+						LOG.error("unable to stage {} for download", stagedDownload.getName());
+					}
 				}
 			}
 		} finally {
@@ -332,6 +337,9 @@ public class DownloadUtility {
 				boolean staged = DownloadUtility.stageItemDownload(item, stagingDir);
 				if (staged) {
 					download = DownloadUtility.zipStagingAreaForDownload(stagingDir, download);
+					downloadManager.update(download);
+				} else {
+					download.setProblem(true);
 					downloadManager.update(download);
 				}
 			} catch (IOException ioe) {
