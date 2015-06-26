@@ -581,9 +581,23 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				me.reorderLayers();
 			});
 
-		$downloadButton.
-			on('click', function () {
-				window.location.href = CCH.CONFIG.contextPath + '/data/download/item/' + id;
+		$downloadButton
+			.on('click', function () {
+				// Check that the download is ready. It may be staging currently.
+				CCH.Util.Util.interrogateDownloadCache(id)
+						.done(function (resp, content, jqXHR) {
+							switch (jqXHR.status) {
+							case 200: // Download is ready to go
+								window.location.href = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.download.endpoint + id;
+								break;
+							case 202: // Download is being staged
+								alertify("Your download is being prepared. Please try again in a moment.");
+							}
+						})
+						.fail(function (resp, content, jqXHR) {
+							alertify("An error occurred while getting this file.");
+							CCH.LOG.warn("An error occurred while trying to download item " + id + " " + jqXHR.responseText);
+						});
 			});
 
 		$viewButton.

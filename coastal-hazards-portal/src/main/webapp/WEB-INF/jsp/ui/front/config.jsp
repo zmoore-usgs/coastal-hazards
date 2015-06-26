@@ -172,6 +172,9 @@
 					'session': {
 						'endpoint': '/data/view/'
 					},
+					'download': {
+						'endpoint' : '/data/download/item/'
+					},
                     'external-csw' : {
                         'endpoint' : '<%=externalCSWEndpoint%>'
                     }

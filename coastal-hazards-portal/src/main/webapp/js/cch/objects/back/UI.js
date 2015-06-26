@@ -50,8 +50,8 @@ CCH.Objects.Back.UI = function (args) {
 				alertify.error(CCH.CONFIG.data.messages.cacheInterrogationError);
 			};
 			
-			var cacheHit = function () {
-				var status = arguments[2].status;
+			var cacheHit = function (resp, content, jqXHR) {
+				var status = jqXHR.status;
 				
 				if (status === 200) {
 					window.location.href = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.download.endpoint + CCH.CONFIG.itemId;
@@ -63,7 +63,8 @@ CCH.Objects.Back.UI = function (args) {
 				}
 			};
 			
-			CCH.Util.Util.interrogateDownloadCache(cacheError, cacheHit, CCH.CONFIG.itemId);
+			var checkCache = CCH.Util.Util.interrogateDownloadCache(CCH.CONFIG.itemId);
+			checkCache.done(cacheHit).fail(cacheError);
 		});
 		
 		me.$addToBucketButton.on('click', function (evt) {
