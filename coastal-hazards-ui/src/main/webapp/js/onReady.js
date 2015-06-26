@@ -117,7 +117,7 @@ $(document).ready(function () {
 					CONFIG.ui.appInit();
 					splashUpdate("Interrogating OWS server...");
 					interrogatePublishedResources();
-					splashUpdate("Starting Application...");
+					splashUpdate("Working...");
 				}
 			],
 			error: [
