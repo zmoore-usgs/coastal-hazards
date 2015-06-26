@@ -21,6 +21,7 @@ CCH.Util.Util = {
 		}
 		
 		return $.ajax({
+			'context' : arguments,
 			'url' : CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.download.endpoint + itemId,
 			'type' : 'HEAD'
 		});
