@@ -61,7 +61,7 @@ CCH.CONFIG = CCH.CONFIG || {};
 							$(window).one('cch.ui.resized', resizeHandler);
 							$(window).resize();
 							$(window).trigger('cch.loaded.uber');
-							CCH.splashUpdate("Starting Application...");
+							CCH.splashUpdate("Working...");
 							CCH.ui.removeOverlay();
 						}
 					});
