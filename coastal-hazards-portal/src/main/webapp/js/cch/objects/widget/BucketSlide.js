@@ -592,11 +592,11 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 								window.location.href = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.download.endpoint + id;
 								break;
 							case 202: // Download is being staged
-								alertify("Your download is being prepared. Please try again in a moment.");
+								alertify.log("Your download is being prepared. Please try again in a moment.");
 							}
 						})
 						.fail(function (resp, content, jqXHR) {
-							alertify("An error occurred while getting this file.");
+							alertify.error("An error occurred while getting this file.");
 							CCH.LOG.warn("An error occurred while trying to download item " + id + " " + jqXHR.responseText);
 						});
 			});
