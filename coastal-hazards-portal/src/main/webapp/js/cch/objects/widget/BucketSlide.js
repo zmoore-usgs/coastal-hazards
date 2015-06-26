@@ -4,6 +4,7 @@
 /*global CCH*/
 /*global alertify*/
 /*global Handlebars*/
+/*global ga*/
 
 /**
  * @param {type} args
@@ -570,8 +571,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			$(this).hide();
 		});
 
-		$removeButton.
-			on('click', function ($evt) {
+		$removeButton
+			.on('click', function ($evt) {
 				$evt.stopPropagation();
 				// I emit this to the top so that bucket can catch it, decrement itself
 				// and then pass on the remove back down here to my remove method
@@ -600,8 +601,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 						});
 			});
 
-		$viewButton.
-			on('click', function () {
+		$viewButton
+			.on('click', function () {
 				var isAggregation = item.itemType === 'aggregation' || item.itemType === 'template',
 					isLayerInMap = false;
 
@@ -670,32 +671,32 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				});
 			});
 
-		$upButton.
-			on('click', function () {
+		$upButton
+			.on('click', function () {
 				me.moveCard({
 					id: id,
 					direction: -1
 				});
 			});
 
-		$downButton.
-			on('click', function () {
+		$downButton
+			.on('click', function () {
 				me.moveCard({
 					id: id,
 					direction: 1
 				});
 			});
 
-		$shareButton.
-			on('click', function () {
+		$shareButton
+			.on('click', function () {
 				$(window).trigger('slide.bucket.button.click.share', {
 					'type': 'item',
 					'id': id
 				});
 			});
 
-		$infoButton.
-			on('click', function () {
+		$infoButton
+			.on('click', function () {
 				$(window).trigger('slide.bucket.button.click.info', {
 					'id': id
 				});

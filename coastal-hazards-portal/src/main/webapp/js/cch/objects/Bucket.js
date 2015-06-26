@@ -123,6 +123,9 @@ CCH.Objects.Bucket = function (args) {
 				visibility = args.visibility;
 
 			if (!me.getItemById(id)) {
+				// Perform a request to stage the item for download just in case
+				CCH.Util.Util.interrogateDownloadCache(id);
+				
 				// Add the item to my personal bucket array
 				me.bucket.push(item);
 
