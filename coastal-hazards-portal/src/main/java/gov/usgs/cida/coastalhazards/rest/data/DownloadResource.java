@@ -73,7 +73,7 @@ public class DownloadResource {
 					// Check if the file location in the database 
 					// If it is null or blank, the download has been accepted
 					if (download.isProblem()) {
-						response = Response.status(NOT_IMPLEMENTED).build();
+						response = Response.status(INTERNAL_SERVER_ERROR).build();
 					} else if (StringUtils.isBlank(persistenceURI)) {
 						response = Response.status(ACCEPTED).build();
 					} else {
