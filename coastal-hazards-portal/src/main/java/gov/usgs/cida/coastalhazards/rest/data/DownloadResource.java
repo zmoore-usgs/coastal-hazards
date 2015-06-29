@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NOT_IMPLEMENTED;
 import static javax.ws.rs.core.Response.Status.OK;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -71,7 +72,9 @@ public class DownloadResource {
 
 					// Check if the file location in the database 
 					// If it is null or blank, the download has been accepted
-					if (StringUtils.isBlank(persistenceURI)) {
+					if (download.isProblem()) {
+						response = Response.status(INTERNAL_SERVER_ERROR).build();
+					} else if (StringUtils.isBlank(persistenceURI)) {
 						response = Response.status(ACCEPTED).build();
 					} else {
 						// If it is has content, check whether the file exists on the server
@@ -121,7 +124,9 @@ public class DownloadResource {
 
 				if (download != null) {
 					String persistenceURI = download.getPersistanceURI();
-					if (StringUtils.isBlank(persistenceURI)) {
+					if (download.isProblem()) {
+						response = Response.status(NOT_IMPLEMENTED).build();
+					} else if (StringUtils.isBlank(persistenceURI)) {
 						// Download is still being created
 						response = Response.status(ACCEPTED).build();
 					} else {
