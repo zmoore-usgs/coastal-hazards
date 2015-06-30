@@ -163,19 +163,14 @@
                                 
                                 <p>
                                     Legend Scrollover for Probability of Collision/Inundation/Overwash (PCOI) layers: When viewing the three PCOI layers on the map, a user can hover over the individual item names in the legend in order to differentiate the layers. As a layer is hovered upon, its "sibling" layers are hidden in the map view until the user moves the cursor off the PCOI layer name. 
-
                                 </p>
                                 
-                                <p>Zoom In/Out<p>
+                                <p>
+                                   Zoom In/Out: Use the familiar icons to zoom in or out on the map.
+                                </p>  
                                 
                                 <p>
-                                   	
-                                </p>
-                                
-                                <h2>Identify Visible Features</h2>
-                                
-                                <p>
-                                    When a layer is enabled on the map, a user may click on a feature to retrieve a summary of the visible items.
+                                   Identify Visible Features: When a layer is enabled on the map, a user may click on a feature to retrieve a summary of the visible items.
                                 </p>
                                 
                                 <h2>Icons Associated with the Map</h2>
@@ -260,7 +255,9 @@
                                 <h1>Action Center</h1>
                                 
                                 <button class="button-tour">Take a Tour</button>
-                                
+                                <p>
+                                   The action center can be accessed from the application by clicking on the “more info” icon in any item. Once you have arrived in the action center, you will see more information about an item in the “Summary” and “Additional Information” sections. The “Additional Information” section includes related data, publications, and resources links. The action center also contains several action button options on the left-hand side, explained in more detail below.
+                                </p>
                                 <h2>Review Data Detail</h2>
                                 
                                 <p>
