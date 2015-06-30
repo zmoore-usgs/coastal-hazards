@@ -255,31 +255,9 @@
                                 <h1>Action Center</h1>
                                 
                                 <button class="button-tour">Take a Tour</button>
+
                                 <p>
                                    The action center can be accessed from the application by clicking on the “more info” icon in any item. Once you have arrived in the action center, you will see more information about an item in the “Summary” and “Additional Information” sections. The “Additional Information” section includes related data, publications, and resources links. The action center also contains several action button options on the left-hand side, explained in more detail below.
-                                </p>
-                                <h2>Review Data Detail</h2>
-                                
-                                <p>
-                                    Click the More Info button in the Navigation Pane or the Bucket in order to review more information about an item or aggregation.
-                                </p>
-                                
-                                <h2>Access Map Services</h2>
-                                
-                                <p>
-                                    To explore available Web Services, click the Map Services button displayed for a lower level item. These services can be used in your local or web-based mapping applications.
-                                </p>
-                                
-                                <h2>Create Print View</h2>
-                                
-                                <p>
-                                    To create a printer-friendly view of the details about an item or aggregation, click the Print Snapshot button and select from available options to build your view. Some browsers also allow users to create PDF (.pdf) output from the print dialog window.
-                                </p>
-                                
-                                <h2>Browse Related Publications</h2>
-                                
-                                <p>
-                                    Items and aggregations in the Portal provide links to rich background materials and publications of support.
                                 </p>
                                 
                                 <h2>Action Center Descriptions</h2>
