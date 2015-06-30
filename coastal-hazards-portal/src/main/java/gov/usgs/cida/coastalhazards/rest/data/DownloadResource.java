@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 @PermitAll
 public class DownloadResource {
 
-	private static final Logger log = LoggerFactory.getLogger(DownloadResource.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DownloadResource.class);
 
 	private static final SessionManager sessionManager = new SessionManager();
 
@@ -68,13 +68,16 @@ public class DownloadResource {
 			} else {
 				Download download = downloadManager.load(id);
 				if (download != null) {
+					LOG.debug("Download manager found a download for item id {}", id);
 					String persistenceURI = download.getPersistanceURI();
 
 					// Check if the file location in the database 
 					// If it is null or blank, the download has been accepted
 					if (download.isProblem()) {
+						LOG.debug("Download manager found a problem with download for item id {}", id);
 						response = Response.status(INTERNAL_SERVER_ERROR).build();
 					} else if (StringUtils.isBlank(persistenceURI)) {
+						LOG.debug("Download manager found a download with no path id {}, Item is probably still being created", id);
 						response = Response.status(ACCEPTED).build();
 					} else {
 						// If it is has content, check whether the file exists on the server
@@ -82,14 +85,17 @@ public class DownloadResource {
 						// and it should be deleted and reinitialized. Otherwise, this is 
 						// is good to go and send an OK response
 						if (!downloadManager.downloadFileExistsOnFilesystem(download)) {
+							LOG.debug("Download manager found a download path that doesn't exist for id {}. Will delete and re-stage", id);
 							new DownloadService().delete(id);
 							DownloadUtility.stageAsyncItemDownload(id);
 							response = Response.status(ACCEPTED).build();
 						} else {
+							LOG.debug("Download manager found the download for item {}", id);
 							response = Response.status(OK).build();
 						}
 					}
 				} else {
+					LOG.debug("Download manager could not find download for item {}. A download will be staged for this item.", id);
 					DownloadUtility.stageAsyncItemDownload(id);
 					response = Response.status(ACCEPTED).build();
 				}
@@ -123,15 +129,19 @@ public class DownloadResource {
 				Download download = downloadManager.load(id);
 
 				if (download != null) {
+					LOG.debug("Download manager found a download for item id {}", id);
 					String persistenceURI = download.getPersistanceURI();
 					if (download.isProblem()) {
+						LOG.debug("Download manager found a problem with download for item id {}", id);
 						response = Response.status(NOT_IMPLEMENTED).build();
 					} else if (StringUtils.isBlank(persistenceURI)) {
+						LOG.debug("Download manager found a download with no path id {}, Item is probably still being created", id);
 						// Download is still being created
 						response = Response.status(ACCEPTED).build();
 					} else {
 						// Download should be on the file system. Check that it does exist
 						if (!downloadManager.downloadFileExistsOnFilesystem(download)) {
+							LOG.debug("Download manager found a download path that doesn't exist for id {}. Will delete and re-stage", id);
 							// File is not actually on the file system. Re-stage.
 							new DownloadService().delete(id);
 							DownloadUtility.stageAsyncItemDownload(id);
@@ -140,6 +150,9 @@ public class DownloadResource {
 							// File was found. Load the zip file 
 							zipFile = download.fetchZipFile();
 							if (zipFile == null) {
+								LOG.debug("Download manager found could not find the zip file that was indicated in the database for item {}. Will attempt to re-stage", id);
+								new DownloadService().delete(id);
+								DownloadUtility.stageAsyncItemDownload(id);
 								response = Response.status(INTERNAL_SERVER_ERROR).entity("Problem getting persisted download").build();
 							}
 						}
@@ -147,14 +160,17 @@ public class DownloadResource {
 				} else {
 					// Download was null, so we it was not previously staged. Do so now
 					// and wait for it to finish, grabbing the zip file at the end
+					LOG.debug("Download manager could not find download for item {}. A download will be staged for this item.", id);
 					Future<Download> future = DownloadUtility.stageAsyncItemDownload(id);
 					download = future.get();
 					if (download.isProblem()) {
-						throw new DownloadStagingUnsuccessfulException();
+						LOG.debug("Download manager found a problem with download for item id {}", id);
+						response = Response.status(INTERNAL_SERVER_ERROR).entity("Problem getting persisted download").build();
 					}
-					
+
 					zipFile = download.fetchZipFile();
 					if (zipFile == null) {
+						LOG.debug("Download manager found could not find the zip file that was indicated in the database for item {}.", id);
 						response = Response.status(INTERNAL_SERVER_ERROR).entity("Problem getting persisted download").build();
 					}
 				}
@@ -210,11 +226,11 @@ public class DownloadResource {
 						download = DownloadUtility.zipStagingAreaForDownload(stagingDir, download);
 						download.setSessionId(id);
 						zipFile = download.fetchZipFile();
-						
+
 						if (zipFile == null) {
 							throw new DownloadStagingUnsuccessfulException();
 						}
-						
+
 						downloadManager.save(download);
 					} else {
 						throw new DownloadStagingUnsuccessfulException();
