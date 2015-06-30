@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
@@ -112,12 +113,14 @@ public class DownloadUtility {
 		lock(stagingDir);
 
 		List<String> missing = new LinkedList<>();
-
+		String itemId = stageThis.getId();
 		try {
+			LOG.info("Staging download for item {}", itemId);
 			Map<WFSService, SingleDownload> downloadMap = new HashMap<>();
 			populateDownloadMap(downloadMap, stageThis);
-			
+
 			if (downloadMap.isEmpty()) {
+				LOG.info("Could not find valid WFS for item {}", itemId);
 				missing.add(stageThis.getName());
 			} else {
 				List<String> namesUsed = new ArrayList<>(downloadMap.values().size());
@@ -129,12 +132,7 @@ public class DownloadUtility {
 					namesUsed.add(stagedDownload.getName());
 
 					// TODO try/catch this to isolate/retry problem downloads
-					try {
-						boolean staged = stagedDownload.stage(stagingDir, missing);
-						success = success || staged;
-					} catch (Exception ex) {
-						LOG.error("unable to stage {} for download", stagedDownload.getName());
-					}
+					success = stagedDownload.stage(stagingDir, missing);
 				}
 			}
 		} finally {
@@ -150,7 +148,7 @@ public class DownloadUtility {
 	 *
 	 * @param stageThis
 	 * @param stagingDir
-	 * @return 
+	 * @return
 	 * @throws java.io.IOException
 	 */
 	public static boolean stageSessionDownload(Session stageThis, File stagingDir) throws IOException, ConcurrentModificationException {
@@ -246,9 +244,9 @@ public class DownloadUtility {
 						URL cswUrl = currentItem.fetchCswService().fetchUrl();
 						download.setMetadata(cswUrl);
 					} catch (MalformedURLException ex) {
-						LOG.debug("Invalid csw url {}", currentItem.fetchCswService());
+						LOG.info("Invalid csw url {}", currentItem.fetchCswService());
 					} catch (NullPointerException ex) {
-						LOG.debug("CSW service not set");
+						LOG.info("CSW service not set");
 					}
 					downloadMap.put(wfs, download);
 				}
@@ -315,6 +313,8 @@ public class DownloadUtility {
 	 */
 	private static class DownloadStagingRunner implements Callable<Download> {
 
+		private static final Logger LOG = LoggerFactory.getLogger(DownloadStagingRunner.class);
+
 		Thread stagingThread;
 		String itemId;
 
@@ -326,23 +326,32 @@ public class DownloadUtility {
 		public Download call() throws IOException {
 			Download download = null;
 			File stagingDir = DownloadUtility.createDownloadStagingArea();
+			LOG.info("Staging item download at location {} for item {}", stagingDir.getAbsolutePath(), itemId);
+
 			try (ItemManager itemManager = new ItemManager(); DownloadManager downloadManager = new DownloadManager()) {
 				Item item = itemManager.load(itemId);
+				if (item == null) {
+					throw new IOException(MessageFormat.format("Item {0} does not exist", itemId));
+				}
 				download = downloadManager.load(itemId);
 				if (download == null) {
+					LOG.debug("Beginning staging item {}", itemId);
 					download = new Download();
 					download.setItemId(itemId);
 					downloadManager.save(download);
 				}
 				boolean staged = DownloadUtility.stageItemDownload(item, stagingDir);
 				if (staged) {
+					LOG.info("{} has been staged", itemId);
 					download = DownloadUtility.zipStagingAreaForDownload(stagingDir, download);
 					downloadManager.update(download);
 				} else {
+					LOG.warn("Staging item {} has run into a problem.", itemId);
 					download.setProblem(true);
 					downloadManager.update(download);
 				}
 			} catch (IOException ioe) {
+				LOG.warn("Download could not be staged", ioe);
 				FileUtils.forceDelete(stagingDir);
 			}
 			return download;
