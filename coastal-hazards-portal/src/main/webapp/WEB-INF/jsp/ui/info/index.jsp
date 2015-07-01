@@ -153,6 +153,18 @@
                                     Click the "Add To Bucket icon" to put the current item or aggregation in your Bucket and interact with it there.
                                 </p>
                                 
+                                <h2>More Information</h2>
+                                
+                                <p>
+                                	Click on the "More Info button" in an item or aggregate in order to review more details about the item or aggregate in the Action Center.	
+                                </p>
+                                
+                                <h2>Toggle Item Visibility on the Map</h2>
+                                
+                                <p>
+                                	In order to manage what is visible on the Map, add the item or aggregations of interest to your bucket, then navigate to the bucket and re-order and toggle their visibility status.
+                                </p>
+                                
                                 <h2>Search Options</h2>
                                 
                                 <p>
@@ -204,7 +216,13 @@
                                 <h1>Bucket</h1>
                                 
                                 <button class="button-tour">Take a Tour</button>
+                               
+                                <h2>Add and Manage Datasets</h2>
                                 
+                                <p>
+                                    Click the "Add To Bucket icon" to place the current item or aggregation in your Bucket and interact with it there.
+                                </p>
+                               
                                 <h2>Adjust Data Visibility/Order</h2>
                                 
                                 <p>
@@ -212,15 +230,16 @@
                                     
                                     Click the up or down arrows in order to move the layer above or below other layers in your Bucket.
                                 </p>
+
+								<h2>Zoom to Layer Extent</h2>
+								
+								<p>
+									For any item in the Bucket with a thumbnail image, a user can click on the thumbnail image to zoom to the extent of the item or aggregation.
+								</p>
                                 
-                                <h2>Add and Manage Datasets</h2>
-                                
-                                <p>
-                                    Click the "Add To Bucket icon" to place the current item or aggregation in your Bucket and interact with it there.
                                 </p>
-                                </p>
                                 
-                                <h2>Create Link of Portal View to Keep or Share</h2>
+                                <h2>Share Item</h2>
                                 
                                 <p>
                                     In order to create a view or collection of items to bookmark or share with a colleague or friend, a user should add items and aggregations to their Bucket, click on the Bucket to open its contents, and click the Manage button to get the direct link. 
@@ -244,7 +263,16 @@
                                         <img src="../images/info/info-page-add-to-bucket.png" alt="Base layer Icon"/>
                                     
                                         <p>Add items to the bucket</p>
+                                        
+                                        <p>Download datasets</p>
+                                        
+                                        <p>More Info - Go to Action Center</p>
                                     
+                                    	<p>Clear/empty/share bucket</p>
+                                    	
+                                    	<p>Adjust Data Visibility/Order</p>
+                                    	
+                                    	
                                 </div>
                                 
                                 
