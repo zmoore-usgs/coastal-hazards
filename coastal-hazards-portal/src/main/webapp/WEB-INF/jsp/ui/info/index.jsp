@@ -189,22 +189,22 @@
                                 
                                 <div class="iconExplanationContainer">
                                    
-                                        <img src="../images/info/base_layer.png" alt="Base layer Icon"/>
+                                        <img src="<%=baseUrl%>/images/info/base_layer.png" alt="Base layer Icon"/>
                                     
                                         <p>Change maps base layer:  World Imagery, Street, Topo, and Ocean. The user can also toggle the Place Name layer displayed.</p>
                                     
                                     
-                                        <img src="../images/info/legend.png" alt="Base layer Icon"/>
+                                        <img src="<%=baseUrl%>/images/info/legend.png" alt="Base layer Icon"/>
                                     
                                         <p>Click to view the maps legend</p>
                                    
                                     
-                                        <img class="longIcon" src="../images/info/info-page-zoomto-link.png" alt="Base layer Icon"/>
+                                        <img class="longIcon" src="<%=baseUrl%>/images/info/info-page-zoomto-link.png" alt="Base layer Icon"/>
                                     
                                         <p>Zoom to the spatial extent of the item being viewed</p>
                                     
                                     
-                                        <img class="longIcon" src="../images/info/findyourlocation.png" alt="Base layer Icon"/>
+                                        <img class="longIcon" src="<%=baseUrl%>/images/info/findyourlocation.png" alt="Base layer Icon"/>
                                     
                                         <p>Click this icon in order to zoom to your location. Some browsers will request a user's permission to share their location before adjusting the map extent.</p>
                                     
@@ -255,12 +255,12 @@
                                 
                                 <div class="iconExplanationContainer">
                                    
-                                        <img src="../images/info/info-page-bucket.png" alt="Base layer Icon"/>
+                                        <img src="<%=baseUrl%>/images/info/info-page-bucket.png" alt="Base layer Icon"/>
                                     
                                         <p>Put items of interest into the bucket. From here, download data and products or share contents with friends and colleagues</p>
                                     
                                    
-                                        <img src="../images/info/info-page-add-to-bucket.png" alt="Base layer Icon"/>
+                                        <img src="<%=baseUrl%>/images/info/info-page-add-to-bucket.png" alt="Base layer Icon"/>
                                     
                                         <p>Add items to the bucket</p>
                                         
