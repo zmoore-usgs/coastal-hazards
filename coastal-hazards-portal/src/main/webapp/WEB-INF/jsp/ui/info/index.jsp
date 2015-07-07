@@ -149,14 +149,26 @@
                                 
                                 <h2>Add Items to the Bucket</h2>
                                 
+                                <img src="<%=baseUrl%>/images/info/info-page-add-to-bucket.png" alt="add to bucket Icon"/>
+                                
                                 <p>
                                     Click the "Add To Bucket icon" to put the current item or aggregation in your Bucket and interact with it there.
                                 </p>
                                 
                                 <h2>More Information</h2>
                                 
+                                <img class="longIcon" src="<%=baseUrl%>/images/info/info-page-more-info-link.png" alt="more info Icon"/>
+                                
                                 <p>
                                 	Click on the "More Info button" in an item or aggregate in order to review more details about the item or aggregate in the Action Center.	
+                                </p>
+                                
+                                <h2>Zoom to Layer Extent</h2>
+                                
+                                <img class="longIcon" src="<%=baseUrl%>/images/info/info-page-zoomto-link.png" alt="zoom to Icon"/>
+								
+				<p>
+                                    For any item in the Bucket with a thumbnail image, a user can click on the thumbnail image to zoom to the extent of the item or aggregation.
                                 </p>
                                 
                                 <h2>Toggle Item Visibility on the Map</h2>
@@ -177,38 +189,37 @@
                                     Legend Scrollover for Probability of Collision/Inundation/Overwash (PCOI) layers: When viewing the three PCOI layers on the map, a user can hover over the individual item names in the legend in order to differentiate the layers. As a layer is hovered upon, its "sibling" layers are hidden in the map view until the user moves the cursor off the PCOI layer name. 
                                 </p>
                                 
+                                <h2>Zoom In/Out</h2>
+                                
+                                <img class="longIcon" src="<%=baseUrl%>/images/info/zoom-in-out.png" alt="zoom in and out Icon"/>
+                                
                                 <p>
-                                   Zoom In/Out: Use the familiar icons to zoom in or out on the map.
+                                   Use the familiar icons to zoom in or out on the map.
                                 </p>  
                                 
-                                <p>
-                                   Identify Visible Features: When a layer is enabled on the map, a user may click on a feature to retrieve a summary of the visible items.
+                                <h2>Change maps base layer</h2>
+                                
+                                <img src="<%=baseUrl%>/images/info/base_layer.png" alt="Base layer Icon"/>
+                                    
+                                <p>World Imagery, Street, Topo, and Ocean. The user can also toggle the Place Name layer displayed.</p>
+                                
+                                <h2>Map Legend</h2>
+                                
+                                <img src="<%=baseUrl%>/images/info/legend.png" alt="legend Icon"/>
+                                    
+                                <p>Click to view the maps legend</p>
+                                
+                                <h2>Zoom to Your Location</h2>
+                                
+                                <img class="longIcon" src="<%=baseUrl%>/images/info/findyourlocation.png" alt="find your location Icon"/>
+                                    
+                                <p>Click this icon in order to zoom to you location. Some browsers will request a user's permission to share their location before adjusting the map extent.</p>
+                                
+                                <h2>Identify Visible Features</h2>
+                                
+                                 <p>
+                                   When a layer is enabled on the map, a user may click on a feature to retrieve a summary of the visible items.
                                 </p>
-                                
-                                <h2>Icons Associated with the Map</h2>
-                                
-                                <div class="iconExplanationContainer">
-                                   
-                                        <img src="<%=baseUrl%>/images/info/base_layer.png" alt="Base layer Icon"/>
-                                    
-                                        <p>Change maps base layer:  World Imagery, Street, Topo, and Ocean. The user can also toggle the Place Name layer displayed.</p>
-                                    
-                                    
-                                        <img src="<%=baseUrl%>/images/info/legend.png" alt="Base layer Icon"/>
-                                    
-                                        <p>Click to view the maps legend</p>
-                                   
-                                    
-                                        <img class="longIcon" src="<%=baseUrl%>/images/info/info-page-zoomto-link.png" alt="Base layer Icon"/>
-                                    
-                                        <p>Zoom to the spatial extent of the item being viewed</p>
-                                    
-                                    
-                                        <img class="longIcon" src="<%=baseUrl%>/images/info/findyourlocation.png" alt="Base layer Icon"/>
-                                    
-                                        <p>Click this icon in order to zoom to your location. Some browsers will request a user's permission to share their location before adjusting the map extent.</p>
-                                    
-                                </div>
                                 
                             </div>
                                 
@@ -231,14 +242,6 @@
                                     Click the up or down arrows in order to move the layer above or below other layers in your Bucket.
                                 </p>
 
-								<h2>Zoom to Layer Extent</h2>
-								
-								<p>
-									For any item in the Bucket with a thumbnail image, a user can click on the thumbnail image to zoom to the extent of the item or aggregation.
-								</p>
-                                
-                                </p>
-                                
                                 <h2>Share Item</h2>
                                 
                                 <p>
@@ -251,27 +254,43 @@
                                     From within the Bucket, the user can click on the Download icon in order to download a zipped (.zip) shapefile (.shp) of the item or aggregation of interest. Some downloads may take a while to queue and prepare.
                                 </p>
                                 
-                                <h2>Icons Associated with the Bucket</h2>
-                                
                                 <div class="iconExplanationContainer">
                                    
-                                        <img src="<%=baseUrl%>/images/info/info-page-bucket.png" alt="Base layer Icon"/>
+                                    <h2>The Bucket</h2>
                                     
-                                        <p>Put items of interest into the bucket. From here, download data and products or share contents with friends and colleagues</p>
+                                    <img src="<%=baseUrl%>/images/info/info-page-bucket.png" alt="bucket Icon"/>
                                     
-                                   
-                                        <img src="<%=baseUrl%>/images/info/info-page-add-to-bucket.png" alt="Base layer Icon"/>
-                                    
-                                        <p>Add items to the bucket</p>
+                                    <p>Put items of interest into the bucket. From here, download data and products or share contents with friends and colleagues</p>
                                         
-                                        <p>Download datasets</p>
-                                        
-                                        <p>More Info - Go to Action Center</p>
+                                    <h2>Layer Visibility</h2>
                                     
-                                    	<p>Clear/empty/share bucket</p>
+                                    <img src="<%=baseUrl%>/images/info/eyeball.png" alt="eyeball Icon"/>
+                                        
+                                    <p>Toggle Visibility</p>
+                                    
+                                    <h2>Download Data</h2>
+                                        
+                                    <img src="<%=baseUrl%>/images/info/download.png" alt="download Icon"/>
+                                        
+                                    <p>Download datasets</p>
+                                    
+                                    <h2>Clear Item</h2>
+                                        
+                                    <img src="<%=baseUrl%>/images/info/trashcan.png" alt="trashcan Icon"/>
+                                        
+                                    <p>Clear an item from your bucket</p>
+                                    
+                                    <h2>Share your Bucket</h2>
+                                        
+                                    <img src="<%=baseUrl%>/images/info/share.png" alt="share Icon"/>
+                                        
+                                    <p>Share bucket</p>
+                                    
+                                    <h2>Adjust Items Order</h2>
+                                        
+                                    <img src="<%=baseUrl%>/images/info/move.png" alt="move Icon"/>
                                     	
-                                    	<p>Adjust Data Visibility/Order</p>
-                                    	
+                                    <p>Adjust Data Order</p>
                                     	
                                 </div>
                                 
