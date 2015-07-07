@@ -169,30 +169,23 @@ CCH.intro = (function () {
                 },
                 {
                     element: '#application-slide-bucket-content-container .well:nth-child(2)',
-//                    element: document.querySelector('#application-slide-bucket-content-container .well:nth-child(2)'),
                     intro: 'Toggle visibility',
                     position: 'left',
                     name: 'visibility',
+					prepare: function () {
+						$(CCH.ui.accordion.getBellows()[0]).find('.application-card-add-bucket-btn').click();
+						$(CCH.ui.accordion.getBellows()[1]).find('.application-card-add-bucket-btn').click();
+						$(CCH.ui.accordion.getBellows()[2]).find('.application-card-add-bucket-btn').click();
+						return CCH.ui.bucketSlide.open();
+					},
                     onbeforechange: function(targetEle){
-                        
-                        if(targetEle === null){
-                            if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
-                                //inefficient, needs Ivan magic
-                                //loads three items into the bucket if not loaded already
-                                 $(CCH.ui.accordion.getBellows()[0]).find('.application-card-add-bucket-btn').click();
-                                 $(CCH.ui.accordion.getBellows()[1]).find('.application-card-add-bucket-btn').click();
-                                 $(CCH.ui.accordion.getBellows()[2]).find('.application-card-add-bucket-btn').click();
-                             }
-                            CCH.ui.bucketSlide.open().done(function(){
-                                intro._introItems[14].element = '#application-slide-bucket-content-container .well:nth-child(2)';
-                                intro.goToStep(15);
-                            });
-                        }
-                    },
-                    onafterchange: function(targetEle){
-                        setTimeout(function(){ $('#application-slide-bucket-content-container .well:nth-child(2)'); }, 450);
-                        
-                        
+						if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
+							//inefficient, needs Ivan magic
+							//loads three items into the bucket if not loaded already
+							 $(CCH.ui.accordion.getBellows()[0]).find('.application-card-add-bucket-btn').click();
+							 $(CCH.ui.accordion.getBellows()[1]).find('.application-card-add-bucket-btn').click();
+							 $(CCH.ui.accordion.getBellows()[2]).find('.application-card-add-bucket-btn').click();
+						 }
                     }
                 }
             ],
@@ -247,9 +240,7 @@ CCH.intro = (function () {
                 showStepNumbers: false,
                 steps: steps
             });
-
-            intro.start();
-
+			
             // The starting will start as a string. The string may be a number
             // or a name of a step. 
             if (startingStep) {
@@ -260,12 +251,17 @@ CCH.intro = (function () {
                     });
                     // If the name matches a step, start at that step
                     if (idx !== -1) {
-                        idx++;
-                        var step = steps[idx -1];
-                        if (step.onbeforechange) {
-                            step.onbeforechange(document.querySelector(step.element));
-                        }
-                        intro.goToStep(idx);
+						var step = steps[idx];
+					
+						if (step.hasOwnProperty('prepare')) {
+							step.prepare().done(function () {
+								intro.start();
+								intro.goToStep(idx + 1); // Steps are 1-based
+							});
+						} else {
+							intro.start();
+							intro.goToStep(idx + 1);
+						}
                     }
                 } else {
                     // Starting step is a number. Make sure it's a valid integer 
@@ -273,13 +269,22 @@ CCH.intro = (function () {
                     startingStep = Number.parseFloat(startingStep);
                     if (startingStep - 1 <= steps.length + 1 && startingStep > 1 && Number.isInteger(startingStep)) {
                         var step = steps[startingStep - 1];
-                        if (step.onbeforechange) {
-                            step.onbeforechange(document.querySelector(step.element));
-                        }
-                        intro.goToStep(startingStep);
+						if (step.hasOwnProperty('prepare')) {
+							step.prepare().done(function () {
+								intro.goToStep(startingStep); // Steps are 1-based
+							});
+							intro.start();
+						} else {
+							intro.start();
+							intro.goToStep(startingStep);
+						}
                     }
+					intro.start();
                 }
-            }
+            } else {
+				debugger;
+				
+			}
             
             $(window).on('cch.ui.resizing', function () {
                 intro.exit();
