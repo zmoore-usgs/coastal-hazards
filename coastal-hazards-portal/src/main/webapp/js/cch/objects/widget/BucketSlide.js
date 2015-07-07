@@ -74,8 +74,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		CCH.map.hideAllLayers();
 
 		me.reorderLayers();
-
-		$slideContainer.animate({
+		return $slideContainer.animate({
 			left: me.getExtents()[me.isSmall() ? 'small' : 'large'].left
 		}, me.animationTime, function () {
 			me.isClosed = false;
@@ -85,25 +84,27 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			});
 
 			$(window).trigger('cch.slide.bucket.opened');
-		});
+		}).promise();
 	};
 
 	me.open = function () {
+            var deferred;
 		if (me.isClosed) {
 			if (me.isSmall()) {
 				$(window).trigger('cch.slide.bucket.opening');
 				me.resized();
-				me.openSlide();
+				deferred = me.openSlide();
 			} else {
 				$(window).trigger('cch.slide.bucket.opening');
-				me.openSlide();
+				deferred = me.openSlide();
 			}
 
 		} else {
-			me.reorderLayers();
+			deferred = me.reorderLayers();
 			$(window).trigger('cch.slide.bucket.opened');
 		}
 		CCH.session.setBucketSlideOpen(true);
+                return deferred;
 	};
 
 	me.close = function (dontEmoteClosing, bindItemsOpening) {
@@ -172,6 +173,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			item,
 			layerNames,
 			sessionItem,
+                        deferred = $.Deferred(),
 			sortedSessionItems = [];
 
 		if (me.cards.length === 1) {
@@ -212,6 +214,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		$(window).trigger('cch.slide.bucket.reordered', {
 			cards: me.cards
 		});
+                deferred.resolve();
+                return deferred;
 	};
 
 	me.layerAppendRemoveHandler = function (evt, args) {
