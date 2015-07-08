@@ -362,6 +362,19 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			me.cards.push($card);
 			me.append($card);
 			me.redrawArrows();
+			
+			// Perform a request to stage the item for download just in case
+			CCH.Util.Util.interrogateDownloadCache(item.id).fail(function () {
+				// If there was an error, disable the download button
+				var $card = $('#application-slide-bucket-container-card-' + this[0]),
+					$downloadButton = $card.find('.application-slide-bucket-container-card-button-download');
+					
+				$downloadButton.attr({
+					'disabled' : 'disabled',
+					'title' : 'Downloads for this item are not possible'
+				});
+				
+			});
 		}
 
 		return $card;
@@ -600,7 +613,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 							}
 						})
 						.fail(function (resp, content, jqXHR) {
-							alertify.error("An error occurred while getting this file.");
+							alertify.error("Downloading this item is not supported");
 							CCH.LOG.warn("An error occurred while trying to download item " + id + " " + jqXHR.responseText);
 						});
 			});

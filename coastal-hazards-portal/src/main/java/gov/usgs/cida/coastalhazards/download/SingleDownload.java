@@ -45,11 +45,11 @@ public class SingleDownload {
      * @param stagingDir temporary staging directory
      * @param missing handle to MISSING file writer
      * @return whether this download was staged properly
-     * @throws IOException usually means cannot contact server
      */
-    public boolean stage(File stagingDir, List<String> missing) throws IOException {
+    public boolean stage(File stagingDir, List<String> missing)  {
         boolean properlyStaged = false;
         try (WFSClientInterface wfsClient = new HttpComponentsWFSClient()) {
+			LOG.debug("Setting up data store for WFS");
             wfsClient.setupDatastoreFromEndpoint(wfs.getEndpoint());
 
             Filter nonFilter = null;
@@ -60,13 +60,15 @@ public class SingleDownload {
             }
 
             try {
+				LOG.debug("Writing feature collection to shape file");
                 properlyStaged = export.writeToShapefile();
+				LOG.debug("Wrote feature colleciton to shapefile: {}", properlyStaged);
             } catch (IOException ex) {
-                LOG.error("Unable to write shapefile {}", name);
+                LOG.error("Unable to write shapefile {}", name, ex);
                 missing.add(name);
             }
         } catch (Exception ex) {
-            LOG.debug("Exception while using or closing wfsClient");
+            LOG.error("Exception while using or closing wfsClient", ex);
             missing.add(name);
         }
         
@@ -75,7 +77,7 @@ public class SingleDownload {
             MetadataDownload metaExport = new MetadataDownload(metadata, new File(stagingDir, metadataName));
             metaExport.stage();
         } catch (Exception ex) {
-            LOG.error("Unable to add metadata named {} from {}", metadataName, metadata);
+            LOG.error("Unable to add metadata named {} from {}", metadataName, metadata, ex);
             missing.add(metadataName);
         }
         return properlyStaged;

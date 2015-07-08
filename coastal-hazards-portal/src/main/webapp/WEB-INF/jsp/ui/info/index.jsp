@@ -111,10 +111,10 @@
                             <%-- Portal Description --%>
                             <div id="text">
 				<p class="descriptive-text">
-                                    Welcome to the U.S. Geological Survey's Coastal Change Hazards portal, 
+                                    Welcome to the U.S. Geological Survey's (USGS) Coastal Change Hazards Portal, 
                                     where you have interactive access to coastal change science and data for 
-                                    our Nation’s coasts. This page provides a summary of how to use the portal's 
-                                    basic functions. We encourage you to explore and learn. (CIDA).
+                                    our Nation’s coasts. This page provides a summary of how to use the Portal's 
+                                    basic functions. We encourage you to explore and learn.
                                 </p>
                             </div>
                                 
@@ -126,13 +126,12 @@
                             
                             <div id="otherLinks">
                                 <p>
-                                    For more information about the organizations who created this portal please visit 
-                                    these links
+                                    For more information about the organizations who created this portal:
                                 </p>
                                 
-                                <a href="http://marine.usgs.gov/coastalchangehazards/" target="_blank">National Assessment of Coastal Change Hazards</a>
-                                <a href="http://cida.usgs.gov/" target="_blank">Center for Integrated Data Analytics</a>
-                                <a href="" target="_blank">Open source software available on Github</a>
+                                <a href="http://marine.usgs.gov/coastalchangehazards/" target="_blank">USGS National Assessment of Coastal Change Hazards</a>
+                                <a href="http://cida.usgs.gov/" target="_blank">USGS Center for Integrated Data Analytics</a>
+                                <a href="https://github.com/USGS-CIDA/coastal-hazards" target="_blank">Review the open source software behind the Portal available on Github</a>
                                 <a href="mailto:cch_help@usgs.gov">Contact us at cch_help@usgs.gov</a>
                             </div> 
                                 
@@ -144,65 +143,70 @@
                                 <h2>Navigate Data Themes</h2>
                                 
                                 <p>
-                                    Nulla sit amet arcu et augue blandit blandit. In tristique neque at metus tempus, 
-                                    eget finibus nisi suscipit. Quisque nec aliquet justo, eget suscipit urna. Vivamus 
-                                    gravida lorem non sapien lobortis facilisis. Nulla facilisi. Vivamus blandit, augue ut 
-                                    rhoncus placerat, mi neque fermentum magna, id tincidunt enim lorem vitae leo. Pellentesque 
-                                    nec turpis diam. Sed a diam et tellus luctus commodo. In hac habitasse platea dictumst.
+                                    The Coastal Change Hazards portal organizes products and information into discrete items within three specific coastal hazard themes: 1) severe storms, 2) shoreline change, and 3) sea-level rise. Each data item represents an individual research product. Items with a common topic area are grouped into aggregations within a theme, to show the breadth of that topic and make it easy to explore related information.
+
                                 </p>
                                 
-                                <h2>Interactive Map Features</h2>
+                                <h2>Add Items to the Bucket</h2>
                                 
                                 <p>
-                                    Nulla sit amet arcu et augue blandit blandit. In tristique neque at metus tempus, 
-                                    eget finibus nisi suscipit. Quisque nec aliquet justo, eget suscipit urna. Vivamus 
-                                    gravida lorem non sapien lobortis facilisis. Nulla facilisi. Vivamus blandit, augue ut 
-                                    rhoncus placerat, mi neque fermentum magna, id tincidunt enim lorem vitae leo. Pellentesque 
-                                    nec turpis diam. Sed a diam et tellus luctus commodo. In hac habitasse platea dictumst.
+                                    Click the "Add To Bucket icon" to put the current item or aggregation in your Bucket and interact with it there.
+                                </p>
+                                
+                                <h2>More Information</h2>
+                                
+                                <p>
+                                	Click on the "More Info button" in an item or aggregate in order to review more details about the item or aggregate in the Action Center.	
+                                </p>
+                                
+                                <h2>Toggle Item Visibility on the Map</h2>
+                                
+                                <p>
+                                	In order to manage what is visible on the Map, add the item or aggregations of interest to your bucket, then navigate to the bucket and re-order and toggle their visibility status.
                                 </p>
                                 
                                 <h2>Search Options</h2>
                                 
                                 <p>
-                                    Nulla sit amet arcu et augue blandit blandit. In tristique neque at metus tempus, 
-                                    eget finibus nisi suscipit. Quisque nec aliquet justo, eget suscipit urna. Vivamus 
-                                    gravida lorem non sapien lobortis facilisis. Nulla facilisi. Vivamus blandit, augue ut 
-                                    rhoncus placerat, mi neque fermentum magna, id tincidunt enim lorem vitae leo. Pellentesque 
-                                    nec turpis diam. Sed a diam et tellus luctus commodo. In hac habitasse platea dictumst.
+                                    Users can search for data products in one or more coastal hazard themes by name or description, as well as search by Location in order to find a particular place of interest.
                                 </p>
                                 
-                                <h2>Identify Visible Features</h2>
+                                <h2>Interactive Map Features</h2>
                                 
                                 <p>
-                                    Nulla sit amet arcu et augue blandit blandit. In tristique neque at metus tempus, 
-                                    eget finibus nisi suscipit. Quisque nec aliquet justo, eget suscipit urna. Vivamus 
-                                    gravida lorem non sapien lobortis facilisis. Nulla facilisi. Vivamus blandit, augue ut 
-                                    rhoncus placerat, mi neque fermentum magna, id tincidunt enim lorem vitae leo. Pellentesque 
-                                    nec turpis diam. Sed a diam et tellus luctus commodo. In hac habitasse platea dictumst.
+                                    Legend Scrollover for Probability of Collision/Inundation/Overwash (PCOI) layers: When viewing the three PCOI layers on the map, a user can hover over the individual item names in the legend in order to differentiate the layers. As a layer is hovered upon, its "sibling" layers are hidden in the map view until the user moves the cursor off the PCOI layer name. 
+                                </p>
+                                
+                                <p>
+                                   Zoom In/Out: Use the familiar icons to zoom in or out on the map.
+                                </p>  
+                                
+                                <p>
+                                   Identify Visible Features: When a layer is enabled on the map, a user may click on a feature to retrieve a summary of the visible items.
                                 </p>
                                 
                                 <h2>Icons Associated with the Map</h2>
                                 
                                 <div class="iconExplanationContainer">
                                    
-                                        <img src="../images/info/base_layer.png" alt="Base layer Icon"/>
+                                        <img src="<%=baseUrl%>/images/info/base_layer.png" alt="Base layer Icon"/>
                                     
-                                        <p>Change maps base layer:  World Imagery, Street, Topo, and Ocean</p>
+                                        <p>Change maps base layer:  World Imagery, Street, Topo, and Ocean. The user can also toggle the Place Name layer displayed.</p>
                                     
                                     
-                                        <img src="../images/info/legend.png" alt="Base layer Icon"/>
+                                        <img src="<%=baseUrl%>/images/info/legend.png" alt="Base layer Icon"/>
                                     
                                         <p>Click to view the maps legend</p>
                                    
                                     
-                                        <img class="longIcon" src="../images/info/info-page-zoomto-link.png" alt="Base layer Icon"/>
+                                        <img class="longIcon" src="<%=baseUrl%>/images/info/info-page-zoomto-link.png" alt="Base layer Icon"/>
                                     
                                         <p>Zoom to the spatial extent of the item being viewed</p>
                                     
                                     
-                                        <img class="longIcon" src="../images/info/findyourlocation.png" alt="Base layer Icon"/>
+                                        <img class="longIcon" src="<%=baseUrl%>/images/info/findyourlocation.png" alt="Base layer Icon"/>
                                     
-                                        <p>Use this to find your location</p>
+                                        <p>Click this icon in order to zoom to your location. Some browsers will request a user's permission to share their location before adjusting the map extent.</p>
                                     
                                 </div>
                                 
@@ -212,60 +216,63 @@
                                 <h1>Bucket</h1>
                                 
                                 <button class="button-tour">Take a Tour</button>
-                                
-                                <h2>Adjust Data Visibility/Order</h2>
-                                
-                                <p>
-                                    Nulla sit amet arcu et augue blandit blandit. In tristique neque at metus tempus, 
-                                    eget finibus nisi suscipit. Quisque nec aliquet justo, eget suscipit urna. Vivamus 
-                                    gravida lorem non sapien lobortis facilisis. Nulla facilisi. Vivamus blandit, augue ut 
-                                    rhoncus placerat, mi neque fermentum magna, id tincidunt enim lorem vitae leo. Pellentesque 
-                                    nec turpis diam. Sed a diam et tellus luctus commodo. In hac habitasse platea dictumst.
-                                </p>
-                                
+                               
                                 <h2>Add and Manage Datasets</h2>
                                 
                                 <p>
-                                    Nulla sit amet arcu et augue blandit blandit. In tristique neque at metus tempus, 
-                                    eget finibus nisi suscipit. Quisque nec aliquet justo, eget suscipit urna. Vivamus 
-                                    gravida lorem non sapien lobortis facilisis. Nulla facilisi. Vivamus blandit, augue ut 
-                                    rhoncus placerat, mi neque fermentum magna, id tincidunt enim lorem vitae leo. Pellentesque 
-                                    nec turpis diam. Sed a diam et tellus luctus commodo. In hac habitasse platea dictumst.
+                                    Click the "Add To Bucket icon" to place the current item or aggregation in your Bucket and interact with it there.
                                 </p>
-                                
-                                <h2>Create Link of Portal View to Keep or Share</h2>
+                               
+                                <h2>Adjust Data Visibility/Order</h2>
                                 
                                 <p>
-                                    Nulla sit amet arcu et augue blandit blandit. In tristique neque at metus tempus, 
-                                    eget finibus nisi suscipit. Quisque nec aliquet justo, eget suscipit urna. Vivamus 
-                                    gravida lorem non sapien lobortis facilisis. Nulla facilisi. Vivamus blandit, augue ut 
-                                    rhoncus placerat, mi neque fermentum magna, id tincidunt enim lorem vitae leo. Pellentesque 
-                                    nec turpis diam. Sed a diam et tellus luctus commodo. In hac habitasse platea dictumst.
+                                    Click the eyeball icon in the Bucket in order to toggle a layer on or off.
+                                    
+                                    Click the up or down arrows in order to move the layer above or below other layers in your Bucket.
+                                </p>
+
+								<h2>Zoom to Layer Extent</h2>
+								
+								<p>
+									For any item in the Bucket with a thumbnail image, a user can click on the thumbnail image to zoom to the extent of the item or aggregation.
+								</p>
+                                
+                                </p>
+                                
+                                <h2>Share Item</h2>
+                                
+                                <p>
+                                    In order to create a view or collection of items to bookmark or share with a colleague or friend, a user should add items and aggregations to their Bucket, click on the Bucket to open its contents, and click the Manage button to get the direct link. 
                                 </p>
                                 
                                 <h2>Download Datasets</h2>
                                 
                                 <p>
-                                    Nulla sit amet arcu et augue blandit blandit. In tristique neque at metus tempus, 
-                                    eget finibus nisi suscipit. Quisque nec aliquet justo, eget suscipit urna. Vivamus 
-                                    gravida lorem non sapien lobortis facilisis. Nulla facilisi. Vivamus blandit, augue ut 
-                                    rhoncus placerat, mi neque fermentum magna, id tincidunt enim lorem vitae leo. Pellentesque 
-                                    nec turpis diam. Sed a diam et tellus luctus commodo. In hac habitasse platea dictumst.
+                                    From within the Bucket, the user can click on the Download icon in order to download a zipped (.zip) shapefile (.shp) of the item or aggregation of interest. Some downloads may take a while to queue and prepare.
                                 </p>
                                 
                                 <h2>Icons Associated with the Bucket</h2>
                                 
                                 <div class="iconExplanationContainer">
                                    
-                                        <img src="../images/info/info-page-bucket.png" alt="Base layer Icon"/>
+                                        <img src="<%=baseUrl%>/images/info/info-page-bucket.png" alt="Base layer Icon"/>
                                     
                                         <p>Put items of interest into the bucket. From here, download data and products or share contents with friends and colleagues</p>
                                     
                                    
-                                        <img src="../images/info/info-page-add-to-bucket.png" alt="Base layer Icon"/>
+                                        <img src="<%=baseUrl%>/images/info/info-page-add-to-bucket.png" alt="Base layer Icon"/>
                                     
                                         <p>Add items to the bucket</p>
+                                        
+                                        <p>Download datasets</p>
+                                        
+                                        <p>More Info - Go to Action Center</p>
                                     
+                                    	<p>Clear/empty/share bucket</p>
+                                    	
+                                    	<p>Adjust Data Visibility/Order</p>
+                                    	
+                                    	
                                 </div>
                                 
                                 
@@ -276,45 +283,9 @@
                                 <h1>Action Center</h1>
                                 
                                 <button class="button-tour">Take a Tour</button>
-                                
-                                <h2>Review Data Detail</h2>
-                                
+
                                 <p>
-                                    Nulla sit amet arcu et augue blandit blandit. In tristique neque at metus tempus, 
-                                    eget finibus nisi suscipit. Quisque nec aliquet justo, eget suscipit urna. Vivamus 
-                                    gravida lorem non sapien lobortis facilisis. Nulla facilisi. Vivamus blandit, augue ut 
-                                    rhoncus placerat, mi neque fermentum magna, id tincidunt enim lorem vitae leo. Pellentesque 
-                                    nec turpis diam. Sed a diam et tellus luctus commodo. In hac habitasse platea dictumst.
-                                </p>
-                                
-                                <h2>Access Map Services</h2>
-                                
-                                <p>
-                                    Nulla sit amet arcu et augue blandit blandit. In tristique neque at metus tempus, 
-                                    eget finibus nisi suscipit. Quisque nec aliquet justo, eget suscipit urna. Vivamus 
-                                    gravida lorem non sapien lobortis facilisis. Nulla facilisi. Vivamus blandit, augue ut 
-                                    rhoncus placerat, mi neque fermentum magna, id tincidunt enim lorem vitae leo. Pellentesque 
-                                    nec turpis diam. Sed a diam et tellus luctus commodo. In hac habitasse platea dictumst.
-                                </p>
-                                
-                                <h2>Create Print View</h2>
-                                
-                                <p>
-                                    Nulla sit amet arcu et augue blandit blandit. In tristique neque at metus tempus, 
-                                    eget finibus nisi suscipit. Quisque nec aliquet justo, eget suscipit urna. Vivamus 
-                                    gravida lorem non sapien lobortis facilisis. Nulla facilisi. Vivamus blandit, augue ut 
-                                    rhoncus placerat, mi neque fermentum magna, id tincidunt enim lorem vitae leo. Pellentesque 
-                                    nec turpis diam. Sed a diam et tellus luctus commodo. In hac habitasse platea dictumst.
-                                </p>
-                                
-                                <h2>Browse Related Publications</h2>
-                                
-                                <p>
-                                    Nulla sit amet arcu et augue blandit blandit. In tristique neque at metus tempus, 
-                                    eget finibus nisi suscipit. Quisque nec aliquet justo, eget suscipit urna. Vivamus 
-                                    gravida lorem non sapien lobortis facilisis. Nulla facilisi. Vivamus blandit, augue ut 
-                                    rhoncus placerat, mi neque fermentum magna, id tincidunt enim lorem vitae leo. Pellentesque 
-                                    nec turpis diam. Sed a diam et tellus luctus commodo. In hac habitasse platea dictumst.
+                                   The action center can be accessed from the application by clicking on the “more info” icon in any item. Once you have arrived in the action center, you will see more information about an item in the “Summary” and “Additional Information” sections. The “Additional Information” section includes related data, publications, and resources links. The action center also contains several action button options on the left-hand side, explained in more detail below.
                                 </p>
                                 
                                 <h2>Action Center Descriptions</h2>
