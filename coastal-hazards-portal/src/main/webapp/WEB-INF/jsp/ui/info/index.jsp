@@ -143,7 +143,7 @@
                                 <h2>Find and view data, reports, and other products</h2>
                                 
                                 <p>
-                                    The Coastal Change Hazards portal organizes products and information into discrete items within three specific coastal hazard themes: 1) severe storms, 2) shoreline change, and 3) sea-level rise. Each data item represents an individual research product. Items with a common topic area are grouped into aggregations within a theme, to show the breadth of that topic and make it easy to explore related information.
+                                    Information and products are organized within three coastal hazard themes: 1) severe storms, 2) shoreline change, and 3) sea-level rise. Each data item represents an individual research product, with some items grouped together to show the breadth of the topic and make it easy to explore. 
                                 </p>
                                 
                                 <h2>Adding an item to the bucket</h2>
@@ -151,7 +151,7 @@
                                 <img src="<%=baseUrl%>/images/info/info-page-add-to-bucket.png" alt="add to bucket Icon"/>
                                 
                                 <p>
-                                    Click on the icon to put the current data item or aggregation in your Bucket where you can collect and download data, as well as, customize your map.
+                                    Click on the bucket icon to put the current data item or aggregation in your Bucket where you can collect and download data, as well as, customize your map.
                                 </p>
                                 
                                 <h2>More Information</h2>
