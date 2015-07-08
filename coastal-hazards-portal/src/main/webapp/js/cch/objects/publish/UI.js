@@ -254,20 +254,20 @@ CCH.Objects.Publish.UI = function () {
 				if (me.isBlank($attributeSelect)) {
 					errors.push('Attribute is missing');
 				} else if ($attributeSelect.val().length > CCH.CONFIG.limits.item.attribute) {
-						errors.push('Attribute was longer than ' + CCH.CONFIG.limits.item.attribute + ' characters');
+					errors.push('Attribute was longer than ' + CCH.CONFIG.limits.item.attribute + ' characters');
 				}
 
 				if (me.isBlank($cswServiceInput)) {
 					errors.push('CSW service endpoint not entered');
 				} else if ($cswServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
-						errors.push('CSW endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
+					errors.push('CSW endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
 				
 
 				if (me.isBlank($srcWfsServiceInput)) {
 					errors.push('Source WFS Endpoint not provided');
 				} else if ($srcWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
-						errors.push('WFS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
+					errors.push('WFS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
 				
 				if (me.isBlank($srcWfsServiceParamInput)) {
@@ -642,11 +642,11 @@ CCH.Objects.Publish.UI = function () {
 		if (textStatus === 'success') {
 			
 			CCH.ows.requestCSWRecords({
-			maxRecords: 100000,
-			callbacks: {
-				success: [me.updateMetadataDropdown]
-			}
-		});
+				maxRecords: 100000,
+				callbacks: {
+					success: [me.updateMetadataDropdown]
+				}
+			});
 			
 			var cswNodes = responseObject.children,
 					tag;
@@ -984,7 +984,7 @@ CCH.Objects.Publish.UI = function () {
 
 				if (CCH.CONFIG.ui.disableBoundingBoxInputForAggregations === false) {
 					$bboxes.removeAttr(CCH.CONFIG.strings.disabled);
-				};
+				}
 			} else {
 				$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 				$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
@@ -1218,23 +1218,23 @@ CCH.Objects.Publish.UI = function () {
 			itemId = item.id;
 			if (itemId !== currentAggregationId && isOfType(item)) {
 				var $li = $('<li />')
-						.addClass('ui-state-default form-publish-info-item-children-sortable-li')
-						.attr('id', 'child-item-' + item.id),
-						$span = $('<span />')
-						.addClass('form-publish-info-item-children-sortable-li-span'),
-						$buttonDiv = $('<div />'),
-						$activeButton = $('<button />')
-						.addClass('btn btn-xs btn-default btn-child-active')
-						.attr({
-							'type': 'button',
-							'data-toggle': 'button'
-						}),
-						$viewButton = $('<button />')
-						.addClass('btn btn-xs btn-default btn-child-visible')
-						.attr({
-							'type': 'button',
-							'data-toggle': 'button'
-						});
+					.addClass('ui-state-default form-publish-info-item-children-sortable-li')
+					.attr('id', 'child-item-' + item.id),
+					$span = $('<span />')
+					.addClass('form-publish-info-item-children-sortable-li-span'),
+					$buttonDiv = $('<div />'),
+					$activeButton = $('<button />')
+					.addClass('btn btn-xs btn-default btn-child-active')
+					.attr({
+						'type': 'button',
+						'data-toggle': 'button'
+					}),
+					$viewButton = $('<button />')
+					.addClass('btn btn-xs btn-default btn-child-visible')
+					.attr({
+						'type': 'button',
+						'data-toggle': 'button'
+					});
 
 				$activeButton.append($('<i />').addClass('fa fa-check'));
 				$viewButton.append($('<i />').addClass('fa fa-eye'));
@@ -1476,38 +1476,38 @@ CCH.Objects.Publish.UI = function () {
 
 	me.deleteItem = function (id) {
 		var $deleteButton = $('<button />')
-				.attr({
-					type: 'button',
-					'data-dismiss': 'modal'
-				})
-				.addClass('btn btn-danger')
-				.html('Delete')
-				.on(CCH.CONFIG.strings.click, function () {
-					$.ajax({
-						url: CCH.CONFIG.contextPath + '/data/item/' + id,
-						method: 'DELETE',
-						success: function () {
-							window.location = CCH.CONFIG.contextPath + '/publish/item/';
-						},
-						error: function (jqXHR, err, errTxt) {
-							if (errTxt.indexOf('Unauthorized') !== -1) {
-								$alertModal.modal(CCH.CONFIG.strings.hide);
-								$alertModalTitle.html('Item Could Not Be Deleted');
-								$alertModalBody.html('It looks like your session has expired.' +
-										'You should try reloading the page to continue.');
-								$alertModal.modal(CCH.CONFIG.strings.show);
-							} else {
-								$alertModal.modal(CCH.CONFIG.strings.hide);
-								$alertModalTitle.html('Item Could Not Be Deleted');
-								$alertModalBody.html('Unfortunately the item you\'re ' +
-										'trying to delete couldn\'t be deleted. ' +
-										'You may need to contact the system administrator ' +
-										'to manually remove it in order to continue');
-								$alertModal.modal(CCH.CONFIG.strings.show);
-							}
+			.attr({
+				type: 'button',
+				'data-dismiss': 'modal'
+			})
+			.addClass('btn btn-danger')
+			.html('Delete')
+			.on(CCH.CONFIG.strings.click, function () {
+				$.ajax({
+					url: CCH.CONFIG.contextPath + '/data/item/' + id,
+					method: 'DELETE',
+					success: function () {
+						window.location = CCH.CONFIG.contextPath + '/publish/item/';
+					},
+					error: function (jqXHR, err, errTxt) {
+						if (errTxt.indexOf('Unauthorized') !== -1) {
+							$alertModal.modal(CCH.CONFIG.strings.hide);
+							$alertModalTitle.html('Item Could Not Be Deleted');
+							$alertModalBody.html('It looks like your session has expired.' +
+									'You should try reloading the page to continue.');
+							$alertModal.modal(CCH.CONFIG.strings.show);
+						} else {
+							$alertModal.modal(CCH.CONFIG.strings.hide);
+							$alertModalTitle.html('Item Could Not Be Deleted');
+							$alertModalBody.html('Unfortunately the item you\'re ' +
+									'trying to delete couldn\'t be deleted. ' +
+									'You may need to contact the system administrator ' +
+									'to manually remove it in order to continue');
+							$alertModal.modal(CCH.CONFIG.strings.show);
 						}
-					});
+					}
 				});
+			});
 		$alertModal.modal(CCH.CONFIG.strings.hide);
 		$alertModalTitle.html('Delete Item?');
 		$alertModalBody.html('<h2>WARNING: This action cannot be undone</h2>');
@@ -1633,11 +1633,11 @@ CCH.Objects.Publish.UI = function () {
 					if (id && title) {
 						$li = $('<li />');
 						$a = $('<a />')
-								.attr({
-									'data-attr': id,
-									'href': '#'
-								})
-								.html(title);
+							.attr({
+								'data-attr': id,
+								'href': '#'
+							})
+							.html(title);
 						$li.append($a);
 						$metadataDropdownList.append($li);
 
@@ -1723,44 +1723,44 @@ CCH.Objects.Publish.UI = function () {
 				errorCallback = function (errorText) {
 					if (errorText.indexOf('already exists') !== -1) {
 						var $overwriteButton = $('<button />')
-								.attr({
-									type: 'button',
-									'data-dismiss': 'modal'
-								})
-								.addClass('btn btn-primary')
-								.html('Overwrite')
-								.on(CCH.CONFIG.strings.click, function () {
-									$alertModal.modal(CCH.CONFIG.strings.hide);
+							.attr({
+								type: 'button',
+								'data-dismiss': 'modal'
+							})
+							.addClass('btn btn-primary')
+							.html('Overwrite')
+							.on(CCH.CONFIG.strings.click, function () {
+								$alertModal.modal(CCH.CONFIG.strings.hide);
 
-									var deleteCall = function () {
-										$alertModal.off('hidden.bs.modal', deleteCall);
-										var updatedLayerName = $srcWfsServiceParamInput.val().split(':')[1];
+								var deleteCall = function () {
+									$alertModal.off('hidden.bs.modal', deleteCall);
+									var updatedLayerName = $srcWfsServiceParamInput.val().split(':')[1];
 
-										$.ajax({
-											url: CCH.CONFIG.contextPath + '/data/layer/' + encodeURIComponent(updatedLayerName),
-											method: 'DELETE',
-											success: function () {
-												importCall();
-											},
-											error: function (jqXHR, err, errTxt) {
-												if (errTxt.indexOf('Unauthorized') !== -1) {
-													$alertModalTitle.html('Layer Could Not Be Removed');
-													$alertModalBody.html('It looks like your session has expired.' +
-															'You should try reloading the page to continue.');
-													$alertModal.modal(CCH.CONFIG.strings.show);
-												}
+									$.ajax({
+										url: CCH.CONFIG.contextPath + '/data/layer/' + encodeURIComponent(updatedLayerName),
+										method: 'DELETE',
+										success: function () {
+											importCall();
+										},
+										error: function (jqXHR, err, errTxt) {
+											if (errTxt.indexOf('Unauthorized') !== -1) {
 												$alertModalTitle.html('Layer Could Not Be Removed');
-												$alertModalBody.html('Unfortunately the layer you\'re ' +
-														'trying to import could not be overwritten. ' +
-														'You may need to contact the system administrator ' +
-														'to manually remove it in order to continue');
+												$alertModalBody.html('It looks like your session has expired.' +
+														'You should try reloading the page to continue.');
 												$alertModal.modal(CCH.CONFIG.strings.show);
 											}
-										});
-									};
+											$alertModalTitle.html('Layer Could Not Be Removed');
+											$alertModalBody.html('Unfortunately the layer you\'re ' +
+													'trying to import could not be overwritten. ' +
+													'You may need to contact the system administrator ' +
+													'to manually remove it in order to continue');
+											$alertModal.modal(CCH.CONFIG.strings.show);
+										}
+									});
+								};
 
-									$alertModal.on('hidden.bs.modal', deleteCall);
-								});
+								$alertModal.on('hidden.bs.modal', deleteCall);
+							});
 						$alertModalTitle.html('Layer Could Not Be Imported');
 						$alertModalBody.html('Layer Already Exists On Server. Overwrite?');
 						$alertModalFooter.append($overwriteButton);
@@ -1935,18 +1935,18 @@ CCH.Objects.Publish.UI = function () {
 				$ul.append($li);
 			});
 			var $modalSaveButton = $('<button />')
-					.attr({
-						id : 'alert-modal-save-button',
-						type : 'button',
-						'data-dismiss' : 'modal'
-					})
-					.addClass("btn btn-default")
-					.html('Save Anyway')
-					.off('click')
-					.on('click', function (evt) {
-						performSave();
-						$(evt.target).remove();
-					});
+				.attr({
+					id : 'alert-modal-save-button',
+					type : 'button',
+					'data-dismiss' : 'modal'
+				})
+				.addClass("btn btn-default")
+				.html('Save Anyway')
+				.off('click')
+				.on('click', function (evt) {
+					performSave();
+					$(evt.target).remove();
+				});
 			
 			$alertModal.modal(CCH.CONFIG.strings.hide);
 			$alertModalTitle.html('Errors Found In Publish Form');
@@ -2190,8 +2190,8 @@ CCH.Objects.Publish.UI = function () {
 				});
 			} else if (srcWmsVal.indexOf(CCH.CONFIG.data.sources['marine-arcserver'].endpoint) !== -1) {
 				var serverName = 'marine-arcserver',
-						serverData = CCH.CONFIG.data.sources[serverName],
-						namespace = srcWmsVal.substring(serverData.endpoint.length + 1);
+					serverData = CCH.CONFIG.data.sources[serverName],
+					namespace = srcWmsVal.substring(serverData.endpoint.length + 1);
 
 				if (namespace.indexOf('WMSServer') !== -1) {
 					namespace = namespace.split('/')[0] + '/' + namespace.split('/')[1];
