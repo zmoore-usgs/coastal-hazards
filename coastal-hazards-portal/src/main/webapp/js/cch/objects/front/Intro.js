@@ -169,6 +169,73 @@ CCH.intro = (function () {
 					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
 					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
 				}
+			},
+                        {
+				element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-navigation-container',
+				intro: 'Drawing Order',
+				position: 'left',
+				name: 'move',
+				onEnter: function () {
+					$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					return CCH.ui.bucketSlide.open();
+				},
+				onbeforechange: function(targetEle){
+					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
+						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					 }
+					 
+					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
+					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
+				}
+			},
+                        {
+				element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-share',
+				intro: 'Share Bucket',
+				position: 'left',
+				name: 'share',
+				onEnter: function () {
+					$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					return CCH.ui.bucketSlide.open();
+				},
+				onbeforechange: function(targetEle){
+					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
+						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					 }
+					 
+					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
+					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
+				}
+			},
+                        {
+				element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-remove',
+				intro: 'Remove Item',
+				position: 'left',
+				name: 'remove',
+				onEnter: function () {
+					$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					return CCH.ui.bucketSlide.open();
+				},
+				onbeforechange: function(targetEle){
+					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
+						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					 }
+					 
+					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
+					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
+				}
+			},
+                        {
+				element: '#bucket-manage-menu-drop',
+				intro: 'Manage your bucket here',
+				position: 'left',
+				name: 'manage-bucket',
+				onbeforechange: function(targetEle){
+					CCH.ui.bucketSlide.open();
+					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
+						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					}
+				}
+
 			}
 		],
 		updateForMobile = function () {
