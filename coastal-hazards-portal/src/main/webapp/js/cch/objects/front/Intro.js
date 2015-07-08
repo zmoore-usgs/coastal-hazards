@@ -135,7 +135,9 @@ CCH.intro = (function () {
 				position: 'left',
 				name: 'bucket',
 				onbeforechange: function(targetEle){
+                                    if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
 					$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+                                    }
 					CCH.ui.bucketSlide.open();
 				}
 			},
@@ -183,6 +185,9 @@ CCH.intro = (function () {
 					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
 						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 					 }
+                                         if($('.modal-content-share').css('display', 'block')){
+                                             $('.close').click();
+                                         }
 					 
 					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
 					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
@@ -201,7 +206,48 @@ CCH.intro = (function () {
 					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
 						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 					 }
+                                         CCH.ui.displayShareModal();
 					 
+					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
+					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
+				}
+			},
+                        {
+				element: '.modal-content',
+				intro: 'Share Bucket with friends',
+				position: 'bottom',
+				name: 'share-url',
+				onEnter: function () {
+					$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					return CCH.ui.bucketSlide.open();
+				},
+				onbeforechange: function(targetEle){
+					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
+						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					 }
+                                         if($('.modal-content-share').css('display', 'none')){
+                                             $('#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-share').click();
+                                         }
+					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
+					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
+				}
+			},
+                        {
+				element: '.modal-content #modal-share-summary-url-inputbox',
+				intro: 'Use the url to save a session and share',
+				position: 'bottom',
+				name: 'url-box',
+				onEnter: function () {
+					$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					return CCH.ui.bucketSlide.open();
+				},
+				onbeforechange: function(targetEle){
+					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
+						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					 }
+                                         if($('.modal-content-share').css('display', 'none')){
+                                             $('#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-share').click();
+                                         }
 					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
 					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
 				}
@@ -219,6 +265,9 @@ CCH.intro = (function () {
 					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
 						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 					 }
+                                         if($('.modal-content-share').css('display', 'block')){
+                                             $('.close').click();
+                                         }
 					 
 					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
 					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
