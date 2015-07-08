@@ -205,7 +205,7 @@
                                 <img src="<%=baseUrl%>/images/info/legend.png" alt="legend Icon"/>
                                     
                                 <p>
-                                	Click to view the map's legend
+                                	Click to view the map's legend.
                                 </p>
                                 
                                 <p>
