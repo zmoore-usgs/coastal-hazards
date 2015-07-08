@@ -274,10 +274,7 @@
     
                                     	
                                 </div>
-                                
-                                
-                                
-                            </div>
+
                                 
                             <div id="acContentArea" class="topicContentArea">
                                 <h1>Action Center</h1>
