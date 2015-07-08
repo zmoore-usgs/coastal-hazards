@@ -3,7 +3,6 @@ package gov.usgs.cida.coastalhazards.rest.data.util;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.MetadataResource;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
-import gov.usgs.cida.utilities.communication.HttpClientSingleton;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -26,11 +24,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +101,7 @@ public class MetadataUtil {
 		}
 		String data = IOUtils.toString(resp.getEntity().getContent(), "UTF-8");
 		if (data.contains("ExceptionReport")) {
+			log.error(data);
 			throw new IOException("Error in response from csw");
 		}
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -125,7 +122,7 @@ public class MetadataUtil {
 	 * I really don't like this in its current form, we should rethink this
 	 * process and move this around
 	 *
-	 * @param metadataId id of metadata file to send to R process
+	 * @param metadataEndpoint metadata endpoint for retreival
 	 * @param attr attribute summary is for
 	 * @return
 	 * @throws IOException
