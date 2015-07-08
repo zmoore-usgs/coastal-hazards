@@ -167,7 +167,7 @@
                                 <h2>Toggle item visibility on the map</h2>
                                 
                                 <p>
-                                	In order to manage what is visible on the Map, add the item or aggregations of interest to your bucket, then navigate to the bucket where you can  re-order and toggle their visibility.
+                                	In order to manage what is visible on the map, add the item or aggregations of interest to your bucket, then navigate to the bucket where you can  re-order and toggle their visibility.
                                 </p>
                                 
                                 <h2>Search options</h2>
@@ -190,7 +190,7 @@
                                 
                                 <img class="longIcon" src="<%=baseUrl%>/images/info/findyourlocation.png" alt="find your location Icon"/>
                                     
-                                <p>Click this icon in order to zoom to you location. Some browsers will request a user's permission to share their location before adjusting the map extent.</p> 
+                                <p>Click this icon in order to zoom to your location. Some browsers will request a user's permission to share their location before adjusting the map extent.</p> 
                                 
                                 <h3>Change maps base layer</h3>
                                 
