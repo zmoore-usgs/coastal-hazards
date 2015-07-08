@@ -72,7 +72,11 @@ CCH.Util.Util = {
 	getMinifiedEndpoint: function (args) {
 		"use strict";
 		var location = args.location || window.location.href;
-
+		
+		if (location === CCH.CONFIG.ui.endpoints.tutorial) {
+			return $.Deferred().resolve({tinyUrl : location});
+		}
+		
 		return $.ajax(CCH.CONFIG.contextPath + '/data/minifier/minify/' + location, {
 			type: 'GET',
 			dataType: 'json'
