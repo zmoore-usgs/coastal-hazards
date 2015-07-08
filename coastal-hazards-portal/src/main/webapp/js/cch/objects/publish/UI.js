@@ -672,12 +672,13 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.initNewItemForm = function () {
-		var cswUrl = me.$cswServiceInput.val();
+		var $cswInput = $('#form-publish-item-service-csw'),
+			cswUrl = $cswInput.val();
 
 		me.clearForm();
 		me.enableNewItemForm();
 
-		me.$cswServiceInput.val(cswUrl);
+		$cswInput.val(cswUrl);
 
 		me.getCSWInfo({
 			url: cswUrl,
