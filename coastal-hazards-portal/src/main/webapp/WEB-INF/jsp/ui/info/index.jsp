@@ -197,7 +197,7 @@
                                 <img src="<%=baseUrl%>/images/info/base_layer.png" alt="Base layer Icon"/>
                                     
                                 <p>
-                                	World Imagery, Street, Topo, and Ocean. The user can also toggle the Place Name layer displayed.
+                                	World Imagery, Street, Topo, and Ocean. The user can also toggle the Place Name overlay.
                                	</p>
                                 
                                 <h3>Map Legend</h3>
