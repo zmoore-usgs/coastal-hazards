@@ -140,19 +140,18 @@
                                 
                                 <button class="button-tour">Take a Tour</button>
                                 
-                                <h2>Navigate Data Themes</h2>
+                                <h2>Find and view data, reports, and other products</h2>
                                 
                                 <p>
                                     The Coastal Change Hazards portal organizes products and information into discrete items within three specific coastal hazard themes: 1) severe storms, 2) shoreline change, and 3) sea-level rise. Each data item represents an individual research product. Items with a common topic area are grouped into aggregations within a theme, to show the breadth of that topic and make it easy to explore related information.
-
                                 </p>
                                 
-                                <h2>Add Items to the Bucket</h2>
+                                <h2>Adding an item to the bucket</h2>
                                 
                                 <img src="<%=baseUrl%>/images/info/info-page-add-to-bucket.png" alt="add to bucket Icon"/>
                                 
                                 <p>
-                                    Click the "Add To Bucket icon" to put the current item or aggregation in your Bucket and interact with it there.
+                                    Click on the icon to put the current data item or aggregation in your Bucket where you can collect and download data, as well as, customize your map.
                                 </p>
                                 
                                 <h2>More Information</h2>
@@ -160,21 +159,15 @@
                                 <img class="longIcon" src="<%=baseUrl%>/images/info/info-page-more-info-link.png" alt="more info Icon"/>
                                 
                                 <p>
-                                	Click on the "More Info button" in an item or aggregate in order to review more details about the item or aggregate in the Action Center.	
+                                	Click on the icon to get more information about the data item, this will take the user to the action center.	
                                 </p>
                                 
-                                <h2>Zoom to Layer Extent</h2>
                                 
-                                <img class="longIcon" src="<%=baseUrl%>/images/info/info-page-zoomto-link.png" alt="zoom to Icon"/>
-								
-				<p>
-                                    For any item in the Bucket with a thumbnail image, a user can click on the thumbnail image to zoom to the extent of the item or aggregation.
-                                </p>
                                 
                                 <h2>Toggle Item Visibility on the Map</h2>
                                 
                                 <p>
-                                	In order to manage what is visible on the Map, add the item or aggregations of interest to your bucket, then navigate to the bucket and re-order and toggle their visibility status.
+                                	In order to manage what is visible on the Map, add the item or aggregations of interest to your bucket, then navigate to the bucket where you can  re-order and toggle their visibility.
                                 </p>
                                 
                                 <h2>Search Options</h2>
@@ -184,41 +177,40 @@
                                 </p>
                                 
                                 <h2>Interactive Map Features</h2>
-                                
-                                <p>
-                                    Legend Scrollover for Probability of Collision/Inundation/Overwash (PCOI) layers: When viewing the three PCOI layers on the map, a user can hover over the individual item names in the legend in order to differentiate the layers. As a layer is hovered upon, its "sibling" layers are hidden in the map view until the user moves the cursor off the PCOI layer name. 
-                                </p>
-                                
+                                 
                                 <h2>Zoom In/Out</h2>
                                 
                                 <img class="longIcon" src="<%=baseUrl%>/images/info/zoom-in-out.png" alt="zoom in and out Icon"/>
                                 
                                 <p>
-                                   Use the familiar icons to zoom in or out on the map.
+                                   Use the icons to zoom in or out on the map.
                                 </p>  
+                                
+                                <h2>Zoom to Your Location</h2>
+                                
+                                <img class="longIcon" src="<%=baseUrl%>/images/info/findyourlocation.png" alt="find your location Icon"/>
+                                    
+                                <p>Click this icon in order to zoom to you location. Some browsers will request a user's permission to share their location before adjusting the map extent.</p> 
                                 
                                 <h2>Change maps base layer</h2>
                                 
                                 <img src="<%=baseUrl%>/images/info/base_layer.png" alt="Base layer Icon"/>
                                     
                                 <p>World Imagery, Street, Topo, and Ocean. The user can also toggle the Place Name layer displayed.</p>
-                                
                                 <h2>Map Legend</h2>
                                 
                                 <img src="<%=baseUrl%>/images/info/legend.png" alt="legend Icon"/>
                                     
                                 <p>Click to view the maps legend</p>
+                                <p>
+                                Legend Scrollover for Probability of Collision/Inundation/Overwash (PCOI) data items: When viewing the three coastal change probability data items on the map, a user can hover over the individual item names in the legend in order to differentiate the layers. As a data item’s name is hovered upon, the other data items are hidden in the map view until the user moves the cursor off the active data item’s name in the legend.
+
+                                </p>
                                 
-                                <h2>Zoom to Your Location</h2>
-                                
-                                <img class="longIcon" src="<%=baseUrl%>/images/info/findyourlocation.png" alt="find your location Icon"/>
-                                    
-                                <p>Click this icon in order to zoom to you location. Some browsers will request a user's permission to share their location before adjusting the map extent.</p>
-                                
-                                <h2>Identify Visible Features</h2>
+                                <h2>Identify Visible Data</h2>
                                 
                                  <p>
-                                   When a layer is enabled on the map, a user may click on a feature to retrieve a summary of the visible items.
+                                   When a data item is enabled on the map, a user may click on the data to retrieve a summary.
                                 </p>
                                 
                             </div>
@@ -228,13 +220,19 @@
                                 
                                 <button class="button-tour">Take a Tour</button>
                                
-                                <h2>Add and Manage Datasets</h2>
-                                
+                                <h2>Add and manage datasets</h2>
+                               
+                                <img src="<%=baseUrl%>/images/info/info-page-add-to-bucket.png" alt="add to bucket Icon"/>
+                              
                                 <p>
                                     Click the "Add To Bucket icon" to place the current item or aggregation in your Bucket and interact with it there.
                                 </p>
                                
-                                <h2>Adjust Data Visibility/Order</h2>
+                                <h2>Change data visibility</h2>
+                                
+                                    <img src="<%=baseUrl%>/images/info/eyeball.png" alt="eyeball Icon"/>
+                                
+                                  <img src="<%=baseUrl%>/images/info/move.png" alt="move Icon"/>
                                 
                                 <p>
                                     Click the eyeball icon in the Bucket in order to toggle a layer on or off.
@@ -242,55 +240,38 @@
                                     Click the up or down arrows in order to move the layer above or below other layers in your Bucket.
                                 </p>
 
-                                <h2>Share Item</h2>
+								<h2>Zoom to data</h2>
                                 
-                                <p>
-                                    In order to create a view or collection of items to bookmark or share with a colleague or friend, a user should add items and aggregations to their Bucket, click on the Bucket to open its contents, and click the Manage button to get the direct link. 
+                                <img class="longIcon" src="<%=baseUrl%>/images/info/info-page-zoomto-link.png" alt="zoom to Icon"/>
+								<p>
+                                    Click on the thumbnail image to zoom to the extent of the data item.
                                 </p>
+
+                                <h2>Share data</h2>
                                 
-                                <h2>Download Datasets</h2>
-                                
-                                <p>
-                                    From within the Bucket, the user can click on the Download icon in order to download a zipped (.zip) shapefile (.shp) of the item or aggregation of interest. Some downloads may take a while to queue and prepare.
-                                </p>
-                                
-                                <div class="iconExplanationContainer">
-                                   
-                                    <h2>The Bucket</h2>
-                                    
-                                    <img src="<%=baseUrl%>/images/info/info-page-bucket.png" alt="bucket Icon"/>
-                                    
-                                    <p>Put items of interest into the bucket. From here, download data and products or share contents with friends and colleagues</p>
-                                        
-                                    <h2>Layer Visibility</h2>
-                                    
-                                    <img src="<%=baseUrl%>/images/info/eyeball.png" alt="eyeball Icon"/>
-                                        
-                                    <p>Toggle Visibility</p>
-                                    
-                                    <h2>Download Data</h2>
-                                        
-                                    <img src="<%=baseUrl%>/images/info/download.png" alt="download Icon"/>
-                                        
-                                    <p>Download datasets</p>
-                                    
-                                    <h2>Clear Item</h2>
-                                        
-                                    <img src="<%=baseUrl%>/images/info/trashcan.png" alt="trashcan Icon"/>
-                                        
-                                    <p>Clear an item from your bucket</p>
-                                    
-                                    <h2>Share your Bucket</h2>
-                                        
                                     <img src="<%=baseUrl%>/images/info/share.png" alt="share Icon"/>
-                                        
-                                    <p>Share bucket</p>
-                                    
-                                    <h2>Adjust Items Order</h2>
-                                        
-                                    <img src="<%=baseUrl%>/images/info/move.png" alt="move Icon"/>
-                                    	
-                                    <p>Adjust Data Order</p>
+                                
+                                <p>
+                                    Click the share icon to get a short link useful for sharing on social media, or to send to colleagues and friends.
+                                </p>
+                                
+                                <h2>Download data</h2>
+                                
+                                 <img src="<%=baseUrl%>/images/info/download.png" alt="download Icon"/>
+                                
+                                <p>
+                                    Click on the Download icon to download a zipped (.zip) shapefile (.shp) of the item or aggregation of interest.
+                                </p>
+                                
+
+                                <h2>Remove data</h2>
+                                
+                                	<img src="<%=baseUrl%>/images/info/trashcan.png" alt="trashcan Icon"/>
+                                
+                                <p>
+                                	Click the Trashcan icon to remove the item from your bucket.
+                                </p>
+    
                                     	
                                 </div>
                                 
@@ -304,7 +285,7 @@
                                 <button class="button-tour">Take a Tour</button>
 
                                 <p>
-                                   The action center can be accessed from the application by clicking on the “more info” icon in any item. Once you have arrived in the action center, you will see more information about an item in the “Summary” and “Additional Information” sections. The “Additional Information” section includes related data, publications, and resources links. The action center also contains several action button options on the left-hand side, explained in more detail below.
+                                   The action center can be accessed from the application by clicking on the “more info” icon in any item. Once you have arrived in the action center, you will see more information about an item in the “Summary” and “Additional Information” sections. The “Additional Information” section includes related data, publications, and resources links. The action center also contains several action button options, explained in more detail below.
                                 </p>
                                 
                                 <h2>Action Center Descriptions</h2>
