@@ -135,8 +135,6 @@ CCH.intro = (function () {
 				position: 'left',
 				name: 'bucket',
 				onbeforechange: function(targetEle){
-					//inefficient, needs Ivan magic
-					//loads three items into the bucket
 					$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 					CCH.ui.bucketSlide.open();
 				}
@@ -149,8 +147,6 @@ CCH.intro = (function () {
 				onbeforechange: function(targetEle){
 					CCH.ui.bucketSlide.open();
 					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
-					   //inefficient, needs Ivan magic
-					   //loads three items into the bucket if not loaded already
 						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 					}
 				}
@@ -159,7 +155,7 @@ CCH.intro = (function () {
 			{
 				element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-layer',
 				intro: 'Toggle visibility',
-				position: 'right',
+				position: 'bottom',
 				name: 'visibility',
 				onEnter: function () {
 					$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
@@ -167,14 +163,11 @@ CCH.intro = (function () {
 				},
 				onbeforechange: function(targetEle){
 					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
-						//inefficient, needs Ivan magic
-						//loads three items into the bucket if not loaded already
 						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 					 }
 					 
-					 if (targetEle.className === 'introjsFloatingElement') {
-						intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
-					 }
+					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
+					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
 				}
 			}
 		],
