@@ -640,6 +640,14 @@ CCH.Objects.Publish.UI = function () {
 
 	me.updateFormWithNewCSWInfo = function (responseObject, textStatus) {
 		if (textStatus === 'success') {
+			
+			CCH.ows.requestCSWRecords({
+			maxRecords: 100000,
+			callbacks: {
+				success: [me.updateMetadataDropdown]
+			}
+		});
+			
 			var cswNodes = responseObject.children,
 					tag;
 			cswNodes[0].children.each(function (node) {
@@ -1601,6 +1609,56 @@ CCH.Objects.Publish.UI = function () {
 			}
 		});
 	};
+	
+	me.updateMetadataDropdown = function (cswResponse) {
+		
+		$metadataDropdownList.empty();
+		
+		cswResponse.children.each(function (responseChild) {
+			if (responseChild.tag === "csw:SearchResults" || responseChild.tag === "metadata" && responseChild.children) {
+				var id,
+						title,
+						$li,
+						$a;
+
+				responseChild.children.each(function (recordSummary) {
+					recordSummary.children.each(function (recordAttribute) {
+						if (recordAttribute.tag === "dc:identifier") {
+							id = recordAttribute.text;
+						} else if (recordAttribute.tag === "dc:title") {
+							title = recordAttribute.text;
+						}
+					});
+
+					if (id && title) {
+						$li = $('<li />');
+						$a = $('<a />')
+								.attr({
+									'data-attr': id,
+									'href': '#'
+								})
+								.html(title);
+						$li.append($a);
+						$metadataDropdownList.append($li);
+
+						$a.on(CCH.CONFIG.strings.click, function (evt) {
+							var endpoint = CCH.CONFIG.publicUrl;
+							endpoint += '/csw/?';
+							endpoint += 'service=CSW';
+							endpoint += '&request=GetRecordById';
+							endpoint += '&version=2.0.2';
+							endpoint += '&typeNames=fgdc:metadata';
+							endpoint += '&id=' + $(evt.target).attr('data-attr');
+							endpoint += '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
+							endpoint += '&elementSetName=full';
+							$cswServiceInput.val(endpoint);
+
+						});
+					}
+				});
+			}
+		});
+	};
 
 	$wfsImportButton.on(CCH.CONFIG.strings.click, function () {
 		var importCall,
@@ -2278,54 +2336,7 @@ CCH.Objects.Publish.UI = function () {
 	CCH.ows.requestCSWRecords({
 		maxRecords: 100000,
 		callbacks: {
-			success: [
-				function (response) {
-					response.children.each(function (responseChild) {
-						if (responseChild.tag === "csw:SearchResults" && responseChild.children) {
-							var id,
-									title,
-									$li,
-									$a;
-
-							responseChild.children.each(function (recordSummary) {
-								recordSummary.children.each(function (recordAttribute) {
-									if (recordAttribute.tag === "dc:identifier") {
-										id = recordAttribute.text;
-									} else if (recordAttribute.tag === "dc:title") {
-										title = recordAttribute.text;
-									}
-								});
-
-								if (id && title) {
-									$li = $('<li />');
-									$a = $('<a />')
-											.attr({
-												'data-attr': id,
-												'href': '#'
-											})
-											.html(title);
-									$li.append($a);
-									$metadataDropdownList.append($li);
-
-									$a.on(CCH.CONFIG.strings.click, function (evt) {
-										var endpoint = CCH.CONFIG.publicUrl;
-										endpoint += '/csw/?';
-										endpoint += 'service=CSW';
-										endpoint += '&request=GetRecordById';
-										endpoint += '&version=2.0.2';
-										endpoint += '&typeNames=fgdc:metadata';
-										endpoint += '&id=' + $(evt.target).attr('data-attr');
-										endpoint += '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
-										endpoint += '&elementSetName=full';
-										$cswServiceInput.val(endpoint);
-
-									});
-								}
-							});
-						}
-					});
-				}
-			],
+			success: [me.updateMetadataDropdown],
 			error: [
 				function (response) {
 					$alertModal.modal(CCH.CONFIG.strings.hide);
