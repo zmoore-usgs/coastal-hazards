@@ -151,7 +151,7 @@
                                 <img src="<%=baseUrl%>/images/info/info-page-add-to-bucket.png" alt="add to bucket Icon"/>
                                 
                                 <p>
-                                    Click on the bucket icon to put the current data item or aggregation in your bucket where you can collect and download data, as well as, customize your map.
+                                    Click on the bucket icon to put the current item or group in your bucket.
                                 </p>
                                 
                                 <h2>More Information</h2>
@@ -159,21 +159,19 @@
                                 <img class="longIcon" src="<%=baseUrl%>/images/info/info-page-more-info-link.png" alt="more info Icon"/>
                                 
                                 <p>
-                                	Click on the icon to get more information about the data item, this will take the user to the action center.	
+                                	Click on the information icon to get more details about the data item.	
                                 </p>
-                                
-                                
                                 
                                 <h2>Toggle Item Visibility on the Map</h2>
                                 
                                 <p>
-                                	In order to manage what is visible on the map, add the item or aggregations of interest to your bucket, then navigate to the bucket where you can  re-order and toggle their visibility.
+                                	To change what is visible on the map, add the item to your bucket, then navigate to the bucket where you can  re-order and toggle their visibility.
                                 </p>
                                 
                                 <h2>Search Options</h2>
                                 
                                 <p>
-                                    Users can search for data products in one or more coastal hazard themes by name or description, as well as search by location in order to find a particular place of interest.
+                                    Search for data and information in one or more coastal hazard themes by name or search by location.
                                 </p>
                                 
                                 <h2>Interactive Map Features</h2>
@@ -183,21 +181,21 @@
                                 <img class="longIcon" src="<%=baseUrl%>/images/info/zoom-in-out.png" alt="zoom in and out Icon"/>
                                 
                                 <p>
-                                   Use the icons to zoom in or out on the map.
+                                   Click the icons to zoom in or out on the map.
                                 </p>  
                                 
                                 <h3>Zoom to Your Location</h3>
                                 
                                 <img class="longIcon" src="<%=baseUrl%>/images/info/findyourlocation.png" alt="find your location Icon"/>
                                     
-                                <p>Click this icon in order to zoom to your location. Some browsers will request a user's permission to share their location before adjusting the map extent.</p> 
+                                <p>Click the location icon in order to zoom to your location. Some browsers and smartphones will first request your permission to share your location.</p> 
                                 
-                                <h3>Change Maps Base Layer</h3>
+                                <h3>Map Base Layer</h3>
                                 
                                 <img src="<%=baseUrl%>/images/info/base_layer.png" alt="Base layer Icon"/>
                                     
                                 <p>
-                                	World Imagery, Street, Topo, and Ocean. The user can also toggle the Place Name overlay.
+                                	Choose World Imagery, Street, Topo, or Ocean, and choose whether to display place names.
                                	</p>
                                 
                                 <h3>Map Legend</h3>
@@ -205,11 +203,11 @@
                                 <img src="<%=baseUrl%>/images/info/legend.png" alt="legend Icon"/>
                                     
                                 <p>
-                                	Click to view the map's legend.
+                                	Click to view the map legend.
                                 </p>
                                 
                                 <p>
-                                	Legend scrollover for probability of collision/inundation/overwash (PCOI) data items: When viewing the three coastal change probability data items on the map, a user can hover over the individual item names in the legend in order to differentiate the layers. As a data item’s name is hovered upon, the other data items are hidden in the map view until the user moves the cursor off the active data item’s name in the legend.
+                                	Legend scrollover for probability of collision/inundation/overwash (pCOI) data items: When viewing the three coastal change probability data items on the mato highlight the layers on the map. Click on data in the map to get more information about the data at that location.
                                 </p>
                                 
                                 <h3>Identify Visible Data</h3>
@@ -271,12 +269,25 @@
                                     Click on the download icon to download a zipped (.zip) shapefile (.shp) of the item or aggregation of interest.
                                 </p>
                                 
-                                <h2>Remove Data</h2>
+                                <h2>Clear/empty/share Bucket</h2>
+                               	<p>
+                               		To empty or share the contents for all items in the bucket, click the Manage Bucket button and select Clear or Share Bucket options.
+                               	</p>
+                                
+                                <h2>Remove Item</h2>
                                 
                                 <img src="<%=baseUrl%>/images/info/trashcan.png" alt="trashcan Icon"/>
                                 
                                 <p>
                                 	Click the trash can icon to remove the item from your bucket.
+                                </p>
+                                
+                                <h2>More Info</h2>
+                                
+                                <img src="<%=baseUrl%>/images/info/info.png" alt="More Info Icon"/>
+                                
+                                <p>
+                                	Click on the information icon to get more details about the item. This will take the user to the action center.
                                 </p>
                                     	
                             </div>
@@ -287,7 +298,7 @@
                                 <button class="button-tour">Take a Tour</button>
 
                                 <p>
-                                   The action center can be accessed from the application by clicking on the “more info” icon in any item. Once you have arrived in the action center, you will see more information about an item in the “Summary” and “Additional Information” sections. The “Additional Information” section includes related data, publications, and resources links. The action center also contains several action button options, explained in more detail below.
+                                   Get to the Action Center by clicking on the “More Info” icon in any item. The Action Center contains several button options.
                                 </p>
                                 
                                 <h2>Action Center Descriptions</h2>
