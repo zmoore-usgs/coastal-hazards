@@ -51,6 +51,10 @@
 
 			<div id="content">
                             
+                            <div id="mobileReturnToMap">
+                                <a href="<%=baseUrl%>"><button>Return to Map</button></a>
+                            </div>
+                            
                             <div id="mobileTopThree">
                                 <a href="#mapContentArea">
                                     <div id="mobileMap" class="mobileThree">Map</div>
@@ -119,10 +123,12 @@
                             </div>
                                 
                             <%-- Back to Portal Button --%>
-                            <h3>Not where you want to be?</h3>
-                            <form action="<%=baseUrl%>">
-                                <button id="cch-back-to-portal-button" type="submit">Return to Portal</button>
-                            </form>
+                            <div id="desktopReturnToMap">
+                                <h3>Not where you want to be?</h3>
+                                <form action="<%=baseUrl%>">
+                                    <button id="cch-back-to-portal-button" type="submit">Return to Portal</button>
+                                </form>
+                            </div>
                             
                             <div id="otherLinks">
                                 <p>
