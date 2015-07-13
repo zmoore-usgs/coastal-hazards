@@ -6,7 +6,8 @@
     color: white;
 }
 
-.button-tour {
+.button-tour,
+#desktopReturnToMap{
 	display: none;
 }
 
@@ -202,6 +203,19 @@ header{
     }
 }
 
+#mobileReturnToMap{
+    button{
+        background:@cch-primaryColor;
+        width:100%;
+        color:white;
+        border:none;
+        height:30px;
+        margin-bottom:15px;
+        border-radius:5px;
+        font-size: .85em;
+    }
+}
+
 .iconExplanationContainer{
     margin:0 15px 10px 0;
     width:100%;
@@ -244,7 +258,12 @@ footer{
 
     .mobileThree,
     h1.mobile,
-    h1.mobile_portrait{display:none;}
+    h1.mobile_portrait,
+    #mobileReturnToMap{display:none;}
+    
+    #desktopReturnToMap{
+        display:block;
+    }
 
     .topicContentArea{
 
