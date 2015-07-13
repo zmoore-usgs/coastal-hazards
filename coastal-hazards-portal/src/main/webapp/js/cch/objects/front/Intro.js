@@ -206,8 +206,8 @@ CCH.intro = (function () {
 					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
 						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 					 }
-                                         CCH.ui.displayShareModal();
-					 
+                                          $('#' + CCH.ui.SHARE_TWITTER_BUTTON_ID).empty();
+                                         CCH.ui.displayShareModal(CCH.CONFIG.ui.endpoints.tutorial);
 					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
 					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
 				}
@@ -225,8 +225,9 @@ CCH.intro = (function () {
 					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
 						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 					 }
+                                         $('#' + CCH.ui.SHARE_TWITTER_BUTTON_ID).empty();
                                          if($('.modal-content-share').css('display', 'none')){
-                                             $('#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-share').click();
+                                             CCH.ui.displayShareModal(CCH.CONFIG.ui.endpoints.tutorial);
                                          }
 					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
 					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
@@ -246,7 +247,7 @@ CCH.intro = (function () {
 						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 					 }
                                          if($('.modal-content-share').css('display', 'none')){
-                                             $('#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-share').click();
+                                             CCH.ui.displayShareModal(CCH.CONFIG.ui.endpoints.tutorial);
                                          }
 					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
 					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
