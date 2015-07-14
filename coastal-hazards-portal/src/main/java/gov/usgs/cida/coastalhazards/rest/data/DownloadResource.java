@@ -21,7 +21,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -148,7 +147,12 @@ public class DownloadResource {
 				download = downloadManager.load(id);
 			}
 			
-			if (download != null) {
+			if (download == null) {
+				// Download was null, so we it was not previously staged. Do so now.
+				LOG.debug("Download manager could not find download for item {}. A download will be staged for this item.", id);
+				DownloadUtility.stageAsyncItemDownload(id);
+				response = Response.status(ACCEPTED).build();
+			} else {
 				LOG.debug("Download manager found a download for item id {}", id);
 				if (download.isProblem()) {
 					LOG.debug("Download manager found a problem with download for item id {}", id);
@@ -182,11 +186,6 @@ public class DownloadResource {
 						}
 					}
 				}
-			} else {
-				// Download was null, so we it was not previously staged. Do so now.
-				LOG.debug("Download manager could not find download for item {}. A download will be staged for this item.", id);
-				DownloadUtility.stageAsyncItemDownload(id);
-				response = Response.status(ACCEPTED).build();
 			}
 		}
 		
