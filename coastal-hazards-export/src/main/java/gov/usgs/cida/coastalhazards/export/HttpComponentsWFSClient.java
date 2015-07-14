@@ -51,7 +51,7 @@ public class HttpComponentsWFSClient implements WFSClientInterface {
 
     @Override
     public SimpleFeatureCollection getFeatureCollection(String typeName, Filter filter) throws IOException {
-        SimpleFeatureCollection collection= null;
+        SimpleFeatureCollection collection;
         
         String filterXml = null;
         InputStream is = null;

@@ -4,7 +4,6 @@ import gov.usgs.cida.coastalhazards.model.util.Download;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.MessageFormat;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -69,57 +68,86 @@ public class DownloadManager implements AutoCloseable {
 		return exists;
 	}
 
-	public void save(Download download) {
+	/**
+	 * Persists download data to the database
+	 * @param download
+	 * @return whether save was succesful
+	 */
+	public boolean save(Download download) {
+		boolean saved = false;
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			transaction.begin();
+			log.info("Saving download id {}", download.getId());
 			em.persist(download);
 			transaction.commit();
+			saved = true;
+			log.info("Saved download id {}", download.getId());
 		} catch (Exception ex) {
+			log.error("Download id {} could not be saved", ex);
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
 		}
+		return saved;
 	}
 
-	public void update(Download download) {
+	/**
+	 * Updates download data in the database
+	 * @param download
+	 * @return whether update was succesful 
+	 */
+	public boolean update(Download download) {
+		boolean updated = false;
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			transaction.begin();
+			log.info("Updating download id {}", download.getId());
 			em.merge(download);
 			transaction.commit();
+			updated = true;
+			log.info("Saved download id {}", download.getId());
 		} catch (Exception ex) {
-			log.error("Unable to update download", ex);
+			log.error("Download id {} could not be updated", ex);
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
 		}
+		return updated;
 	}
 
 	/**
 	 * This needs to be wrapped in transaction or it will fail
 	 *
 	 * @param download
+	 * @return whether download was deleted or not
 	 */
-	public void delete(Download download) {
+	public boolean delete(Download download) {
+		boolean deleted = false;
+		log.info("Deleting download id {}", download.getId());
 		em.remove(download);
+		deleted = true;
+		log.info("Deleted download id {}", download.getId());
+		return deleted;
 	}
 
-	public void deleteAllMissing() {
+	public boolean deleteAllMissing() {
 		Query deleteQuery = em.createQuery(HQL_DELETE_MISSING);
 		EntityTransaction transaction = em.getTransaction();
+		boolean deletedAll = false;
 		try {
 			transaction.begin();
 			int deleted = deleteQuery.executeUpdate();
-			log.debug(MessageFormat.format("Deleted {0} missing downloads", deleted));
+			log.debug("Deleted {} missing downloads", deleted);
 			transaction.commit();
+			deletedAll = true;
 		} catch (Exception ex) {
 			log.error("Error deleting downloads", ex);
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
 		}
-
+		return deletedAll;
 	}
 
 	public List<Download> getAllStagedDownloads() {
