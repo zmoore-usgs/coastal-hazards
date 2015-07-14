@@ -351,7 +351,7 @@ public class DownloadUtility {
 				throw new IOException(MessageFormat.format("Item {0} does not exist", itemId));
 			}
 
-			Download download;
+			Download download = null;
 			try (DownloadManager downloadManager = new DownloadManager()) {
 				download = downloadManager.load(itemId);
 				if (download == null) {
