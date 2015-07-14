@@ -73,12 +73,26 @@ public class DownloadUtility {
 		}
 	}
 
+	/**
+	 * Find where there staging directory is located for all download items.
+	 * Will first attempt to read the location from JNDI propertes. Will fall
+	 * back to the Java system property "java.io.tmpdir"
+	 *
+	 * @return the staging file location
+	 */
 	public static File getStagingParentDir() {
 		String downloadDir = JNDISingleton.getInstance().getProperty("coastal-hazards.files.directory.download",
 				System.getProperty("java.io.tmpdir"));
 		return new File(downloadDir);
 	}
 
+	/**
+	 * Creates a unique area within the staging directory and returns the
+	 * location
+	 *
+	 * @return a path to the staging area
+	 * @throws IOException
+	 */
 	public static File createDownloadStagingArea() throws IOException {
 		File stagingParentDir = getStagingParentDir();
 		UUID uuid = UUID.randomUUID();
@@ -120,7 +134,7 @@ public class DownloadUtility {
 			populateDownloadMap(downloadMap, stageThis);
 
 			if (downloadMap.isEmpty()) {
-				LOG.info("Could not find valid WFS for item {}", itemId);
+				LOG.info("Could not find valid WFS for item {}. Will add to missing list", itemId);
 				missing.add(stageThis.getName());
 			} else {
 				List<String> namesUsed = new ArrayList<>(downloadMap.values().size());
@@ -133,6 +147,7 @@ public class DownloadUtility {
 
 					// TODO try/catch this to isolate/retry problem downloads
 					success = stagedDownload.stage(stagingDir, missing);
+					LOG.info("Download staged for {}", stagedDownload.getName());
 				}
 			}
 		} finally {
@@ -324,36 +339,49 @@ public class DownloadUtility {
 
 		@Override
 		public Download call() throws IOException {
-			Download download = null;
 			File stagingDir = DownloadUtility.createDownloadStagingArea();
 			LOG.info("Staging item download at location {} for item {}", stagingDir.getAbsolutePath(), itemId);
 
-			try (ItemManager itemManager = new ItemManager(); DownloadManager downloadManager = new DownloadManager()) {
-				Item item = itemManager.load(itemId);
-				if (item == null) {
-					throw new IOException(MessageFormat.format("Item {0} does not exist", itemId));
-				}
+			Item item;
+			try (ItemManager itemManager = new ItemManager()) {
+				item = itemManager.load(itemId);
+			}
+
+			if (item == null) {
+				throw new IOException(MessageFormat.format("Item {0} does not exist", itemId));
+			}
+
+			Download download = null;
+			try (DownloadManager downloadManager = new DownloadManager()) {
 				download = downloadManager.load(itemId);
 				if (download == null) {
-					LOG.debug("Beginning staging item {}", itemId);
+					LOG.info("Beginning staging item {}", itemId);
 					download = new Download();
 					download.setItemId(itemId);
 					downloadManager.save(download);
 				}
-				boolean staged = DownloadUtility.stageItemDownload(item, stagingDir);
-				if (staged) {
-					LOG.info("{} has been staged", itemId);
-					download = DownloadUtility.zipStagingAreaForDownload(stagingDir, download);
-					downloadManager.update(download);
-				} else {
-					LOG.warn("Staging item {} has run into a problem.", itemId);
-					download.setProblem(true);
-					downloadManager.update(download);
-				}
-			} catch (IOException ioe) {
-				LOG.warn("Download could not be staged", ioe);
-				FileUtils.forceDelete(stagingDir);
 			}
+
+			boolean staged = DownloadUtility.stageItemDownload(item, stagingDir);
+
+			if (staged) {
+				LOG.info("Item {} has been staged", itemId);
+				try {
+					download = DownloadUtility.zipStagingAreaForDownload(stagingDir, download);
+				} catch (IOException ioe) {
+					LOG.warn("Download could not be staged", ioe);
+					FileUtils.forceDelete(stagingDir);
+					download.setProblem(true);
+				}
+			} else {
+				LOG.warn("Staging item {} has run into a problem.", itemId);
+				download.setProblem(true);
+			}
+
+			try (DownloadManager downloadManager = new DownloadManager()) {
+				downloadManager.update(download);
+			}
+
 			return download;
 		}
 	}

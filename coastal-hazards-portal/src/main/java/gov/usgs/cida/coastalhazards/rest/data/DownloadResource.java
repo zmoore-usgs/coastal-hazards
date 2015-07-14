@@ -21,7 +21,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -60,45 +59,59 @@ public class DownloadResource {
 	@Path("/item/{id}")
 	public Response checkItemAvailability(@PathParam("id") String id) throws IOException {
 		Response response;
+		
+		Item item;
+		try (ItemManager itemManager = new ItemManager()) {
+			item = itemManager.load(id);
+		}
+		
+		if (item == null) {
+			response = Response.status(NOT_FOUND).build();
+		} else {
+			Download download;
+			
+			try (DownloadManager downloadManager = new DownloadManager()) {
+				download = downloadManager.load(id);
+			}
+			
+			if (download != null) {
+				LOG.debug("Download manager found a download for item id {}", id);
+				String persistenceURI = download.getPersistanceURI();
 
-		try (ItemManager itemManager = new ItemManager(); DownloadManager downloadManager = new DownloadManager()) {
-			Item item = itemManager.load(id);
-			if (item == null) {
-				response = Response.status(NOT_FOUND).build();
-			} else {
-				Download download = downloadManager.load(id);
-				if (download != null) {
-					LOG.debug("Download manager found a download for item id {}", id);
-					String persistenceURI = download.getPersistanceURI();
-
-					// Check if the file location in the database 
-					// If it is null or blank, the download has been accepted
-					if (download.isProblem()) {
-						LOG.debug("Download manager found a problem with download for item id {}", id);
-						response = Response.status(INTERNAL_SERVER_ERROR).build();
-					} else if (StringUtils.isBlank(persistenceURI)) {
-						LOG.debug("Download manager found a download with no path id {}, Item is probably still being created", id);
+				// Check if the file location in the database 
+				// If it is null or blank, the download has been accepted
+				if (download.isProblem()) {
+					LOG.debug("Download manager found a problem with download for item id {}", id);
+					response = Response.status(INTERNAL_SERVER_ERROR).build();
+				} else if (StringUtils.isBlank(persistenceURI)) {
+					LOG.debug("Download manager found a download with no path id {}, Item is probably still being created", id);
+					response = Response.status(ACCEPTED).build();
+				} else {
+					// If it is has content, check whether the file exists on the server
+					// If it does not, that means this is a desynchronized entry in the datbase
+					// and it should be deleted and reinitialized. Otherwise, this is 
+					// is good to go and send an OK response
+					boolean existsOnFileSystem;
+					
+					try (DownloadManager downloadManager = new DownloadManager()) {
+						existsOnFileSystem = downloadManager.downloadFileExistsOnFilesystem(download);
+					}
+					
+					if (!existsOnFileSystem) {
+						LOG.debug("Download manager found a download path that doesn't exist for id {}. Will delete and re-stage", id);
+						new DownloadService().delete(id);
+						LOG.debug("Download path for item {} was deleted in the database. Will not attempt to re-stage", id);
+						DownloadUtility.stageAsyncItemDownload(id);
 						response = Response.status(ACCEPTED).build();
 					} else {
-						// If it is has content, check whether the file exists on the server
-						// If it does not, that means this is a desynchronized entry in the datbase
-						// and it should be deleted and reinitialized. Otherwise, this is 
-						// is good to go and send an OK response
-						if (!downloadManager.downloadFileExistsOnFilesystem(download)) {
-							LOG.debug("Download manager found a download path that doesn't exist for id {}. Will delete and re-stage", id);
-							new DownloadService().delete(id);
-							DownloadUtility.stageAsyncItemDownload(id);
-							response = Response.status(ACCEPTED).build();
-						} else {
-							LOG.debug("Download manager found the download for item {}", id);
-							response = Response.status(OK).build();
-						}
+						LOG.debug("Download manager found the download for item {}", id);
+						response = Response.status(OK).build();
 					}
-				} else {
-					LOG.debug("Download manager could not find download for item {}. A download will be staged for this item.", id);
-					DownloadUtility.stageAsyncItemDownload(id);
-					response = Response.status(ACCEPTED).build();
 				}
+			} else {
+				LOG.debug("Download manager could not find download for item {}. A download will be staged for this item.", id);
+				DownloadUtility.stageAsyncItemDownload(id);
+				response = Response.status(ACCEPTED).build();
 			}
 		}
 
@@ -119,68 +132,63 @@ public class DownloadResource {
 	@Path("/item/{id}")
 	@Produces("application/zip")
 	public Response downloadItem(@PathParam("id") String id) throws IOException, InterruptedException, ExecutionException {
-		Response response = null;
-		try (ItemManager itemManager = new ItemManager(); DownloadManager downloadManager = new DownloadManager()) {
-			Item item = itemManager.load(id);
-			if (item == null) {
-				response = Response.status(NOT_FOUND).build();
+		Response response;
+		Item item;
+		
+		try (ItemManager itemManager = new ItemManager()) {
+			item = itemManager.load(id);
+		}
+		
+		if (item == null) {
+			response = Response.status(NOT_FOUND).build();
+		} else {
+			Download download;
+			try (DownloadManager downloadManager = new DownloadManager()) {
+				download = downloadManager.load(id);
+			}
+			
+			if (download == null) {
+				// Download was null, so we it was not previously staged. Do so now.
+				LOG.debug("Download manager could not find download for item {}. A download will be staged for this item.", id);
+				DownloadUtility.stageAsyncItemDownload(id);
+				response = Response.status(ACCEPTED).build();
 			} else {
-				File zipFile = null;
-				Download download = downloadManager.load(id);
-
-				if (download != null) {
-					LOG.debug("Download manager found a download for item id {}", id);
-					String persistenceURI = download.getPersistanceURI();
-					if (download.isProblem()) {
-						LOG.debug("Download manager found a problem with download for item id {}", id);
-						response = Response.status(NOT_IMPLEMENTED).build();
-					} else if (StringUtils.isBlank(persistenceURI)) {
-						LOG.debug("Download manager found a download with no path id {}, Item is probably still being created", id);
-						// Download is still being created
+				LOG.debug("Download manager found a download for item id {}", id);
+				if (download.isProblem()) {
+					LOG.debug("Download manager found a problem with download for item id {}", id);
+					response = Response.status(NOT_IMPLEMENTED).build();
+				} else if (StringUtils.isBlank(download.getPersistanceURI())) {
+					LOG.debug("Download manager found a download with no path id {}, Item is still being created", id);
+					response = Response.status(ACCEPTED).build();
+				} else {
+					boolean downloadFileExists;
+					try (DownloadManager downloadManager = new DownloadManager()) {
+						downloadFileExists = downloadManager.downloadFileExistsOnFilesystem(download);
+					}
+					
+					// Download should be on the file system. Check that it does exist
+					if (!downloadFileExists) {
+						LOG.debug("Download manager found a download path that doesn't exist for id {}. Will delete and re-stage", id);
+						new DownloadService().delete(id);
+						DownloadUtility.stageAsyncItemDownload(id);
 						response = Response.status(ACCEPTED).build();
 					} else {
-						// Download should be on the file system. Check that it does exist
-						if (!downloadManager.downloadFileExistsOnFilesystem(download)) {
-							LOG.debug("Download manager found a download path that doesn't exist for id {}. Will delete and re-stage", id);
-							// File is not actually on the file system. Re-stage.
+						// File was found. Load the zip file 
+						File zipFile = download.fetchZipFile();
+						if (zipFile == null) {
+							LOG.debug("Download manager found could not find the zip file that was indicated in the database for item {}. Will attempt to re-stage", id);
 							new DownloadService().delete(id);
 							DownloadUtility.stageAsyncItemDownload(id);
 							response = Response.status(ACCEPTED).build();
 						} else {
-							// File was found. Load the zip file 
-							zipFile = download.fetchZipFile();
-							if (zipFile == null) {
-								LOG.debug("Download manager found could not find the zip file that was indicated in the database for item {}. Will attempt to re-stage", id);
-								new DownloadService().delete(id);
-								DownloadUtility.stageAsyncItemDownload(id);
-								response = Response.status(INTERNAL_SERVER_ERROR).entity("Problem getting persisted download").build();
-							}
+							String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
+							response = Response.status(OK).entity(zipFile).type("application/zip").header("Content-Disposition", contentDisposition).build();
 						}
 					}
-				} else {
-					// Download was null, so we it was not previously staged. Do so now
-					// and wait for it to finish, grabbing the zip file at the end
-					LOG.debug("Download manager could not find download for item {}. A download will be staged for this item.", id);
-					Future<Download> future = DownloadUtility.stageAsyncItemDownload(id);
-					download = future.get();
-					if (download.isProblem()) {
-						LOG.debug("Download manager found a problem with download for item id {}", id);
-						response = Response.status(INTERNAL_SERVER_ERROR).entity("Problem getting persisted download").build();
-					}
-
-					zipFile = download.fetchZipFile();
-					if (zipFile == null) {
-						LOG.debug("Download manager found could not find the zip file that was indicated in the database for item {}.", id);
-						response = Response.status(INTERNAL_SERVER_ERROR).entity("Problem getting persisted download").build();
-					}
-				}
-
-				if (zipFile != null) {
-					String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
-					response = Response.status(OK).entity(zipFile).type("application/zip").header("Content-Disposition", contentDisposition).build();
 				}
 			}
 		}
+		
 		return response;
 	}
 
