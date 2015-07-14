@@ -85,7 +85,10 @@
                     show : 800,
                     hide : 0
                 },
-                'tooltip-prevalence' : 2000
+                'tooltip-prevalence' : 2000,
+				'endpoints' : {
+					'tutorial' : 'http://marty.needs.to.change.me'
+				}
             },
 			map: {
 				ribbonOffset: 6, //Must be an integer
