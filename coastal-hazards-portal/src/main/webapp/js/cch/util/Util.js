@@ -72,7 +72,15 @@ CCH.Util.Util = {
 	getMinifiedEndpoint: function (args) {
 		"use strict";
 		var location = args.location || window.location.href;
-
+		
+		// For tutorials, I don't want to actually minify an endpoint. Instead,
+		// I want to bypass that and trigger the callback with a specific URL
+		if (location === CCH.CONFIG.ui.endpoints.tutorial) {
+			return $.Deferred().resolve({tinyUrl : location});
+		}
+		
+		// When we're not in a tutorial, go ahead and call the minify functionality
+		// on the back end
 		return $.ajax(CCH.CONFIG.contextPath + '/data/minifier/minify/' + location, {
 			type: 'GET',
 			dataType: 'json'
