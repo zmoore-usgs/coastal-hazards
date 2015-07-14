@@ -149,12 +149,6 @@
 							</button>
 						</div>
 						<div class="btn-group">
-							<button type="button" id="publish-button-edit-existing" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown">
-								Edit Existing <span class="caret"></span>
-							</button>
-							<ul id="publish-button-edit-existing-list" class="dropdown-menu" role="menu"></ul>
-						</div>
-						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown">
 								Create New Item <span class="caret"></span>
 							</button>
@@ -531,6 +525,7 @@
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Auth.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/application/publish/publish.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/application/publish/OnReady.js"></script>
 
 		<div id="alert-modal" class="modal fade">

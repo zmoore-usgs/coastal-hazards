@@ -78,7 +78,7 @@ CCH.Util.Search = function (args) {
 		if (!args) {
 			throw 'arguments required';
 		}
-
+		
 		var criteria = args.criteria || '',
 			count = args.count || '',
 			bbox = args.bbox || null,
