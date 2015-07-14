@@ -22,10 +22,16 @@ public class InfoRouter {
 	@Produces(MediaType.TEXT_HTML)
 	@Path("{id}")
 	public Response useInfoJsp(@PathParam("id") String id) {
-		Item item = new ItemManager().load(id);
+		Item item;
+		
+		try (ItemManager mgr = new ItemManager()) {
+			item = mgr.load(id);
+		}
+		
 		if (item == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
+		
 		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index.jsp", item)).build();
 	}
 	
@@ -33,10 +39,16 @@ public class InfoRouter {
 	@Produces(MediaType.TEXT_HTML)
 	@Path("/print/{id}")
 	public Response useInfoPrintViewJsp(@PathParam("id") String id) {
-		Item item = new ItemManager().load(id);
+		Item item;
+		
+		try (ItemManager mgr = new ItemManager()) {
+			item = mgr.load(id);
+		}
+		
 		if (item == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
+		
 		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", item)).build();
 	}
 
