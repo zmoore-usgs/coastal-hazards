@@ -38,7 +38,7 @@ CCH.Objects.Back.UI = function (args) {
 		me.$metadataButton = $('#metadata-link-button');
 		me.serviceTemplate = null; // Lazy loaded
 		me.$infoButton.on('click', function () {
-			window.location.href = CCH.CONFIG.contextPath + '/info/#helpModal';
+			window.location.href = CCH.CONFIG.contextPath + '/info/#acContentArea';
 		});
 		
 		me.$applicationButton.on('click', function () {
