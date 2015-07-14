@@ -75,7 +75,7 @@ CCH.Util.Util = {
 		
 		// For tutorials, I don't want to actually minify an endpoint. Instead,
 		// I want to bypass that and trigger the callback with a specific URL
-		if (location === CCH.CONFIG.ui.endpoints.tutorial) {
+		if (CCH.CONFIG.ui && location === CCH.CONFIG.ui.endpoints.tutorial) {
 			return $.Deferred().resolve({tinyUrl : location});
 		}
 		
