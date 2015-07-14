@@ -4,10 +4,19 @@
 
 #application-slide-items-content-container-inner-scrollable,
 #map,
-.panel {
+.panel{
 	&.introjs-fixParent {
 		position: inherit !important;
 	}
+}
+
+.modal-dialog.introjs-fixParent{
+    position: relative !important;
+    z-index:9999999 !important;
+    
+    .modal-dialog{
+        z-index:9999999 !important;
+    }
 }
 
 .introjs-arrow.top{

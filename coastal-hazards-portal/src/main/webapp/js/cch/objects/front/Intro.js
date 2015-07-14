@@ -246,6 +246,7 @@ CCH.intro = (function () {
 					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
 						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 					 }
+                                         $('#' + CCH.ui.SHARE_TWITTER_BUTTON_ID).empty();
                                          if($('.modal-content-share').css('display', 'none')){
                                              CCH.ui.displayShareModal(CCH.CONFIG.ui.endpoints.tutorial);
                                          }
@@ -353,7 +354,7 @@ CCH.intro = (function () {
 						var step = steps[idx];
 					
 						if (step.hasOwnProperty('onEnter')) {
-							step.prepare().done(function () {
+							step.onEnter().done(function () {
 								intro.start();
 								intro.goToStep(idx + 1); // Steps are 1-based
 							});
@@ -369,7 +370,7 @@ CCH.intro = (function () {
                     if (startingStep - 1 <= steps.length + 1 && startingStep > 1 && Number.isInteger(startingStep)) {
                         var step = steps[startingStep - 1];
 						if (step.hasOwnProperty('onEnter')) {
-							step.prepare().done(function () {
+							step.onEnter().done(function () {
 								intro.goToStep(startingStep); // Steps are 1-based
 							});
 							intro.start();
