@@ -129,6 +129,11 @@ CCH.intro = (function () {
 
 				}
 			},
+                        {
+				onbeforechange:function(){
+                                    window.location.href = CCH.CONFIG.contextPath = '../info/#mapContentArea';
+                                }
+			},
 			{
 				element: '#animated-bucket-object',
 				intro: 'This is your bucket, think of it as a shopping cart for data',
@@ -287,6 +292,11 @@ CCH.intro = (function () {
 					}
 				}
 
+			},
+                        {
+				onbeforechange:function(){
+                                    window.location.href = CCH.CONFIG.contextPath = '../../info/#bucketContentArea';
+                                }
 			}
 		],
 		updateForMobile = function () {
