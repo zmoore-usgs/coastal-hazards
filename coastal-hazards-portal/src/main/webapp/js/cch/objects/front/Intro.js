@@ -8,12 +8,6 @@ CCH.intro = (function () {
     var intro = new introJs(),
 		steps = [
 			{
-				element: '#app-navbar-site-title-container',
-				intro: 'Welcome to <b>CCH</b>',
-				highlightClass: 'half-opacity',
-				name: 'welcome'
-			},
-			{
 				element: '.panel:nth-child(1)',
 				intro: 'This is an item',
 				position: 'left',
@@ -113,7 +107,10 @@ CCH.intro = (function () {
 				element: '.input-group-btn',
 				intro: 'Switch Search Preference Here',
 				position: 'left',
-				name: 'search-me-more'
+				name: 'search-me-more',
+                                onbeforechange: function(targetEle){
+                                    $('#tourButton').remove();
+                                }
 			},
 			{
 				element: '#app-navbar-search-dropdown-menu',
@@ -122,6 +119,9 @@ CCH.intro = (function () {
 				name: 'search-me-options',
 				onbeforechange: function(targetEle){
 					$('#app-navbar-search-dropdown-toggle').dropdown('toggle');
+                                        var button = $('<a id="tourButton">Info</a>');
+                                        button.attr('href', CCH.CONFIG.contextPath + '/info/#mapContentArea');
+                                        $('.introjs-tooltipbuttons').append(button);
 				},
 				onafterchange: function(targetEle){
 					setTimeout(function(){ $('.input-group-btn').addClass('open'); }, 450);
@@ -139,6 +139,7 @@ CCH.intro = (function () {
 					$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
                                     }
 					CCH.ui.bucketSlide.open();
+                                        $('#tourButton').remove();
 				}
 			},
 			{
@@ -185,10 +186,43 @@ CCH.intro = (function () {
 					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
 						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 					 }
+					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
+					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
+				}
+			},
+                        {
+				element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-download',
+				intro: 'Download Item',
+				position: 'left',
+				name: 'download',
+				onEnter: function () {
+					$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					return CCH.ui.bucketSlide.open();
+				},
+				onbeforechange: function(targetEle){
+					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
+						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					 }
+					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
+					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
+				}
+			},
+                        {
+				element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-info',
+				intro: 'Info Button',
+				position: 'left',
+				name: 'info',
+				onEnter: function () {
+					$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					return CCH.ui.bucketSlide.open();
+				},
+				onbeforechange: function(targetEle){
+					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
+						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+					 }
                                          if($('.modal-content-share').css('display', 'block')){
                                              $('.close').click();
                                          }
-					 
 					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
 					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
 				}
@@ -270,6 +304,7 @@ CCH.intro = (function () {
                                          if($('.modal-content-share').css('display', 'block')){
                                              $('.close').click();
                                          }
+                                         $('#tourButton').remove();
 					 
 					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
 					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
@@ -285,6 +320,9 @@ CCH.intro = (function () {
 					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
 						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 					}
+                                        var button = $('<a id="tourButton">Info</a>');
+                                        button.attr('href', CCH.CONFIG.contextPath + '/info/#bucketContentArea');
+                                        $('.introjs-tooltipbuttons').append(button);
 				}
 
 			}
@@ -292,13 +330,12 @@ CCH.intro = (function () {
 		updateForMobile = function () {
 
 			//Removing Steps that don't exist on mobile
-			steps.removeAt(0);
 			steps.removeAt(4);
 
 			//Changing position of text to fit on mobile
 			steps[0].position = 'bottom';
-			steps[1].position = 'bottom';
-			steps[2].position = 'bottom';
+			steps[1].position = 'left';
+			steps[2].position = 'top';
 			steps[3].position = 'right';
 			steps[6].position = 'top';
 			steps[8].position = 'right';
@@ -366,7 +403,7 @@ CCH.intro = (function () {
                 } else {
                     // Starting step is a number. Make sure it's a valid integer 
                     // greater than 0 and it is within the range of our steps
-                    startingStep = Number.parseFloat(startingStep);
+                    startingStep = parseFloat(startingStep);
                     if (startingStep - 1 <= steps.length + 1 && startingStep > 1 && Number.isInteger(startingStep)) {
                         var step = steps[startingStep - 1];
 						if (step.hasOwnProperty('onEnter')) {
