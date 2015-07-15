@@ -332,9 +332,8 @@ CCH.Objects.Publish.UI = function () {
 					
 					validateBbox(errors);
 				});
-			} else if ('aggregation' === type || 'uber' === type) {
-//				// TODO- What  goes into an agregation type? Anything?
-			} else if ('template' === type) {
+			} else if ('aggregation' === type || 'uber' === type || 'template' === type) {
+				// TODO- What  goes into an agregation type? Anything?
 				// TODO- What validation goes into a template type? Anything?
 			}
 
@@ -905,7 +904,6 @@ CCH.Objects.Publish.UI = function () {
 				$typeSb
 						.val(item.type)
 						.removeAttr(CCH.CONFIG.strings.disabled)
-						.on('change', me.createSortableChildren)
 						.trigger('change');
 
 				// Show Children
@@ -1224,17 +1222,12 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.updateBoundingBox = function () {
-		var $children = $childrenSortableList.find('li > span > div > button:first-child.active');
+		var children = CCH.CONFIG.item.children;
 		
 		$bboxes.val('');
 
-		if ($children.length !== 0) {
-			$childrenSortableList.find('li > span > div > button:first-child.active').each(function (idx, btn) {
-				var $li = $(btn).parent().parent().parent(),
-						id = $li.attr('id').substring(11),
-						item = CCH.items.find(function (item) {
-							return item.id === id;
-						});
+		if (children.length !== 0) {
+			children.each(function (idx, item) {
 				if (item.bbox) {
 					if ($bboxWest.val()) {
 						if (item.bbox[0] < parseFloat($bboxWest.val())) {
