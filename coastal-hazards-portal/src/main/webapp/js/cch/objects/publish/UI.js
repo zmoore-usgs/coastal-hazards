@@ -45,7 +45,6 @@ CCH.Objects.Publish.UI = function () {
 			$name = $form.find('#form-publish-item-name'),
 			$wfsImportButton = $form.find('#form-publish-item-service-source-wfs-import-button'),
 			$keywordGroupClone = $keywordGroup.clone(),
-			$childrenSortableList = $form.find('#form-publish-info-item-children-sortable-ul'),
 			$alertModal = $('#alert-modal'),
 			$alertModalTitle = $alertModal.find('.modal-title'),
 			$alertModalBody = $alertModal.find('.modal-body'),
@@ -141,7 +140,6 @@ CCH.Objects.Publish.UI = function () {
 		$('.form-group-keyword button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
 		$metadataDropdownGroup.addClass(CCH.CONFIG.strings.hidden);
 		$publicationsPanel.find('.resource-list-container-sortable').empty();
-		$childrenSortableList.empty();
 		$itemImage.attr('src', '');
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
@@ -180,7 +178,6 @@ CCH.Objects.Publish.UI = function () {
 		$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$itemEnabledField.val('false');
-		$childrenSortableList.empty();
 		$isActiveStormRow.addClass('hidden');
 	};
 
@@ -205,7 +202,6 @@ CCH.Objects.Publish.UI = function () {
 		
 		$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
 		$itemEnabledField.val('false');
-		me.createSortableChildren();
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
 		$isActiveStormRow.addClass('hidden');
@@ -337,10 +333,7 @@ CCH.Objects.Publish.UI = function () {
 					validateBbox(errors);
 				});
 			} else if ('aggregation' === type || 'uber' === type) {
-				if ($childrenSortableList.find('li > span > div > button:first-child.active').length === 0) {
-					errors.push('Aggregations require at least one child');
-				}
-				validateBbox(errors);
+//				// TODO- What  goes into an agregation type? Anything?
 			} else if ('template' === type) {
 				// TODO- What validation goes into a template type? Anything?
 			}
@@ -395,35 +388,34 @@ CCH.Objects.Publish.UI = function () {
 
 	me.buildItemFromForm = function () {
 		var id = $itemIdInput.val(),
-				itemType = $itemType.val(),
-				summary = {},
-				keywordsArray = [],
-				name = $name.val(),
-				type = $typeSb.val(),
-				attr = $attributeSelect.val() || '',
-				ribbonable = $ribbonableCb.prop(CCH.CONFIG.strings.checked),
-				showChildren = $showChildrenCb.prop(CCH.CONFIG.strings.checked),
-				enabled = $itemEnabledField.val() === 'true' ? true : false,
-				activeStorm = $isActiveStormChecbox.prop('checked'),
-				services = [],
-				children = [],
-				displayedChildren = [],
-				bbox = [$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()],
-				item = {
-				id: id,
-				itemType: itemType,
-				attr: attr,
-				name: name,
-				type: type,
-				ribbonable: ribbonable,
-				summary: summary,
-				showChildren: showChildren,
-				enabled: enabled,
-				services: services,
-				children: children,
-				displayedChildren: displayedChildren,
-				activeStorm: activeStorm
-			};
+			itemType = $itemType.val(),
+			summary = {},
+			keywordsArray = [],
+			name = $name.val(),
+			type = $typeSb.val(),
+			attr = $attributeSelect.val() || '',
+			ribbonable = $ribbonableCb.prop(CCH.CONFIG.strings.checked),
+			showChildren = $showChildrenCb.prop(CCH.CONFIG.strings.checked),
+			enabled = $itemEnabledField.val() === 'true' ? true : false,
+			activeStorm = $isActiveStormChecbox.prop('checked'),
+			services = [],
+			displayedChildren = [],
+			bbox = [$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()],
+			item = {
+			id: id,
+			itemType: itemType,
+			attr: attr,
+			name: name,
+			type: type,
+			ribbonable: ribbonable,
+			summary: summary,
+			children : CCH.CONFIG.item.children,
+			showChildren: showChildren,
+			enabled: enabled,
+			services: services,
+			displayedChildren: displayedChildren,
+			activeStorm: activeStorm
+		};
 			
 		// Bbox may be blank and that may be ok (e.g. if it's a template)
 		if (bbox.join('')) {
@@ -514,25 +506,7 @@ CCH.Objects.Publish.UI = function () {
 				serviceParameter: proxyWmsServiceParam
 			});
 		}
-
-		$childrenSortableList.find('li > span > div > button:nth-child(1).active').each(function (ind, btn) {
-			var $li = $(btn).parent().parent().parent(),
-					childId = $li.attr('id').substring(11),
-					child = CCH.items.find(function (item) {
-						return item.id === childId;
-					});
-
-			if (child) {
-				children.push(child.id);
-			}
-		});
-
-		$childrenSortableList.find('li > span > div > button:nth-child(2).active').each(function (ind, btn) {
-			var $li = $(btn).parent().parent().parent(),
-					childId = $li.attr('id').substring(11);
-			displayedChildren.push(childId);
-		});
-
+		
 		return item;
 	};
 
@@ -926,8 +900,6 @@ CCH.Objects.Publish.UI = function () {
 			if (type === 'aggregation' || type === 'uber' || type === 'template') {
 				$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
 				$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
-				// Populate children
-				me.createSortableChildren();
 
 				// Fill out item type
 				$typeSb
@@ -941,45 +913,8 @@ CCH.Objects.Publish.UI = function () {
 						.prop(CCH.CONFIG.strings.checked, item.showChildren)
 						.removeAttr(CCH.CONFIG.strings.disabled);
 
-				// Select children
-				item.children.reverse().each(function (child) {
-					var id;
-					if (typeof child === 'string') {
-						id = child;
-					} else {
-						id = child.id;
-					}
-
-					var $li = $childrenSortableList
-							.find('li#child-item-' + id);
-
-					// Move child to top of list
-					$childrenSortableList.prepend($li);
-
-					var $button = $li.find('div > button:nth-child(1)');
-
-					if (!$button.hasClass('active')) {
-						$button.click();
-					}
-				});
-
-				item.displayedChildren.each(function (child) {
-					var $button = $childrenSortableList
-							.find('li#child-item-' + child)
-							.find('div > button:nth-child(2)');
-
-					if (!$button.hasClass('active')) {
-						$button.click();
-					}
-				});
-
-				// Bubble the displayed children to the top of the stack in proper order
-				item.displayedChildren.reverse().each(function (id) {
-					var $displayedChild = $('.form-publish-info-item-children-sortable-li#child-item-' + id);
-					$childrenSortableList.prepend($displayedChild);
-				});
-
 				$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
+				
 				$metadataDropdownGroup.addClass(CCH.CONFIG.strings.hidden);
 
 				if (CCH.CONFIG.ui.disableBoundingBoxInputForAggregations === false) {
@@ -988,7 +923,6 @@ CCH.Objects.Publish.UI = function () {
 			} else {
 				$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 				$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
-				$childrenSortableList.empty();
 
 				// Fill out item type
 				$typeSb
@@ -1022,6 +956,7 @@ CCH.Objects.Publish.UI = function () {
 									}],
 								error: [
 									function (data) {
+										debugger;
 										var errorText = data.firstChild.textContent.trim();
 										if (errorText.indexOf('not find') !== -1) {
 											$srcWfsServiceInput.empty();
@@ -1135,6 +1070,7 @@ CCH.Objects.Publish.UI = function () {
 					}
 				});
 			}
+			
 			[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
 					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
 					$proxyWmsCheckButton,
@@ -1192,143 +1128,6 @@ CCH.Objects.Publish.UI = function () {
 		} else {
 			CCH.LOG.warn('UI.js::addItemToForm: function was called with no item');
 		}
-	};
-
-	me.createSortableChildren = function () {
-		$childrenSortableList.empty();
-		var type = $typeSb.val() || '',
-				currentAggregationId = $itemIdInput.val() || '',
-				itemId,
-				isOfType = function (item) {
-					if (!type) {
-						return true;
-					} else {
-						if (type === 'mixed') {
-							return true;
-						} else {
-							if (item.type) {
-								return item.type.toLowerCase().trim() === type.toLowerCase().trim();
-							}
-							return false;
-						}
-					}
-				};
-
-		CCH.items.each(function (item) {
-			itemId = item.id;
-			if (itemId !== currentAggregationId && isOfType(item)) {
-				var $li = $('<li />')
-					.addClass('ui-state-default form-publish-info-item-children-sortable-li')
-					.attr('id', 'child-item-' + item.id),
-					$span = $('<span />')
-					.addClass('form-publish-info-item-children-sortable-li-span'),
-					$buttonDiv = $('<div />'),
-					$activeButton = $('<button />')
-					.addClass('btn btn-xs btn-default btn-child-active')
-					.attr({
-						'type': 'button',
-						'data-toggle': 'button'
-					}),
-					$viewButton = $('<button />')
-					.addClass('btn btn-xs btn-default btn-child-visible')
-					.attr({
-						'type': 'button',
-						'data-toggle': 'button'
-					});
-
-				$activeButton.append($('<i />').addClass('fa fa-check'));
-				$viewButton.append($('<i />').addClass('fa fa-eye'));
-
-				$buttonDiv.append($activeButton, $viewButton);
-
-				$span
-						.append(
-								$('<i />').addClass("fa fa-arrows-v"),
-								' ' + item.summary.medium.title + ' ',
-								$buttonDiv
-								);
-
-				$li.append($span);
-
-				$childrenSortableList.append($li);
-				$activeButton.on(CCH.CONFIG.strings.click, function (evt) {
-					var currentAggregationId = $itemIdInput.val() || '',
-							$button = evt.target.tagName === 'I' ? $(evt.target).parent() : $(evt.target),
-							$container = $button.parent().parent().parent(),
-							itemId = $container.attr('id').substring(11),
-							$overrideButton = $('<button />').attr('type', 'button').addClass('btn btn-warning'),
-							processChildren = function () {
-								setTimeout(function () {
-									me.buildKeywordsFromChildren();
-									me.updateBoundingBox();
-								}, 100);
-							};
-
-					if (currentAggregationId !== '' && !$button.hasClass('active')) {
-						$.ajax({
-							url: CCH.CONFIG.contextPath + '/data/item/cycle/' + currentAggregationId + '/' + itemId,
-							success: function (response) {
-								if (response.cycle === true) {
-									$button.removeClass('active');
-									$overrideButton.on(CCH.CONFIG.strings.click, function () {
-										$button.addClass('active');
-										processChildren();
-									}),
-									$alertModal.modal(CCH.CONFIG.strings.hide);
-									$alertModalTitle.html('Cyclic Relationship Found');
-									$alertModalBody.html('There was a cyclic relationship found ' +
-											'between parent ' + currentAggregationId +
-											'and child ' + itemId + '. You can override ' +
-											'this warning and add this child to the ' +
-											'aggregation but you should only do so if you ' +
-											'really know what you are doing.');
-									$alertModal.modal(CCH.CONFIG.strings.show);
-								} else {
-									processChildren();
-								}
-							},
-							error: function () {
-								CCH.LOG.warn('An error occurred while trying to ' +
-										'get parent/child cycle info. This could cause ' +
-										'huge problems if this child is added and a ' +
-										'cycle occurs.');
-								processChildren();
-							}
-						});
-					} else {
-						if ($button.siblings().hasClass('active')) {
-							$button.siblings().first().click();
-						}
-						processChildren();
-					}
-					$button.blur();
-				});
-			}
-
-		});
-
-		$childrenSortableList.sortable();
-	};
-
-	me.buildKeywordsFromChildren = function () {
-		$('.form-publish-info-item-children-sortable-li button:first-child().active').each(function (i, o) {
-			var itemId = $(o).parent().parent().parent().attr('id').substring(11),
-					item = CCH.items.find(function (i) {
-						return i.id === itemId;
-					}),
-					keywords = item.summary.keywords.split('|');
-
-			$('.form-publish-item-keyword').not(':first').each(function (i, o) {
-				var oKeyword = $(o).val().trim();
-				keywords.push(oKeyword);
-			});
-
-			keywords.unique(function (k) {
-				return k.toLowerCase().trim();
-			}).each(function (keyword) {
-				me.addKeywordGroup(keyword);
-			});
-		});
 	};
 
 	me.wfsInfoUpdated = function () {

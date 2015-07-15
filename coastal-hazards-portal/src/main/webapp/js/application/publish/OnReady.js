@@ -23,6 +23,11 @@ $(document).ready(function () {
 	$(document).ajaxStop(function () {
 		$('body').css('cursor', 'default');
 	});
+
+	CCH.ows = new CCH.Util.OWS().init();
+
+	CCH.ui = new CCH.Objects.Publish.UI();
+
 	CCH.publish = new CCH.Publish({
 		item: CCH.itemid || ''
 	});
