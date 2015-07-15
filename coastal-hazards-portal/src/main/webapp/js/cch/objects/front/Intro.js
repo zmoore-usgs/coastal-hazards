@@ -62,6 +62,7 @@ CCH.intro = (function () {
 					if($('#application-slide-bucket-content').is(':visible')){
 						$('#animated-bucket-object').click();
 					}
+                                        $('#application-slide-items-container').css('display', 'block');
 				}
 			},
 			{
@@ -77,6 +78,7 @@ CCH.intro = (function () {
 				name: 'zoom-to-you',
 				onbeforechange: function (targetEle) {
 					$(targetEle).click();
+                                        $('#application-slide-items-container').css('display', 'none');
 				}
 			},
 			{
@@ -94,14 +96,17 @@ CCH.intro = (function () {
 					if(!$('.cchMapLegendElement').is(':visible')){
 						$(CCH.ui.accordion.getBellows()[0]).find('.panel-heading').click();
 					}
-
+                                        $('#application-slide-items-container').css('display', 'none');
 				}
 			},
 			{
 				element: '#app-navbar-search-container',
 				intro: 'Search Here',
 				position: 'bottom',
-				name: 'search-me'
+				name: 'search-me',
+                                onbeforechange: function(targetEle){
+                                     $('#application-slide-items-container').css('display', 'block');
+                                }
 			},
 			{
 				element: '.input-group-btn',
@@ -125,8 +130,6 @@ CCH.intro = (function () {
 				},
 				onafterchange: function(targetEle){
 					setTimeout(function(){ $('.input-group-btn').addClass('open'); }, 450);
-
-
 				}
 			},
 			{
