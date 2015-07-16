@@ -418,11 +418,13 @@ CCH.intro = (function () {
         if($('#application-slide-items-container').css('display', 'none')){
             $('#application-slide-items-container').css('display', 'block');
         }
+        window.location.href = CCH.CONFIG.contextPath;
     });
     intro.oncomplete(function() {
         if($('#application-slide-items-container').css('display', 'none')){
             $('#application-slide-items-container').css('display', 'block');
         }
+        window.location.href = CCH.CONFIG.contextPath;
     });
 
     return {
