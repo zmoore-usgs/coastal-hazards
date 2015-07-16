@@ -1,3 +1,13 @@
+@import "../cch.less";
+
+.introjs-bullets ul li a.active{
+         background:@cch-primaryColor;
+        }
+        
+.introjs-tooltipbuttons{
+         text-align:center;  
+        }
+
 .half-opacity {
 	opacity: 0.5;
 }
@@ -65,5 +75,60 @@ a[data-stepnumber="22"]
         {
             display:block !important;
         }
+        
+    .introjs-bullets ul li a{
+          width: 16px;
+          height: 16px; 
+          margin-left:10px;
+        }
+        
+    
+        
+    .addMobileTip{
+          left: -100px !important; 
+          
+          .introjs-arrow.bottom{
+            right:10% !important;
+        }
+    }  
+    .zoomMobileTip{
+       left:-60px !important;
+       
+       .introjs-arrow.bottom{
+            right:50% !important;
+        }
+     }
+     
+     .searchMobileTip{
+         left:-15px !important;
+     }
+     
+     .infoMobileTip{
+         left: -60px !important;
+         
+         .introjs-arrow.bottom{
+            right:50% !important;
+        }
+     }
+     
+     .shareMobileTip{
+         left:-120px !important;
+         
+         .introjs-arrow.bottom{
+            right:10% !important;
+        }
+     }
+     
+     .urlMobileTip{
+         left:15px !important;
+     }
+     
+     .manageMobileTip{
+         left: -120px !important;
+         
+         .introjs-arrow.bottom{
+            right:10% !important;
+        }
+     }
 
 }

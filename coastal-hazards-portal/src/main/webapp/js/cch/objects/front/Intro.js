@@ -34,7 +34,10 @@ CCH.intro = (function () {
 					if($('#application-slide-bucket-content').is(':visible')){
 						$('#animated-bucket-object').click();
 					}
-				}
+				},
+                                onafterchange: function(){
+                                    setTimeout(function(){ $('.introjs-tooltip').addClass('addMobileTip'); }, 355);
+                                }
 			},
 			{
 				element: '.application-card-zoom-to-btn',
@@ -51,8 +54,10 @@ CCH.intro = (function () {
 					if($(window).width() > 991){
 						$(targetEle).click();
 					}
-
-				}
+				},
+                                onafterchange: function(){
+                                    setTimeout(function(){ $('.introjs-tooltip').addClass('zoomMobileTip'); }, 355);
+                                }
 			},
 			{
 				element: '.application-card-more-info-btn',
@@ -148,6 +153,7 @@ CCH.intro = (function () {
 				},
 				onafterchange: function(targetEle){
 					setTimeout(function(){ $('.input-group-btn').addClass('open'); }, 450);
+                                        setTimeout(function(){ $('.introjs-tooltip').addClass('searchMobileTip'); }, 355);
 				}
 			},
 			{
@@ -253,7 +259,10 @@ CCH.intro = (function () {
                                          }
 					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
 					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
-				}
+				},
+                                onafterchange: function(){
+                                    setTimeout(function(){ $('.introjs-tooltip').addClass('infoMobileTip'); }, 355);
+                                }
 			},
                         {
 				element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-share',
@@ -272,7 +281,10 @@ CCH.intro = (function () {
                                          CCH.ui.displayShareModal(CCH.CONFIG.ui.endpoints.tutorial);
 					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
 					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
-				}
+				},
+                                onafterchange: function(){
+                                    setTimeout(function(){ $('.introjs-tooltip').addClass('shareMobileTip'); }, 355);
+                                }
 			},
                         {
 				element: '.modal-content',
@@ -315,7 +327,10 @@ CCH.intro = (function () {
                                          $('.modal-content').css('display', 'block');
 					intro._introItems[intro._currentStep].element = document.querySelector(steps[intro._currentStep].element);
 					intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
-				}
+				},
+                                onafterchange: function(){
+                                    setTimeout(function(){ $('.introjs-tooltip').addClass('urlMobileTip'); }, 355);
+                                }
 			},
                         {
 				element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-remove',
@@ -350,7 +365,10 @@ CCH.intro = (function () {
                                         var button = $('<a id="tourButton" class="introjs-button">Info Page</a>');
                                         button.attr('href', CCH.CONFIG.contextPath + '/info/#bucketContentArea');
                                         $('.introjs-tooltipbuttons').append(button);
-				}
+				},
+                                onafterchange: function(){
+                                    setTimeout(function(){ $('.introjs-tooltip').addClass('manageMobileTip'); }, 355);
+                                }
 			}
 		],
 		updateForMobile = function () {
@@ -359,17 +377,18 @@ CCH.intro = (function () {
 			steps.removeAt(4);
 
 			//Changing position of text to fit on mobile
-			steps[0].position = 'bottom';
-			steps[1].position = 'left';
+			steps[0].position = 'top';
+			steps[1].position = 'top';
 			steps[2].position = 'top';
-			steps[3].position = 'right';
+			steps[3].position = 'top';
 			steps[6].position = 'top';
 			steps[8].position = 'right';
 			steps[9].position = 'bottom';
 			steps[11].position = 'top';
                         steps[12].position = 'top';
                         steps[14].position = 'top';
-                        steps[15].position = 'left';
+                        steps[15].position = 'top';
+                        steps[16].position = 'top';
                         steps[20].position = 'top';
 		};
                 
