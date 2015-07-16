@@ -15,7 +15,7 @@
 	<properties>
 		<version.jqueryui>1.10.4</version.jqueryui>
 		<version.handlebars>3.0.0-1</version.handlebars>
-		<version.jstree>3.0.9</version.jstree>
+		<version.jstree>3.1.1</version.jstree>
 		<version.introjs>1.0.0</version.introjs>
 		<gt.version>10.1</gt.version>
 	</properties>

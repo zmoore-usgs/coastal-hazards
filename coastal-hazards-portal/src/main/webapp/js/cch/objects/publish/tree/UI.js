@@ -12,7 +12,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 	me.updatedItems = {};
 	me.autoSearch = "";
-	
+
 
 	// The individual tree node.
 	me.createTreeNode = function (item) {
@@ -24,9 +24,10 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				'opened': false,
 				'itemType': itemType,
 				'title': title,
-				'original-id': id
+				'original-id': id,
+				'displayed' : false
 			};
-
+			
 		return {
 			id: id === 'uber' || id === 'orphans' ? id : CCH.Util.Util.generateUUID(),
 			text: text,
@@ -53,6 +54,11 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			for (var childIndex = 0; childIndex < children.length; childIndex++) {
 				var child = children[childIndex];
 				var childNode = this.buildAdjacencyListFromData(child);
+				
+				if (item.displayedChildren && item.displayedChildren.indexOf(child.id) !== -1) {
+					childNode.state.displayed = true;
+				}
+				
 				node.children.push(childNode);
 			}
 		}
@@ -76,13 +82,13 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			'contextmenu': {
 				'items': {
 					'edit': {
-						'label' : 'Edit',
+						'label': 'Edit',
 						'icon': 'fa fa-pencil-square-o',
-						'action' : function () {
+						'action': function () {
 							var tree = CCH.ui.getTree(),
-								selectedId = tree.get_selected()[0],
-								originalId = CCH.ui.getTree().get_node(selectedId).state['original-id'];
-						
+									selectedId = tree.get_selected()[0],
+									originalId = CCH.ui.getTree().get_node(selectedId).state['original-id'];
+
 							window.location = CCH.config.baseUrl + "/publish/item/" + originalId;
 						}
 					},
@@ -98,6 +104,24 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 								tree.move_node(selectedId, 'orphans');
 								me.itemUpdated(parentId);
 							}
+						}
+					},
+					'displayed' : {
+						'label': 'Toggle Visibility',
+						'icon' : 'fa fa-eye',
+						'action': function (args) {
+							var tree = CCH.ui.getTree(),
+									selectedId = tree.get_selected()[0],
+									node = CCH.ui.getTree().get_node(selectedId);
+							
+							var displayed = node.state.displayed;
+							if (displayed) {
+								node.state.displayed = false;
+								$('#' + selectedId + '_anchor')
+							} else {
+								node.state.displayed = true;
+							}
+							tree.save_state();
 						}
 					}
 				}
@@ -121,13 +145,13 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					return true;
 				}
 			},
-			'plugins': ['contextmenu', 'dnd',  'types', 'state', 'search']
+			'plugins': ['contextmenu', 'dnd', 'types', 'state', 'search']
 		});
-
+		
 		me.$treeContainer.bind({
 			'move_node.jstree': function (evt, moveEvt) {
 				var oldParent = moveEvt.old_parent,
-					newParent = moveEvt.parent;
+						newParent = moveEvt.parent;
 
 				// I don't want to allow users to move nodes to the root node. If they 
 				// try to, move back to the old node
@@ -139,10 +163,10 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					});
 				}
 			},
-			'copy_node.jstree' : function (evt, copyEvt) {
+			'copy_node.jstree': function (evt, copyEvt) {
 				var oldParent = copyEvt.old_parent,
-					newParent = copyEvt.parent;
-			
+						newParent = copyEvt.parent;
+
 				// I don't want to allow users to move nodes to the root node. If they 
 				// try to, move back to the old node
 				if (newParent === 'root') {
@@ -152,7 +176,20 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					copyEvt.node.id = CCH.Util.Util.generateUUID();
 					me.itemUpdated(newParent);
 				}
-			} 
+			},
+			'show_contextmenu.jstree' : function (evt, obj) {
+				var node = obj.node,
+					displayed = node.displayed,
+					$iconContainer = $('.jstree-contextmenu').find('li:last-child i');
+			
+				$iconContainer.removeClass('fa-eye fa-eye-slash');
+				
+				if (displayed) {
+					$iconContainer.addClass('fa-eye');
+				} else {
+					$iconContainer.addClass('fa-eye-slash');
+				}
+			}
 		});
 	};
 
@@ -192,7 +229,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				dataClone[CCH.ui.getTree().get_node(k).state['original-id']] = dataClone[k];
 				delete dataClone[k];
 			}
-			
+
 		});
 		return dataClone;
 	};
@@ -204,18 +241,18 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		// Delete the orphans node in the data object if it exists. This is an 
 		// artifact of how I build this data. 
 		data = me.updateRandomIdToOriginalId(data);
-		
+
 		delete data.orphans;
-		
+
 		$.ajax(CCH.config.relPath + 'data/tree/item', {
 			data: JSON.stringify(data),
 			method: 'POST',
 			contentType: 'application/json',
-			success : function () {
+			success: function () {
 				location.reload();
 			},
-			error : function () {
-				
+			error: function () {
+
 			}
 		});
 	};
@@ -240,12 +277,11 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					'text': 'Items',
 					'children': []
 				};
-
+				
 				// First create a data node for the top level item with all children
 				parentItem.children.push(this.buildAdjacencyListFromData(item));
 				// Use that date to create the tree
 				this.createTree([parentItem]);
-
 				this.loadOrphans();
 			}
 		});

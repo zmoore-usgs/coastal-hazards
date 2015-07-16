@@ -954,7 +954,6 @@ CCH.Objects.Publish.UI = function () {
 									}],
 								error: [
 									function (data) {
-										debugger;
 										var errorText = data.firstChild.textContent.trim();
 										if (errorText.indexOf('not find') !== -1) {
 											$srcWfsServiceInput.empty();
