@@ -69,7 +69,10 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	me.itemUpdated = function (itemId) {
 		var node = CCH.ui.getTree().get_node(itemId);
 
-		me.updatedItems[node.id] = node.children;
+		me.updatedItems[node.id] = {
+			children : node.children,
+			displayed : node.displayed
+		};
 	};
 
 	// Use the items data to build out the tree UI
@@ -111,17 +114,19 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 						'icon' : 'fa fa-eye',
 						'action': function (args) {
 							var tree = CCH.ui.getTree(),
-									selectedId = tree.get_selected()[0],
-									node = CCH.ui.getTree().get_node(selectedId);
+								parentId = tree.get_parent(selectedId),
+								selectedId = tree.get_selected()[0],
+								node = CCH.ui.getTree().get_node(selectedId);
 							
 							var displayed = node.state.displayed;
 							if (displayed) {
 								node.state.displayed = false;
-								$('#' + selectedId + '_anchor')
+								$('#' + selectedId + '_anchor');
 							} else {
 								node.state.displayed = true;
 							}
 							tree.save_state();
+							me.itemUpdated(parentId);
 						}
 					}
 				}
@@ -179,15 +184,21 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			},
 			'show_contextmenu.jstree' : function (evt, obj) {
 				var node = obj.node,
-					displayed = node.displayed,
-					$iconContainer = $('.jstree-contextmenu').find('li:last-child i');
-			
-				$iconContainer.removeClass('fa-eye fa-eye-slash');
+					displayed = node.state.displayed,
+					$visibilityRow = $('.jstree-contextmenu').find('li:last-child'),
+					$iconContainer = $visibilityRow.find('i');
 				
-				if (displayed) {
-					$iconContainer.addClass('fa-eye');
+				
+				$iconContainer.removeClass('fa-eye fa-eye-slash');
+				if (node.parent && node.parent !== '#' && node.parent !== 'uber' && node.parent !== 'root') {
+					if (displayed) {
+						$iconContainer.addClass('fa-eye');
+					} else {
+						$iconContainer.addClass('fa-eye-slash');
+					}
+					$visibilityRow.removeClass('hidden');
 				} else {
-					$iconContainer.addClass('fa-eye-slash');
+					$visibilityRow.addClass('hidden');
 				}
 			}
 		});
