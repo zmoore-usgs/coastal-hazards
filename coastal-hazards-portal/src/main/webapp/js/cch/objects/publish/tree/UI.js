@@ -20,12 +20,14 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			text = item.title,
 			itemType = item.itemType,
 			title = item.title,
+			displayedChildren = item.displayedChildren || [],
 			state = {
 				'opened': false,
 				'itemType': itemType,
 				'title': title,
 				'original-id': id,
-				'displayed' : false
+				'displayed' : false,
+				'displayedChildren' : displayedChildren
 			};
 			
 		return {
@@ -71,7 +73,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 		me.updatedItems[node.id] = {
 			children : node.children,
-			displayed : node.displayed
+			displayedChildren : node.state.displayedChildren
 		};
 	};
 
@@ -114,19 +116,22 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 						'icon' : 'fa fa-eye',
 						'action': function (args) {
 							var tree = CCH.ui.getTree(),
-								parentId = tree.get_parent(selectedId),
 								selectedId = tree.get_selected()[0],
-								node = CCH.ui.getTree().get_node(selectedId);
+								node = CCH.ui.getTree().get_node(selectedId),
+								parent = tree.get_node(node.parent),
+								originalId = node.state['original-id'];
 							
 							var displayed = node.state.displayed;
 							if (displayed) {
 								node.state.displayed = false;
 								$('#' + selectedId + '_anchor');
+								parent.state.displayedChildren.remove(originalId);
 							} else {
 								node.state.displayed = true;
+								parent.state.displayedChildren = parent.state.displayedChildren.union(originalId);
 							}
 							tree.save_state();
-							me.itemUpdated(parentId);
+							me.itemUpdated(parent.id);
 						}
 					}
 				}
@@ -226,6 +231,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		data.children = children;
 		data.title = node.state.title;
 		data.itemType = node.state.itemType;
+		data.displayedChildren = node.state.displayedChildren;
 
 		return data;
 	};
@@ -233,9 +239,14 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	me.updateRandomIdToOriginalId = function (data) {
 		var dataClone = Object.clone(data, true);
 		Object.keys(dataClone, function (k, v) {
-			dataClone[k] = v.map(function (id) {
+			var children = v.children.map(function (id) {
 				return CCH.ui.getTree().get_node(id).state['original-id'];
 			});
+			dataClone[k] = {
+				children : children,
+				displayedChildren : v.displayedChildren
+			};
+			
 			if (k !== 'uber') {
 				dataClone[CCH.ui.getTree().get_node(k).state['original-id']] = dataClone[k];
 				delete dataClone[k];

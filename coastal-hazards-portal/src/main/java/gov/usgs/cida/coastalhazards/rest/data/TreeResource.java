@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.adapter.ItemTreeAdapter;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
@@ -14,6 +15,7 @@ import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +34,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -40,6 +44,8 @@ import javax.ws.rs.core.Response;
 @Path(DataURI.TREE_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class TreeResource {
+
+	private static final Logger log = LoggerFactory.getLogger(TreeResource.class);
 
 	@GET
 	@Path("/item")
@@ -61,7 +67,7 @@ public class TreeResource {
 		}
 		return response;
 	}
-	
+
 	@GET
 	@Path("/item/orphans")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -84,23 +90,25 @@ public class TreeResource {
 		}
 		return response;
 	}
-	
+
 	@GET
 	@Path("/item/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getTree(@PathParam("id") String id, @Context Request request) {
 		Response response = null;
+		Item item = null;
 		try (ItemManager itemManager = new ItemManager()) {
-			Item item = itemManager.load(id);
-			if (item == null) {
-				throw new NotFoundException();
-			}
-			else {
-				Gson treeGson = new GsonBuilder().registerTypeAdapter(Item.class, new ItemTreeAdapter()).create();
-				String jsonResult = treeGson.toJson(item);
-				response = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).build();
-			}
+			item = itemManager.load(id);
 		}
+
+		if (item == null) {
+			throw new NotFoundException();
+		} else {
+			Gson treeGson = new GsonBuilder().registerTypeAdapter(Item.class, new ItemTreeAdapter()).create();
+			String jsonResult = treeGson.toJson(item);
+			response = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).build();
+		}
+
 		return response;
 	}
 
@@ -110,9 +118,11 @@ public class TreeResource {
 	public Response updateChildren(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response = null;
 		JsonParser parser = new JsonParser();
-		JsonElement parsed = parser.parse(content);
-		if (parsed instanceof JsonObject) {
+		JsonElement parsed = null;
+		try {
+			parsed = parser.parse(content);
 			JsonObject jsonObj = (JsonObject) parsed;
+
 			if (jsonObj.has("children")) {
 				JsonArray childrenArray = (JsonArray) jsonObj.get("children");
 
@@ -127,26 +137,26 @@ public class TreeResource {
 					}
 					item.setChildren(children);
 					manager.merge(item);
-					
+
 					try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
 						Status status = new Status();
 						status.setStatusName(Status.StatusName.STRUCTURE_UPDATE);
 						statusMan.save(status);
-						
+
 						thumbMan.updateDirtyBits(id);
 					}
 				}
 				response = Response.ok().build();
-				
-				
-			}
-			else {
+
+			} else {
+				log.error("Incoming JSON Object {} has no children", content);
 				throw new BadRequestException();
 			}
-		}
-		else {
+		} catch (JsonSyntaxException ex) {
+			log.error("Could not parse incoming content: {}", content, ex);
 			throw new BadRequestException();
 		}
+
 		return response;
 	}
 
@@ -157,36 +167,129 @@ public class TreeResource {
 		Response response = null;
 		JsonParser parser = new JsonParser();
 		JsonElement parsed = parser.parse(content);
+		try {
+			parsed = parser.parse(content);
+			JsonObject jsonObj = (JsonObject) parsed;
+
+			if (jsonObj.has("children")) {
+				try (ItemManager manager = new ItemManager()) {
+					List<Item> itemList = new LinkedList<>();
+					for (Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+
+						boolean success = updateItemChildren(entry.getKey(), (JsonObject) entry.getValue());
+
+						Item parentItem = manager.load(entry.getKey());
+						JsonObject obj = (JsonObject) entry.getValue();
+						List<Item> children = new LinkedList<>();
+
+						// Update the item's children
+						if (obj.has("children")) {
+							Iterator<JsonElement> iterator = obj.get("children").getAsJsonArray().iterator();
+							while (iterator.hasNext()) {
+								String childId = iterator.next().getAsString();
+								Item child = manager.load(childId);
+								children.add(child);
+							}
+							parentItem.setChildren(children);
+						}
+
+						// Update the displayedChildren
+						if (obj.has("displayedChildren")) {
+							Iterator<JsonElement> iterator = obj.get("displayedChildren").getAsJsonArray().iterator();
+							List<String> displayedChildren = new ArrayList<>();
+							while (iterator.hasNext()) {
+								String childId = iterator.next().getAsString();
+								displayedChildren.add(childId);
+							}
+							parentItem.setDisplayedChildren(displayedChildren);
+						}
+
+						itemList.add(parentItem);
+
+						try (ThumbnailManager thumbMan = new ThumbnailManager()) {
+							thumbMan.updateDirtyBits(parentItem.getId());
+						}
+					}
+					manager.mergeAll(itemList);
+
+					try (StatusManager statusMan = new StatusManager()) {
+						Status status = new Status();
+						status.setStatusName(Status.StatusName.STRUCTURE_UPDATE);
+						statusMan.save(status);
+					}
+				}
+			} else {
+				log.error("Incoming JSON Object {} has no children", content);
+				throw new BadRequestException();
+			}
+		} catch (JsonSyntaxException ex) {
+			log.error("Could not parse incoming content: {}", content, ex);
+			throw new BadRequestException();
+		}
 		if (parsed instanceof JsonObject) {
 			JsonObject jsonObj = (JsonObject) parsed;
 
-			try (ItemManager manager = new ItemManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
+			response = Response.ok().build();
+		}
+		return response;
+	}
+
+	/**
+	 *
+	 * @param itemId
+	 * @param updateData
+	 * @return
+	 */
+	boolean updateItemChildren(String itemId, JsonObject updateData) {
+		boolean success = false;
+
+		if (updateData.has("children")) {
+			try (ItemManager manager = new ItemManager()) {
 				List<Item> itemList = new LinkedList<>();
-				for (Entry<String, JsonElement> entry : jsonObj.entrySet()) {
-					Item parentItem = manager.load(entry.getKey());
-					List<Item> children = new LinkedList<>();
-					Iterator<JsonElement> iterator = ((JsonArray) entry.getValue()).iterator();
+				Item parentItem = manager.load(itemId);
+				List<Item> children = new LinkedList<>();
+
+				// Update the item's children
+				if (updateData.has("children")) {
+					Iterator<JsonElement> iterator = updateData.get("children").getAsJsonArray().iterator();
 					while (iterator.hasNext()) {
 						String childId = iterator.next().getAsString();
 						Item child = manager.load(childId);
 						children.add(child);
 					}
 					parentItem.setChildren(children);
-					itemList.add(parentItem);
-					
+				}
+
+				// Update the displayedChildren
+				if (updateData.has("displayedChildren")) {
+					Iterator<JsonElement> iterator = updateData.get("displayedChildren").getAsJsonArray().iterator();
+					List<String> displayedChildren = new ArrayList<>();
+					while (iterator.hasNext()) {
+						String childId = iterator.next().getAsString();
+						displayedChildren.add(childId);
+					}
+					parentItem.setDisplayedChildren(displayedChildren);
+				}
+
+				itemList.add(parentItem);
+
+				try (ThumbnailManager thumbMan = new ThumbnailManager()) {
 					thumbMan.updateDirtyBits(parentItem.getId());
 				}
-				manager.mergeAll(itemList);
-				
+				success = manager.mergeAll(itemList);
+
 				try (StatusManager statusMan = new StatusManager()) {
 					Status status = new Status();
 					status.setStatusName(Status.StatusName.STRUCTURE_UPDATE);
 					statusMan.save(status);
 				}
 			}
-			response = Response.ok().build();
+		} else {
+			log.error("Incoming JSON Object {} has no children");
+			throw new BadRequestException();
 		}
-		return response;
+
+		return success;
 	}
 
 }
