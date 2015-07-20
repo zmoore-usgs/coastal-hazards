@@ -76,9 +76,9 @@
 					success: function (pos) {
 						var lat = pos.coords.latitude,
 								lon = pos.coords.longitude,
-								locationLonLat = new OpenLayers.LonLat(lon, lat).transform().transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection),
+								locationLonLat = new OpenLayers.LonLat(lon, lat).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection),
 								bounds = new OpenLayers.Bounds();
-
+						
 						bounds.extend(locationLonLat);
 						bounds.extend(locationLonLat);
 						CCH.map.getMap().zoomToExtent(bounds);

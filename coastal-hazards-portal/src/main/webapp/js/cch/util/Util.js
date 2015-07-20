@@ -112,7 +112,7 @@ CCH.Util.Util = {
 		};
 
 		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(callbacks.success, callbacks.error);
+			navigator.geolocation.getCurrentPosition(callbacks.success, callbacks.error, { enableHighAccuracy : true, maximumAge : 0});
 		}
 	}
 };
