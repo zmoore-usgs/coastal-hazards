@@ -430,6 +430,7 @@ CCH.intro = (function () {
     return {
         intro: intro,
         start: function (step) {
+            CCH.CONFIG.ui.isTouring = true;
             var startingStep = step;
 
             if (CCH.ui.isSmall()) {
