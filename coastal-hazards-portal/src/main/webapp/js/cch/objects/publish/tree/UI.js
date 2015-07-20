@@ -17,19 +17,19 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	// The individual tree node.
 	me.createTreeNode = function (item) {
 		var id = item.id,
-			text = item.title,
-			itemType = item.itemType,
-			title = item.title,
-			displayedChildren = item.displayedChildren || [],
-			state = {
-				'opened': false,
-				'itemType': itemType,
-				'title': title,
-				'original-id': id,
-				'displayed' : false,
-				'displayedChildren' : displayedChildren
-			};
-			
+				text = item.title,
+				itemType = item.itemType,
+				title = item.title,
+				displayedChildren = item.displayedChildren || [],
+				state = {
+					'opened': false,
+					'itemType': itemType,
+					'title': title,
+					'original-id': id,
+					'displayed': false,
+					'displayedChildren': displayedChildren
+				};
+
 		return {
 			id: id === 'uber' || id === 'orphans' ? id : CCH.Util.Util.generateUUID(),
 			text: text,
@@ -56,11 +56,11 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			for (var childIndex = 0; childIndex < children.length; childIndex++) {
 				var child = children[childIndex];
 				var childNode = this.buildAdjacencyListFromData(child);
-				
+
 				if (item.displayedChildren && item.displayedChildren.indexOf(child.id) !== -1) {
 					childNode.state.displayed = true;
 				}
-				
+
 				node.children.push(childNode);
 			}
 		}
@@ -72,8 +72,8 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		var node = CCH.ui.getTree().get_node(itemId);
 
 		me.updatedItems[node.id] = {
-			children : node.children,
-			displayedChildren : node.state.displayedChildren
+			children: node.children,
+			displayedChildren: node.state.displayedChildren
 		};
 	};
 
@@ -111,16 +111,16 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 							}
 						}
 					},
-					'displayed' : {
+					'displayed': {
 						'label': 'Toggle Visibility',
-						'icon' : 'fa fa-eye',
+						'icon': 'fa fa-eye',
 						'action': function (args) {
 							var tree = CCH.ui.getTree(),
-								selectedId = tree.get_selected()[0],
-								node = CCH.ui.getTree().get_node(selectedId),
-								parent = tree.get_node(node.parent),
-								originalId = node.state['original-id'];
-							
+									selectedId = tree.get_selected()[0],
+									node = CCH.ui.getTree().get_node(selectedId),
+									parent = tree.get_node(node.parent),
+									originalId = node.state['original-id'];
+
 							var displayed = node.state.displayed;
 							if (displayed) {
 								node.state.displayed = false;
@@ -132,6 +132,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 							}
 							tree.save_state();
 							me.itemUpdated(parent.id);
+							me.updateItemsLook();
 						}
 					}
 				}
@@ -157,7 +158,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			},
 			'plugins': ['contextmenu', 'dnd', 'types', 'state', 'search']
 		});
-		
+
 		me.$treeContainer.bind({
 			'move_node.jstree': function (evt, moveEvt) {
 				var oldParent = moveEvt.old_parent,
@@ -187,13 +188,12 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					me.itemUpdated(newParent);
 				}
 			},
-			'show_contextmenu.jstree' : function (evt, obj) {
+			'show_contextmenu.jstree': function (evt, obj) {
 				var node = obj.node,
-					displayed = node.state.displayed,
-					$visibilityRow = $('.jstree-contextmenu').find('li:last-child'),
-					$iconContainer = $visibilityRow.find('i');
-				
-				
+						displayed = node.state.displayed,
+						$visibilityRow = $('.jstree-contextmenu').find('li:last-child'),
+						$iconContainer = $visibilityRow.find('i');
+
 				$iconContainer.removeClass('fa-eye fa-eye-slash');
 				if (node.parent && node.parent !== '#' && node.parent !== 'uber' && node.parent !== 'root') {
 					if (displayed) {
@@ -205,8 +205,31 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				} else {
 					$visibilityRow.addClass('hidden');
 				}
+			},
+			'after_open.jstree': function () {
+				me.updateItemsLook();
 			}
 		});
+	};
+
+	// Update the CSS on all items based on if they have visibility toggled on or off
+	me.updateItemsLook = function () {
+		var tree = CCH.ui.getTree(),
+				uber = tree.get_node('uber'),
+				allItems = uber.children_d,
+				invisClass = 'invisible-item';
+
+		for (var cIdx = 0; cIdx < allItems.length; cIdx++) {
+			var node = tree.get_node(allItems[cIdx]);
+			if (node.parent && node.parent !== '#' && node.parent !== 'uber' && node.parent !== 'root') {
+				if (node.state.displayed) {
+					$('#' + node.li_attr.id + '_anchor').removeClass(invisClass);
+				} else {
+					$('#' + node.li_attr.id + '_anchor').addClass(invisClass);
+				}
+			}
+
+		}
 	};
 
 	// When a user hits save, I need to reconstruct the data into the same format
@@ -243,10 +266,10 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				return CCH.ui.getTree().get_node(id).state['original-id'];
 			});
 			dataClone[k] = {
-				children : children,
-				displayedChildren : v.displayedChildren
+				children: children,
+				displayedChildren: v.displayedChildren
 			};
-			
+
 			if (k !== 'uber') {
 				dataClone[CCH.ui.getTree().get_node(k).state['original-id']] = dataClone[k];
 				delete dataClone[k];
@@ -299,18 +322,18 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					'text': 'Items',
 					'children': []
 				};
-				
+
 				// First create a data node for the top level item with all children
 				parentItem.children.push(this.buildAdjacencyListFromData(item));
 				// Use that date to create the tree
 				this.createTree([parentItem]);
-				this.loadOrphans();
+				this.loadOrphans().done(me.updateItemsLook);
 			}
 		});
 
 		// Load the orphans object
 		me.loadOrphans = function () {
-			$.ajax(CCH.config.baseUrl + '/data/tree/item/orphans/', {
+			return $.ajax(CCH.config.baseUrl + '/data/tree/item/orphans/', {
 				context: this,
 				success: function (item) {
 					var orphanItem = {

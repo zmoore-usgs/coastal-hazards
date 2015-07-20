@@ -51,11 +51,7 @@
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/themes/default/style<%= development ? "" : ".min"%>.css" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
-		<style type="text/css">
-			#search-input {
-				margin: 10px;
-			}
-		</style>
+		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/publish/tree.css" />
     </head>
     <body>
         <div class="container-fluid">
