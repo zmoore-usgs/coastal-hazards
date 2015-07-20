@@ -1412,41 +1412,44 @@ CCH.Objects.Publish.UI = function () {
 						$li,
 						$a;
 
-				responseChild.children.each(function (recordSummary) {
-					recordSummary.children.each(function (recordAttribute) {
-						if (recordAttribute.tag === "dc:identifier") {
-							id = recordAttribute.text;
-						} else if (recordAttribute.tag === "dc:title") {
-							title = recordAttribute.text;
+				if (responseChild.children) {
+					responseChild.children.each(function (recordSummary) {
+						recordSummary.children.each(function (recordAttribute) {
+							if (recordAttribute.tag === "dc:identifier") {
+								id = recordAttribute.text;
+							} else if (recordAttribute.tag === "dc:title") {
+								title = recordAttribute.text;
+							}
+						});
+
+						if (id && title) {
+							$li = $('<li />');
+							$a = $('<a />')
+									.attr({
+										'data-attr': id,
+										'href': '#'
+									})
+									.html(title);
+							$li.append($a);
+							$metadataDropdownList.append($li);
+
+							$a.on(CCH.CONFIG.strings.click, function (evt) {
+								var endpoint = CCH.CONFIG.publicUrl;
+								endpoint += '/csw/?';
+								endpoint += 'service=CSW';
+								endpoint += '&request=GetRecordById';
+								endpoint += '&version=2.0.2';
+								endpoint += '&typeNames=fgdc:metadata';
+								endpoint += '&id=' + $(evt.target).attr('data-attr');
+								endpoint += '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
+								endpoint += '&elementSetName=full';
+								$cswServiceInput.val(endpoint);
+
+							});
 						}
 					});
-
-					if (id && title) {
-						$li = $('<li />');
-						$a = $('<a />')
-							.attr({
-								'data-attr': id,
-								'href': '#'
-							})
-							.html(title);
-						$li.append($a);
-						$metadataDropdownList.append($li);
-
-						$a.on(CCH.CONFIG.strings.click, function (evt) {
-							var endpoint = CCH.CONFIG.publicUrl;
-							endpoint += '/csw/?';
-							endpoint += 'service=CSW';
-							endpoint += '&request=GetRecordById';
-							endpoint += '&version=2.0.2';
-							endpoint += '&typeNames=fgdc:metadata';
-							endpoint += '&id=' + $(evt.target).attr('data-attr');
-							endpoint += '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
-							endpoint += '&elementSetName=full';
-							$cswServiceInput.val(endpoint);
-
-						});
-					}
-				});
+				}
+				
 			}
 		});
 	};
