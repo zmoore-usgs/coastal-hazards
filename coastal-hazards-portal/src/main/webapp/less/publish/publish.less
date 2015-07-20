@@ -1,3 +1,5 @@
+@import "../cch.less";
+
 .row-form-combo() {
 	.form-group {
 		width: 100%;
@@ -13,7 +15,7 @@
 .emphasis-block() {
 	display: none;
 	&.enabled {
-		color: #FF0000;
+		color: red;
 		display: initial;
 	}
 }
@@ -114,12 +116,12 @@
     padding-left: 0px;
 	li {
 		padding: 10px;
-		border: 1px solid #DDD;
+		border: @cch-border;
 		border-radius: 5px;
 		-moz-border-radius: 5px;
 		-webkit-border-radius: 5px;
 		text-align: center;
-		background-color: #FFFFFF;
+		background-color: white;
 		margin: 5px;
 		span {
 			& > i:first-child {
@@ -142,7 +144,7 @@
 	}
 }
 form-publish-info-item-panel-children .panel-body {
-    background-color: #EEE;
+    background-color: @cch-gray;
 }
 
 .qq-upload-button {
@@ -164,7 +166,7 @@ form-publish-info-item-panel-children .panel-body {
 	-ms-user-select: none;
 	-o-user-select: none;
 	user-select: none;
-	color: #ffffff;
+	color: white;
 	background-color: #5cb85c;
 	border-color: #4cae4c;
 	padding: 10px 16px  !important;

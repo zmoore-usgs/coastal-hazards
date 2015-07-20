@@ -1,15 +1,12 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
 import gov.usgs.cida.coastalhazards.model.Thumbnail;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
-
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

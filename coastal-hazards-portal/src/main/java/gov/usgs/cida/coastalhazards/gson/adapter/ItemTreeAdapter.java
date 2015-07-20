@@ -3,7 +3,6 @@ package gov.usgs.cida.coastalhazards.gson.adapter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
@@ -26,7 +25,8 @@ public class ItemTreeAdapter implements JsonSerializer<Item> {
 			simplified.add("id", json.get("id"));
 			simplified.add("itemType", json.get("itemType"));
 			simplified.add("title", json.getAsJsonObject("summary").getAsJsonObject("full").get("title"));
-
+			simplified.add("displayedChildren", json.getAsJsonArray("displayedChildren"));
+			
 			List<Item> items = src.getChildren();
 			if (items != null) {
 				JsonArray children = new JsonArray();

@@ -237,7 +237,6 @@ CCH.Objects.Item = function (args) {
 					layers.concat(childReturnObj.layers);
 					bboxObject = childReturnObj.bboxObject;
 				}
-
 			}
 		} else {
 			if (me.ribboned && me.parent && me.parent.ribboned) {

@@ -60,10 +60,10 @@
 		</script>
 		<jsp:include page="../../ui/common/meta-tags.jsp">
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
-			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/cida-cmgp.svg" %>' />
+			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/cida-cmgp.svg"%>' />
 		</jsp:include>
-			<title>USGS Coastal Change Hazards Portal - Publish</title>
-			<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
+		<title>USGS Coastal Change Hazards Portal - Publish</title>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/publish/publish.css" />
@@ -74,7 +74,7 @@
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
 
 		<jsp:include page="../../../../js/third-party/jsuri/jsuri.jsp">
-			<jsp:param name="baseUrl" value="<%=baseUrl + '/' %>" /> 
+			<jsp:param name="baseUrl" value="<%=baseUrl + '/'%>" /> 
 		</jsp:include>
 		<jsp:include page="../../../../js/log4javascript/log4javascript.jsp">
 			<jsp:param name="relPath" value="<%=baseUrl + '/'%>" /> 
@@ -85,12 +85,12 @@
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="/WEB-INF/jsp/ui/front/config.jsp"></jsp:include>
-		<script type="text/javascript">
-			CCH.itemid = '<%= id %>';
-			CCH.baseUrl = '<%= baseUrl %>';
-			CCH.CONFIG.contextPath = '<%= baseUrl %>';
+			<script type="text/javascript">
+			CCH.itemid = '<%= id%>';
+			CCH.baseUrl = '<%= baseUrl%>';
+			CCH.CONFIG.contextPath = '<%= baseUrl%>';
 			CCH.CONFIG.ui = {
-				'disableBoundingBoxInputForAggregations' : true
+				'disableBoundingBoxInputForAggregations': true
 			},
 			CCH.CONFIG.limits = {
 				map: {
@@ -122,24 +122,24 @@
 					link: <%= Publication.LINK_MAX_LENGTH%>
 				}
 			};
-		CCH.CONFIG.strings = {
-			cidaGeoserver : 'cida-geoserver',
-			disabled : 'disabled',
-			hide : 'hide',
-			show : 'show',
-			hidden : 'hidden',
-			enabled : 'enabled',
-			checked : 'checked',
-			click : 'click'
-		}
-	</script>
+			CCH.CONFIG.strings = {
+				cidaGeoserver: 'cida-geoserver',
+				disabled: 'disabled',
+				hide: 'hide',
+				show: 'show',
+				hidden: 'hidden',
+				enabled: 'enabled',
+				checked: 'checked',
+				click: 'click'
+			}
+		</script>
 	</head>
 	<body>
 
 		<div class="container">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"></h3>
+					<h3 id="welcome-text" class="panel-title"></h3>
 				</div>
 				<div class="panel-body">
 					<div class="row row-control center-block">
@@ -147,12 +147,6 @@
 							<button type="button" id="publish-button-view-all" class="btn btn-success btn-lg" data-toggle="dropdown">
 								View All
 							</button>
-						</div>
-						<div class="btn-group">
-							<button type="button" id="publish-button-edit-existing" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown">
-								Edit Existing <span class="caret"></span>
-							</button>
-							<ul id="publish-button-edit-existing-list" class="dropdown-menu" role="menu"></ul>
 						</div>
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown">
@@ -164,18 +158,26 @@
 								<li><a id="publish-button-create-template-option" href="#">Template</a></li>
 							</ul>
 						</div>
-						<div class="btn-group">
-							<button id="publish-button-logout" type="button" class="btn btn-success btn-lg logout-button" data-toggle="dropdown">
-								Logout 
-							</button>
-						</div>
+
 						<div id="publish-button-edit-metadata-existing-grp" class="btn-group hidden">
 							<button type="button" id="publish-button-edit-metadata-existing" class="btn btn-lg btn-success dropdown-toggle" data-toggle="dropdown">
 								Select Metadata <span class="caret"></span>
 							</button>
 							<ul id="publish-list-edit-metadata-existing" class="dropdown-menu" role="menu"></ul>
 						</div>
+
 						<div id="qq-uploader-dummy"></div>
+						<button type="button" id="publish-button-save" class="btn btn-lg btn-success" disabled="disabled">
+							Save
+						</button>
+						<button type="button" id="publish-button-delete" class="btn btn-lg btn-success" disabled="disabled">
+							Delete
+						</button>
+						<div class="btn-group">
+							<button id="publish-button-logout" type="button" class="btn btn-success btn-lg logout-button" data-toggle="dropdown">
+								Logout 
+							</button>
+						</div>
 					</div>
 					<form class="form-inline" role="form">
 
@@ -366,17 +368,17 @@
 									</select>
 								</div>
 							</div>
-							
+
 							<%-- Is Active Storm --%>
 							<div id="form-publish-info-item-active-storm" class="row hidden">
 								<div class="form-group">
 									<label>
 										<input type="checkbox" id="checkbox-isactive"> Is Active?
 									</label>
-									
+
 								</div>
 							</div>
-							
+
 							<%-- Attribute --%>
 							<div class="row row-attribute">
 								<div class="form-group">
@@ -448,7 +450,7 @@
 									</ul>
 								</div>
 							</div>
-							
+
 							<%-- Publications --%>
 							<div id="publications-panel" class="resource-panel panel panel-default">
 								<div class="panel-heading">
@@ -474,24 +476,6 @@
 									</ul>
 								</div>
 							</div>
-								
-							<%-- Children --%>
-							<div id="form-publish-info-item-panel-children" class="panel panel-default">
-								<div class="panel-heading">
-									<h3 class="panel-title">
-										<span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>
-										Children
-									</h3>
-								</div>
-								<div class="panel-body">
-									<div id="form-publish-info-item-children-sortable-row" class="row row-children">
-										<div class="form-group">
-											<ul id="form-publish-info-item-children-sortable-ul"></ul>
-										</div>
-									</div>
-								</div>
-							</div>
-
 
 							<%-- Ribbonable --%>
 							<div class="row row-ribbonable">
@@ -513,14 +497,6 @@
 						</div>
 					</form>
 				</div>
-				<div id="row-controls-save" class="row clear">
-					<button type="button" id="publish-button-save" class="btn btn-lg btn-success" disabled="disabled">
-						Save
-					</button>
-					<button type="button" id="publish-button-delete" class="btn btn-lg btn-success" disabled="disabled">
-						Delete
-					</button>
-				</div>
 			</div>
 		</div>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/handlebars/<%=vHandlebars%>/handlebars.js"></script>
@@ -531,6 +507,7 @@
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Auth.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/application/publish/publish.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/application/publish/OnReady.js"></script>
 
 		<div id="alert-modal" class="modal fade">

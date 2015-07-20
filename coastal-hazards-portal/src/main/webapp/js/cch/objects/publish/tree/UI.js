@@ -12,20 +12,23 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 	me.updatedItems = {};
 	me.autoSearch = "";
-	
+
 
 	// The individual tree node.
 	me.createTreeNode = function (item) {
 		var id = item.id,
-			text = item.title,
-			itemType = item.itemType,
-			title = item.title,
-			state = {
-				'opened': false,
-				'itemType': itemType,
-				'title': title,
-				'original-id': id
-			};
+				text = item.title,
+				itemType = item.itemType,
+				title = item.title,
+				displayedChildren = item.displayedChildren || [],
+				state = {
+					'opened': false,
+					'itemType': itemType,
+					'title': title,
+					'original-id': id,
+					'displayed': false,
+					'displayedChildren': displayedChildren
+				};
 
 		return {
 			id: id === 'uber' || id === 'orphans' ? id : CCH.Util.Util.generateUUID(),
@@ -53,6 +56,11 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			for (var childIndex = 0; childIndex < children.length; childIndex++) {
 				var child = children[childIndex];
 				var childNode = this.buildAdjacencyListFromData(child);
+
+				if (item.displayedChildren && item.displayedChildren.indexOf(child.id) !== -1) {
+					childNode.state.displayed = true;
+				}
+
 				node.children.push(childNode);
 			}
 		}
@@ -63,7 +71,10 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	me.itemUpdated = function (itemId) {
 		var node = CCH.ui.getTree().get_node(itemId);
 
-		me.updatedItems[node.id] = node.children;
+		me.updatedItems[node.id] = {
+			children: node.children,
+			displayedChildren: node.state.displayedChildren
+		};
 	};
 
 	// Use the items data to build out the tree UI
@@ -76,13 +87,13 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			'contextmenu': {
 				'items': {
 					'edit': {
-						'label' : 'Edit',
+						'label': 'Edit',
 						'icon': 'fa fa-pencil-square-o',
-						'action' : function () {
+						'action': function () {
 							var tree = CCH.ui.getTree(),
-								selectedId = tree.get_selected()[0],
-								originalId = CCH.ui.getTree().get_node(selectedId).state['original-id'];
-						
+									selectedId = tree.get_selected()[0],
+									originalId = CCH.ui.getTree().get_node(selectedId).state['original-id'];
+
 							window.location = CCH.config.baseUrl + "/publish/item/" + originalId;
 						}
 					},
@@ -98,6 +109,30 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 								tree.move_node(selectedId, 'orphans');
 								me.itemUpdated(parentId);
 							}
+						}
+					},
+					'displayed': {
+						'label': 'Toggle Visibility',
+						'icon': 'fa fa-eye',
+						'action': function (args) {
+							var tree = CCH.ui.getTree(),
+									selectedId = tree.get_selected()[0],
+									node = CCH.ui.getTree().get_node(selectedId),
+									parent = tree.get_node(node.parent),
+									originalId = node.state['original-id'];
+
+							var displayed = node.state.displayed;
+							if (displayed) {
+								node.state.displayed = false;
+								$('#' + selectedId + '_anchor');
+								parent.state.displayedChildren.remove(originalId);
+							} else {
+								node.state.displayed = true;
+								parent.state.displayedChildren = parent.state.displayedChildren.union(originalId);
+							}
+							tree.save_state();
+							me.itemUpdated(parent.id);
+							me.updateItemsLook();
 						}
 					}
 				}
@@ -121,13 +156,13 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					return true;
 				}
 			},
-			'plugins': ['contextmenu', 'dnd',  'types', 'state', 'search']
+			'plugins': ['contextmenu', 'dnd', 'types', 'state', 'search']
 		});
 
 		me.$treeContainer.bind({
 			'move_node.jstree': function (evt, moveEvt) {
 				var oldParent = moveEvt.old_parent,
-					newParent = moveEvt.parent;
+						newParent = moveEvt.parent;
 
 				// I don't want to allow users to move nodes to the root node. If they 
 				// try to, move back to the old node
@@ -139,10 +174,10 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					});
 				}
 			},
-			'copy_node.jstree' : function (evt, copyEvt) {
+			'copy_node.jstree': function (evt, copyEvt) {
 				var oldParent = copyEvt.old_parent,
-					newParent = copyEvt.parent;
-			
+						newParent = copyEvt.parent;
+
 				// I don't want to allow users to move nodes to the root node. If they 
 				// try to, move back to the old node
 				if (newParent === 'root') {
@@ -152,8 +187,49 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					copyEvt.node.id = CCH.Util.Util.generateUUID();
 					me.itemUpdated(newParent);
 				}
-			} 
+			},
+			'show_contextmenu.jstree': function (evt, obj) {
+				var node = obj.node,
+						displayed = node.state.displayed,
+						$visibilityRow = $('.jstree-contextmenu').find('li:last-child'),
+						$iconContainer = $visibilityRow.find('i');
+
+				$iconContainer.removeClass('fa-eye fa-eye-slash');
+				if (node.parent && node.parent !== '#' && node.parent !== 'uber' && node.parent !== 'root') {
+					if (displayed) {
+						$iconContainer.addClass('fa-eye');
+					} else {
+						$iconContainer.addClass('fa-eye-slash');
+					}
+					$visibilityRow.removeClass('hidden');
+				} else {
+					$visibilityRow.addClass('hidden');
+				}
+			},
+			'after_open.jstree': function () {
+				me.updateItemsLook();
+			}
 		});
+	};
+
+	// Update the CSS on all items based on if they have visibility toggled on or off
+	me.updateItemsLook = function () {
+		var tree = CCH.ui.getTree(),
+				uber = tree.get_node('uber'),
+				allItems = uber.children_d,
+				invisClass = 'invisible-item';
+
+		for (var cIdx = 0; cIdx < allItems.length; cIdx++) {
+			var node = tree.get_node(allItems[cIdx]);
+			if (node.parent && node.parent !== '#' && node.parent !== 'uber' && node.parent !== 'root') {
+				if (node.state.displayed) {
+					$('#' + node.li_attr.id + '_anchor').removeClass(invisClass);
+				} else {
+					$('#' + node.li_attr.id + '_anchor').addClass(invisClass);
+				}
+			}
+
+		}
 	};
 
 	// When a user hits save, I need to reconstruct the data into the same format
@@ -178,6 +254,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		data.children = children;
 		data.title = node.state.title;
 		data.itemType = node.state.itemType;
+		data.displayedChildren = node.state.displayedChildren;
 
 		return data;
 	};
@@ -185,14 +262,19 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	me.updateRandomIdToOriginalId = function (data) {
 		var dataClone = Object.clone(data, true);
 		Object.keys(dataClone, function (k, v) {
-			dataClone[k] = v.map(function (id) {
+			var children = v.children.map(function (id) {
 				return CCH.ui.getTree().get_node(id).state['original-id'];
 			});
+			dataClone[k] = {
+				children: children,
+				displayedChildren: v.displayedChildren
+			};
+
 			if (k !== 'uber') {
 				dataClone[CCH.ui.getTree().get_node(k).state['original-id']] = dataClone[k];
 				delete dataClone[k];
 			}
-			
+
 		});
 		return dataClone;
 	};
@@ -204,18 +286,18 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		// Delete the orphans node in the data object if it exists. This is an 
 		// artifact of how I build this data. 
 		data = me.updateRandomIdToOriginalId(data);
-		
+
 		delete data.orphans;
-		
+
 		$.ajax(CCH.config.relPath + 'data/tree/item', {
 			data: JSON.stringify(data),
 			method: 'POST',
 			contentType: 'application/json',
-			success : function () {
+			success: function () {
 				location.reload();
 			},
-			error : function () {
-				
+			error: function () {
+
 			}
 		});
 	};
@@ -245,14 +327,13 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				parentItem.children.push(this.buildAdjacencyListFromData(item));
 				// Use that date to create the tree
 				this.createTree([parentItem]);
-
-				this.loadOrphans();
+				this.loadOrphans().done(me.updateItemsLook);
 			}
 		});
 
 		// Load the orphans object
 		me.loadOrphans = function () {
-			$.ajax(CCH.config.baseUrl + '/data/tree/item/orphans/', {
+			return $.ajax(CCH.config.baseUrl + '/data/tree/item/orphans/', {
 				context: this,
 				success: function (item) {
 					var orphanItem = {
