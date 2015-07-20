@@ -222,6 +222,8 @@
                                    When a data item is enabled on the map, a user may click on the data to retrieve a summary.
                                 </p>
                                 
+                                <a href="#content"><p class="returnToTop">Return to Top</p></a>
+                                
                             </div>
                                 
                             <div id="bucketContentArea" class="topicContentArea">
@@ -295,6 +297,8 @@
                                 <p>
                                 	Click on the information icon to get more details about the item. This will take the user to the action center.
                                 </p>
+                                
+                                <a href="#content"><p class="returnToTop">Return to Top</p></a>
                                     	
                             </div>
                                 
@@ -354,6 +358,8 @@
                                 <p>
                                     Create a printer-friendly view of the current item.
                                 </p>
+                                
+                                <a href="#content"><p class="returnToTop">Return to Top</p></a>
                                 
                             </div>      
                                 
