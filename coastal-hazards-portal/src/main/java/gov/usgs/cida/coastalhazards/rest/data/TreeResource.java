@@ -158,7 +158,7 @@ public class TreeResource {
 				int itemCount = entrySet.size();
 				if (itemCount > 0) {
 					// Create the map that the updating function expects 
-					Map<String, JsonObject> itemMap = new HashMap<>(itemCount);
+					Map<String, JsonObject> itemMap = new HashMap<>();
 					for (Entry<String, JsonElement> entry : entrySet) {
 						itemMap.put(entry.getKey(), (JsonObject) entry.getValue());
 					}
@@ -191,7 +191,7 @@ public class TreeResource {
 	 *
 	 * @return whether items were updated in the database or not
 	 */
-	boolean updateItemChildren(Map<String, JsonObject> items) {
+	private boolean updateItemChildren(Map<String, JsonObject> items) {
 		List<Item> itemList = new LinkedList<>();
 		boolean updated = false;
 		for (Entry<String, JsonObject> entry : items.entrySet()) {
