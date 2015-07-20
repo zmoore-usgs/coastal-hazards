@@ -107,7 +107,12 @@ CCH.Objects.Session = function (args) {
 	me.write = function (args) {
 		CCH.LOG.debug('Session.js::write');
 		args = args || {};
-
+                
+                
+                if(CCH.CONFIG.ui.isTouring !== undefined && CCH.CONFIG.ui.isTouring === true){
+                    return;
+                } 
+                
 		var callbacks = args.callbacks || {
 			success: [],
 			error: []
