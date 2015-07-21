@@ -2,6 +2,8 @@ package gov.usgs.cida.coastalhazards.rest.ui;
 
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
+import java.util.HashMap;
+import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -22,6 +24,8 @@ public class InfoRouter {
 	@Produces(MediaType.TEXT_HTML)
 	@Path("{id}")
 	public Response useInfoJsp(@PathParam("id") String id) {
+		Map<String, Object> map = new HashMap<>();
+		
 		Item item;
 		
 		try (ItemManager mgr = new ItemManager()) {
@@ -32,7 +36,9 @@ public class InfoRouter {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 		
-		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index.jsp", item)).build();
+		map.put("item", item);
+		
+		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index.jsp", map)).build();
 	}
 	
 	@GET

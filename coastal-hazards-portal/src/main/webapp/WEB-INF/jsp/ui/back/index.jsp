@@ -11,64 +11,67 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
-    {
-        try {
-            File propsFile = new File(getClass().getClassLoader().getResource("application.properties").toURI());
-            props = new DynamicReadOnlyProperties(propsFile);
-            props = props.addJNDIContexts(new String[0]);
-        } catch (Exception e) {
-            System.out.println("Could not find JNDI - Application will probably not function correctly");
-        }
-    }
+	{
+		try {
+			File propsFile = new File(getClass().getClassLoader().getResource("application.properties").toURI());
+			props = new DynamicReadOnlyProperties(propsFile);
+			props = props.addJNDIContexts(new String[0]);
+		} catch (Exception e) {
+			System.out.println("Could not find JNDI - Application will probably not function correctly");
+		}
+	}
 
-    private boolean isTextOnlyClient(String userAgent) {
-        String[] textOnlyClients = new String[]{"lynx", "elinks", "curl", "googlebot"};
-        String userAgentLc = userAgent.toLowerCase();
-        for (int cIdx = 0; cIdx < textOnlyClients.length; cIdx++) {
-            if (userAgentLc.contains(textOnlyClients[cIdx])) {
-                return true;
-            }
-        }
-        return false;
-    }
+	private boolean isTextOnlyClient(String userAgent) {
+		String[] textOnlyClients = new String[]{"lynx", "elinks", "curl", "googlebot"};
+		String userAgentLc = userAgent.toLowerCase();
+		for (int cIdx = 0; cIdx < textOnlyClients.length; cIdx++) {
+			if (userAgentLc.contains(textOnlyClients[cIdx])) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    private String getProp(String key) {
-        String result = props.getProperty(key, "");
-        return result;
-    }
+	private String getProp(String key) {
+		String result = props.getProperty(key, "");
+		return result;
+	}
 
 %>
 <%
-    Item item = (Item) request.getAttribute("it");
-    boolean development = Boolean.parseBoolean(props.getProperty("development"));
-    String baseUrl = props.getProperty("coastal-hazards.base.url");
-    String secureBaseUrlJndiString = props.getProperty("coastal-hazards.base.secure.url");
-    baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
-    String requestUrl = request.getRequestURL().toString();
-    if (requestUrl.toLowerCase().contains("https")) {
-        baseUrl = secureBaseUrlJndiString;
-    }
-    baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
-    String userAgent = request.getHeader("user-agent");
+	Map<String, Object> paramMap = ((Map<String, Object>) request.getAttribute("it"));
+	Item item = (Item) paramMap.get("item");
+	boolean tutorial = Boolean.parseBoolean((String) paramMap.get("tutorial"));
+	boolean development = Boolean.parseBoolean(props.getProperty("development"));
+	String baseUrl = props.getProperty("coastal-hazards.base.url");
+	String secureBaseUrlJndiString = props.getProperty("coastal-hazards.base.secure.url");
+	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
+	String requestUrl = request.getRequestURL().toString();
+	if (requestUrl.toLowerCase().contains("https")) {
+		baseUrl = secureBaseUrlJndiString;
+	}
+	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
+	String userAgent = request.getHeader("user-agent");
 
-    String relPath = baseUrl + "/";
-    String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
-    String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
-    String geoserverEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
-    String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
-    String marineArcServerEndpoint = props.getProperty("coastal-hazards.marine.endpoint");
-    String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");
-    String version = props.getProperty("application.version");
-    String resourceSuffix = development ? "" : "-" + version + "-min";
-    String vJquery = getProp("version.jquery");
-    String vBootstrap = getProp("version.bootstrap");
-    String vSugarJs = getProp("version.sugarjs");
-    String vJsTree = getProp("version.jstree");
-    String vHandlebars = getProp("version.handlebars");
-    String referer = request.getHeader("referer");
-    String vFontAwesome = getProp("version.fontawesome");
+	String relPath = baseUrl + "/";
+	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
+	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
+	String geoserverEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
+	String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
+	String marineArcServerEndpoint = props.getProperty("coastal-hazards.marine.endpoint");
+	String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");
+	String version = props.getProperty("application.version");
+	String resourceSuffix = development ? "" : "-" + version + "-min";
+	String vJquery = getProp("version.jquery");
+	String vBootstrap = getProp("version.bootstrap");
+	String vSugarJs = getProp("version.sugarjs");
+	String vJsTree = getProp("version.jstree");
+	String vHandlebars = getProp("version.handlebars");
+	String referer = request.getHeader("referer");
+	String vFontAwesome = getProp("version.fontawesome");
+	String vIntroJs = getProp("version.introjs");
 
-    pageContext.setAttribute("textOnlyClient", isTextOnlyClient(userAgent));
+	pageContext.setAttribute("textOnlyClient", isTextOnlyClient(userAgent));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -84,11 +87,12 @@
         </jsp:include>
         <%@ include file="../common/ie-check.jsp" %>
         <title>USGS Coastal Change Hazards Portal - <%= item.getSummary().getMedium().getTitle()%></title>
-
+		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/intro.js/<%=vIntroJs%>/introjs<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" media="all" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= resourceSuffix%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/themes/default/style<%= development ? "" : ".min"%>.css" />
+
         <script type="text/javascript">
             <jsp:include page="../common/google-analytics.jsp" />
         </script>
@@ -160,7 +164,7 @@
                                         <button type="button" class="btn btn-default control-button" id="metadata-link-button"  role="button" data-tooltip="tooltip" data-placement="right" title="Review detailed geographic, bibliographic and other descriptive information about this item.">Metadata</button>
                                         <button type="button" class="btn btn-default control-button" id="download-link-button" data-tooltip="tooltip" data-placement="right" title="Download this item to your computer">Download Dataset</button>
                                         <button type="button" class="btn btn-default control-button hidden" id="analysis-link-button" data-tooltip="tooltip" data-placement="right" title="....">Make a Hazard Analysis</button>
-                                        <button type="button" class="btn btn-default control-button" data-toggle="modal" data-tooltip="tooltip" data-target="#modal-sharing-view" data-placement="right" title="Get a short URL to share this information with others">Share This Info</button>
+                                        <button type="button" class="btn btn-default control-button" id="share-button" data-toggle="modal" data-tooltip="tooltip" data-target="#modal-sharing-view" data-placement="right" title="Get a short URL to share this information with others">Share This Info</button>
                                     </div>
                                 </div>
                             </div>
@@ -235,60 +239,61 @@
                 <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
                 <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
                 <script type="text/javascript">
-    var CCH = {
-        Objects: {},
-                        CONFIG: {
-                            version: '<%=version%>',
-                            itemData: <%= item.toJSON(true)%>,
-                            itemId: '<%= item.getId()%>',
-                            contextPath: '<%=baseUrl%>',
-                            development: <%=development%>,
-            item: <%= item.toJSON(true)%>,
-                            emailLink: 'CCH_Help@usgs.gov',
-            publicUrl: '<%=publicUrl%>',
-            data: {
-                messages: {
-                    'cacheInterrogationError': 'An error occurred when requesting a download.',
-                    'cachePriming': 'The download for this item is being prepared. Please try again soon.'
-                },
-                sources: {
-                    'item': {
-                        'endpoint': '/data/item'
-                    },
-                    'download': {
-                        'endpoint': '/data/download/item/'
-                    },
-                                    'geocoding': {
-                        'endpoint': '<%=geocodeEndpoint%>'
-                    },
-                                    'cida-geoserver': {
-                        'endpoint': '<%=geoserverEndpoint%>',
-                        'proxy': '/geoserver/'
-                    },
-                                    'stpete-arcserver': {
-                        'endpoint': '<%=stPeteArcServerEndpoint%>',
-                        'proxy': '/stpgis/'
-                    },
-                                    'marine-arcserver': {
-                        'endpoint': '<%=marineArcServerEndpoint%>',
-                        'proxy': '/marine/'
-                    },
-                    'session': {
-                        'endpoint': '/data/view/'
-                    },
-                                    'external-csw': {
-                        'endpoint': '<%=externalCSWEndpoint%>'
-                    }
-                }
-            }
-        }
-    };
+			var CCH = {
+				Objects: {},
+				CONFIG: {
+					tutorial: <%= tutorial%>,
+					version: '<%=version%>',
+					itemData: <%= item.toJSON(true)%>,
+					itemId: '<%= item.getId()%>',
+					contextPath: '<%=baseUrl%>',
+					development: <%=development%>,
+					item: <%= item.toJSON(true)%>,
+					emailLink: 'CCH_Help@usgs.gov',
+					publicUrl: '<%=publicUrl%>',
+					data: {
+						messages: {
+							'cacheInterrogationError': 'An error occurred when requesting a download.',
+							'cachePriming': 'The download for this item is being prepared. Please try again soon.'
+						},
+						sources: {
+							'item': {
+								'endpoint': '/data/item'
+							},
+							'download': {
+								'endpoint': '/data/download/item/'
+							},
+							'geocoding': {
+								'endpoint': '<%=geocodeEndpoint%>'
+							},
+							'cida-geoserver': {
+								'endpoint': '<%=geoserverEndpoint%>',
+								'proxy': '/geoserver/'
+							},
+							'stpete-arcserver': {
+								'endpoint': '<%=stPeteArcServerEndpoint%>',
+								'proxy': '/stpgis/'
+							},
+							'marine-arcserver': {
+								'endpoint': '<%=marineArcServerEndpoint%>',
+								'proxy': '/marine/'
+							},
+							'session': {
+								'endpoint': '/data/view/'
+							},
+							'external-csw': {
+								'endpoint': '<%=externalCSWEndpoint%>'
+							}
+						}
+					}
+				}
+			};
 
-    // Internet Explorer Fix
-    // http://tosbourn.com/2013/08/javascript/a-fix-for-window-location-origin-in-internet-explorer/
-    if (!window.location.origin) {
-        window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
-    }
+			// Internet Explorer Fix
+			// http://tosbourn.com/2013/08/javascript/a-fix-for-window-location-origin-in-internet-explorer/
+			if (!window.location.origin) {
+				window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+			}
                 </script>
                 <jsp:include page="/js/log4javascript/log4javascript.jsp">
                     <jsp:param name="relPath" value="<%=relPath%>" /> 
@@ -308,6 +313,8 @@
                 <script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= resourceSuffix%>.js"></script>
                 <script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= resourceSuffix%>.js"></script>
                 <script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= resourceSuffix%>.js"></script>
+				<script type="text/javascript" src="<%=baseUrl%>/webjars/intro.js/<%=vIntroJs%>/intro<%= development ? "" : ".min"%>.js"></script>
+				<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/Intro<%= resourceSuffix%>.js"></script>
                 <script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= resourceSuffix%>.js'></script>
             </c:when>
             <c:otherwise>

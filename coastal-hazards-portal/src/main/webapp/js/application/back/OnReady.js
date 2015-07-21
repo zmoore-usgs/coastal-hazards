@@ -13,28 +13,37 @@ $(document).ready(function () {
 	CCH.items = new CCH.Objects.Items();
 
 	CCH.ows = new CCH.Util.OWS();
-	
+
 	CCH.session = new CCH.Objects.Session();
-        
+
 	$('#app-navbar-coop-logo-img').on('click', function () {
 		window.location.href = CCH.CONFIG.contextPath;
 	});
-		
+
 	// I am loading an item with the full subtree so once that item is loaded, start loading the rest of the application
 	$(window).on('cch.item.loaded', function (evt, args) {
 		var id = args.id || '',
-			item;
+				item;
 
 		if (CCH.CONFIG.itemId === id) {
-			CCH.CONFIG.item = CCH.items.getById({id : id});
+			CCH.CONFIG.item = CCH.items.getById({id: id});
 			item = CCH.CONFIG.item;
 			CCH.ui = new CCH.Objects.Back.UI().init({item: item});
-			
+
 			// Clear the overlay
 			$('#application-overlay').fadeOut(2000, function () {
 				$('#application-overlay').remove();
+				if (CCH.CONFIG.tutorial) {
+					CCH.intro.start();
+
+					ga('send', 'event', {
+						'eventCategory': 'load',
+						'eventAction': 'loadTour',
+						'eventLabel': 'back'
+					});
+				};
 			});
-			
+
 			// Kick off a request to the server-side cache to prime the download data for this item
 			CCH.Util.Util.interrogateDownloadCache(CCH.CONFIG.itemId);
 		}
@@ -42,8 +51,8 @@ $(document).ready(function () {
 
 	new CCH.Objects.Item({
 		id: CCH.CONFIG.itemId
-	}).load({ 
-		data : CCH.CONFIG.itemData
+	}).load({
+		data: CCH.CONFIG.itemData
 	});
 
 	// http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
