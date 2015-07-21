@@ -146,7 +146,7 @@ CCH.intro = (function () {
 				name: 'search-me-options',
 				onbeforechange: function(targetEle){
 					$('#app-navbar-search-dropdown-toggle').dropdown('toggle');
-                                        var button = $('<a id="tourButton" class="introjs-button">Info Page</a>');
+                                        var button = $('<a id="tourButton" class="introjs-button">End Tour</a>');
                                         button.attr('href', CCH.CONFIG.contextPath + '/info/#mapContentArea');
                                         $('.introjs-tooltipbuttons').append(button);
                                         $('#application-slide-items-container').css('display', 'block');
@@ -362,7 +362,7 @@ CCH.intro = (function () {
 					if($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')){
 						$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 					}
-                                        var button = $('<a id="tourButton" class="introjs-button">Info Page</a>');
+                                        var button = $('<a id="tourButton" class="introjs-button">End Tour</a>');
                                         button.attr('href', CCH.CONFIG.contextPath + '/info/#bucketContentArea');
                                         $('.introjs-tooltipbuttons').append(button);
 				},
