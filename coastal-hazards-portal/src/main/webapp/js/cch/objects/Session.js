@@ -68,6 +68,10 @@ CCH.Objects.Session = function (args) {
 	};
 	
 	me.persistSession = function () {
+		if(CCH.CONFIG.ui.isTouring !== undefined && CCH.CONFIG.ui.isTouring === true){
+			return;
+		} 
+		
 		if(me.hasLocalStorage) {
 			localStorage[me.storageName] = me.toString();
 		} else {
@@ -109,9 +113,9 @@ CCH.Objects.Session = function (args) {
 		args = args || {};
                 
                 
-                if(CCH.CONFIG.ui.isTouring !== undefined && CCH.CONFIG.ui.isTouring === true){
-                    return;
-                } 
+		if(CCH.CONFIG.ui.isTouring !== undefined && CCH.CONFIG.ui.isTouring === true){
+			return;
+		} 
                 
 		var callbacks = args.callbacks || {
 			success: [],
