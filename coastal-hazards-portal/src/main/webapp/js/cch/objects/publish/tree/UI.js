@@ -173,6 +173,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 						me.itemUpdated(itemId);
 					});
 				}
+				me.updateItemsLook();
 			},
 			'copy_node.jstree': function (evt, copyEvt) {
 				var oldParent = copyEvt.old_parent,
@@ -187,6 +188,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					copyEvt.node.id = CCH.Util.Util.generateUUID();
 					me.itemUpdated(newParent);
 				}
+				me.updateItemsLook();
 			},
 			'show_contextmenu.jstree': function (evt, obj) {
 				var node = obj.node,
