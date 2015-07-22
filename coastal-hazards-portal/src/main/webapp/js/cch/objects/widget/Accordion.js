@@ -172,6 +172,12 @@ CCH.Objects.Widget.Accordion = function (args) {
 			heading.append(ribbonWrapper);
 			ribbonContainer.append(ribbonText);
 		}
+		
+		if (card.item.featured) {
+			// TODO: Marty, add a FEATURED corner ribbon here!!
+			debugger;
+		}
+		
 		heading.append(titleContainer);
 
 		accordionBody.on({
