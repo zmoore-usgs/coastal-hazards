@@ -33,9 +33,11 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 	me.$SLIDE_CONTROLSET = me.$SLIDE_CONTAINER.find('> div > div:first-child');
 	me.$DROPDOWN_CONTAINER = me.$SLIDE_CONTROLSET.find('> div > div:nth-child(2)');
 	me.SLIDE_CONTENT_ID = me.$SLIDE_CONTAINER.find(' .application-slide-content').attr('id');
-	me.$CLOSE_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset > div > div:first-child > i');
-	me.$TOP_LEVEL_DROPDOWN_TRIGGER = me.$DROPDOWN_CONTAINER.find('button:first-child');
-	me.$TOP_LEVEL_LIST = me.$DROPDOWN_CONTAINER.find('ul');
+	me.$CLOSE_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset > div > div:nth-child(1) > button');
+        me.$CLEAR_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset > div > div:nth-child(2) > #clear-bucket');
+        me.$SHARE_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset > div > div:nth-child(2) > #share-bucket');
+	me.$TOP_LEVEL_DROPDOWN_TRIGGER = me.$DROPDOWN_CONTAINER.find('#bucket-option-container');
+	me.$TOP_LEVEL_LIST = me.$DROPDOWN_CONTAINER.find('button');
 	me.$TOP_LEVEL_CLEAR = me.$TOP_LEVEL_LIST.find('> li:nth-child(1)');
 	me.$TOP_LEVEL_SHARE = me.$TOP_LEVEL_LIST.find('> li:nth-child(2)');
 	me.$TOP_LEVEL_DOWNLOAD = me.$TOP_LEVEL_LIST.find('> li:nth-child(3)');
@@ -736,10 +738,10 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		me.toggle();
 	});
 
-	me.$TOP_LEVEL_CLEAR.on('click', function () {
+	me.$CLEAR_BUTTON.on('click', function () {
 		me.remove();
 	});
-	me.$TOP_LEVEL_SHARE.on('click', function (evt) {
+	me.$SHARE_BUTTON.on('click', function (evt) {
 		evt.stopPropagation();
 
 		$(window).trigger('slide.bucket.button.click.share', {
