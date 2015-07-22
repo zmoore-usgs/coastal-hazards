@@ -1117,7 +1117,6 @@ CCH.Objects.Publish.UI = function () {
 			}
 
 			// Ribbonable
-			debugger;
 			$ribbonableCb.prop(CCH.CONFIG.strings.checked, item.ribbonable);
 			$isFeaturedCB.prop(CCH.CONFIG.strings.checked, item.featured);
 
