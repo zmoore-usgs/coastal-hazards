@@ -13,68 +13,69 @@ CCH.Objects.Publish.UI = function () {
 	CCH.LOG.trace('UI.js::constructor: UI class is initializing.');
 
 	var me = (this === window) ? {} : this,
-			$form = $('form'),
-			$itemIdInput = $form.find('#form-publish-item-id'),
-			$titleFullTextArea = $form.find('#form-publish-item-title-full'),
-			$titleMediumTextArea = $form.find('#form-publish-item-title-medium'),
-			$descriptionFullTextArea = $form.find('#form-publish-item-description-full'),
-			$descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
-			$descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
-			$bboxNorth = $form.find('#form-publish-item-bbox-input-north'),
-			$bboxWest = $form.find('#form-publish-item-bbox-input-west'),
-			$bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
-			$bboxEast = $form.find('#form-publish-item-bbox-input-east'),
-			$bboxes = $('.bbox'),
-			$typeSb = $form.find('#form-publish-item-type'),
-			$attributeSelect = $form.find('#form-publish-item-attribute'),
-			$attributeRetrieveDataButton = $form.find('#form-publish-item-attribute-button'),
-			$keywordGroup = $form.find('.form-group-keyword'),
-			$cswServiceInput = $form.find('#form-publish-item-service-csw'),
-			$srcWfsServiceInput = $form.find('#form-publish-item-service-source-wfs'),
-			$srcWfsServiceParamInput = $form.find('#form-publish-item-service-source-wfs-serviceparam'),
-			$srcWmsServiceInput = $form.find('#form-publish-item-service-source-wms'),
-			$srcWmsServiceParamInput = $form.find('#form-publish-item-service-source-wms-serviceparam'),
-			$proxyWfsServiceInput = $form.find('#form-publish-item-service-proxy-wfs'),
-			$proxyWfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wfs-serviceparam'),
-			$proxyWmsServiceInput = $form.find('#form-publish-item-service-proxy-wms'),
-			$proxyWmsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
-			$publicationsPanel = $form.find('#publications-panel'),
-			$ribbonableCb = $form.find('#form-publish-item-ribbonable'),
-			$showChildrenCb = $form.find('#form-publish-item-showchildren'),
-			$itemType = $form.find('#form-publish-info-item-itemtype'),
-			$name = $form.find('#form-publish-item-name'),
-			$wfsImportButton = $form.find('#form-publish-item-service-source-wfs-import-button'),
-			$keywordGroupClone = $keywordGroup.clone(),
-			$alertModal = $('#alert-modal'),
-			$alertModalTitle = $alertModal.find('.modal-title'),
-			$alertModalBody = $alertModal.find('.modal-body'),
-			$alertModalFooter = $alertModal.find('.modal-footer'),
-			$metadataDropdownGroup = $('#publish-button-edit-metadata-existing-grp'),
-			$metadataDropdownList = $('#publish-list-edit-metadata-existing'),
-			$metadataSummaryField = $('#form-publish-info-item-summary-version'),
-			$uploaderDummy = $('#qq-uploader-dummy'),
-			$itemEnabledField = $('#form-publish-info-item-enabled'),
-			$itemImage = $form.find('#form-publish-info-item-image'),
-			$imageGenButton = $form.find('#form-publish-info-item-image-gen'),
-			$buttonSave = $('#publish-button-save'),
-			$buttonDelete = $('#publish-button-delete'),
-			$buttonLogout = $('#publish-button-logout'),
-			$buttonViewAll = $('#publish-button-view-all'),
-			$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
-			$wfsHelpLink = $form.find('.form-publish-item-service-source-wfs-import-button-service-help-link'),
-			$wmsHelpLink = $form.find('.form-publish-item-service-source-wms-import-button-service-help-link'),
-			$sourceWfsCheckButton = $form.find('#form-publish-item-service-source-wfs-import-button-check'),
-			$sourceWmsCheckButton = $form.find('#form-publish-item-service-source-wms-import-button-check'),
-			$wfsSourceCopyButton = $form.find('#form-publish-item-service-source-wfs-copy-button'),
-			$wmsServerHelpButton = $form.find('#form-publish-item-service-source-wms-import-button-service-select'),
-			$proxyWfsCheckButton = $form.find('#form-publish-item-service-proxy-wfs-import-button-check'),
-			$proxyWmsCheckButton = $form.find('#form-publish-item-service-proxy-wms-import-button-check'),
-			$getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button'),
-			$emphasisItemSpan = $form.find('.emphasis-item'),
-			$emphasisAggregationSpan = $form.find('.emphasis-aggregation'),
-			$isActiveStormRow = $form.find('#form-publish-info-item-active-storm'),
-			$isActiveStormChecbox = $form.find('#checkbox-isactive'),
-			$resourceSortableContainers = $('.resource-list-container-sortable');
+		$form = $('form'),
+		$itemIdInput = $form.find('#form-publish-item-id'),
+		$titleFullTextArea = $form.find('#form-publish-item-title-full'),
+		$titleMediumTextArea = $form.find('#form-publish-item-title-medium'),
+		$descriptionFullTextArea = $form.find('#form-publish-item-description-full'),
+		$descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
+		$descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
+		$bboxNorth = $form.find('#form-publish-item-bbox-input-north'),
+		$bboxWest = $form.find('#form-publish-item-bbox-input-west'),
+		$bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
+		$bboxEast = $form.find('#form-publish-item-bbox-input-east'),
+		$bboxes = $('.bbox'),
+		$typeSb = $form.find('#form-publish-item-type'),
+		$attributeSelect = $form.find('#form-publish-item-attribute'),
+		$attributeRetrieveDataButton = $form.find('#form-publish-item-attribute-button'),
+		$keywordGroup = $form.find('.form-group-keyword'),
+		$cswServiceInput = $form.find('#form-publish-item-service-csw'),
+		$isFeaturedCB = $form.find('#checkbox-featured'),
+		$srcWfsServiceInput = $form.find('#form-publish-item-service-source-wfs'),
+		$srcWfsServiceParamInput = $form.find('#form-publish-item-service-source-wfs-serviceparam'),
+		$srcWmsServiceInput = $form.find('#form-publish-item-service-source-wms'),
+		$srcWmsServiceParamInput = $form.find('#form-publish-item-service-source-wms-serviceparam'),
+		$proxyWfsServiceInput = $form.find('#form-publish-item-service-proxy-wfs'),
+		$proxyWfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wfs-serviceparam'),
+		$proxyWmsServiceInput = $form.find('#form-publish-item-service-proxy-wms'),
+		$proxyWmsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
+		$publicationsPanel = $form.find('#publications-panel'),
+		$ribbonableCb = $form.find('#form-publish-item-ribbonable'),
+		$showChildrenCb = $form.find('#form-publish-item-showchildren'),
+		$itemType = $form.find('#form-publish-info-item-itemtype'),
+		$name = $form.find('#form-publish-item-name'),
+		$wfsImportButton = $form.find('#form-publish-item-service-source-wfs-import-button'),
+		$keywordGroupClone = $keywordGroup.clone(),
+		$alertModal = $('#alert-modal'),
+		$alertModalTitle = $alertModal.find('.modal-title'),
+		$alertModalBody = $alertModal.find('.modal-body'),
+		$alertModalFooter = $alertModal.find('.modal-footer'),
+		$metadataDropdownGroup = $('#publish-button-edit-metadata-existing-grp'),
+		$metadataDropdownList = $('#publish-list-edit-metadata-existing'),
+		$metadataSummaryField = $('#form-publish-info-item-summary-version'),
+		$uploaderDummy = $('#qq-uploader-dummy'),
+		$itemEnabledField = $('#form-publish-info-item-enabled'),
+		$itemImage = $form.find('#form-publish-info-item-image'),
+		$imageGenButton = $form.find('#form-publish-info-item-image-gen'),
+		$buttonSave = $('#publish-button-save'),
+		$buttonDelete = $('#publish-button-delete'),
+		$buttonLogout = $('#publish-button-logout'),
+		$buttonViewAll = $('#publish-button-view-all'),
+		$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
+		$wfsHelpLink = $form.find('.form-publish-item-service-source-wfs-import-button-service-help-link'),
+		$wmsHelpLink = $form.find('.form-publish-item-service-source-wms-import-button-service-help-link'),
+		$sourceWfsCheckButton = $form.find('#form-publish-item-service-source-wfs-import-button-check'),
+		$sourceWmsCheckButton = $form.find('#form-publish-item-service-source-wms-import-button-check'),
+		$wfsSourceCopyButton = $form.find('#form-publish-item-service-source-wfs-copy-button'),
+		$wmsServerHelpButton = $form.find('#form-publish-item-service-source-wms-import-button-service-select'),
+		$proxyWfsCheckButton = $form.find('#form-publish-item-service-proxy-wfs-import-button-check'),
+		$proxyWmsCheckButton = $form.find('#form-publish-item-service-proxy-wms-import-button-check'),
+		$getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button'),
+		$emphasisItemSpan = $form.find('.emphasis-item'),
+		$emphasisAggregationSpan = $form.find('.emphasis-aggregation'),
+		$isActiveStormRow = $form.find('#form-publish-info-item-active-storm'),
+		$isActiveStormChecbox = $form.find('#checkbox-isactive'),
+		$resourceSortableContainers = $('.resource-list-container-sortable');
 
 	me.templates = {};
 
@@ -132,7 +133,7 @@ CCH.Objects.Publish.UI = function () {
 					$item.val('');
 				});
 		
-		[$ribbonableCb, $showChildrenCb, $isActiveStormChecbox].each(function ($i) {
+		[$ribbonableCb, $showChildrenCb, $isActiveStormChecbox, $isFeaturedCB].each(function ($i) {
 			$i.prop(CCH.CONFIG.strings.checked, false);
 		});
 		
@@ -173,6 +174,7 @@ CCH.Objects.Publish.UI = function () {
 		$proxyWmsServiceInput.val(gsBaseUrl + 'wms');
 		$showChildrenCb.prop(CCH.CONFIG.strings.checked, false);
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
+		$isFeaturedCB.prop(CCH.CONFIG.strings.checked, false);
 		$uploaderDummy.removeClass(CCH.CONFIG.strings.hidden);
 		$metadataDropdownGroup.removeClass(CCH.CONFIG.strings.hidden);
 		$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
@@ -192,7 +194,7 @@ CCH.Objects.Publish.UI = function () {
 			$proxyWmsServiceParamInput, $ribbonableCb, $name, $wfsServerHelpButton,
 			$wfsSourceCopyButton, $sourceWfsCheckButton,
 			$sourceWmsCheckButton, $wmsServerHelpButton, $proxyWfsCheckButton,
-			$proxyWmsCheckButton, $buttonSave, $buttonDelete,
+			$proxyWmsCheckButton, $buttonSave, $buttonDelete, $isFeaturedCB,
 			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')]
 				.concat($('.form-group-keyword input'))
 				.concat($bboxes)
@@ -207,6 +209,7 @@ CCH.Objects.Publish.UI = function () {
 		$isActiveStormRow.addClass('hidden');
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
 		$showChildrenCb.prop(CCH.CONFIG.strings.checked, true);
+		$isFeaturedCB.prop(CCH.CONFIG.strings.checked, true);
 	};
 
 	me.enableNewTemplateForm = function () {
@@ -397,6 +400,7 @@ CCH.Objects.Publish.UI = function () {
 			showChildren = $showChildrenCb.prop(CCH.CONFIG.strings.checked),
 			enabled = $itemEnabledField.val() === 'true' ? true : false,
 			activeStorm = $isActiveStormChecbox.prop('checked'),
+			featured = $isFeaturedCB.prop('checked'),
 			services = [],
 			displayedChildren = [],
 			bbox = [$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()],
@@ -413,7 +417,8 @@ CCH.Objects.Publish.UI = function () {
 			enabled: enabled,
 			services: services,
 			displayedChildren: displayedChildren,
-			activeStorm: activeStorm
+			activeStorm: activeStorm,
+			featured: featured
 		};
 			
 		// Bbox may be blank and that may be ok (e.g. if it's a template)
@@ -860,6 +865,7 @@ CCH.Objects.Publish.UI = function () {
 				keywords = [],
 				services = {},
 				type,
+				featured,
 				isItemEnabled = false;
 
 		if (item) {
@@ -873,7 +879,8 @@ CCH.Objects.Publish.UI = function () {
 			descriptionMedium = summary.medium.text;
 			descriptionTiny = summary.tiny.text;
 			keywords = summary.keywords.split('|');
-			isItemEnabled = item.enabled;
+			isItemEnabled = item.enabled,
+			featured = item.featured;
 
 			if (id !== 'uber') {
 				me.loadItemImage(id);
@@ -1070,7 +1077,7 @@ CCH.Objects.Publish.UI = function () {
 			
 			[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
 					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
-					$proxyWmsCheckButton,
+					$proxyWmsCheckButton, $isFeaturedCB,
 					$titleFullTextArea, $titleMediumTextArea, $ribbonableCb,
 					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
 					$buttonSave, $buttonDelete, $ribbonableCb, $metadataSummaryField]
@@ -1110,7 +1117,9 @@ CCH.Objects.Publish.UI = function () {
 			}
 
 			// Ribbonable
+			debugger;
 			$ribbonableCb.prop(CCH.CONFIG.strings.checked, item.ribbonable);
+			$isFeaturedCB.prop(CCH.CONFIG.strings.checked, item.featured);
 
 			// Publications
 			$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);

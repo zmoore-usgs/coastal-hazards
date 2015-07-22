@@ -29,6 +29,7 @@ CCH.Objects.Item = function (args) {
 	me.type = args.type || null;
 	me.services = args.services || null;
 	me.activeStorm = args.activeStorm || false;
+	me.featured = args.featured || false;
 
 	me.load = function (args) {
 		args = args || {};
@@ -71,6 +72,7 @@ CCH.Objects.Item = function (args) {
 		me.type = data.type;
 		me.services = data.services;
 		me.showChildren = data.showChildren;
+		me.featured = data.featured;
 
 		CCH.items.add({item: me});
 

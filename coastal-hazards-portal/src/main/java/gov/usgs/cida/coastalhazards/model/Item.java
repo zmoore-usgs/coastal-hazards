@@ -102,6 +102,8 @@ public class Item implements Serializable, Cacheable {
 	private Date lastUpdate;
 	// Is this a storm that's currently active?
 	private boolean activeStorm;
+	// Is this a featured item?
+	private boolean featured;
 
 	@Id
 	public String getId() {
@@ -283,6 +285,14 @@ public class Item implements Serializable, Cacheable {
 		this.activeStorm = isActiveStorm;
 	}
 
+	public boolean isFeatured() {
+		return featured;
+	}
+
+	public void setFeatured(boolean featured) {
+		this.featured = featured;
+	}
+
 	@PrePersist
 	@PreUpdate
 	protected void timestamp() {
@@ -351,6 +361,7 @@ public class Item implements Serializable, Cacheable {
 		item.setChildren(from.getChildren());
 		item.setDisplayedChildren(from.getDisplayedChildren());
 		item.setActiveStorm(from.isActiveStorm());
+		item.setFeatured(from.isFeatured());
 
 		return item;
 	}
