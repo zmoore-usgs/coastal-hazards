@@ -34,4 +34,5 @@
 	<include file="60createActivestormColumn.xml" relativeToChangelogFile="true" />
 	<include file="70bboxOnLayer.xml" relativeToChangelogFile="true" />
 	<include file="80fixAggregationPkey.xml" relativeToChangelogFile="true" />
+	<include file="90addFeaturedColumnToItem.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
