@@ -18,7 +18,7 @@ CCH.Objects.Back.UI = function (args) {
 	me.isSmall = function () {
 		return $(window).outerWidth() < me.magicResizeNumber;
 	};
-	
+
 	me.init = function (args) {
 		me.$qrImage = $('#qr-code-img');
 		me.$infoTitle = $('#info-title');
@@ -40,7 +40,7 @@ CCH.Objects.Back.UI = function (args) {
 		me.$infoButton.on('click', function () {
 			window.location.href = CCH.CONFIG.contextPath + '/info/#acContentArea';
 		});
-		
+
 		me.$applicationButton.on('click', function () {
 			window.location.href = CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId;
 		});
@@ -49,10 +49,10 @@ CCH.Objects.Back.UI = function (args) {
 			var cacheError = function () {
 				alertify.error(CCH.CONFIG.data.messages.cacheInterrogationError);
 			};
-			
+
 			var cacheHit = function (resp, content, jqXHR) {
 				var status = jqXHR.status;
-				
+
 				if (status === 200) {
 					window.location.href = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.download.endpoint + CCH.CONFIG.itemId;
 				} else if (status === 202) {
@@ -62,11 +62,11 @@ CCH.Objects.Back.UI = function (args) {
 					alertify.error(CCH.CONFIG.data.messages.cacheInterrogationError);
 				}
 			};
-			
+
 			var checkCache = CCH.Util.Util.interrogateDownloadCache(CCH.CONFIG.itemId);
 			checkCache.done(cacheHit).fail(cacheError);
 		});
-		
+
 		me.$addToBucketButton.on('click', function (evt) {
 			CCH.session.addItem({
 				item: me.item,
@@ -75,7 +75,7 @@ CCH.Objects.Back.UI = function (args) {
 			$(evt.target).addClass('disabled');
 			alertify.log('Item added to bucket!');
 		});
-		
+
 		me.$computeAnalysisButton.on('click', function () {
 			alertify.log('Not yet.');
 		});
@@ -97,17 +97,17 @@ CCH.Objects.Back.UI = function (args) {
 		} else {
 			me.$metadataButton.remove();
 		}
-		
+
 		// Build the publications list for the item
 		if (me.item.summary.full.publications) {
 			me.$publist = $('<ul />').attr('id', 'info-container-publications-list');
 			Object.keys(me.item.summary.full.publications, function (type) {
 				var pubTypeArray = me.item.summary.full.publications[type],
-					pubTypeListHeader = $('<li />')
-							.addClass('publist-header')
-							.html(type),
-					subList = $('<ul />'),
-					pubLink;
+						pubTypeListHeader = $('<li />')
+						.addClass('publist-header')
+						.html(type),
+						subList = $('<ul />'),
+						pubLink;
 				if (pubTypeArray.length) {
 					pubTypeListHeader.append(subList);
 					me.$publist.append(pubTypeListHeader);
@@ -139,8 +139,8 @@ CCH.Objects.Back.UI = function (args) {
 
 		var minificationCallback = function (data) {
 			var url = data.tinyUrl || data.responseJSON.full_url,
-				$shareInput = $('#modal-share-summary-url-inputbox'),
-				$shareButton = $('#view-sharing-container button');
+					$shareInput = $('#modal-share-summary-url-inputbox'),
+					$shareButton = $('#view-sharing-container button');
 
 			// Add the url to the input box
 			$shareInput.val(url);
@@ -150,20 +150,20 @@ CCH.Objects.Back.UI = function (args) {
 			$shareButton.removeClass('disabled');
 
 			twttr.widgets.createShareButton(
-				url,
-				$('#twitter-button-span')[0],
-				function (element) {
-					CCH.LOG.trace('Twitter create share button callback triggered on ' + element);
-				},
-				{
-					hashtags: 'USGS_CCH',
-					lang: 'en',
-					size: 'large',
-					text: CCH.CONFIG.item.summary.tiny.text,
-					count: 'none'
-				}
+					url,
+					$('#twitter-button-span')[0],
+					function (element) {
+						CCH.LOG.trace('Twitter create share button callback triggered on ' + element);
+					},
+					{
+						hashtags: 'USGS_CCH',
+						lang: 'en',
+						size: 'large',
+						text: CCH.CONFIG.item.summary.tiny.text,
+						count: 'none'
+					}
 			);
-	
+
 			twttr.events.bind('tweet', function () {
 				alertify.log('Your view has been tweeted. Thank you.');
 			});
@@ -184,10 +184,10 @@ CCH.Objects.Back.UI = function (args) {
 		if (!me.isSmall()) {
 			me.enableToolTips();
 		}
-		
+
 		return me;
 	};
-	
+
 	me.windowResizeHandler = function () {
 		if (!me.isSmall()) {
 			me.toggleControlCenterVisibility(true);
@@ -197,19 +197,19 @@ CCH.Objects.Back.UI = function (args) {
 			me.disableToolTips();
 		}
 	};
-	
+
 	me.enableToolTips = function () {
-		$('[data-tooltip="tooltip"]').tooltip({ container: 'body', trigger: 'hover'});
+		$('[data-tooltip="tooltip"]').tooltip({container: 'body', trigger: 'hover'});
 	};
-	
+
 	me.disableToolTips = function () {
 		$('[data-tooltip="tooltip"]').tooltip('destroy');
 	};
 
 	me.toggleControlCenterVisibility = function (open) {
 		var $actionCenterButtonContainer = $('#container-control-button'),
-			hidden = 'hidden';
-		
+				hidden = 'hidden';
+
 		// if incoming param was not passed, just toggle from current state
 		// otherwise use incoming param to direct whether to open or close
 		if (typeof open === "boolean") {
@@ -226,7 +226,7 @@ CCH.Objects.Back.UI = function (args) {
 			}
 		}
 	};
-    
+
 	me.rotateArrow = function (direction) {
 		if (!direction) {
 			return;
@@ -253,113 +253,119 @@ CCH.Objects.Back.UI = function (args) {
 
 	me.createModalServicesTab = function (args) {
 		var item = args.item,
-			$treeContainer = $('#modal-services-view-tree-container'),
-			createTreeData = function (item, data) {
-				data.id = item.id;
-				data.text = item.summary.tiny.text;
-				data.children = [];
-				data.type = item.itemType;
-				data.li_attr = {
-					'item_data' : {
-						'services' : (function (s) {
-							var svcs = [];
-							s.each(function (svc) {
-								svcs.push(svc);
-							});
-							return svcs;
-						})(item.services)
+				$treeContainer = $('#modal-services-view-tree-container'),
+				createTreeData = function (item, data) {
+					data.id = item.id;
+					data.text = item.summary.tiny.text;
+					data.children = [];
+					data.type = item.itemType;
+					data.li_attr = {
+						'item_data': {
+							'services': (function (s) {
+								var svcs = [];
+								s.each(function (svc) {
+									svcs.push(svc);
+								});
+								return svcs;
+							})(item.services)
+						}
+					};
+
+					if (item.children && item.children.length) {
+						// This item has children. We must go...deeper
+						for (var itemIdx = 0; itemIdx < item.children.length; itemIdx++) {
+							data.children.push(createTreeData(CCH.items.getById({id: item.children[itemIdx]}), {}));
+						}
 					}
+					return data;
 				};
-				
-				if (item.children && item.children.length) {
-					// This item has children. We must go...deeper
-					for (var itemIdx = 0;itemIdx < item.children.length;itemIdx++) {
-						data.children.push(createTreeData(CCH.items.getById({id: item.children[itemIdx]}), {}));
-					}
-				}
-				return data;
-			};
-			
+
 		// Before I go too far, check that either this item has services or displays
 		// any children with services. If not, hide the map services button and bail
-		var childMapServiceEnabled = CCH.CONFIG.item.children.some(function (id) {
-			var child = CCH.items.getById({ id : id });
-			return child.services.length && child.services.some(function (s) {
-				return s.type === 'source_wfs' || s.type === 'proxy_wfs';
-			});
-		});
+		var deepDiveToFindAnyServices = function (item, services) {
+			if (services.length === 0) {
+				if (item.children.length !== 0) {
+					for (var cIdx = 0; cIdx < item.children.length; cIdx++) {
+						var childId = item.children[cIdx];
+						services = services.union(deepDiveToFindAnyServices(CCH.items.getById({id: childId}), services));
+					}
+				}
+				services = services.union(item.services);
+			}
+			return services;
+		};
 		
-		if (!CCH.CONFIG.item.services.length && !childMapServiceEnabled) {
+		if (deepDiveToFindAnyServices(CCH.CONFIG.item, []).length === 0) {
 			[this.$mapServicesButton, this.$printFormWrapper, this.$downloadDataButton].each(function ($i) {
 				$i.addClass('hidden');
 			});
 		}
-		
+
 		Handlebars.registerHelper('list_translation', function (serviceType) {
 			var serviceString = '';
 			switch (serviceType) {
-			case ('csw') :
-				serviceString = 'CSW';
-				break;
-			case ('source_wms') :
-				serviceString = 'Source WMS';
-				break;
-			case ('source_wfs') :
-				serviceString = 'Source WFS';
-				break;
-			case ('proxy_wfs') :
-				serviceString = 'Proxy WFS';
-				break;
-			case ('proxy_wms') :
-				serviceString = 'Proxy WMS';
-				break;
+				case ('csw') :
+					serviceString = 'CSW';
+					break;
+				case ('source_wms') :
+					serviceString = 'Source WMS';
+					break;
+				case ('source_wfs') :
+					serviceString = 'Source WFS';
+					break;
+				case ('proxy_wfs') :
+					serviceString = 'Proxy WFS';
+					break;
+				case ('proxy_wms') :
+					serviceString = 'Proxy WMS';
+					break;
 			}
 			return serviceString;
 		});
 
 		$.ajax(CCH.CONFIG.contextPath + '/resource/template/handlebars/search/services_display.mustache', {
-			success : function (data) {
+			success: function (data) {
 				CCH.ui.serviceTemplate = Handlebars.compile(data);
-				
+
 				$treeContainer
-					.on({
-						'select_node.jstree': function (e, data) {
-							var services = data.node.li_attr.item_data.services;
-							var id = data.node.li_attr.id;
-							$('#modal-services-view-services').html(CCH.ui.serviceTemplate({services : services}));
-							if (!data.node.state.opened) {
-								data.instance.open_node(id, null, true);
-							} else {
-								data.instance.close_node(id, null, true);
-							}
-							
-						},
-						'loaded.jstree' : function (evt, tree) {
-							tree.instance.select_node({id : CCH.CONFIG.itemId }, true, true);
-						}
-					})
-					.jstree({
-						'core' : {
-							'data' : createTreeData(item, {}),
-							'check_callback' : true,
-							'dblclick_toggle' : false,
-							'themes' : {
-								'variant' : 'large'
-							}
-						},
-						'types': {
-							'aggregation': {
-								'icon': 'fa fa-angle-double-right'
+						.on({
+							'select_node.jstree': function (e, data) {
+								var services = data.node.li_attr.item_data.services;
+								var id = data.node.li_attr.id;
+								$('#modal-services-view-services').html(CCH.ui.serviceTemplate({services: services}));
+								if (!data.node.state.opened) {
+									data.instance.open_node(id, null, true);
+								} else {
+									data.instance.close_node(id, null, true);
+								}
+
 							},
-							'template': {
-								'icon': 'fa fa-angle-double-right'
-							},
-							'data': {
-								'icon': 'fa fa-angle-right'
+							'loaded.jstree': function (evt, tree) {
+								tree.instance.select_node({id: CCH.CONFIG.itemId}, true, true);
 							}
-						},
-						'plugins': ['types']
-					});
+						})
+						.jstree({
+							'core': {
+								'data': createTreeData(item, {}),
+								'check_callback': true,
+								'dblclick_toggle': false,
+								'themes': {
+									'variant': 'large'
+								}
+							},
+							'types': {
+								'aggregation': {
+									'icon': 'fa fa-angle-double-right'
+								},
+								'template': {
+									'icon': 'fa fa-angle-double-right'
+								},
+								'data': {
+									'icon': 'fa fa-angle-right'
+								}
+							},
+							'plugins': ['types']
+						});
 			}
 		});
 	};
@@ -373,6 +379,5 @@ CCH.Objects.Back.UI = function (args) {
 	});
 
 	return $.extend({}, me, {
-		
 	});
 };
