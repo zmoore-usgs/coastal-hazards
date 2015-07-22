@@ -39,7 +39,9 @@
 
 %>
 <%
-	Item item = (Item) request.getAttribute("it");
+	Map<String, Object> paramMap = ((Map<String, Object>) request.getAttribute("it"));
+	Item item = (Item) paramMap.get("item");
+	boolean tutorial = Boolean.parseBoolean((String) paramMap.get("tutorial"));
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 	String baseUrl = props.getProperty("coastal-hazards.base.url");
 	String secureBaseUrlJndiString = props.getProperty("coastal-hazards.base.secure.url");
@@ -67,6 +69,7 @@
 	String vHandlebars = getProp("version.handlebars");
 	String referer = request.getHeader("referer");
 	String vFontAwesome = getProp("version.fontawesome");
+	String vIntroJs = getProp("version.introjs");
 
 	pageContext.setAttribute("textOnlyClient", isTextOnlyClient(userAgent));
 %>
@@ -84,18 +87,12 @@
         </jsp:include>
         <%@ include file="../common/ie-check.jsp" %>
         <title>USGS Coastal Change Hazards Portal - <%= item.getSummary().getMedium().getTitle()%></title>
-
+		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/intro.js/<%=vIntroJs%>/introjs<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" media="all" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= resourceSuffix%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/themes/default/style<%= development ? "" : ".min"%>.css" />
-		<script type="application/ld+json">
-			{
-			'@context': 'http://schema.org/dataset',
-			'name': '<%= item.getName() %>',
-			'url': '<%= baseUrl %>+ "/ui/info/item/" + <%= item.getId() %>'
-			}
-		</script>
+
         <script type="text/javascript">
             <jsp:include page="../common/google-analytics.jsp" />
         </script>
@@ -167,7 +164,7 @@
                                         <button type="button" class="btn btn-default control-button" id="metadata-link-button"  role="button" data-tooltip="tooltip" data-placement="right" title="Review detailed geographic, bibliographic and other descriptive information about this item.">Metadata</button>
                                         <button type="button" class="btn btn-default control-button" id="download-link-button" data-tooltip="tooltip" data-placement="right" title="Download this item to your computer">Download Dataset</button>
                                         <button type="button" class="btn btn-default control-button hidden" id="analysis-link-button" data-tooltip="tooltip" data-placement="right" title="....">Make a Hazard Analysis</button>
-                                        <button type="button" class="btn btn-default control-button" data-toggle="modal" data-tooltip="tooltip" data-target="#modal-sharing-view" data-placement="right" title="Get a short URL to share this information with others">Share This Info</button>
+                                        <button type="button" class="btn btn-default control-button" id="share-button" data-toggle="modal" data-tooltip="tooltip" data-target="#modal-sharing-view" data-placement="right" title="Get a short URL to share this information with others">Share This Info</button>
                                     </div>
                                 </div>
                             </div>
@@ -229,10 +226,10 @@
                                             <input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." title="modal-share-summary-url-inputbox"/>
                                         </div>
                                     </div>
-                                    <span class="pull-right" id='twitter-button-span'></span>
                                 </div>
                             </div>
                             <div class="modal-footer">
+                                <span id='twitter-button-span'></span>
                                 <a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
                             </div>
                         </div>
@@ -245,6 +242,7 @@
 			var CCH = {
 				Objects: {},
 				CONFIG: {
+					tutorial: <%= tutorial%>,
 					version: '<%=version%>',
 					itemData: <%= item.toJSON(true)%>,
 					itemId: '<%= item.getId()%>',
@@ -315,6 +313,8 @@
                 <script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= resourceSuffix%>.js"></script>
                 <script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= resourceSuffix%>.js"></script>
                 <script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= resourceSuffix%>.js"></script>
+				<script type="text/javascript" src="<%=baseUrl%>/webjars/intro.js/<%=vIntroJs%>/intro<%= development ? "" : ".min"%>.js"></script>
+				<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/Intro<%= resourceSuffix%>.js"></script>
                 <script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= resourceSuffix%>.js'></script>
             </c:when>
             <c:otherwise>
