@@ -187,7 +187,6 @@
 
 						<%-- 2 column layout --%>
 						<div class="col-md-6">
-
 							<%-- ITEM ID --%>
 							<div id="form-publish-info-item-id" class="row row-id">
 								<div class="form-group">
@@ -196,6 +195,14 @@
 								</div>
 							</div>
 
+							<div class="row row-id">
+								<div class="form-group">
+									<label>
+										<input type="checkbox" id="checkbox-featured"> Is Featured?
+									</label>
+								</div>
+							</div>
+							
 							<%-- ITEM IMAGE --%>
 							<div class="row row-id">
 								<img alt="Item Thumbnail" id="form-publish-info-item-image" src="" /> 

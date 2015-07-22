@@ -41,6 +41,7 @@ CCH.Objects.Widget.Card = function (args) {
 	me.wmsService = me.item.getService('proxy_wms');
 	me.wmsEndpoint = undefined;
 	me.wmsLayers = undefined;
+	me.featured = me.item.featured;
 	me.container = null;
 	me.descriptionContainer = null;
 	// Is the card hidden by default? We probably want it to be false when creating
@@ -430,8 +431,8 @@ CCH.Objects.Widget.Card = function (args) {
 					$exploreRow = container.find('.application-card-explore-row'),
 					$moreInfoTarget = CCH.CONFIG.contextPath + '/ui/info/item/' + me.id,
 					$moreInfoBtn = container.find('.application-card-more-info-btn').on("click", function () {
-				window.location = $moreInfoTarget;
-			}),
+						window.location = $moreInfoTarget;
+					}),
 					$zoomToBtn = container.find('.application-card-zoom-to-btn'),
 					isItemInBucket = CCH.ui.bucket.getItemById(me.id) !== undefined;
 
