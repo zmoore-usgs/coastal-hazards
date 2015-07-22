@@ -206,7 +206,8 @@ CCH.CONFIG = CCH.CONFIG || {};
 
 		ga('send', 'event', {
 			'eventCategory': 'load',
-			'eventAction': 'loadTour'
+			'eventAction': 'loadTour',
+			'eventLabel' : 'back'
 		});
 		
 	},
