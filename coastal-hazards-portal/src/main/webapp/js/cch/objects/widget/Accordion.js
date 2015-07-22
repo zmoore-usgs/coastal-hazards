@@ -175,7 +175,6 @@ CCH.Objects.Widget.Accordion = function (args) {
 		
 		if (card.item.featured) {
 			// TODO: Marty, add a FEATURED corner ribbon here!!
-			debugger;
 		}
 		
 		heading.append(titleContainer);
