@@ -1,3 +1,4 @@
+<%@page import="gov.usgs.cida.coastalhazards.model.Item"%>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -19,7 +20,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes" /> 
 <meta name="application-name" content="The Coastal Change Hazards Portal" />
-<meta name="description" content="<%= StringEscapeUtils.escapeJavaScript(description) %>" />
+<meta name="description" content="<%= StringEscapeUtils.escapeJavaScript(description)%>" />
 <meta name="author" content="Ivan Suftin, Tom Kunicki, Jordan Walker, Jordan Read, Carl Schroedl" />
 <meta name="keywords" content="${param.keywords}" />
 <meta name="publisher" content="${param.publisher}" />
@@ -33,7 +34,8 @@
 <meta property="og:image:height" content="${param['img_height']}" />
 <meta property="og:image:width" content="${param['img_width']}" />
 <meta property="og:image:type" content="${param['img_type']}" />
-<meta property="og:description" content="<%= StringEscapeUtils.escapeJavaScript(description) %>" />
+<meta property="og:description" content="<%= StringEscapeUtils.escapeJavaScript(description)%>" />
 <meta property="og:locale" content="en_US" />
+
 
 <link rel="icon" href="${param['baseUrl']}/favicon.ico" type="image/x-icon" />

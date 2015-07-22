@@ -1,3 +1,4 @@
+<%@page import="org.apache.commons.lang3.time.DateFormatUtils"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@page import="gov.usgs.cida.coastalhazards.rest.ui.Identifier"%>
@@ -41,6 +42,7 @@
 <%
 	Map<String, Object> paramMap = ((Map<String, Object>) request.getAttribute("it"));
 	Item item = (Item) paramMap.get("item");
+
 	boolean tutorial = Boolean.parseBoolean((String) paramMap.get("tutorial"));
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 	String baseUrl = props.getProperty("coastal-hazards.base.url");
@@ -92,7 +94,59 @@
         <link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= resourceSuffix%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/themes/default/style<%= development ? "" : ".min"%>.css" />
-
+		<script type="application/ld+json">
+			{
+			"@context": "http://schema.org",
+			"@type": "Dataset",
+			"name": "<%= item.getSummary().getMedium().getTitle()%>",
+			"alternateName": "<%= item.getSummary().getTiny().getText()%>",
+			"url": "<%= baseUrl + "/ui/info/item/" + item.getId()%>",
+			"image": "<%= baseUrl + "/data/thumbnail/item/" + item.getId()%>",
+			"about": "<%= item.getSummary().getMedium().getText().replaceAll("\"", "'") %>",
+			"author": {
+				"@context": "http://schema.org",
+				"@type": "Organization",
+				"legalName" : "United States Geological Survey"
+			},
+			"creator" : {
+				"@context": "http://schema.org",
+				"@type": "Organization",
+				"legalName" : "United States Geological Survey"
+			},
+			"publisher" : {
+				"@context": "http://schema.org",
+				"@type": "Organization",
+				"legalName" : "United States Geological Survey"
+			},
+			"dateModified" : "<%= DateFormatUtils.ISO_DATE_FORMAT.format(item.getLastModified()) %>",
+			"distribution": {
+				"contentUrl" : "<%= baseUrl + "/data/download/item/" + item.getId()%>",
+				"encodingFormat": "zip"
+			},
+			"mainEntityOfPage": {
+			"@type": "WebPage",
+					"@id": "<%= baseUrl%>"
+			},
+			"description": "<%= item.getSummary().getFull().getText().replaceAll("\"", "'")%>",
+			"spatial" : {
+				"@context": "http://schema.org",
+				"@type": "Place",
+				"geo": {
+					"@type": "GeoShape",
+					"box" : "<%= item.getBbox().makeEnvelope().getMinX() + " " + item.getBbox().makeEnvelope().getMinY() + " " + item.getBbox().makeEnvelope().getMaxX() + " " + item.getBbox().makeEnvelope().getMaxY()%>"
+				}
+			},
+			"contentLocation" : {
+				"@context": "http://schema.org",
+				"@type": "Place",
+				"geo": {
+					"@type": "GeoShape",
+					"box" : "<%= item.getBbox().makeEnvelope().getMinX() + " " + item.getBbox().makeEnvelope().getMinY() + " " + item.getBbox().makeEnvelope().getMaxX() + " " + item.getBbox().makeEnvelope().getMaxY()%>"
+				}
+			},
+			"keywords" : "<%= item.getSummary().getKeywords().replaceAll("\\|", ", ")%>"
+		}
+		</script>
         <script type="text/javascript">
             <jsp:include page="../common/google-analytics.jsp" />
         </script>
@@ -239,60 +293,59 @@
                 <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
                 <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
                 <script type="text/javascript">
-			var CCH = {
-				Objects: {},
-				CONFIG: {
-					tutorial: <%= tutorial%>,
-					version: '<%=version%>',
-					itemData: <%= item.toJSON(true)%>,
-					itemId: '<%= item.getId()%>',
-					contextPath: '<%=baseUrl%>',
-					development: <%=development%>,
-					item: <%= item.toJSON(true)%>,
-					emailLink: 'CCH_Help@usgs.gov',
-					publicUrl: '<%=publicUrl%>',
-					data: {
-						messages: {
-							'cacheInterrogationError': 'An error occurred when requesting a download.',
-							'cachePriming': 'The download for this item is being prepared. Please try again soon.'
-						},
-						sources: {
-							'item': {
-								'endpoint': '/data/item'
-							},
-							'download': {
-								'endpoint': '/data/download/item/'
-							},
-							'geocoding': {
-								'endpoint': '<%=geocodeEndpoint%>'
-							},
-							'cida-geoserver': {
-								'endpoint': '<%=geoserverEndpoint%>',
-								'proxy': '/geoserver/'
-							},
-							'stpete-arcserver': {
-								'endpoint': '<%=stPeteArcServerEndpoint%>',
-								'proxy': '/stpgis/'
-							},
-							'marine-arcserver': {
-								'endpoint': '<%=marineArcServerEndpoint%>',
-								'proxy': '/marine/'
-							},
-							'session': {
-								'endpoint': '/data/view/'
-							},
-							'external-csw': {
-								'endpoint': '<%=externalCSWEndpoint%>'
+					var CCH = {
+					Objects: {},
+							CONFIG: {
+							tutorial: <%= tutorial%>,
+									version: '<%=version%>',
+									itemData: <%= item.toJSON(true)%>,
+									itemId: '<%= item.getId()%>',
+									contextPath: '<%=baseUrl%>',
+									development: <%=development%>,
+									item: <%= item.toJSON(true)%>,
+									emailLink: 'CCH_Help@usgs.gov',
+									publicUrl: '<%=publicUrl%>',
+									data: {
+									messages: {
+									'cacheInterrogationError': 'An error occurred when requesting a download.',
+											'cachePriming': 'The download for this item is being prepared. Please try again soon.'
+									},
+											sources: {
+											'item': {
+											'endpoint': '/data/item'
+											},
+													'download': {
+													'endpoint': '/data/download/item/'
+													},
+													'geocoding': {
+													'endpoint': '<%=geocodeEndpoint%>'
+													},
+													'cida-geoserver': {
+													'endpoint': '<%=geoserverEndpoint%>',
+															'proxy': '/geoserver/'
+													},
+													'stpete-arcserver': {
+													'endpoint': '<%=stPeteArcServerEndpoint%>',
+															'proxy': '/stpgis/'
+													},
+													'marine-arcserver': {
+													'endpoint': '<%=marineArcServerEndpoint%>',
+															'proxy': '/marine/'
+													},
+													'session': {
+													'endpoint': '/data/view/'
+													},
+													'external-csw': {
+													'endpoint': '<%=externalCSWEndpoint%>'
+													}
+											}
+									}
 							}
-						}
-					}
-				}
-			};
-
-			// Internet Explorer Fix
-			// http://tosbourn.com/2013/08/javascript/a-fix-for-window-location-origin-in-internet-explorer/
-			if (!window.location.origin) {
-				window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+					};
+					// Internet Explorer Fix
+					// http://tosbourn.com/2013/08/javascript/a-fix-for-window-location-origin-in-internet-explorer/
+					if (!window.location.origin) {
+			window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
 			}
                 </script>
                 <jsp:include page="/js/log4javascript/log4javascript.jsp">
