@@ -222,10 +222,10 @@
                                             <input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." title="modal-share-summary-url-inputbox"/>
                                         </div>
                                     </div>
-                                    <span class="pull-right" id='twitter-button-span'></span>
                                 </div>
                             </div>
                             <div class="modal-footer">
+                                <span id='twitter-button-span'></span>
                                 <a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
                             </div>
                         </div>
