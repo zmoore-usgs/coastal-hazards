@@ -10,6 +10,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 	$.extend(me, args);
 
+	me.originalIdToRandomIdMap = {};
 	me.updatedItems = {};
 	me.autoSearch = "";
 
@@ -17,21 +18,24 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	// The individual tree node.
 	me.createTreeNode = function (item) {
 		var id = item.id,
-				text = item.title,
-				itemType = item.itemType,
-				title = item.title,
-				displayedChildren = item.displayedChildren || [],
-				state = {
-					'opened': false,
-					'itemType': itemType,
-					'title': title,
-					'original-id': id,
-					'displayed': false,
-					'displayedChildren': displayedChildren
-				};
+			randomId = id === 'uber' || id === 'orphans' ? id : CCH.Util.Util.generateUUID(),
+			text = item.title,
+			itemType = item.itemType,
+			title = item.title,
+			displayedChildren = item.displayedChildren || [],
+			state = {
+				'opened': false,
+				'itemType': itemType,
+				'title': title,
+				'original-id': id,
+				'displayed': false,
+				'displayedChildren': displayedChildren
+			};
+
+		me.originalIdToRandomIdMap[id] = randomId;
 
 		return {
-			id: id === 'uber' || id === 'orphans' ? id : CCH.Util.Util.generateUUID(),
+			id: randomId,
 			text: text,
 			state: state,
 			type: itemType,
@@ -70,6 +74,15 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 	me.itemUpdated = function (itemId) {
 		var node = CCH.ui.getTree().get_node(itemId);
+		
+		// Update the displayed children on this node
+		node.state.displayedChildren = [];
+		for (var ncIdx = 0;ncIdx < node.children.length;ncIdx++) {
+			var childData = me.getTree().get_node(node.children[ncIdx]).state;
+			if (childData.displayed) {
+				node.state.displayedChildren.push(childData["original-id"]);
+			}
+		}
 
 		me.updatedItems[node.id] = {
 			children: node.children,
@@ -114,7 +127,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					'displayed': {
 						'label': 'Toggle Visibility',
 						'icon': 'fa fa-eye',
-						'action': function (args) {
+						'action': function () {
 							var tree = CCH.ui.getTree(),
 									selectedId = tree.get_selected()[0],
 									node = CCH.ui.getTree().get_node(selectedId),
@@ -192,9 +205,9 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			},
 			'show_contextmenu.jstree': function (evt, obj) {
 				var node = obj.node,
-						displayed = node.state.displayed,
-						$visibilityRow = $('.jstree-contextmenu').find('li:last-child'),
-						$iconContainer = $visibilityRow.find('i');
+					displayed = node.state.displayed,
+					$visibilityRow = $('.jstree-contextmenu').find('li:last-child'),
+					$iconContainer = $visibilityRow.find('i');
 
 				$iconContainer.removeClass('fa-eye fa-eye-slash');
 				if (node.parent && node.parent !== '#' && node.parent !== 'uber' && node.parent !== 'root') {
@@ -240,8 +253,11 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	// that reflects what the tree currently looks like
 	me.buildDataFromJsTreeData = function (data, node, tree) {
 		var nodeId = node.id,
-				children = [],
-				data = data || {};
+			children = [];
+
+		if (data === undefined) {
+			data = {};
+		}
 
 		if (node.children && node.children.length) {
 			for (var cIdx = 0; cIdx < node.children.length; cIdx++) {

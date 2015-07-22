@@ -203,7 +203,8 @@ public class TreeResource {
 				try (ItemManager manager = new ItemManager()) {
 					parentItem = manager.load(itemId);
 					children = new LinkedList<>();
-
+					log.info("Attempting to update item {}", parentItem.getId());
+					
 					// Update the item's children
 					Iterator<JsonElement> iterator = updateData.get("children").getAsJsonArray().iterator();
 					while (iterator.hasNext()) {
