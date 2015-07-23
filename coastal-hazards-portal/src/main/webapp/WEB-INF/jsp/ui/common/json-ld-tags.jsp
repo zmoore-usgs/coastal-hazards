@@ -33,6 +33,8 @@
 					"@id": "<%= baseUrl%>"
 			},
 			"description": "<%= item.getSummary().getFull().getText().replaceAll("\"", "'")%>",
+			<%-- Some items do not have a bounding box, so do the check here --%>
+			<% if (item.getBbox() != null) { %>
 			"spatial" : {
 				"@context": "http://schema.org",
 				"@type": "Place",
@@ -49,6 +51,8 @@
 					"box" : "<%= item.getBbox().makeEnvelope().getMinX() + " " + item.getBbox().makeEnvelope().getMinY() + " " + item.getBbox().makeEnvelope().getMaxX() + " " + item.getBbox().makeEnvelope().getMaxY()%>"
 				}
 			},
+			<% } %>
+		
 			"keywords" : "<%= item.getSummary().getKeywords().replaceAll("\\|", ", ")%>"
 		}
 		</script>
