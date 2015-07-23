@@ -172,10 +172,13 @@ public class DownloadUtility {
 
 		List<String> missing = new LinkedList<>();
 
-		try (ItemManager itemManager = new ItemManager()) {
+		try {
 			Map<WFSService, SingleDownload> downloadMap = new HashMap<>(stageThis.getItems().size());
 			for (SessionItem sessionItem : stageThis.getItems()) {
-				Item item = itemManager.load(sessionItem.getItemId());
+				Item item;
+				try (ItemManager itemManager = new ItemManager()) {
+					item = itemManager.load(sessionItem.getItemId());
+				}
 				populateDownloadMap(downloadMap, item);
 			}
 			List<String> namesUsed = new ArrayList<>(downloadMap.size());

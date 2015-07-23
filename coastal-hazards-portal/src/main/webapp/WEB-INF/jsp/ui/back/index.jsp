@@ -80,7 +80,8 @@
     <head>
         <jsp:include page="../common/meta-tags.jsp">
             <jsp:param name="description" value="<%= item.getSummary().getFull().getText()%>" />
-            <jsp:param name="baseUrl" value='<%= baseUrl + "/ui/info/item/" + item.getId()%>' />
+            <jsp:param name="itemUrl" value='<%= baseUrl + "/ui/info/item/" + item.getId()%>' />
+            <jsp:param name="baseUrl" value='<%= baseUrl %>' />
             <jsp:param name="thumb" value='<%= baseUrl + "/data/thumbnail/item/" + item.getId()%>' />
             <jsp:param name="img_height" value='300' />
             <jsp:param name="img_width" value='300' />

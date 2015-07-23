@@ -59,7 +59,7 @@ public class InfoRouter {
 	}
 
 	@GET
-	@Produces("text/html")
+	@Produces(MediaType.TEXT_HTML)
 	@Path("{jspPath:.*/?.*\\..*}")
 	public Response useResourceAtInfoPath(@PathParam("jspPath") String jspPath) {
 		return Response.ok(new Viewable("/" + jspPath)).build();

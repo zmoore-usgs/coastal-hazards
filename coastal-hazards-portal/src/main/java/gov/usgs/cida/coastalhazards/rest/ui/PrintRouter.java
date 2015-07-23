@@ -21,11 +21,14 @@ public class PrintRouter {
 	@Produces(MediaType.TEXT_HTML)
 	@Path("{id}")
 	public Response useInfoPrintViewJsp(@PathParam("id") String id) {
-		Item item = new ItemManager().load(id);
-		if (item == null) {
-			return Response.status(Response.Status.NOT_FOUND).build();
+		try (ItemManager mgr = new ItemManager()) {
+			Item item = mgr.load(id);
+			if (item == null) {
+				return Response.status(Response.Status.NOT_FOUND).build();
+			}
+			return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", item)).build();
 		}
-		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", item)).build();
+
 	}
 
 }
