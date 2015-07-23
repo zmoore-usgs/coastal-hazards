@@ -28,7 +28,7 @@
 <%-- http://ogp.me/ --%>
 <meta property="og:title" content="The Coastal Change Hazards Portal" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="${param['baseUrl']}" />
+<meta property="og:url" content="${param['itemUrl']}" />
 <meta property="og:image" content="${param['thumb']}" />
 <meta property="og:image:url" content="${param['thumb']}" />
 <meta property="og:image:height" content="${param['img_height']}" />
