@@ -43,7 +43,7 @@
 	Map<String, Object> paramMap = ((Map<String, Object>) request.getAttribute("it"));
 	Item item = (Item) paramMap.get("item");
 
-	boolean tutorial = Boolean.parseBoolean((String) paramMap.get("tutorial"));
+	boolean isTouring = Boolean.parseBoolean((String) paramMap.get("tutorial"));
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 	String baseUrl = props.getProperty("coastal-hazards.base.url");
 	String secureBaseUrlJndiString = props.getProperty("coastal-hazards.base.secure.url");
@@ -95,7 +95,7 @@
         <link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= resourceSuffix%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/themes/default/style<%= development ? "" : ".min"%>.css" />
-		
+
         <script type="text/javascript">
             <jsp:include page="../common/google-analytics.jsp" />
         </script>
@@ -242,59 +242,61 @@
                 <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
                 <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
                 <script type="text/javascript">
-					var CCH = {
-					Objects: {},
-							CONFIG: {
-							tutorial: <%= tutorial%>,
-									version: '<%=version%>',
-									itemData: <%= item.toJSON(true)%>,
-									itemId: '<%= item.getId()%>',
-									contextPath: '<%=baseUrl%>',
-									development: <%=development%>,
-									item: <%= item.toJSON(true)%>,
-									emailLink: 'CCH_Help@usgs.gov',
-									publicUrl: '<%=publicUrl%>',
-									data: {
-									messages: {
-									'cacheInterrogationError': 'An error occurred when requesting a download.',
-											'cachePriming': 'The download for this item is being prepared. Please try again soon.'
-									},
-											sources: {
-											'item': {
-											'endpoint': '/data/item'
-											},
-													'download': {
-													'endpoint': '/data/download/item/'
-													},
-													'geocoding': {
-													'endpoint': '<%=geocodeEndpoint%>'
-													},
-													'cida-geoserver': {
-													'endpoint': '<%=geoserverEndpoint%>',
-															'proxy': '/geoserver/'
-													},
-													'stpete-arcserver': {
-													'endpoint': '<%=stPeteArcServerEndpoint%>',
-															'proxy': '/stpgis/'
-													},
-													'marine-arcserver': {
-													'endpoint': '<%=marineArcServerEndpoint%>',
-															'proxy': '/marine/'
-													},
-													'session': {
-													'endpoint': '/data/view/'
-													},
-													'external-csw': {
-													'endpoint': '<%=externalCSWEndpoint%>'
-													}
-											}
-									}
+			var CCH = {
+				Objects: {},
+				CONFIG: {
+					ui: {
+						isTouring: <%= isTouring %>
+					},
+					version: '<%=version%>',
+					itemData: <%= item.toJSON(true)%>,
+					itemId: '<%= item.getId()%>',
+					contextPath: '<%=baseUrl%>',
+					development: <%=development%>,
+					item: <%= item.toJSON(true)%>,
+					emailLink: 'CCH_Help@usgs.gov',
+					publicUrl: '<%=publicUrl%>',
+					data: {
+						messages: {
+							'cacheInterrogationError': 'An error occurred when requesting a download.',
+							'cachePriming': 'The download for this item is being prepared. Please try again soon.'
+						},
+						sources: {
+							'item': {
+								'endpoint': '/data/item'
+							},
+							'download': {
+								'endpoint': '/data/download/item/'
+							},
+							'geocoding': {
+								'endpoint': '<%=geocodeEndpoint%>'
+							},
+							'cida-geoserver': {
+								'endpoint': '<%=geoserverEndpoint%>',
+								'proxy': '/geoserver/'
+							},
+							'stpete-arcserver': {
+								'endpoint': '<%=stPeteArcServerEndpoint%>',
+								'proxy': '/stpgis/'
+							},
+							'marine-arcserver': {
+								'endpoint': '<%=marineArcServerEndpoint%>',
+								'proxy': '/marine/'
+							},
+							'session': {
+								'endpoint': '/data/view/'
+							},
+							'external-csw': {
+								'endpoint': '<%=externalCSWEndpoint%>'
 							}
-					};
-					// Internet Explorer Fix
-					// http://tosbourn.com/2013/08/javascript/a-fix-for-window-location-origin-in-internet-explorer/
-					if (!window.location.origin) {
-			window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+						}
+					}
+				}
+			};
+			// Internet Explorer Fix
+			// http://tosbourn.com/2013/08/javascript/a-fix-for-window-location-origin-in-internet-explorer/
+			if (!window.location.origin) {
+				window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
 			}
                 </script>
                 <jsp:include page="/js/log4javascript/log4javascript.jsp">

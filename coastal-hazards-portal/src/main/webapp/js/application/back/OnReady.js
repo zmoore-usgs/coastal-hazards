@@ -33,7 +33,7 @@ $(document).ready(function () {
 			// Clear the overlay
 			$('#application-overlay').fadeOut(2000, function () {
 				$('#application-overlay').remove();
-				if (CCH.CONFIG.tutorial) {
+				if (CCH.CONFIG.ui.isTouring) {
 					CCH.intro.start();
 
 					ga('send', 'event', {
