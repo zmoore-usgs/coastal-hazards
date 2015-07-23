@@ -10,7 +10,7 @@
  * @param {type} args
  * @returns 
  */
-window.CCH = (window.CCH === undefined ) ? {} : window.CCH;
+window.CCH = (window.CCH === undefined) ? {} : window.CCH;
 CCH.Objects = CCH.Objects || {};
 CCH.Objects.Widget = CCH.Objects.Widget || {};
 CCH.Objects.Widget.BucketSlide = function (args) {
@@ -85,7 +85,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 	};
 
 	me.open = function () {
-            var deferred;
+		var deferred;
 		if (me.isClosed) {
 			if (me.isSmall()) {
 				$(window).trigger('cch.slide.bucket.opening');
@@ -101,7 +101,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			$(window).trigger('cch.slide.bucket.opened');
 		}
 		CCH.session.setBucketSlideOpen(true);
-                return deferred;
+		return deferred;
 	};
 
 	me.close = function (dontEmoteClosing, bindItemsOpening) {
@@ -211,8 +211,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		$(window).trigger('cch.slide.bucket.reordered', {
 			cards: me.cards
 		});
-                deferred.resolve();
-                return deferred;
+		deferred.resolve();
+		return deferred;
 	};
 
 	me.layerAppendRemoveHandler = function (evt, args) {
