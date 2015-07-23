@@ -174,7 +174,13 @@ CCH.Objects.Widget.Accordion = function (args) {
 		}
 		
 		if (card.item.featured) {
-			// TODO: Marty, add a FEATURED corner ribbon here!!
+			var newFeatureRibbonWrapper = $('<div />').addClass('new-feature-ribbon-wrapper');
+			var newFeatureRibbonContainer = $('<div />').addClass('new-featurecorner-ribbon');
+			var newFeatureRibbonText = $('<p>New</p>');
+			heading.addClass('new-feature');
+			newFeatureRibbonWrapper.append(newFeatureRibbonContainer);
+			heading.append(newFeatureRibbonWrapper);
+			newFeatureRibbonContainer.append(newFeatureRibbonText);
 		}
 		
 		heading.append(titleContainer);
