@@ -21,14 +21,11 @@ public class ItemRouter {
 	@Produces(MediaType.TEXT_HTML)
 	@Path("{id}")
 	public Response useInfoJsp(@PathParam("id") String id) {
-		Response response = null;
 		Identifier identifier = new Identifier(id, Identifier.IdentifierType.ITEM);
 		if (null == id || id.equals(Item.UBER_ID)) {
 			throw new NotFoundException();
 		}
-		response = Response.ok(new Viewable("/WEB-INF/jsp/ui/front/index.jsp", identifier)).build();
-
-		return response;
+		return Response.ok(new Viewable("/WEB-INF/jsp/ui/front/index.jsp", identifier)).build();
 	}
 
 	@GET

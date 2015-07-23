@@ -59,21 +59,21 @@ public class DownloadResource {
 	@Path("/item/{id}")
 	public Response checkItemAvailability(@PathParam("id") String id) throws IOException {
 		Response response;
-		
+
 		Item item;
 		try (ItemManager itemManager = new ItemManager()) {
 			item = itemManager.load(id);
 		}
-		
+
 		if (item == null) {
 			response = Response.status(NOT_FOUND).build();
 		} else {
 			Download download;
-			
+
 			try (DownloadManager downloadManager = new DownloadManager()) {
 				download = downloadManager.load(id);
 			}
-			
+
 			if (download != null) {
 				LOG.debug("Download manager found a download for item id {}", id);
 				String persistenceURI = download.getPersistanceURI();
@@ -92,14 +92,16 @@ public class DownloadResource {
 					// and it should be deleted and reinitialized. Otherwise, this is 
 					// is good to go and send an OK response
 					boolean existsOnFileSystem;
-					
+
 					try (DownloadManager downloadManager = new DownloadManager()) {
 						existsOnFileSystem = downloadManager.downloadFileExistsOnFilesystem(download);
 					}
-					
+
 					if (!existsOnFileSystem) {
 						LOG.debug("Download manager found a download path that doesn't exist for id {}. Will delete and re-stage", id);
-						new DownloadService().delete(id);
+						try (DownloadService svc = new DownloadService()) {
+							svc.delete(id);
+						}
 						LOG.debug("Download path for item {} was deleted in the database. Will not attempt to re-stage", id);
 						DownloadUtility.stageAsyncItemDownload(id);
 						response = Response.status(ACCEPTED).build();
@@ -134,11 +136,11 @@ public class DownloadResource {
 	public Response downloadItem(@PathParam("id") String id) throws IOException, InterruptedException, ExecutionException {
 		Response response;
 		Item item;
-		
+
 		try (ItemManager itemManager = new ItemManager()) {
 			item = itemManager.load(id);
 		}
-		
+
 		if (item == null) {
 			response = Response.status(NOT_FOUND).build();
 		} else {
@@ -146,7 +148,7 @@ public class DownloadResource {
 			try (DownloadManager downloadManager = new DownloadManager()) {
 				download = downloadManager.load(id);
 			}
-			
+
 			if (download == null) {
 				// Download was null, so we it was not previously staged. Do so now.
 				LOG.debug("Download manager could not find download for item {}. A download will be staged for this item.", id);
@@ -165,11 +167,13 @@ public class DownloadResource {
 					try (DownloadManager downloadManager = new DownloadManager()) {
 						downloadFileExists = downloadManager.downloadFileExistsOnFilesystem(download);
 					}
-					
+
 					// Download should be on the file system. Check that it does exist
 					if (!downloadFileExists) {
 						LOG.debug("Download manager found a download path that doesn't exist for id {}. Will delete and re-stage", id);
-						new DownloadService().delete(id);
+						try (DownloadService svc = new DownloadService()) {
+							svc.delete(id);
+						}
 						DownloadUtility.stageAsyncItemDownload(id);
 						response = Response.status(ACCEPTED).build();
 					} else {
@@ -177,7 +181,9 @@ public class DownloadResource {
 						File zipFile = download.fetchZipFile();
 						if (zipFile == null) {
 							LOG.debug("Download manager found could not find the zip file that was indicated in the database for item {}. Will attempt to re-stage", id);
-							new DownloadService().delete(id);
+							try (DownloadService svc = new DownloadService()) {
+								svc.delete(id);
+							}
 							DownloadUtility.stageAsyncItemDownload(id);
 							response = Response.status(ACCEPTED).build();
 						} else {
@@ -188,7 +194,7 @@ public class DownloadResource {
 				}
 			}
 		}
-		
+
 		return response;
 	}
 

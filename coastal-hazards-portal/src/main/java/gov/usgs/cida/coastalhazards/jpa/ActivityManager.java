@@ -3,7 +3,6 @@ package gov.usgs.cida.coastalhazards.jpa;
 import gov.usgs.cida.coastalhazards.model.Activity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceContext;
 
 /**
  *

@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 @Path(DataURI.ITEM_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ItemResource {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ItemResource.class);
 
 	public static final String PUBLIC_URL = JNDISingleton.getInstance()
@@ -67,12 +67,14 @@ public class ItemResource {
 			@DefaultValue("false") @QueryParam("subtree") boolean subtree,
 			@Context Request request) {
 		Response response = null;
-		try (ItemManager itemManager = new ItemManager(); StatusManager statusMan = new StatusManager()) {
-			Item item = itemManager.load(id);
+		Item item = null;
+		try (StatusManager statusMan = new StatusManager()) {
+			try (ItemManager itemManager = new ItemManager()) {
+				item = itemManager.load(id);
+			}
 			if (item == null) {
 				throw new NotFoundException();
-			}
-			else {
+			} else {
 				// Check when the item and/or structure was last modified, if at all.
 				// - If both are null, use today's date. 
 				// - If one of the two is not null, use that. 
@@ -84,7 +86,7 @@ public class ItemResource {
 					// Both updates exist, so compare between them and choose the latest
 					Date lastItemUpdateDate = lastItemUpdate.getLastUpdate();
 					Date lastStructureUpdateDate = lastStructureUpdate.getLastUpdate();
-					
+
 					modified = lastItemUpdateDate.after(lastStructureUpdateDate) ? lastItemUpdateDate : lastStructureUpdateDate;
 				} else {
 					// At least one of the two do not exist, so find out if at 
@@ -96,7 +98,7 @@ public class ItemResource {
 						modified = lastStructureUpdate.getLastUpdate();
 					}
 				}
-				
+
 				Response unmodified = HTTPCachingUtil.checkModified(request, modified);
 				if (unmodified != null) {
 					response = unmodified;
@@ -141,34 +143,35 @@ public class ItemResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response postItem(String content, @Context HttpServletRequest request) {
 		Response response;
+		Item item = Item.fromJSON(content);
+		final String id;
+		
 		try (ItemManager itemManager = new ItemManager()) {
-			Item item = Item.fromJSON(content);
-			final String id = itemManager.persist(item);
-			if (null == id) {
-				throw new BadRequestException();
-			}
-			else {
-				Map<String, Object> ok = new HashMap<String, Object>() {
-					private static final long serialVersionUID = 2398472L;
-
-					{
-						put("id", id);
-					}
-				};
-
-				response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
-				
-				
-			}
-			try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
-				Status status = new Status();
-				status.setStatusName(Status.StatusName.ITEM_UPDATE);
-				statusMan.save(status);
-
-				thumbMan.updateDirtyBits(id);
-			}
+			id = itemManager.persist(item);
 		}
 		
+		if (null == id) {
+			throw new BadRequestException();
+		} else {
+			Map<String, Object> ok = new HashMap<String, Object>() {
+				private static final long serialVersionUID = 2398472L;
+
+				{
+					put("id", id);
+				}
+			};
+
+			response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+
+		}
+		try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
+			Status status = new Status();
+			status.setStatusName(Status.StatusName.ITEM_UPDATE);
+			statusMan.save(status);
+
+			thumbMan.updateDirtyBits(id);
+		}
+
 		return response;
 	}
 
@@ -196,8 +199,7 @@ public class ItemResource {
 			}
 			if (null != mergedId) {
 				response = Response.ok().build();
-			}
-			else {
+			} else {
 				throw new BadRequestException();
 			}
 			try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
@@ -219,8 +221,7 @@ public class ItemResource {
 		try (ItemManager itemManager = new ItemManager()) {
 			if (itemManager.delete(id)) {
 				response = Response.ok().build();
-			}
-			else {
+			} else {
 				throw new Error();
 			}
 			try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {

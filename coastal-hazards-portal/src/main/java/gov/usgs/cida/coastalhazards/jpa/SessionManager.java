@@ -2,11 +2,9 @@ package gov.usgs.cida.coastalhazards.jpa;
 
 import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.coastalhazards.session.io.SessionIO;
-import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
 import java.security.NoSuchAlgorithmException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceContext;
 
 /**
  *

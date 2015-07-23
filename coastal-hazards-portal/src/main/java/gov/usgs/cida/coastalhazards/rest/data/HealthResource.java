@@ -22,6 +22,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -30,7 +32,7 @@ import javax.ws.rs.core.Response;
 @Path(DataURI.HEALTH_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class HealthResource {
-	
+	private static final Logger LOG = LoggerFactory.getLogger(HealthResource.class);
 	private static final String geoserverEndpoint;
 	private static final String geoserverUser;
 	private static final String geoserverPass;
@@ -58,6 +60,7 @@ public class HealthResource {
 			overallHealth = open && overallHealth;
 		}
 		catch (Exception e) {
+			LOG.warn("Exception occurred while checking health", e);
 			componentCheckMap.put("EntityManagerFactory", false);
 			overallHealth = false;
 		}
@@ -69,6 +72,7 @@ public class HealthResource {
 			overallHealth = ok && overallHealth;
 		}
 		catch (Exception e) {
+			LOG.warn("Exception occurred while checking health", e);
 			componentCheckMap.put("DefaultGson", false);
 			overallHealth = false;
 		}
@@ -80,6 +84,7 @@ public class HealthResource {
 			overallHealth = ok && overallHealth;
 		}
 		catch (Exception e) {
+			LOG.warn("Exception occurred while checking health", e);
 			componentCheckMap.put("NonSubtreeGson", false);
 			overallHealth = false;
 		}
@@ -91,6 +96,7 @@ public class HealthResource {
 			overallHealth = ok && overallHealth;
 		}
 		catch (Exception e) {
+			LOG.warn("Exception occurred while checking health", e);
 			componentCheckMap.put("SubtreeGson", false);
 			overallHealth = false;
 		}
@@ -102,6 +108,7 @@ public class HealthResource {
 			overallHealth = ok && overallHealth;
 		}
 		catch (Exception e) {
+			LOG.warn("Exception occurred while checking health", e);
 			componentCheckMap.put("ItemManager", false);
 			overallHealth = false;
 		}
@@ -119,6 +126,7 @@ public class HealthResource {
 			componentCheckMap.put("Geoserver", geoserverStatus);
 			overallHealth = overallHealth && existGeoserver && workspacesConfigured;
 		} catch (Exception e) {
+			LOG.warn("Exception occurred while checking health", e);
 			componentCheckMap.put("Geoserver", false);
 			overallHealth = false;
 		}

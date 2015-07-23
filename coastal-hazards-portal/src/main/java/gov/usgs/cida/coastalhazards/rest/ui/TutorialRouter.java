@@ -58,7 +58,7 @@ public class TutorialRouter {
 	}
 
 	@GET
-	@Produces("text/html")
+	@Produces(MediaType.TEXT_HTML)
 	public Response useJspAtPath() {
 		Identifier identifier = new Identifier("1", Identifier.IdentifierType.TOUR);
 		return Response.ok(new Viewable("/WEB-INF/jsp/ui/front/index.jsp", identifier)).build();
