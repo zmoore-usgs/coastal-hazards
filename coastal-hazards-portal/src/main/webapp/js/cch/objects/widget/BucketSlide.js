@@ -10,7 +10,7 @@
  * @param {type} args
  * @returns 
  */
-window.CCH = (window.CCH === undefined ) ? {} : window.CCH;
+window.CCH = (window.CCH === undefined) ? {} : window.CCH;
 CCH.Objects = CCH.Objects || {};
 CCH.Objects.Widget = CCH.Objects.Widget || {};
 CCH.Objects.Widget.BucketSlide = function (args) {
@@ -34,13 +34,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 	me.$DROPDOWN_CONTAINER = me.$SLIDE_CONTROLSET.find('> div > div:nth-child(2)');
 	me.SLIDE_CONTENT_ID = me.$SLIDE_CONTAINER.find(' .application-slide-content').attr('id');
 	me.$CLOSE_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset > div > div:nth-child(1) > button');
-        me.$CLEAR_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset > div > div:nth-child(2) > #clear-bucket');
-        me.$SHARE_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset > div > div:nth-child(2) > #share-bucket');
-	me.$TOP_LEVEL_DROPDOWN_TRIGGER = me.$DROPDOWN_CONTAINER.find('#bucket-option-container');
-	me.$TOP_LEVEL_LIST = me.$DROPDOWN_CONTAINER.find('button');
-	me.$TOP_LEVEL_CLEAR = me.$TOP_LEVEL_LIST.find('> li:nth-child(1)');
-	me.$TOP_LEVEL_SHARE = me.$TOP_LEVEL_LIST.find('> li:nth-child(2)');
-	me.$TOP_LEVEL_DOWNLOAD = me.$TOP_LEVEL_LIST.find('> li:nth-child(3)');
+	me.$CLEAR_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset > div > div:nth-child(2) > #clear-bucket');
+	me.$SHARE_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset > div > div:nth-child(2) > #share-bucket');
 	me.$EMPTY_TEXT_CONTAINER = me.$SLIDE_CONTAINER.find('> div > div > #application-slide-bucket-content-empty');
 	me.LABEL_ORDER_CLASS = '.application-slide-bucket-container-card-label-order';
 	me.cardTemplate = null;
@@ -90,7 +85,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 	};
 
 	me.open = function () {
-            var deferred;
+		var deferred;
 		if (me.isClosed) {
 			if (me.isSmall()) {
 				$(window).trigger('cch.slide.bucket.opening');
@@ -106,7 +101,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			$(window).trigger('cch.slide.bucket.opened');
 		}
 		CCH.session.setBucketSlideOpen(true);
-                return deferred;
+		return deferred;
 	};
 
 	me.close = function (dontEmoteClosing, bindItemsOpening) {
@@ -216,8 +211,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		$(window).trigger('cch.slide.bucket.reordered', {
 			cards: me.cards
 		});
-                deferred.resolve();
-                return deferred;
+		deferred.resolve();
+		return deferred;
 	};
 
 	me.layerAppendRemoveHandler = function (evt, args) {
@@ -729,11 +724,6 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		return $cardHtml;
 	};
 
-	me.$TOP_LEVEL_DROPDOWN_TRIGGER.on('click', function (evt) {
-		evt.stopImmediatePropagation();
-		$(evt.target).dropdown('toggle');
-	});
-
 	me.$CLOSE_BUTTON.on('click', function () {
 		me.toggle();
 	});
@@ -747,10 +737,6 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		$(window).trigger('slide.bucket.button.click.share', {
 			'type': 'session'
 		});
-	});
-	$(me.$TOP_LEVEL_DOWNLOAD).on('click', function (evt) {
-		evt.stopPropagation();
-		me.downloadBucket();
 	});
 
 	$(window).on({
