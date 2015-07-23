@@ -636,10 +636,12 @@ CCH.Objects.Publish.UI = function () {
 						tag = childNode.tag;
 						switch (tag) {
 						case 'spdom':
-							childNode.children[0].children.each(function (spdom) {
-								var direction = spdom.tag.substring(0, spdom.tag.length - 2);
-								$('#form-publish-item-bbox-input-' + direction).val(spdom.text);
-							});
+							if (childNode.children) {
+								childNode.children[0].children.each(function (spdom) {
+									var direction = spdom.tag.substring(0, spdom.tag.length - 2);
+									$('#form-publish-item-bbox-input-' + direction).val(spdom.text);
+								});
+							}
 							break;
 						case 'keywords':
 							childNode.children.each(function (kwNode) {
