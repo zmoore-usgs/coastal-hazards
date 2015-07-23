@@ -366,11 +366,41 @@ CCH.intro = (function () {
 						intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
 					}
 				},
-				{
-					element: '#bucket-manage-menu-drop',
-					intro: 'Manage your bucket here',
+                                {
+					element: '#share-bucket',
+					intro: 'Share your bucket here',
 					position: 'left',
-					name: 'manage-bucket',
+					name: 'share-bucket',
+					onbeforechange: function (targetEle) {
+						CCH.ui.bucketSlide.open();
+						if ($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')) {
+							$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+						}
+					}
+				},
+                                {
+					element: '#clear-bucket',
+					intro: 'Clear your bucket here',
+					position: 'left',
+					name: 'clear-bucket',
+					onbeforechange: function (targetEle) {
+						CCH.ui.bucketSlide.open();
+						if ($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')) {
+							$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
+						}
+                                                $('#tourButton').remove();
+					},
+					onafterchange: function () {
+						setTimeout(function () {
+							$('.introjs-tooltip').addClass('clearMobileTip');
+						}, 355);
+					}
+				},
+				{
+					element: '#hide-your-bucket',
+					intro: 'Hide your bucket here',
+					position: 'right',
+					name: 'hide-bucket',
 					onbeforechange: function (targetEle) {
 						CCH.ui.bucketSlide.open();
 						if ($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')) {
@@ -379,11 +409,6 @@ CCH.intro = (function () {
 						var button = $('<a id="tourButton" class="introjs-button">End Tour</a>');
 						button.attr('href', CCH.CONFIG.contextPath + '/info/#bucketContentArea');
 						$('.introjs-tooltipbuttons').append(button);
-					},
-					onafterchange: function () {
-						setTimeout(function () {
-							$('.introjs-tooltip').addClass('manageMobileTip');
-						}, 355);
 					}
 				}
 			],
@@ -405,7 +430,8 @@ CCH.intro = (function () {
 				steps[14].position = 'top';
 				steps[15].position = 'top';
 				steps[16].position = 'top';
-				steps[20].position = 'top';
+				steps[21].position = 'top';
+                                steps[22].position = 'top';
 			};
 
 
