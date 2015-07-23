@@ -9,7 +9,7 @@ CCH.intro = (function () {
 			steps = [
 				{
 					element: '.panel:nth-child(1)',
-					intro: 'This is an item',
+					intro: 'This is an item. Information and products are organized within three coastal change hazard themes: 1) extreme storms, 2) shoreline change, and 3) sea-level rise. Each data item represents an individual research product, with some items grouped together to show the breadth of the topic and make it easy to explore.',
 					position: 'left',
 					name: 'show-item',
 					onbeforechange: function (targetEle) {
@@ -24,7 +24,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '.application-card-add-bucket-btn',
-					intro: 'This is add to your bucket',
+					intro: 'Click the "Add To Bucket icon" to place the current item or aggregation in your bucket and interact with it there.',
 					position: 'left',
 					name: 'add-to-bucket',
 					onbeforechange: function (targetEle) {
@@ -43,7 +43,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '.application-card-zoom-to-btn',
-					intro: 'This is zoom to button',
+					intro: 'Click the zoom to button to zoom to the extent of the data item.',
 					position: 'left',
 					name: 'zoom-to',
 					onbeforechange: function (targetEle) {
@@ -65,7 +65,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '.application-card-more-info-btn',
-					intro: 'This is more info button',
+					intro: 'Click the more information icon to get more details about the data item.',
 					position: 'left',
 					name: 'more-info',
 					onbeforechange: function (targetEle) {
@@ -80,13 +80,13 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#OpenLayers_Control_Zoom_34',
-					intro: 'Zoom in and Out of the Map',
+					intro: 'Click these icons to zoom in or out on the map.',
 					position: 'right',
 					name: 'zoom-in-out'
 				},
 				{
 					element: '#ol-zoom-to-location_innerImage',
-					intro: 'Zoom to your personal location',
+					intro: 'Click this icon in order to zoom to your location. Some browsers and smartphones will first request your permission to share your location.',
 					position: 'right',
 					name: 'zoom-to-you',
 					onbeforechange: function (targetEle) {
@@ -101,13 +101,13 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#OpenLayers_Control_MaximizeDiv_innerImage',
-					intro: 'Change maps baselayer',
+					intro: 'Choose a base layer from World Imagery, Street, Topo, or Ocean here. You can also choose to display place names.',
 					position: 'right',
 					name: 'baselayer'
 				},
 				{
 					element: '.cchMapLegendContainer',
-					intro: 'Maps legend',
+					intro: 'This is the legend, it displays information about the active map items. Bonus: When viewing the three coastal change probability data items on the map you can also scroll over the titles in the legend to highlight the layers on the map.',
 					position: 'left',
 					name: 'legend',
 					onbeforechange: function (targetEle) {
@@ -124,7 +124,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#app-navbar-search-container',
-					intro: 'Search Here',
+					intro: 'Use this search bar to find data and information in one or more coastal change hazards themes by name or location.',
 					position: 'bottom',
 					name: 'search-me',
 					onbeforechange: function (targetEle) {
@@ -136,7 +136,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '.input-group-btn',
-					intro: 'Switch Search Preference Here',
+					intro: 'Click on this icon for a drop down menu of search options.',
 					position: 'left',
 					name: 'search-me-more',
 					onbeforechange: function (targetEle) {
@@ -145,7 +145,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#app-navbar-search-dropdown-menu',
-					intro: 'Search Options',
+					intro: 'Choose one of these menu items to narrow down your search.',
 					position: 'bottom',
 					name: 'search-me-options',
 					onbeforechange: function (targetEle) {
@@ -166,7 +166,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#animated-bucket-object',
-					intro: 'This is your bucket, think of it as a shopping cart for data',
+					intro: 'This is your bucket, it’s like a shopping cart for your data. Use the bucket to collect and download data, as well as to customize your map.',
 					position: 'left',
 					name: 'bucket',
 					onbeforechange: function (targetEle) {
@@ -183,7 +183,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#application-slide-bucket-container',
-					intro: 'View saved data here',
+					intro: 'Data items you have added to your bucket will be visible here.',
 					position: 'left',
 					name: 'bucket-content',
 					onbeforechange: function (targetEle) {
@@ -199,7 +199,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-layer',
-					intro: 'Toggle visibility',
+					intro: 'Click the eyeball icon to turn a data item on or off.',
 					position: 'bottom',
 					name: 'visibility',
 					onEnter: function () {
@@ -217,7 +217,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-navigation-container',
-					intro: 'Drawing Order',
+					intro: 'Click the up or down arrows to move the item above or below other layers. This affects the order of the data on the map.',
 					position: 'left',
 					name: 'move',
 					onEnter: function () {
@@ -234,7 +234,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-download',
-					intro: 'Download Item',
+					intro: 'Click on the download icon to download a zipped (.zip) shapefile (.shp) of the item or aggregation of interest.',
 					position: 'left',
 					name: 'download',
 					onEnter: function () {
@@ -251,7 +251,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-info',
-					intro: 'Info Button',
+					intro: 'Click on the information icon to get more details about the item. It will take you to the action center.',
 					position: 'left',
 					name: 'info',
 					onEnter: function () {
@@ -276,7 +276,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-share',
-					intro: 'Share Bucket',
+					intro: 'Click the share icon to get a short link useful for sharing this item on social media, or to send to colleagues and friends.',
 					position: 'left',
 					name: 'share',
 					onEnter: function () {
@@ -300,7 +300,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '.modal-content',
-					intro: 'Share Bucket with friends',
+					intro: 'You can also tweet the item directly from here.',
 					position: 'bottom',
 					name: 'share-url',
 					onEnter: function () {
@@ -321,7 +321,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '.modal-content #modal-share-summary-url-inputbox',
-					intro: 'Use the url to save a session and share',
+					intro: 'Copy this URL to save your session and share it with a friend or colleague.',
 					position: 'bottom',
 					name: 'url-box',
 					onEnter: function () {
@@ -348,7 +348,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#application-slide-bucket-content-container .well:nth-child(2) .application-slide-bucket-container-card-button-remove',
-					intro: 'Remove Item',
+					intro: 'Click the trash can icon to remove an item from your bucket.',
 					position: 'left',
 					name: 'remove',
 					onEnter: function () {
@@ -368,7 +368,7 @@ CCH.intro = (function () {
 				},
                                 {
 					element: '#share-bucket',
-					intro: 'Share your bucket here',
+					intro: 'To share the contents for all items in the bucket, click the Share Bucket option.',
 					position: 'left',
 					name: 'share-bucket',
 					onbeforechange: function (targetEle) {
@@ -380,7 +380,7 @@ CCH.intro = (function () {
 				},
                                 {
 					element: '#clear-bucket',
-					intro: 'Clear your bucket here',
+					intro: 'To clear the contents for all items in the bucket, click the Clear Bucket option.',
 					position: 'left',
 					name: 'clear-bucket',
 					onbeforechange: function (targetEle) {
@@ -398,7 +398,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#hide-your-bucket',
-					intro: 'Hide your bucket here',
+					intro: 'Click to collapse your Bucket along the side of your browser.',
 					position: 'right',
 					name: 'hide-bucket',
 					onbeforechange: function (targetEle) {
