@@ -56,7 +56,9 @@
 	}
 }
 
-#hide-your-bucket{
+#hide-your-bucket,
+#clear-bucket,
+#share-bucket{
 	padding:5px 10px;
 	font-size:1em;
 	font-style:normal;
@@ -71,10 +73,8 @@
          background:white;   
         }
 }
-/* Combined Bucket Control Dropdown Menu */
-#bucket-manage-menu-drop {
-	color: @cch-primaryColor;
-}
+/* Bucket Options */
+
 
 /* Card Image Column Div */
 .application-slide-bucket-container-card-image-container {
@@ -240,5 +240,13 @@ No tab shown on large display. Toggled via button in bar
 	.application-slide-bucket-container-card-navigation-container {
 		float:right;
 	}
-}
+        
+        #hide-your-bucket,
+        #clear-bucket,
+        #share-bucket{
+                font-size:.7em;
+                padding:3px 5px;
+                margin:8px 0 0 2px;
+        }
 
+}
