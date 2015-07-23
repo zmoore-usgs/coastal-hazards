@@ -412,7 +412,7 @@ CCH.Objects.Publish.UI = function () {
 			type: type,
 			ribbonable: ribbonable,
 			summary: summary,
-			children : CCH.CONFIG.item.children,
+			children : CCH.CONFIG.item ? CCH.CONFIG.item.children : [],
 			showChildren: showChildren,
 			enabled: enabled,
 			services: services,
