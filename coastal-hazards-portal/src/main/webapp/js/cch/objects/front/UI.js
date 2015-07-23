@@ -227,6 +227,12 @@ CCH.Objects.Front.UI = function (args) {
 			applicationOverlay.fadeOut(me.overlayFadeoutTimeInMS, function () {
 				applicationOverlay.remove();
 				$(window).trigger(removedTriggerNamespace);
+				
+				// Internet Explorer has an issue with scrollbars messing up the view. 
+				// re-triggering after application has sized itself properly fixes this
+				if (window.navigator.userAgent.indexOf("MSIE") > 0) {
+					$(window).resize();
+				}
 			});
 		} else {
 			// For whatever reason, overlay didn't exist so just trigger that it was

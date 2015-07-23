@@ -59,10 +59,10 @@ CCH.CONFIG = CCH.CONFIG || {};
 								}
 							};
 							$(window).one('cch.ui.resized', resizeHandler);
-							$(window).resize();
 							$(window).trigger('cch.loaded.uber');
 							CCH.splashUpdate("Working...");
 							CCH.ui.removeOverlay();
+							$(window).resize();
 						}
 					});
 
@@ -193,7 +193,7 @@ CCH.CONFIG = CCH.CONFIG || {};
 		});
 	},
 	loadTour = function () {
-		$(window).on('cch.ui.overlay.removed', function () {
+		$(window).one('cch.ui.overlay.removed', function () {
 			// The tour begins here
 			CCH.intro.start(CCH.CONFIG.params.id);
 		});
