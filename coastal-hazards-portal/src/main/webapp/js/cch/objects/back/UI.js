@@ -39,15 +39,29 @@ CCH.Objects.Back.UI = function (args) {
 		me.serviceTemplate = null; // Lazy loaded
 		me.$infoButton.on('click', function () {
 			window.location.href = CCH.CONFIG.contextPath + '/info/#acContentArea';
+			ga('send', 'event', {
+				'eventCategory': 'infopage',
+				'eventAction': 'infoButtonClicked',
+				'eventLabel': 'info page event'
+			});
 		});
 
 		me.$applicationButton.on('click', function () {
 			window.location.href = CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId;
+			ga('send', 'event', {
+				'eventCategory': 'infopage',
+				'eventAction': 'backToAppButtonClicked',
+				'eventLabel': 'info page event'
+			});
 		});
 
 		me.$downloadDataButton.on('click', function () {
 			var cacheError = function () {
 				alertify.error(CCH.CONFIG.data.messages.cacheInterrogationError);
+				ga('send', 'exception', {
+					'exDescription': 'DownloadRequestFailed',
+					'exFatal': false
+				});
 			};
 
 			var cacheHit = function (resp, content, jqXHR) {
@@ -61,10 +75,20 @@ CCH.Objects.Back.UI = function (args) {
 					// I don't expect any other codes, so default to an error message
 					alertify.error(CCH.CONFIG.data.messages.cacheInterrogationError);
 				}
+				ga('send', 'event', {
+					'eventCategory': 'infopage',
+					'eventAction': 'downloadRequestSucceeded',
+					'eventLabel': 'info page event'
+				});
 			};
 
 			var checkCache = CCH.Util.Util.interrogateDownloadCache(CCH.CONFIG.itemId);
 			checkCache.done(cacheHit).fail(cacheError);
+			ga('send', 'event', {
+				'eventCategory': 'infopage',
+				'eventAction': 'downloadButtonClicked',
+				'eventLabel': 'info page event'
+			});
 		});
 
 		me.$addToBucketButton.on('click', function (evt) {
@@ -74,10 +98,20 @@ CCH.Objects.Back.UI = function (args) {
 			});
 			$(evt.target).addClass('disabled');
 			alertify.log('Item added to bucket!');
+			ga('send', 'event', {
+				'eventCategory': 'infopage',
+				'eventAction': 'addToBucketButtonClicked',
+				'eventLabel': 'info page event'
+			});
 		});
 
 		me.$computeAnalysisButton.on('click', function () {
 			alertify.log('Not yet.');
+			ga('send', 'event', {
+				'eventCategory': 'infopage',
+				'eventAction': 'computeAnalysisButtonClicked',
+				'eventLabel': 'info page event'
+			});
 		});
 
 		me.createModalServicesTab({
@@ -93,6 +127,11 @@ CCH.Objects.Back.UI = function (args) {
 		if (me.cswService && me.cswService.endpoint) {
 			me.$metadataButton.on('click', function () {
 				window.location.href = me.cswService.endpoint + '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
+				ga('send', 'event', {
+					'eventCategory': 'infopage',
+					'eventAction': 'metadataButtonClicked',
+					'eventLabel': 'info page event'
+				});
 			});
 		} else {
 			me.$metadataButton.remove();
@@ -131,10 +170,19 @@ CCH.Objects.Back.UI = function (args) {
 		me.$infoSummary.html(me.item.summary.full.text);
 		me.$infoPubListSpan.append(me.$publist);
 
-		me.$labelActionCenter.on('click', me.toggleControlCenterVisibility);
-		me.$labelActionCenter.on('click', me.toggleArrowRotation);
+		me.$labelActionCenter.on('click', function () {
+			me.toggleControlCenterVisibility();
+			me.toggleArrowRotation();
+			ga('send', 'event', {
+				'eventCategory': 'infopage',
+				'eventAction': 'controlCenterVisibilityToggled',
+				'eventLabel': 'info page event'
+			});
+		});
+		
 		if (me.isSmall()) {
-			me.$labelActionCenter.click();
+			me.toggleControlCenterVisibility();
+			me.toggleArrowRotation();
 		}
 
 		var minificationCallback = function (data) {
@@ -166,6 +214,11 @@ CCH.Objects.Back.UI = function (args) {
 
 			twttr.events.bind('tweet', function () {
 				alertify.log('Your view has been tweeted. Thank you.');
+				ga('send', 'event', {
+					'eventCategory': 'infopage',
+					'eventAction': 'itemTweeted',
+					'eventLabel': 'info page event'
+				});
 			});
 		};
 

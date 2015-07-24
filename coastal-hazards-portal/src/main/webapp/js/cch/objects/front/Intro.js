@@ -454,18 +454,33 @@ CCH.intro = (function () {
 		if (func) {
 			func.call(this, targetEle);
 		}
+		ga('send', 'event', {
+			'eventCategory': 'search',
+			'eventAction': 'frontTutorialStepChanged',
+			'eventLabel': 'tutorial event'
+		});
 	});
 
 	intro.onexit(function () {
 		if ($('#application-slide-items-container').css('display', 'none')) {
 			$('#application-slide-items-container').css('display', 'block');
 		}
+		ga('send', 'event', {
+			'eventCategory': 'search',
+			'eventAction': 'frontTutorialExited',
+			'eventLabel': 'tutorial event'
+		});
 		window.location.href = CCH.CONFIG.contextPath;
 	});
 	intro.oncomplete(function () {
 		if ($('#application-slide-items-container').css('display', 'none')) {
 			$('#application-slide-items-container').css('display', 'block');
 		}
+		ga('send', 'event', {
+			'eventCategory': 'search',
+			'eventAction': 'frontTutorialExited',
+			'eventLabel': 'tutorial event'
+		});
 		window.location.href = CCH.CONFIG.contextPath;
 	});
 

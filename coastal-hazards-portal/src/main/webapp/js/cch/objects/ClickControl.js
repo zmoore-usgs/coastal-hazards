@@ -80,6 +80,12 @@ CCH.Objects.ClickControl = OpenLayers.Class(OpenLayers.Control, {
 				});
 			}
 		}, 5000);
+		
+		ga('send', 'event', {
+			'eventCategory': 'map',
+			'eventAction': 'mapClicked',
+			'eventLabel': 'map event'
+		});
 		return evt;
 	},
 	/**

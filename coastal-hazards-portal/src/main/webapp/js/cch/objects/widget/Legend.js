@@ -82,24 +82,25 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.generateGenericLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
-				$table = $('<table />'),
-				$thead = $('<thead />'),
-				$caption = $('<caption />'),
-				$theadTr = $('<tr />'),
-				$theadUOM = $('<td />'),
-				$colorContainer,
-				$tr,
-				$colorTd,
-				$rangeTd,
-				bins = sld.bins,
-				uom = sld.units || '',
-				title = (args.item && args.item.summary && args.item.summary && args.item.summary.medium) ? args.item.summary.medium.title : sld.title || '',
-				upperBound,
-				lowerBound,
-				category,
-				years,
-				color,
-				range;
+			$table = $('<table />'),
+			$thead = $('<thead />'),
+			$caption = $('<caption />'),
+			$theadTr = $('<tr />'),
+			$theadUOM = $('<td />'),
+			$colorContainer,
+			$tr,
+			$colorTd,
+			$rangeTd,
+			bins = sld.bins,
+			uom = sld.units || '',
+			title = (args.item && args.item.summary && args.item.summary && args.item.summary.medium) ? args.item.summary.medium.title : sld.title || '',
+			upperBound,
+			lowerBound,
+			category,
+			years,
+			color,
+			range;
+	
 		// Create the table head which displays the unit of measurements
 		$caption.html(title);
 		$theadUOM.html(uom);

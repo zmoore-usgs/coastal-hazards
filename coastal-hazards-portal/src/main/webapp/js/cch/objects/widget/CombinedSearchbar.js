@@ -3,8 +3,9 @@
 /* global $ */
 /* global CCH */
 /* global OpenLayers */
+/* global ga */
 
-window.CCH = CCH || {};
+var CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
 CCH.Objects.Widget = CCH.Objects.Widget || {};
 
@@ -35,7 +36,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 	me.SUBMIT_BUTTON_ID = args.submitButtonId || 'app-navbar-search-submit-button';
 	me.DD_TOGGLE_SPINNER_IMG_LOCATION = CCH.CONFIG.contextPath + '/images/spinner/ajax-loader.gif';
 	me.selectedOption = 'all';
-	me.isSmall;
+	me.isSmall = false;
 	me.includeBboxInSearch = false;
 
 	// Internally used objects
@@ -43,19 +44,19 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 		geocodeServiceEndpoint: CCH.CONFIG.data.sources.geocoding.endpoint
 	});
 
-	me.resizeContainer = function (evt) {
+	me.resizeContainer = function () {
 		var $container = $('#' + me.CONTAINER_ID),
-				$parentContainer = $container.parent(),
-				parentContainerWidth = $parentContainer.width(),
-				$navSearchbarLocator = $('#' + me.CONTAINER_ID).find('> div'),
-				$dropDown = $navSearchbarLocator.find('> div:first-child > button'),
-				$searchBar = $navSearchbarLocator.find('> input'),
-				$submitButton = $navSearchbarLocator.find('div:last-child > button'),
-				$parentContainerVisibleItems,
-				childrenCombinedWidth,
-				containerMarginRight,
-				idealInputWidth,
-				isSmall = CCH.ui.isSmall();
+			$parentContainer = $container.parent(),
+			parentContainerWidth = $parentContainer.width(),
+			$navSearchbarLocator = $('#' + me.CONTAINER_ID).find('> div'),
+			$dropDown = $navSearchbarLocator.find('> div:first-child > button'),
+			$searchBar = $navSearchbarLocator.find('> input'),
+			$submitButton = $navSearchbarLocator.find('div:last-child > button'),
+			$parentContainerVisibleItems,
+			childrenCombinedWidth,
+			containerMarginRight,
+			idealInputWidth,
+			isSmall = CCH.ui.isSmall();
 
 		if (isSmall) {
 			idealInputWidth = '100%';
@@ -64,13 +65,14 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 			$submitButton.height(30);
 		} else {
 			// Get all visible, non-modal children of the parent that are also not my container
-			$parentContainerVisibleItems = $parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
-					// Get the width of child containers
-					childrenCombinedWidth = $parentContainerVisibleItems.toArray().sum(function (el) {
+			$parentContainerVisibleItems = $parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])');
+			// Get the width of child containers
+			childrenCombinedWidth = $parentContainerVisibleItems.toArray().sum(function (el) {
 				return $(el).outerWidth(true);
-			}),
-					containerMarginRight = 15, // TODO- This is problematic between IE9 and others
-					idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
+			});
+			containerMarginRight = 15; // TODO- This is problematic between IE9 and others
+			idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
+			
 			$dropDown.height(20);
 			$searchBar.height(20);
 			$submitButton.height(20);
@@ -86,7 +88,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 		me.resizeContainer();
 	};
 
-	me.getCriteria = function (args) {
+	me.getCriteria = function () {
 		return me.selectedOption;
 	};
 
@@ -138,13 +140,13 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 				scope = args.scope || me;
 
 		if (me.includeBboxInSearch) {
-			bbox = CCH.map.getMap().
-					getExtent().
-					transform(
-						CCH.map.getMap().displayProjection,
-						CCH.CONFIG.map.modelProjection).
-					toArray().
-					join(',');
+			bbox = CCH.map.getMap()
+				.getExtent()
+				.transform(
+					CCH.map.getMap().displayProjection,
+					CCH.CONFIG.map.modelProjection)
+				.toArray()
+				.join(',');
 		}
 
 		return me.search.submitItemSearch({
@@ -330,7 +332,8 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 			alt: 'Spinner Image',
 			id: 'app-navbar-search-spinner-image'
 		}),
-			$submitButton = $('#' + me.SUBMIT_BUTTON_ID);
+		$submitButton = $('#' + me.SUBMIT_BUTTON_ID);
+
 		$submitButton.empty();
 		$submitButton.append(spinnerImage);
 	};
@@ -342,6 +345,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 	me.hideSpinner = function () {
 		var magnifyingGlass = $('<i />').addClass('fa fa-search'),
 			$submitButton = $('#' + me.SUBMIT_BUTTON_ID);
+	
 		$submitButton.empty();
 		$submitButton.append(magnifyingGlass);
 	};
@@ -349,6 +353,11 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 	// Bind the search submit button
 	$('#' + me.SUBMIT_BUTTON_ID).on('click', function (evt) {
 		evt.stopImmediatePropagation();
+		ga('send', 'event', {
+			'eventCategory': 'search',
+			'eventAction': 'submitButtonClicked',
+			'eventLabel': 'search menu controls'
+		});
 		me.submitButtonClicked(evt);
 	});
 
@@ -361,6 +370,12 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 				// The id has the type as the last word
 				type = evt.target.id.split('-').last(),
 				isDisabled = $(target).parent().hasClass('disabled');
+
+		ga('send', 'event', {
+			'eventCategory': 'search',
+			'eventAction': 'menuToggled',
+			'eventLabel': 'search menu controls'
+		});
 
 		if (!isDisabled) {
 			// First, remove the disabled class from all list elements
@@ -401,7 +416,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 				me.selectedOption = 'location';
 			}
 		},
-		'slide-search-opened': function (evt) {
+		'slide-search-opened': function () {
 			$(me.INPUTBOX_SELECTOR)[0].blur();
 		},
 		'cch.slide.search.filter.toggle': function (evt, args) {

@@ -92,6 +92,11 @@ CCH.Util.Util = {
 		var callbacks = args.callbacks || {
 			success: function (pos) {
 				CCH.LOG.debug("Latitude: " + pos.coords.latitude + ", Longitude: " + pos.coords.longitude);
+				ga('send', 'event', {
+					'eventCategory': 'search',
+					'eventAction': 'geoLocationSearchSuccess',
+					'eventLabel': 'search event'
+				});
 			},
 			error: function (err) {
 				switch (err.code) {
@@ -108,9 +113,13 @@ CCH.Util.Util = {
 					CCH.LOG.warn("An unknown error occurred.");
 					break;
 				}
+				ga('send', 'exception', {
+					'exDescription': 'GeolocationFailed',
+					'exFatal': false
+				});
 			}
 		};
-
+		
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(callbacks.success, callbacks.error, { enableHighAccuracy : true, maximumAge : 0});
 		}

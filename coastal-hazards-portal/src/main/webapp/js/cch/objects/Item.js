@@ -42,6 +42,12 @@ CCH.Objects.Item = function (args) {
 		callbacks.error = callbacks.error || [];
 
 		callbacks.success.unshift(me.loadFromData);
+		callbacks.error.unshift(function () {
+			ga('send', 'exception', {
+				'exDescription': 'LoadItemFailed',
+				'exFatal': false
+			});
+		});
 
 		if (args.data) {
 			callbacks.success[0](args.data);

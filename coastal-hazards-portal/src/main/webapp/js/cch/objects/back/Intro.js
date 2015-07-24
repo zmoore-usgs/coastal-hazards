@@ -101,11 +101,21 @@ CCH.intro = (function () {
 		if (func) {
 			func.call(this, targetEle);
 		}
+		ga('send', 'event', {
+			'eventCategory': 'search',
+			'eventAction': 'backTutorialStepChanged',
+			'eventLabel': 'tutorial event'
+		});
 	});
 	intro.onexit(function () {
 		$('html, body').css({
 			'overflow-x': 'auto',
 			'overflow-y': 'auto'
+		});
+		ga('send', 'event', {
+			'eventCategory': 'search',
+			'eventAction': 'backTutorialExited',
+			'eventLabel': 'tutorial event'
 		});
 		window.location.href = CCH.CONFIG.contextPath + "/ui/info/item/" + CCH.CONFIG.item.id;
 	});
@@ -113,6 +123,11 @@ CCH.intro = (function () {
 		$('html, body').css({
 			'overflow-x': 'auto',
 			'overflow-y': 'auto'
+		});
+		ga('send', 'event', {
+			'eventCategory': 'search',
+			'eventAction': 'backTutorialExited',
+			'eventLabel': 'tutorial event'
 		});
 		window.location.href = CCH.CONFIG.contextPath + "/ui/info/item/" + CCH.CONFIG.item.id;
 	});

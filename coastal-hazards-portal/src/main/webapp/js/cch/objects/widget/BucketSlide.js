@@ -101,6 +101,13 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			$(window).trigger('cch.slide.bucket.opened');
 		}
 		CCH.session.setBucketSlideOpen(true);
+		
+		ga('send', 'event', {
+			'eventCategory': 'bucketSlide',
+			'eventAction': 'slideOpened',
+			'eventLabel': 'bucket slide action'
+		});
+		
 		return deferred;
 	};
 
@@ -146,6 +153,12 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			$(window).trigger('cch.slide.bucket.closed');
 		}
 		CCH.session.setBucketSlideOpen(true);
+		
+		ga('send', 'event', {
+			'eventCategory': 'bucketSlide',
+			'eventAction': 'slideClosed',
+			'eventLabel': 'bucket slide action'
+		});
 	};
 
 	me.toggle = function () {
@@ -377,10 +390,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		return $card;
 	};
 
-	/**
-	 * Removes a card from the slider. Passing in no args will clear everything
-	 * from the slider
-	 */
+	// Removes a card from the slider. Passing in no args will clear everything 
+	// from the slider
 	me.remove = function (args) {
 		args = args || {};
 
@@ -525,14 +536,24 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 						var sessionId = result.sid;
 
 						if (sessionId) {
+							ga('send', 'event', {
+								'eventCategory': 'bucketSlide',
+								'eventAction': 'downloadBucket',
+								'eventValue': 0
+							});
 							window.open(CCH.CONFIG.contextPath + '/data/download/view/' + sessionId);
 						}
 					}
 				],
 				error: [
 					function () {
+						ga('send', 'event', {
+							'eventCategory': 'bucketSlide',
+							'eventAction': 'downloadBucket',
+							'eventValue': 1
+						});
 						alertify.error('An error has occured. We were not able to ' +
-							'create your download package.', 3000);
+								'create your download package.', 3000);
 					}
 				]
 			}
@@ -576,6 +597,12 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		}
 
 		$imageContainer.on('click', function () {
+			ga('send', 'event', {
+				'eventCategory': 'bucketSlide',
+				'eventAction': 'downloadBucketItemClicked',
+				'eventLabel': 'bucket buttons',
+				'eventValue': 0
+			});
 			$(window).trigger('cch.slide.bucket.item.thumbnail.click');
 			CCH.map.zoomToBoundingBox({
 				bbox: item.bbox,
@@ -588,6 +615,13 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		$removeButton
 			.on('click', function ($evt) {
 				$evt.stopPropagation();
+		
+				ga('send', 'event', {
+					'eventCategory': 'bucketSlide',
+					'eventAction': 'removeBucketItemClicked',
+					'eventLabel': 'bucket buttons'
+				});
+		
 				// I emit this to the top so that bucket can catch it, decrement itself
 				// and then pass on the remove back down here to my remove method
 				$(window).trigger('cch.slide.bucket.remove', {
@@ -598,21 +632,40 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 
 		$downloadButton
 			.on('click', function () {
+				ga('send', 'event', {
+					'eventCategory': 'bucketSlide',
+					'eventAction': 'downloadBucketItemClicked',
+					'eventLabel': 'bucket buttons'
+				});
 				// Check that the download is ready. It may be staging currently.
 				CCH.Util.Util.interrogateDownloadCache(id)
-						.done(function (resp, content, jqXHR) {
-							switch (jqXHR.status) {
-							case 200: // Download is ready to go
-								window.location.href = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.download.endpoint + id;
-								break;
-							case 202: // Download is being staged
-								alertify.log("Your download is being prepared. Please try again in a moment.");
-							}
-						})
-						.fail(function (resp, content, jqXHR) {
-							alertify.error("Downloading this item is not supported");
-							CCH.LOG.warn("An error occurred while trying to download item " + id + " " + jqXHR.responseText);
+					.done(function (resp, content, jqXHR) {
+
+						ga('send', 'event', {
+							'eventCategory': 'data',
+							'eventAction': 'downloadItemRequestSuccess',
+							'eventLabel': 'data',
+							'eventValue': jqXHR.status
 						});
+
+						switch (jqXHR.status) {
+						case 200: // Download is ready to go
+							window.location.href = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.download.endpoint + id;
+							break;
+						case 202: // Download is being staged
+							alertify.log("Your download is being prepared. Please try again in a moment.");
+						}
+					})
+					.fail(function (resp, content, jqXHR) {
+						ga('send', 'exception', {
+							'eventCategory': 'data',
+							'eventAction': 'downloadItemRequestError',
+							'exFatal' : false
+						});
+
+						alertify.error("Downloading this item is not supported");
+						CCH.LOG.warn("An error occurred while trying to download item " + id + " " + jqXHR.responseText);
+					});
 			});
 
 		$viewButton
@@ -631,19 +684,21 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 						itemid: item.id,
 						visible: false
 					});
-					me.layerAppendRemoveHandler(
-						{
-							namespace: 'hid.layer.map'
-						},
-					{layer: {
+					
+					me.layerAppendRemoveHandler({
+						namespace: 'hid.layer.map' 
+					},
+					{
+						layer: {
 							name: id,
 							itemid: id
-						}}
-					);
+						}
+					});
 					CCH.session.getItemById(item.id).visible = false;
 					ga('send', 'event', {
 						'eventCategory': 'bucketSlide',
 						'eventAction': 'visibilityClicked',
+						'eventLabel': 'bucket buttons',
 						'eventValue': 0
 					});
 				} else {
@@ -665,6 +720,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 					ga('send', 'event', {
 						'eventCategory': 'bucketSlide',
 						'eventAction': 'visibilityClicked',
+						'eventLabel': 'bucket buttons',
 						'eventValue': 1
 					});
 				}
@@ -687,6 +743,11 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 
 		$upButton
 			.on('click', function () {
+				ga('send', 'event', {
+					'eventCategory': 'bucketSlide',
+					'eventAction': 'upButtonClicked',
+					'eventLabel': 'bucket buttons'
+				});
 				me.moveCard({
 					id: id,
 					direction: -1
@@ -695,6 +756,11 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 
 		$downButton
 			.on('click', function () {
+				ga('send', 'event', {
+					'eventCategory': 'bucketSlide',
+					'eventAction': 'downButtonClicked',
+					'eventLabel': 'bucket buttons'
+				});
 				me.moveCard({
 					id: id,
 					direction: 1
@@ -703,6 +769,11 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 
 		$shareButton
 			.on('click', function () {
+				ga('send', 'event', {
+					'eventCategory': 'bucketSlide',
+					'eventAction': 'shareItemButtonClicked',
+					'eventLabel': 'bucket buttons'
+				});
 				$(window).trigger('slide.bucket.button.click.share', {
 					'type': 'item',
 					'id': id
@@ -711,6 +782,11 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 
 		$infoButton
 			.on('click', function () {
+				ga('send', 'event', {
+					'eventCategory': 'bucketSlide',
+					'eventAction': 'infoButtonClicked',
+					'eventLabel': 'bucket buttons'
+				});
 				$(window).trigger('slide.bucket.button.click.info', {
 					'id': id
 				});
@@ -725,15 +801,29 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 	};
 
 	me.$CLOSE_BUTTON.on('click', function () {
+		ga('send', 'event', {
+			'eventCategory': 'bucketSlide',
+			'eventAction': 'closeButtonClicked',
+			'eventLabel': 'bucket buttons'
+		});
 		me.toggle();
 	});
 
 	me.$CLEAR_BUTTON.on('click', function () {
+		ga('send', 'event', {
+			'eventCategory': 'bucketSlide',
+			'eventAction': 'clearButtonClicked',
+			'eventLabel': 'bucket buttons'
+		});
 		me.remove();
 	});
 	me.$SHARE_BUTTON.on('click', function (evt) {
 		evt.stopPropagation();
-
+		ga('send', 'event', {
+			'eventCategory': 'bucketSlide',
+			'eventAction': 'shareAllButtonClicked',
+			'eventLabel': 'bucket buttons'
+		});
 		$(window).trigger('slide.bucket.button.click.share', {
 			'type': 'session'
 		});

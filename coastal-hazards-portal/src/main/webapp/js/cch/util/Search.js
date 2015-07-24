@@ -52,10 +52,19 @@ CCH.Util.Search = function (args) {
 				callbacks.success.each(function (cb) {
 					cb.apply(this, [data, statusText, xhrResponse]);
 				});
+				ga('send', 'event', {
+					'eventCategory': 'search',
+					'eventAction': 'geocodeSearchPerformed',
+					'eventLabel': 'search event'
+				});
 			},
 			error: function (xhr, status, error) {
 				callbacks.error.each(function (cb) {
 					cb.apply(this, [xhr, status, error]);
+				});
+				ga('send', 'exception', {
+					'exDescription': 'GeoSearchFailed',
+					'exFatal': false
 				});
 			}
 		});

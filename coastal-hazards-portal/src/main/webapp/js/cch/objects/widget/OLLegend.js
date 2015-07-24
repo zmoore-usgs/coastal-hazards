@@ -150,8 +150,18 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 		"use strict";
 		if (evt.buttonElement === this.minimizeDiv) {
 			this.minimizeControl();
+			ga('send', 'event', {
+				'eventCategory': 'map',
+				'eventAction': 'legendClosed',
+				'eventLabel': 'map event'
+			});
 		} else if (evt.buttonElement === this.maximizeDiv) {
 			this.maximizeControl();
+			ga('send', 'event', {
+				'eventCategory': 'map',
+				'eventAction': 'legendOpened',
+				'eventLabel': 'map event'
+			});
 		}
 	},
 	maximizeControl: function (e) {

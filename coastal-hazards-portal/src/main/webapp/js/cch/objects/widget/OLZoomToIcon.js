@@ -1,6 +1,7 @@
 /*global CCH*/
 /*global OpenLayers*/
 /*global alertify*/
+/*global ga */
 (function () {
 	"use strict";
 	window.CCH = CCH || {};
@@ -54,7 +55,7 @@
 				OpenLayers.Event.stop(evt);
 			}, this, this.div));
 			
-			$(window).on('cch.ui.resized', function (evt) {
+			$(window).on('cch.ui.resized', function () {
 				var magicMobileWidth = 441,
 					isMobile = $(window).outerWidth() < magicMobileWidth,
 					divImage = isMobile ? CCH.CONFIG.contextPath + '/images/map/zoom/cross-mobile.svg' :
@@ -75,31 +76,40 @@
 				callbacks: {
 					success: function (pos) {
 						var lat = pos.coords.latitude,
-								lon = pos.coords.longitude,
-								locationLonLat = new OpenLayers.LonLat(lon, lat).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection),
-								bounds = new OpenLayers.Bounds();
+							lon = pos.coords.longitude,
+							locationLonLat = new OpenLayers.LonLat(lon, lat).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection),
+							bounds = new OpenLayers.Bounds();
 						
 						bounds.extend(locationLonLat);
 						bounds.extend(locationLonLat);
 						CCH.map.getMap().zoomToExtent(bounds);
 						CCH.map.getMap().zoomTo(15);
+						ga('send', 'event', {
+							'eventCategory': 'map',
+							'eventAction': 'geoLocationZoom',
+							'eventLabel': 'map event'
+						});
 					},
 					error: function (err) {
 						alertify.log("Cannot Find Your Location");
 						switch (err.code) {
-							case err.PERMISSION_DENIED:
-								CCH.LOG.warn("User denied the request for Geolocation.");
-								break;
-							case err.POSITION_UNAVAILABLE:
-								CCH.LOG.warn("Location information is unavailable.");
-								break;
-							case err.TIMEOUT:
-								CCH.LOG.warn("The request to get user location timed out.");
-								break;
-							case err.UNKNOWN_ERROR:
-								CCH.LOG.warn("An unknown error occurred.");
-								break;
+						case err.PERMISSION_DENIED:
+							CCH.LOG.warn("User denied the request for Geolocation.");
+							break;
+						case err.POSITION_UNAVAILABLE:
+							CCH.LOG.warn("Location information is unavailable.");
+							break;
+						case err.TIMEOUT:
+							CCH.LOG.warn("The request to get user location timed out.");
+							break;
+						case err.UNKNOWN_ERROR:
+							CCH.LOG.warn("An unknown error occurred.");
+							break;
 						}
+						ga('send', 'exception', {
+							'exDescription': 'GeoLocationFailed',
+							'exFatal': false
+						});
 					}
 				}
 			});
