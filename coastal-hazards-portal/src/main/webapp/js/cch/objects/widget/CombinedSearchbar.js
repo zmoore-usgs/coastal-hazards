@@ -426,12 +426,21 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 	});
 
 	// Clicking enter in the input box should submit the search
-	$(me.INPUTBOX_SELECTOR).on('keyup', function (evt) {
-		var keyCode = evt.keyCode,
-				enterKeyCode = 13;
+	$(me.INPUTBOX_SELECTOR).on({
+		'keyup': function (evt) {
+			var keyCode = evt.keyCode,
+					enterKeyCode = 13;
 
-		if (keyCode === enterKeyCode) {
-			$('#' + me.SUBMIT_BUTTON_ID).trigger('click');
+			if (keyCode === enterKeyCode) {
+				$('#' + me.SUBMIT_BUTTON_ID).trigger('click');
+			}
+		},
+		'focus' : function () {
+			ga('send', 'event', {
+				'eventCategory': 'search',
+				'eventAction': 'inputBoxGainedFocus',
+				'eventLabel': 'search menu controls'
+			});
 		}
 	});
 
