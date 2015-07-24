@@ -107,6 +107,12 @@ CCH.Objects.Front.UI = function (args) {
 		if (isSmall !== me.previouslySmall) {
 			CCH.LOG.debug('UI:: Redimensioned To ' + isSmall ? ' Small' : ' Large');
 			$(window).trigger('cch.ui.redimensioned', isSmall);
+			ga('send', 'event', {
+				'eventCategory': 'ui',
+				'eventAction': 'redimensioned',
+				'eventLabel': 'ui events',
+				'eventValue': isSmall ? 0 : 1
+			});
 		}
 
 		contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : $('body').outerHeight(true) - (headerHeight + footerHeight);
@@ -167,6 +173,11 @@ CCH.Objects.Front.UI = function (args) {
 			$('#' + me.SHARE_MODAL_ID).modal('show');
 			
 			twttr.events.bind('tweet', function () {
+				ga('send', 'event', {
+					'eventCategory': 'twitter',
+					'eventAction': 'tweeted',
+					'eventLabel': 'social events'
+				});
 				alertify.log('Your view has been tweeted. Thank you.');
 			});
 		};
@@ -197,12 +208,22 @@ CCH.Objects.Front.UI = function (args) {
 								shareUrl = CCH.CONFIG.publicUrl + '/ui/view/' + sid;
 
 							me.displayShareModal(shareUrl);
+							
+							ga('send', 'event', {
+								'eventCategory': 'twitter',
+								'eventAction': 'tweeted',
+								'eventLabel': 'social events'
+							});
 						}
 					],
 					error: [
 						function () {
 							$('#' + me.SHARE_MODAL_ID).modal('hide');
 							alertify.error('We apologize, but we could not create a share url for this session.', 2000);
+							ga('send', 'exception', {
+								'exDescription': 'SessionCreationFailed',
+								'exFatal': false
+							});
 						}
 					]
 				}

@@ -129,6 +129,11 @@ CCH.Objects.Widget.Accordion = function (args) {
 					$bellow.off('click', headingClickHandler);
 					$bellow.find('a').trigger('click');
 					$bellow.on('click', headingClickHandler);
+					ga('send', 'event', {
+						'eventCategory': 'bellow',
+						'eventAction': 'bellowClicked',
+						'eventLabel': 'bellow event'
+					});
 				};
 				
 		toggleTarget.append(
@@ -198,12 +203,12 @@ CCH.Objects.Widget.Accordion = function (args) {
 				var $this = $(this),
 						abId = $this.data('id');
 				
+				$(window).trigger('cch.accordion.shown', evt);
 				ga('send', 'event', {
 					'eventCategory': 'accordion',
 					'eventAction': 'show',
-					'eventLabel': abId
+					'eventLabel': 'accordion event'
 				});
-				$(window).trigger('cch.accordion.shown', evt);
 			},
 			'hide.bs.collapse': function (evt) {
 				card.closeChild();
@@ -212,17 +217,13 @@ CCH.Objects.Widget.Accordion = function (args) {
 				$(window).trigger('cch.accordion.hide', evt);
 			},
 			'hidden.bs.collapse': function (evt) {
-				var $this = $(this),
-						abId = $this.data('id');
-
-				ga('send', 'event', {
-					'eventCategory': 'accordion', // Required.
-					'eventAction': 'hide', // Required.
-					'eventLabel': abId
-				});
 				$(window).trigger('cch.accordion.hidden', evt);
+				ga('send', 'event', {
+					'eventCategory': 'accordion',
+					'eventAction': 'hide',
+					'eventLabel': 'accordion event'
+				});
 			}
-                         
 		});
 
 		return group;
@@ -250,16 +251,16 @@ CCH.Objects.Widget.Accordion = function (args) {
 		// clicked in the item.  If the item isn't found, I want to load the item
 		// and add it to the accordion.
 		var id = args.id,
-				idIdx = 0,
-				ids = me.getBellows().map(function (ind, b) {
-			return $(b).data().id;
-		}),
-				$bellow,
-				$bellowTitle,
-				$bellowBody,
-				path = [],
-				card,
-				openPath;
+			idIdx = 0,
+			ids = me.getBellows().map(function (ind, b) {
+				return $(b).data().id;
+			}),
+			$bellow,
+			$bellowTitle,
+			$bellowBody,
+			path = [],
+			card,
+			openPath;
 
 		// Go down the top level items until we have a hit for an id
 		if (ids.length > 0) {

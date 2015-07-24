@@ -131,12 +131,6 @@ CCH.CONFIG = CCH.CONFIG || {};
 				'exFatal': false
 			});
 		});
-
-		ga('send', 'event', {
-			'eventCategory': 'load',
-			'eventAction': 'loadView',
-			'eventLabel': '"' + CCH.CONFIG.params.id + '"'
-		});
 	},
 	loadItem = function () {
 		var id = CCH.CONFIG.params.id;
@@ -185,12 +179,6 @@ CCH.CONFIG = CCH.CONFIG || {};
 			zoomToUberBbox: true,
 			overridePreviousBounds: false
 		});
-
-		ga('send', 'event', {
-			'eventCategory': 'load',
-			'eventAction': 'loadItem',
-			'eventLabel': '"' + id + '"'
-		});
 	},
 	loadTour = function () {
 		$(window).one('cch.ui.overlay.removed', function () {
@@ -202,12 +190,6 @@ CCH.CONFIG = CCH.CONFIG || {};
 			subtree: true,
 			zoomToUberBbox: true,
 			overridePreviousBounds: true
-		});
-
-		ga('send', 'event', {
-			'eventCategory': 'load',
-			'eventAction': 'loadTour',
-			'eventLabel' : 'back'
 		});
 		
 	},
@@ -240,11 +222,6 @@ CCH.CONFIG = CCH.CONFIG || {};
 			zoomToUberBbox: true,
 			overridePreviousBounds: doNotUsePreviousBounds
 		});
-		
-		ga('send', 'event', {
-			'eventCategory': 'load',
-			'eventAction': 'loadDefault'
-		});
 	};
 
 	CCH.CONFIG.onAppInitialize = function () {
@@ -262,15 +239,35 @@ CCH.CONFIG = CCH.CONFIG || {};
 		// either one item, a view or all top level items. First I check if idType exists
 		switch (viewType) {
 		case 'view':
+			ga('send', 'event', {
+				'eventCategory': 'app',
+				'eventAction': 'loadView',
+				'eventLabel': 'app load'
+			});
 			loadView();
 			break;
 		case 'item':
+			ga('send', 'event', {
+				'eventCategory': 'app',
+				'eventAction': 'loadItem',
+				'eventLabel': 'app load'
+			});
 			loadItem();
 			break;
 		case 'tour':
+			ga('send', 'event', {
+				'eventCategory': 'app',
+				'eventAction': 'loadTour',
+				'eventLabel': 'app load'
+			});
 			loadTour();
 			break;
 		default :
+			ga('send', 'event', {
+				'eventCategory': 'app',
+				'eventAction': 'loadDefault',
+				'eventLabel': 'app load'
+			});
 			loadDefault();
 		}
 		delete CCH.CONFIG.onAppInitialize;

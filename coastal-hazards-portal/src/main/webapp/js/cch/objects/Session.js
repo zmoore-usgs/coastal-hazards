@@ -139,6 +139,11 @@ CCH.Objects.Session = function (args) {
 						callback.call(null, json, textStatus, jqXHR);
 					});
 				}
+				ga('send', 'event', {
+					'eventCategory': 'session',
+					'eventAction': 'sessionSaved',
+					'eventLabel': 'session event'
+				});
 			},
 			error: function (data, textStatus, jqXHR) {
 				if (callbacks.error && callbacks.error.length > 0) {
@@ -146,6 +151,10 @@ CCH.Objects.Session = function (args) {
 						callback.call(null, data, textStatus, jqXHR);
 					});
 				}
+				ga('send', 'exception', {
+					'exDescription': 'SessionSaveFailed',
+					'exFatal': false
+				});
 			}
 		});
 	};
@@ -157,12 +166,23 @@ CCH.Objects.Session = function (args) {
 			context = args.context;
 
 		if (sid) {
-			return $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint + sid, {
+			
+			var deferred = $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint + sid, {
 				type: 'GET',
 				contentType: 'application/json;charset=utf-8',
 				dataType: 'json',
 				context : context
 			});
+			
+			deferred.done(function () {
+				ga('send', 'event', {
+					'eventCategory': 'session',
+					'eventAction': 'sessionLoaded',
+					'eventLabel': 'session event'
+				});
+			});
+			
+			return deferred;
 		}
 	};
 
@@ -177,6 +197,13 @@ CCH.Objects.Session = function (args) {
 			read = me.read({
 				sid: sid
 			});
+		
+		callbacks.error.unshift(function () {
+			ga('send', 'exception', {
+				'exDescription': 'SessionReadFailed',
+				'exFatal': false
+			});
+		});
 		
 		if (read) {
 			read.done(callbacks.success, function (json) {
@@ -234,6 +261,12 @@ CCH.Objects.Session = function (args) {
 		}
 
 		me.persistSession();
+		
+		ga('send', 'event', {
+			'eventCategory': 'session',
+			'eventAction': 'itemAddedToSession',
+			'eventLabel': 'session event'
+		});
 
 		return me.session;
 	};
@@ -248,6 +281,12 @@ CCH.Objects.Session = function (args) {
 		}
 
 		me.persistSession();
+		
+		ga('send', 'event', {
+			'eventCategory': 'session',
+			'eventAction': 'itemRemovedFromSession',
+			'eventLabel': 'session event'
+		});
 		
 		return me.session;
 	};

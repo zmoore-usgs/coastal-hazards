@@ -132,6 +132,11 @@ CCH.Objects.Front.Map = function (args) {
 				$(this.icon.imageDiv).popover('hide');
 				// Zoom to where the pointer is based on the original location search's extent
 				me.getMap().zoomToExtent(new OpenLayers.Bounds(extent.xmin, extent.ymin, extent.xmax, extent.ymax));
+				ga('send', 'event', {
+					'eventCategory': 'map',
+					'eventAction': 'locationMarkerClicked',
+					'eventLabel': 'map event'
+				});
 			});
 			marker.events.register('mouseover', null, function () {
 				var $iconDiv = $(this.icon.imageDiv);
@@ -469,6 +474,12 @@ CCH.Objects.Front.Map = function (args) {
 			} else {
 				placeNames.setVisibility(false);
 			}
+			
+			ga('send', 'event', {
+				'eventCategory': 'map',
+				'eventAction': 'baseLayerChange',
+				'eventLabel': 'map event'
+			});
 			
 			return placeNames.getVisibility();
 		},

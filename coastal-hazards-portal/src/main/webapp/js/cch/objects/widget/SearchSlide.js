@@ -2,8 +2,8 @@
 /*jslint plusplus: true */
 /*global $*/
 /*global CCH*/
-/*global OpenLayers*/
-/*global HandleBars*/
+/*global ga */
+/*global Handlebars */
 
 window.CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
@@ -63,7 +63,7 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 	me.isClosing = false;
 	
 	// Handlebars templates
-	me.locationResultTemplate;
+	me.locationResultTemplate = null;
 
 	me.clear = function () {
 		var $locationSlide = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
@@ -71,14 +71,14 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 
 		[$locationSlide, $productSlide].each(function ($slide, ind) {
 			$slide.find('>div:nth-child(1)').empty();
-			$slide.find('>div:nth-child(' + (ind + 2) + ')').
-					empty().
-					append($('<img />').
-							addClass('img-responsive search-spinner').
-							attr({
-								'src': CCH.CONFIG.contextPath + '/images/spinner/spinner3.gif',
-								'alt': "Spinner Image"
-							}));
+			$slide.find('>div:nth-child(' + (ind + 2) + ')')
+				.empty()
+				.append($('<img />')
+				.addClass('img-responsive search-spinner')
+				.attr({
+					'src': CCH.CONFIG.contextPath + '/images/spinner/spinner3.gif',
+					'alt': "Spinner Image"
+				}));
 			$slide.find('>div:nth-child(' + (ind + 3) + ')>ul').empty();
 		});
 	};
@@ -229,19 +229,19 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 
 	me.getExtents = function () {
 		var $slideContainer = $('#application-slide-items-content-container'),
-				$firstAggregationBellow = $slideContainer.find('>div:nth-child(2)'),
-				$contentRow = $('#' + me.CONTENT_ROW_ID),
-				$mapDiv = $('#' + me.MAP_DIV_ID),
-				extents = {
-					large: {
-						top: $contentRow.offset().top,
-						left: $mapDiv.outerWidth() + $mapDiv.offset().left
-					},
-					small: {
-						top: $firstAggregationBellow.offset() ? $firstAggregationBellow.offset().top - 1 : 0,
-						left: $slideContainer.offset().left
-					}
-				};
+			$firstAggregationBellow = $slideContainer.find('>div:nth-child(2)'),
+			$contentRow = $('#' + me.CONTENT_ROW_ID),
+			$mapDiv = $('#' + me.MAP_DIV_ID),
+			extents = {
+				large: {
+					top: $contentRow.offset().top,
+					left: $mapDiv.outerWidth() + $mapDiv.offset().left
+				},
+				small: {
+					top: $firstAggregationBellow.offset() ? $firstAggregationBellow.offset().top - 1 : 0,
+					left: $slideContainer.offset().left
+				}
+			};
 
 		return extents;
 	};
@@ -274,169 +274,169 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 		if (data) {
 			// The data type can either be location or item
 			switch (type) {
-				case 'location':
-					
-					$contentContainer = $locationContentContainer;
-					$resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
-					$slideContainer = $contentContainer.find('> div:nth-child(2)');
-					$pagingContainer = $contentContainer.find('> div:nth-child(3)');
+			case 'location':
 
-					me.hideLocationSpinner();
+				$contentContainer = $locationContentContainer;
+				$resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
+				$slideContainer = $contentContainer.find('> div:nth-child(2)');
+				$pagingContainer = $contentContainer.find('> div:nth-child(3)');
 
-					// I want to show locations if we have locations to show
-					if (locationSize > 0) {
-						$showAllButton = $('<div />').
-								addClass('application-slide-search-location-card-toggle').
-								append($('<span />').addClass('badge').html('Show All ' + locationSize + ' Locations'));
+				me.hideLocationSpinner();
 
-						pageCount = Math.ceil(locationSize / slidesPerPage);
+				// I want to show locations if we have locations to show
+				if (locationSize > 0) {
+					$showAllButton = $('<div />')
+							.addClass('application-slide-search-location-card-toggle')
+							.append($('<span />').addClass('badge').html('Show All ' + locationSize + ' Locations'));
 
-						$contentContainer.removeClass('hidden');
-						$resultsFoundsContainer.
-								removeClass('hidden').
-								html(locationSize + ' Location' + (locationSize > 1 ? 's' : '') + ' Found');
+					pageCount = Math.ceil(locationSize / slidesPerPage);
 
-						// Start with a clean slate 
-						$slideContainer.empty();
-						$slideContainer.css('backgroundImage', '');
-						$pagingContainer.find('>ul').empty();
+					$contentContainer.removeClass('hidden');
+					$resultsFoundsContainer
+							.removeClass('hidden')
+							.html(locationSize + ' Location' + (locationSize > 1 ? 's' : '') + ' Found');
 
-						// I want to build a card for every search result item
-						for (locationIdx = 0; locationIdx < locationSize; locationIdx++) {
-							$card = me.buildLocationSearchResultItem({
-								location: locations[locationIdx],
-								spatialReference: data.spatialReference
-							});
+					// Start with a clean slate 
+					$slideContainer.empty();
+					$slideContainer.css('backgroundImage', '');
+					$pagingContainer.find('>ul').empty();
 
-							$card.addClass('search-result-item-page-' + Math.ceil((locationIdx + 1) / slidesPerPage));
-
-							// I want to add the card to the items and append it to 
-							// the slide container
-							cards.push($card);
-						}
-
-						$slideContainer.append(cards);
-
-						// If I have more than one page worth of stuff, I want to create a
-						// paging system to deal with that
-						me.createPaging({
-							container: $pagingContainer,
-							pageCount: pageCount
+					// I want to build a card for every search result item
+					for (locationIdx = 0; locationIdx < locationSize; locationIdx++) {
+						$card = me.buildLocationSearchResultItem({
+							location: locations[locationIdx],
+							spatialReference: data.spatialReference
 						});
 
-						if (criteria.indexOf('location') === -1) {
-							// User is searching for mixed criteria
-							// I only want to show the first location. If I have more 
-							// than one, I want to leave a toggle at the bottom that 
-							// will display all the items
-							$pagingContainer.addClass('hidden');
-							if ($slideContainer.find('>div').length) {
-								$slideContainer.find('>div:not(.search-result-item-page-1)').addClass('hidden');
-								$slideContainer.find('>div:first-child()').nextAll().addClass('hidden');
-								$slideContainer.append($showAllButton);
+						$card.addClass('search-result-item-page-' + Math.ceil((locationIdx + 1) / slidesPerPage));
 
-								// When the user clicks on my toggle, I want to display all
-								// of the locations, change the search criteria to 'Locations'
-								// and have paging for locations (if need be)
-								$showAllButton.on('click', function ($evt) {
-									// Stop propagation of the event because the slide
-									// listens to body events and it might catch a click
-									// and toggle the slide.
-									$evt.stopImmediatePropagation();
+						// I want to add the card to the items and append it to 
+						// the slide container
+						cards.push($card);
+					}
 
-									// I want to emit this event because it's listened to
-									// by the combined search bar 
-									$(window).trigger('slide-search-button-click', {
-										button: 'show-all-location'
+					$slideContainer.append(cards);
+
+					// If I have more than one page worth of stuff, I want to create a
+					// paging system to deal with that
+					me.createPaging({
+						container: $pagingContainer,
+						pageCount: pageCount
+					});
+
+					if (criteria.indexOf('location') === -1) {
+						// User is searching for mixed criteria
+						// I only want to show the first location. If I have more 
+						// than one, I want to leave a toggle at the bottom that 
+						// will display all the items
+						$pagingContainer.addClass('hidden');
+						if ($slideContainer.find('>div').length) {
+							$slideContainer.find('>div:not(.search-result-item-page-1)').addClass('hidden');
+							$slideContainer.find('>div:first-child()').nextAll().addClass('hidden');
+							$slideContainer.append($showAllButton);
+
+							// When the user clicks on my toggle, I want to display all
+							// of the locations, change the search criteria to 'Locations'
+							// and have paging for locations (if need be)
+							$showAllButton.on('click', function ($evt) {
+								// Stop propagation of the event because the slide
+								// listens to body events and it might catch a click
+								// and toggle the slide.
+								$evt.stopImmediatePropagation();
+
+								// I want to emit this event because it's listened to
+								// by the combined search bar 
+								$(window).trigger('slide-search-button-click', {
+									button: 'show-all-location'
+								});
+
+								// Check to see if I am paging by finding if I have a 
+								// page 2 button
+								if ($pagingContainer.find('>ul.pagination>li>a:contains("2")').length > 0) {
+									// If I'm paging, just show the first page
+									$pagingContainer.removeClass('hidden');
+									me.displayPage({
+										num: 1,
+										container: $contentContainer
 									});
+								} else {
+									// I'm not paging so hide the toggle button
+									$slideContainer.find('>div:last-child').remove();
+									// Show all the cards
+									$slideContainer.find('>div').removeClass('hidden');
+								}
 
-									// Check to see if I am paging by finding if I have a 
-									// page 2 button
-									if ($pagingContainer.find('>ul.pagination>li>a:contains("2")').length > 0) {
-										// If I'm paging, just show the first page
-										$pagingContainer.removeClass('hidden');
-										me.displayPage({
-											num: 1,
-											container: $contentContainer
-										});
-									} else {
-										// I'm not paging so hide the toggle button
-										$slideContainer.find('>div:last-child').remove();
-										// Show all the cards
-										$slideContainer.find('>div').removeClass('hidden');
-									}
-
-									// Remove all of the product cards and product paging
-									$productContentContainer.find('>div:first-child()').empty();
-									$productContentContainer.find('>div:nth-child(2)').empty();
-									$productContentContainer.find('>div>ul').empty();
-								});
-							}
-						} else {
-							me.displayPage({
-								num: 1,
-								container: $contentContainer
+								// Remove all of the product cards and product paging
+								$productContentContainer.find('>div:first-child()').empty();
+								$productContentContainer.find('>div:nth-child(2)').empty();
+								$productContentContainer.find('>div>ul').empty();
 							});
 						}
 					} else {
-						$slideContainer.empty();
-						$resultsFoundsContainer.
-								removeClass('hidden').
-								html('0 Locations Found');
-					}
-					break;
-
-				case 'item':
-					$contentContainer = $productContentContainer;
-					$resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
-					$slideContainer = $contentContainer.find('>div:nth-child(3)');
-					$pagingContainer = $contentContainer.find('>div:nth-child(4)');
-					
-					// Hide the spinner in the product card container since we're only doing a location search
-					me.hideItemSpinner();
-					
-					$resultsFoundsContainer.
-							removeClass('hidden').
-							html(productsSize + ' Product' + (productsSize !== 1 ? 's' : '') + ' Found');
-
-					if (productsSize > 0) {
-						pageCount = Math.ceil(productsSize / slidesPerPage);
-
-						// Start with a clean slate 
-						$slideContainer.empty();
-						$slideContainer.css('backgroundImage', '');
-						$pagingContainer.find('>ul').empty();
-
-						for (itemsIdx = 0; itemsIdx < productsSize; itemsIdx++) {
-							product = products[itemsIdx];
-							$card = me.buildProductSearchResultItem({
-								product: product
-							});
-							$card.addClass('search-result-item-page-' + Math.ceil((itemsIdx + 1) / slidesPerPage));
-							cards.push($card);
-						}
-
-						$slideContainer.append(cards);
-
-						$slideContainer.find('>div:not(.search-result-item-page-1)').addClass('hidden');
-						$slideContainer.
-								find('*[data-toggle="popover"]').
-								popover().
-								on('shown.bs.popover', function (evt) {
-									setTimeout(function () {
-										$(evt.target).popover('hide');
-									}, CCH.CONFIG.ui['tooltip-prevalence']);
-								});
-						me.FILTER_RESULTS_BUTTON.show();
-						me.createPaging({
-							container: $pagingContainer,
-							pageCount: pageCount
+						me.displayPage({
+							num: 1,
+							container: $contentContainer
 						});
-					} else {
-						$slideContainer.empty();
-						me.FILTER_RESULTS_BUTTON.hide();
 					}
-					break;
+				} else {
+					$slideContainer.empty();
+					$resultsFoundsContainer
+						.removeClass('hidden')
+						.html('0 Locations Found');
+				}
+				break;
+
+			case 'item':
+				$contentContainer = $productContentContainer;
+				$resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
+				$slideContainer = $contentContainer.find('>div:nth-child(3)');
+				$pagingContainer = $contentContainer.find('>div:nth-child(4)');
+
+				// Hide the spinner in the product card container since we're only doing a location search
+				me.hideItemSpinner();
+
+				$resultsFoundsContainer
+					.removeClass('hidden')
+					.html(productsSize + ' Product' + (productsSize !== 1 ? 's' : '') + ' Found');
+
+				if (productsSize > 0) {
+					pageCount = Math.ceil(productsSize / slidesPerPage);
+
+					// Start with a clean slate 
+					$slideContainer.empty();
+					$slideContainer.css('backgroundImage', '');
+					$pagingContainer.find('>ul').empty();
+
+					for (itemsIdx = 0; itemsIdx < productsSize; itemsIdx++) {
+						product = products[itemsIdx];
+						$card = me.buildProductSearchResultItem({
+							product: product
+						});
+						$card.addClass('search-result-item-page-' + Math.ceil((itemsIdx + 1) / slidesPerPage));
+						cards.push($card);
+					}
+
+					$slideContainer.append(cards);
+
+					$slideContainer.find('>div:not(.search-result-item-page-1)').addClass('hidden');
+					$slideContainer
+						.find('*[data-toggle="popover"]')
+						.popover()
+						.on('shown.bs.popover', function (evt) {
+							setTimeout(function () {
+								$(evt.target).popover('hide');
+							}, CCH.CONFIG.ui['tooltip-prevalence']);
+						});
+					me.FILTER_RESULTS_BUTTON.show();
+					me.createPaging({
+						container: $pagingContainer,
+						pageCount: pageCount
+					});
+				} else {
+					$slideContainer.empty();
+					me.FILTER_RESULTS_BUTTON.hide();
+				}
+				break;
 			}
 
 			if (pageCount <= 1) {
@@ -464,21 +464,24 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 		$pagingButtonGroup.empty();
 
 		// Add a previous page button
-		$pageButton = $('<a />').
-				attr('href', '#').
-				html('&laquo;');
+		$pageButton = $('<a />')
+			.attr('href', '#')
+			.html('&laquo;');
+	
 		// This will be the first page so I'm going to disable 
 		// the back button
-		$li = $('<li />').
-				addClass('disabled page-move').
-				append($pageButton);
+		$li = $('<li />')
+			.addClass('disabled page-move')
+			.append($pageButton);
+	
 		$pagingButtonGroup.append($li);
 		for (pIdx = 0; pIdx < pageCount; pIdx++) {
-			$pageButton = $('<a />').
-					attr('href', '#').
-					html(pIdx + 1);
-			$li = $('<li />').
-					append($pageButton);
+			$pageButton = $('<a />')
+				.attr('href', '#')
+				.html(pIdx + 1);
+		
+			$li = $('<li />')
+				.append($pageButton);
 
 			if (pIdx === 0) {
 				// If this is the first page, also disable the
@@ -490,18 +493,18 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 		}
 
 		// Tack on a "Next Page" button
-		$pageButton = $('<a />').
-				attr('href', '#').
-				html('&raquo;');
-		$li = $('<li />').
-				addClass('page-move').
-				append($pageButton);
+		$pageButton = $('<a />')
+			.attr('href', '#')
+			.html('&raquo;');
+		$li = $('<li />')
+			.addClass('page-move')
+			.append($pageButton);
 		$pagingButtonGroup.append($li);
 
 		// Bind the click event for each of these buttons
-		$pagingContainer.
-				find('>ul>li').
-				on('click', me.pageButtonClickHandler);
+		$pagingContainer
+			.find('>ul>li')
+			.on('click', me.pageButtonClickHandler);
 
 		// The paging container row might be hidden, so remove
 		// the hidden class to display the container
@@ -555,16 +558,34 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 						container: $container,
 						num: currentPage - 1
 					});
+					ga('send', 'event', {
+						'eventCategory': 'search',
+						'eventAction': 'pagingBackButtonClicked',
+						'eventLabel': 'search event',
+						'eventValue' : currentPage - 1
+					});
 				} else {
 					me.displayPage({
 						container: $container,
 						num: currentPage + 1
+					});
+					ga('send', 'event', {
+						'eventCategory': 'search',
+						'eventAction': 'pagingForwardButtonClicked',
+						'eventLabel': 'search event',
+						'eventValue' : currentPage + 1
 					});
 				}
 			} else {
 				me.displayPage({
 					container: $container,
 					num: toPage
+				});
+				ga('send', 'event', {
+					'eventCategory': 'search',
+					'eventAction': 'pagingButtonClicked',
+					'eventLabel': 'search event',
+					'eventValue' : toPage
 				});
 			}
 		}
@@ -606,39 +627,40 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 		// resized to make sure the paging row stays near the bottom
 		me.resize();
 	};
+	
 	me.buildProductSearchResultItem = function (args) {
 		args = args || {};
 
 		if (args.product) {
 			var product = args.product,
-					item = CCH.items.getById({id: product.id}),
-					id = product.id,
-					bbox = product.bbox,
-					summary = product.summary.medium,
-					title = summary.title,
-					description = summary.text,
-					$newItem = $('#' + me.PRODUCT_CARD_TEMPLATE_ID).children().clone(true),
-					imageContainerClass = 'application-slide-search-product-card-image',
-					titleContainerClass = 'application-slide-search-product-card-title',
-					descriptionContainerClass = 'application-slide-search-product-card-description',
-					$imageContainer = $newItem.find('> div > div:first-child > img'),
-					$titleContainer = $newItem.find('.' + titleContainerClass),
-					$descriptionContainer = $newItem.find('.' + descriptionContainerClass),
-					$bucketButton = $newItem.find('>span.badge'),
-					$exploreControl = $('<span />').
-					addClass('badge').
-					append($('<i />').addClass('fa fa-arrow-circle-o-right'), ' Explore'),
-					bucketAdd = function () {
-						$(window).trigger('cch.slide.search.button.bucket.add', {
-							item: item
-						});
-					},
-					defaultPopoverObject = {
-						'data-toggle': 'popover',
-						'data-trigger': 'hover',
-						'data-placement': 'auto',
-						'data-delay': JSON.stringify(CCH.CONFIG.ui['tooltip-delay'])
-					};
+				item = CCH.items.getById({id: product.id}),
+				id = product.id,
+				bbox = product.bbox,
+				summary = product.summary.medium,
+				title = summary.title,
+				description = summary.text,
+				$newItem = $('#' + me.PRODUCT_CARD_TEMPLATE_ID).children().clone(true),
+				imageContainerClass = 'application-slide-search-product-card-image',
+				titleContainerClass = 'application-slide-search-product-card-title',
+				descriptionContainerClass = 'application-slide-search-product-card-description',
+				$imageContainer = $newItem.find('> div > div:first-child > img'),
+				$titleContainer = $newItem.find('.' + titleContainerClass),
+				$descriptionContainer = $newItem.find('.' + descriptionContainerClass),
+				$bucketButton = $newItem.find('>span.badge'),
+				$exploreControl = $('<span />')
+					.addClass('badge')
+					.append($('<i />').addClass('fa fa-arrow-circle-o-right'), ' Explore'),
+				bucketAdd = function () {
+					$(window).trigger('cch.slide.search.button.bucket.add', {
+						item: item
+					});
+				},
+				defaultPopoverObject = {
+					'data-toggle': 'popover',
+					'data-trigger': 'hover',
+					'data-placement': 'auto',
+					'data-delay': JSON.stringify(CCH.CONFIG.ui['tooltip-delay'])
+				};
 
 			$newItem.attr('id', 'application-slide-search-product-card-' + id);
 			$imageContainer.attr($.extend({}, defaultPopoverObject, {
@@ -654,6 +676,11 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 					'id': id
 				});
 				me.close();
+				ga('send', 'event', {
+					'eventCategory': 'search',
+					'eventAction': 'zoomClicked',
+					'eventLabel': 'search event'
+				});
 			}).error(function () {
 				$(this).parent().css('display', 'none');
 				$descriptionContainer.parent().parent().css('width', '100%');
@@ -727,6 +754,11 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 				$('#' + me.ID_LOCATION_CARD_CONTAINER).empty();
 			}
 		}
+		ga('send', 'event', {
+			'eventCategory': 'search',
+			'eventAction': 'searchTypeSelected',
+			'eventLabel': 'search event'
+		});
 	});
 
 	$(me.FILTER_RESULTS_BUTTON).on('click', function (evt) {
@@ -745,11 +777,21 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 		$(window).trigger('cch.slide.search.filter.toggle', {
 			active: active
 		});
+		ga('send', 'event', {
+			'eventCategory': 'search',
+			'eventAction': 'filterButtonClicked',
+			'eventLabel': 'search event'
+		});
 	});
 
 	$(me.CLOSE_BUTTON_SELECTOR).on('click', function () {
 		me.toggle({
 			clearOnClose: true
+		});
+		ga('send', 'event', {
+			'eventCategory': 'search',
+			'eventAction': 'closeButtonClicked',
+			'eventLabel': 'search event'
 		});
 	});
 

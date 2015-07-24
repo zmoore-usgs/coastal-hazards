@@ -101,6 +101,12 @@ CCH.Objects.Widget.ItemsSlide = function (args) {
 		}
 		// Set the session
 		CCH.session.setItemSlideOpen(true);
+		
+		ga('send', 'event', {
+			'eventCategory': 'itemSlide',
+			'eventAction': 'slideOpened',
+			'eventLabel': 'item slide action'
+		});
 	};
 
 	me.close = function () {
@@ -141,6 +147,12 @@ CCH.Objects.Widget.ItemsSlide = function (args) {
 		}
 		// Set the session
 		CCH.session.setItemSlideOpen(false);
+		
+		ga('send', 'event', {
+			'eventCategory': 'itemSlide',
+			'eventAction': 'slideClosed',
+			'eventLabel': 'item slide action'
+		});
 	};
 
 	// Toggles the container open/closed. This is only valid for when the 

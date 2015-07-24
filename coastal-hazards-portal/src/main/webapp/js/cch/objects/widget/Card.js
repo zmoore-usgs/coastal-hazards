@@ -64,12 +64,6 @@ CCH.Objects.Widget.Card = function (args) {
 	me.show = function (args) {
 		args = args || {};
 
-		ga('send', 'event', {
-			'eventCategory': 'card',
-			'eventAction': 'show',
-			'eventLabel': me.id
-		});
-
 		//only show if we have no active children
 		if (!me.child || !me.item.showChildren) {
 			var duration = args.duration !== undefined ? args.duration : 500,
@@ -141,12 +135,6 @@ CCH.Objects.Widget.Card = function (args) {
 			CCH.session.setOpenItemId('');
 		}
 
-		ga('send', 'event', {
-			'eventCategory': 'card',
-			'eventAction': 'hide',
-			'eventLabel': me.id
-		});
-
 		var duration = args.duration !== undefined ? args.duration : 500,
 				effect = args.effect || 'slide',
 				easing = args.easing || 'swing',
@@ -198,6 +186,12 @@ CCH.Objects.Widget.Card = function (args) {
 
 	me.close = function (args) {
 		var complete = args ? args.complete : null;
+
+		ga('send', 'event', {
+			'eventCategory': 'card',
+			'eventAction': 'close',
+			'eventLabel': 'card event'
+		});
 
 		// I'd like to send this close command all the way down the chain to my
 		// children so they close from the bottom up
@@ -260,7 +254,7 @@ CCH.Objects.Widget.Card = function (args) {
 					ga('send', 'event', {
 						'eventCategory': 'card',
 						'eventAction': 'addToBucketClicked',
-						'eventLabel': me.id
+						'eventLabel': 'card event'
 					});
 				};
 
@@ -325,7 +319,7 @@ CCH.Objects.Widget.Card = function (args) {
 						ga('send', 'event', {
 							'eventCategory': 'card',
 							'eventAction': 'childItemClicked',
-							'eventLabel': id
+							'eventLabel': 'card event'
 						});
 					};
 
@@ -382,8 +376,14 @@ CCH.Objects.Widget.Card = function (args) {
 
 	me.bindBackToParentButton = function (control) {
 		control.on('click', function () {
+			ga('send', 'event', {
+				'eventCategory': 'card',
+				'eventAction': 'breadcrumbLinkClicked',
+				'eventLabel': 'card event'
+			});
+			
 			// A user has clicked on my min/max button. 
-			// FInd out which one by querying an ancestor that has the 
+			// Find out which one by querying an ancestor that has the 
 			// closed/open class on it
 			var isOpen = me.container.hasClass('open');
 
@@ -417,24 +417,24 @@ CCH.Objects.Widget.Card = function (args) {
 	me.createContainer = function () {
 		if (!me.container) {
 			var container = $('#' + me.CARD_TEMPLATE_ID).clone(true).children(),
-					summary = me.summary,
-					fullSummary = summary.full,
-					mediumSummary = summary.medium,
-					largeTitle = fullSummary.title || '',
-					mediumTitle = mediumSummary.title || largeTitle,
-					largeContent = fullSummary.text || '',
-					mediumContent = mediumSummary.text || largeContent,
-					mediumTitleContainer = container.find('.application-card-title-container-medium'),
-					mediumContentContainer = container.find('.application-card-content-container-medium'),
-					$buttonRow = container.find('.application-card-control-row'),
-					$bucketButton = $buttonRow.find('.application-card-add-bucket-btn'),
-					$exploreRow = container.find('.application-card-explore-row'),
-					$moreInfoTarget = CCH.CONFIG.contextPath + '/ui/info/item/' + me.id,
-					$moreInfoBtn = container.find('.application-card-more-info-btn').on("click", function () {
-						window.location = $moreInfoTarget;
-					}),
-					$zoomToBtn = container.find('.application-card-zoom-to-btn'),
-					isItemInBucket = CCH.ui.bucket.getItemById(me.id) !== undefined;
+				summary = me.summary,
+				fullSummary = summary.full,
+				mediumSummary = summary.medium,
+				largeTitle = fullSummary.title || '',
+				mediumTitle = mediumSummary.title || largeTitle,
+				largeContent = fullSummary.text || '',
+				mediumContent = mediumSummary.text || largeContent,
+				mediumTitleContainer = container.find('.application-card-title-container-medium'),
+				mediumContentContainer = container.find('.application-card-content-container-medium'),
+				$buttonRow = container.find('.application-card-control-row'),
+				$bucketButton = $buttonRow.find('.application-card-add-bucket-btn'),
+				$exploreRow = container.find('.application-card-explore-row'),
+				$moreInfoTarget = CCH.CONFIG.contextPath + '/ui/info/item/' + me.id,
+				$moreInfoBtn = container.find('.application-card-more-info-btn').on("click", function () {
+					window.location = $moreInfoTarget;
+				}),
+				$zoomToBtn = container.find('.application-card-zoom-to-btn'),
+				isItemInBucket = CCH.ui.bucket.getItemById(me.id) !== undefined;
 
 			// My container starts out open so I immediately add that class to it
 			container.addClass('open');
@@ -465,8 +465,8 @@ CCH.Objects.Widget.Card = function (args) {
 			// Item may already be in bucket by the time I make this card
 			if (isItemInBucket) {
 				$bucketButton
-						.addClass('disabled')
-						.find('> img').attr('src', CCH.CONFIG.contextPath + '/images/cards/add-bucket-disabled.svg');
+					.addClass('disabled')
+					.find('> img').attr('src', CCH.CONFIG.contextPath + '/images/cards/add-bucket-disabled.svg');
 			}
 
 			$zoomToBtn.on('click', function () {
@@ -478,7 +478,7 @@ CCH.Objects.Widget.Card = function (args) {
 				ga('send', 'event', {
 					'eventCategory': 'card',
 					'eventAction': 'zoomToClicked',
-					'eventLabel': me.id
+					'eventLabel': 'card event'
 				});
 			});
 
@@ -486,7 +486,7 @@ CCH.Objects.Widget.Card = function (args) {
 				ga('send', 'event', {
 					'eventCategory': 'card',
 					'eventAction': 'moreInfoClicked',
-					'eventLabel': me.id
+					'eventLabel': 'card event'
 				});
 			});
 
@@ -531,6 +531,11 @@ CCH.Objects.Widget.Card = function (args) {
 
 		//root link always goes to top level card
 		breadCrumbRootNode.on("click", function () {
+			ga('send', 'event', {
+				'eventCategory': 'card',
+				'eventAction': 'breadcrumbLinkClicked',
+				'eventLabel': 'card event'
+			});
 			me.flipToRootCard();
 		});
 
