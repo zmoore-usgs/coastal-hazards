@@ -8,55 +8,55 @@ CCH.intro = (function () {
 			steps = [
 				{
 					element: '#application-link-button',
-					intro: 'Return To Map',
+					intro: 'Returns to the Map view of the Portal.',
 					position: 'right',
 					name: 'button-back'
 				},
 				{
 					element: '#add-bucket-link-button',
-					intro: 'Add To Bucket',
+					intro: 'Adds the current item to the Bucket.',
 					position: 'right',
 					name: 'button-bucket'
 				},
 				{
 					element: '#print-button',
-					intro: 'Print Button',
+					intro: 'Provides the user with a customizable printer-friendly view of an item summary.',
 					position: 'right',
 					name: 'button-print'
 				},
 				{
 					element: '#map-services-link-button',
-					intro: 'Map Services Button',
+					intro: 'Provides the user with available services that can be added to other mapping applications.',
 					position: 'right',
 					name: 'button-map-svcs'
 				},
 				{
 					element: '#metadata-link-button',
-					intro: 'Metadata Button',
+					intro: 'Review detailed standardized information about this item.',
 					position: 'right',
 					name: 'button-metadata'
 				},
 				{
 					element: '#download-link-button',
-					intro: 'Download Button',
+					intro: 'Download the current item to your computer for use in geospatial applications.',
 					position: 'right',
 					name: 'button-download'
 				},
 				{
 					element: '#share-button',
-					intro: 'Share Button',
+					intro: 'Download the current item to your computer for use in geospatial applications.',
 					position: 'right',
 					name: 'button-share'
 				},
 				{
 					element: '#summary-row',
-					intro: 'Summary',
+					intro: 'Provides a short description of the item including details about how it was created and the geographic location the data pertain to.',
 					position: 'left',
 					name: 'summary'
 				},
 				{
 					element: '#publications-row',
-					intro: 'Publications',
+					intro: 'Displays publications where the data were released and additional resources of interest pertaining to the data item.',
 					position: 'left',
 					name: 'publications'
 				}
