@@ -149,7 +149,7 @@
                                 <h2>Find and View Data, Reports, and Other Products</h2>
                                 
                                 <p>
-                                    Information and products are organized within three coastal hazard themes: 1) severe storms, 2) shoreline change, and 3) sea-level rise. Each data item represents an individual research product, with some items grouped together to show the breadth of the topic and make it easy to explore. 
+                                    Information and products are organized within three coastal change hazard themes: 1) extreme, 2) shoreline change, and 3) sea-level rise. Each data item represents an individual research product, with some items grouped together as aggregates to show the breadth of the topic and make it easy to explore. 
                                 </p>
                                 
                                 <h2>Adding an Item to the Bucket</h2>
@@ -157,7 +157,7 @@
                                 <img src="<%=baseUrl%>/images/info/info-page-add-to-bucket.png" alt="add to bucket Icon"/>
                                 
                                 <p>
-                                    Click on the bucket icon to put the current item or group in your bucket.
+                                    Click the "Add To Bucket" icon to place the current item or aggregatoin in your bucket and interact with it there.
                                 </p>
                                 
                                 <h2>More Information</h2>
@@ -165,19 +165,19 @@
                                 <img class="longIcon" src="<%=baseUrl%>/images/info/info-page-more-info-link.png" alt="more info Icon"/>
                                 
                                 <p>
-                                	Click on the information icon to get more details about the data item.	
+                                	Click the "More Information" icon to go to a page with additional details about the data item you are viewing.
                                 </p>
                                 
                                 <h2>Toggle Item Visibility on the Map</h2>
                                 
                                 <p>
-                                	To change what is visible on the map, add the item to your bucket, then navigate to the bucket where you can  re-order and toggle their visibility.
+                                	To change what is visible on the map, add the item to your bucket, then navigate to the bucket where you can  re-order and toggle the visibility of any saved items.
                                 </p>
                                 
                                 <h2>Search Options</h2>
                                 
                                 <p>
-                                    Search for data and information in one or more coastal hazard themes by name or search by location.
+                                    Search for data and information in one or more of the coastal change hazards themes by name or by location.
                                 </p>
                                 
                                 <h2>Interactive Map Features</h2>
@@ -194,14 +194,14 @@
                                 
                                 <img class="longIcon" src="<%=baseUrl%>/images/info/findyourlocation.png" alt="find your location Icon"/>
                                     
-                                <p>Click the location icon in order to zoom to your location. Some browsers and smartphones will first request your permission to share your location.</p> 
+                                <p>Click the location icon in order to zoom to your location. Some browsers and smartphones may request permission to share your location.</p> 
                                 
                                 <h3>Map Base Layer</h3>
                                 
                                 <img src="<%=baseUrl%>/images/info/base_layer.png" alt="Base layer Icon"/>
                                     
                                 <p>
-                                	Choose World Imagery, Street, Topo, or Ocean, and choose whether to display place names.
+                                	Choose a base layer from World Imagery, Street, Topo, or Ocean. You can also choose to display or hide place names here.
                                	</p>
                                 
                                 <h3>Map Legend</h3>
@@ -213,13 +213,13 @@
                                 </p>
                                 
                                 <p>
-                                	Legend scrollover for probability of collision/inundation/overwash (pCOI) data items: When viewing the three coastal change probability data items on the mato highlight the layers on the map. Click on data in the map to get more information about the data at that location.
+                                	For data that are displayed on the map view with multiple legends, such as the probability of collision/inundation/overwash (pCOI) data items within the Extreme Storms theme, scroll over the titles in the legend to highlight which color band on the map it corresponds to.
                                 </p>
                                 
-                                <h3>Identify Visible Data</h3>
+                                <h3>Click to Identify Visible Data</h3>
                                 
                                  <p>
-                                   When a data item is enabled on the map, a user may click on the data to retrieve a summary.
+                                   When a data item is visible on the map, a user may click anywhere on the data to retrieve a summary of the values.
                                 </p>
                                 
                                 <a href="#content"><p class="returnToTop">Return to Top</p></a>
@@ -240,7 +240,7 @@
                                 <img src="<%=baseUrl%>/images/info/info-page-add-to-bucket.png" alt="add to bucket Icon"/>
                               
                                 <p>
-                                    Click the "Add To Bucket icon" to place the current item or aggregation in your bucket and interact with it there.
+                                    Click the "Add To Bucket icon" to save the current item or aggregation in your bucket and interact with it there.
                                 </p>
                                
                                 <h2>Change Data Visibility</h2>
@@ -251,14 +251,13 @@
                                 
                                 <p>
                                     Click the eyeball icon to turn a data item on or off.
-                                    Click the up or down arrows to move the item above or below other layers.
+                                    Click the up or down arrows to move the item above or below other layers. This affects the order of the data displayed on the map.
                                 </p>
 
 				<h2>Zoom to data</h2>
                                 
-                                <img class="longIcon" src="<%=baseUrl%>/images/info/info-page-zoomto-link.png" alt="zoom to Icon"/>
-				<p>
-                                    Click on the thumbnail image to zoom to the extent of the data item.
+                                <p>
+                                    Click the thumbnail image to zoom to the extent of the data item.
                                 </p>
 
                                 <h2>Share Data</h2>
@@ -274,7 +273,7 @@
                                  <img src="<%=baseUrl%>/images/info/download.png" alt="download Icon"/>
                                 
                                 <p>
-                                    Click on the download icon to download a zipped (.zip) shapefile (.shp) of the item or aggregation of interest.
+                                    Click the download icon to download a zipped (.zip) shapefile (.shp) of the item or aggregation of interest.
                                 </p>
                                 
                                 <h2>Clear/empty/share Bucket</h2>
@@ -295,7 +294,7 @@
                                 <img src="<%=baseUrl%>/images/info/info.png" alt="More Info Icon"/>
                                 
                                 <p>
-                                	Click on the information icon to get more details about the item. This will take the user to the action center.
+                                	Click the information icon to get more details about the item. This will take the user to the action center.
                                 </p>
                                 
                                 <a href="#content"><p class="returnToTop">Return to Top</p></a>
@@ -322,8 +321,7 @@
                                 <h3>Add to Your Bucket</h3>
                                 
                                 <p>
-                                    Add this item to your bucket. Use the bucket to collect, view, and download lots 
-                                    of data and products, or share your bucket with friends and colleagues.
+                                    Add this item to your bucket. Use the bucket to collect, view, and download data and products, or share your bucket with friends and colleagues.
                                 </p>
                                 
                                 <h3>Map Services</h3>
