@@ -87,7 +87,7 @@
                 },
                 'tooltip-prevalence' : 2000,
 				'endpoints' : {
-					'tutorial' : 'http://marty.needs.to.change.me'
+					'tutorial' : 'http://go.usa.gov/Kjwx'
 				}
             },
 			map: {
