@@ -44,7 +44,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#share-button',
-					intro: 'Download the current item to your computer for use in geospatial applications.',
+					intro: 'Get a short URL to share this information with colleagues or bookmark it to come back later.',
 					position: 'right',
 					name: 'button-share'
 				},
