@@ -149,7 +149,7 @@
                                 <h2>Find and View Data, Reports, and Other Products</h2>
                                 
                                 <p>
-                                    Information and products are organized within three coastal change hazard themes: 1) extreme, 2) shoreline change, and 3) sea-level rise. Each data item represents an individual research product, with some items grouped together as aggregates to show the breadth of the topic and make it easy to explore. 
+                                    Information and products are organized within three coastal change hazard themes: 1) extreme storms, 2) shoreline change, and 3) sea-level rise. Each data item represents an individual research product, with some items grouped together as aggregates to show the breadth of the topic and make it easy to explore. 
                                 </p>
                                 
                                 <h2>Adding an Item to the Bucket</h2>
