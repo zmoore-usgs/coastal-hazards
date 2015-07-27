@@ -17,22 +17,44 @@ $(document).ready(function () {
 			content.style.height = windowHeight - headerHeight - footerHeight - 2 + 'px';
 		}
 	};
-
-	// Back To Portal Button
-	$('#cch-back-to-portal-button').on('click', function () {
+	
+	var sendGa = function(ea) {
 		ga('send', 'event', {
 			'eventCategory': 'info',
-			'eventAction': 'backToPortalButtonClicked',
+			'eventAction': ea,
 			'eventLabel': 'info page button'
 		});
+	};
+
+	$('a[href="#content"]').on('click', function () {
+		sendGa('returnToTopClicked');
+	});
+	$('#cch-back-to-portal-button').on('click', function () {
+		sendGa('backToPortalButtonClicked');
 	});
 	$('#cch-back-to-portal-link').on('click', function () {
-		ga('send', 'event', {
-			'eventCategory': 'info',
-			'eventAction': 'backToPortalButtonClicked',
-			'eventLabel': 'info page button'
-		});
+		sendGa('backToPortalButtonClicked');
 	});
+	$('#learn-more-map').on('click', function () {
+		sendGa('learnMoreMapClicked');
+	});
+	$('#learn-more-bucket').on('click', function () {
+		sendGa('learnMoreBucketClicked');
+	});
+	$('#learn-more-ac').on('click', function () {
+		sendGa('learnMoreActionCenterClicked');
+	});
+	$('#button-tour-map').on('click', function () {
+		sendGa('buttonTourMapClicked');
+	});
+	$('#button-tour-bucket').on('click', function () {
+		sendGa('buttonTourBucketClicked');
+	});
+	$('#button-tour-ac').on('click', function () {
+		sendGa('buttonTourAcClicked');
+	});
+	
+	
 	
 
 	$(window).on('resize', resizeHandler);
