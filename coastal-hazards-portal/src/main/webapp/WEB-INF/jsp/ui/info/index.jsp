@@ -242,7 +242,7 @@
 				<div id="bucketContentArea" class="topicContentArea">
 					<h1>Bucket</h1>
 
-					<a href ="<%=baseUrl%>/ui/tutorial"><button class="button-tour" id="button-tour-map">Take a Tour</button></a>
+					<a href ="<%=baseUrl%>/ui/tutorial/bucket"><button class="button-tour" id="button-tour-map">Take a Tour</button></a>
 
 					<p>
 						Use the bucket to collect and download data, as well as to customize your map.
@@ -317,7 +317,7 @@
 				<div id="acContentArea" class="topicContentArea">
 					<h1>Action Center</h1>
 
-					<a href ="<%=baseUrl%>/ui/tutorial"><button class="button-tour" id="button-tour-map">Take a Tour</button></a>
+					<a href ="<%=baseUrl%>/ui/tutorial/item/CAmnDJX"><button class="button-tour" id="button-tour-map">Take a Tour</button></a>
 
 					<p>
 						Get to the Action Center by clicking on the “More Info” icon in any item. The Action Center contains several button options.
