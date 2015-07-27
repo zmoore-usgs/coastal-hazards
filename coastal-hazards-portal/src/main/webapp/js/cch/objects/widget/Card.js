@@ -437,8 +437,7 @@ CCH.Objects.Widget.Card = function (args) {
 				isItemInBucket = CCH.ui.bucket.getItemById(me.id) !== undefined;
 
 			// My container starts out open so I immediately add that class to it
-			container.addClass('open');
-
+			container.addClass('open').attr('id', 'application-card-container-' + me.id);
 			me.renderBreadCrumbs(container);
 
 			// Create Title
