@@ -82,7 +82,10 @@ CCH.intro = (function () {
 					element: '#OpenLayers_Control_Zoom_34',
 					intro: 'Click these icons to zoom in or out on the map.',
 					position: 'right',
-					name: 'zoom-in-out'
+					name: 'zoom-in-out',
+					onbeforechange: function () {
+						CCH.ui.accordion.getCurrent().card.close();
+					}
 				},
 				{
 					element: '#ol-zoom-to-location_innerImage',
@@ -103,7 +106,15 @@ CCH.intro = (function () {
 					element: '#OpenLayers_Control_MaximizeDiv_innerImage',
 					intro: 'Choose a base layer from World Imagery, Street, Topo, or Ocean here. You can also choose to display place names.',
 					position: 'right',
-					name: 'baselayer'
+					name: 'baselayer',
+					onbeforechange: function (targetEle) {
+						if (!$('.cchMapLegendElement').is(':visible')) {
+							var ribbonedId = Object.values(CCH.items.getItems()).reverse().find(function (i) {
+								return i.ribboned;
+							}).id;
+							CCH.ui.accordion.explore(null, { id : ribbonedId });
+						}
+					}
 				},
 				{
 					element: '.cchMapLegendContainer',
@@ -112,7 +123,10 @@ CCH.intro = (function () {
 					name: 'legend',
 					onbeforechange: function (targetEle) {
 						if (!$('.cchMapLegendElement').is(':visible')) {
-							$(CCH.ui.accordion.getBellows()[0]).find('.panel-heading').click();
+							var ribbonedId = Object.values(CCH.items.getItems()).reverse().find(function (i) {
+								return i.ribboned;
+							}).id;
+							CCH.ui.accordion.explore(null, { id : ribbonedId });
 						}
 						if ($(window).width() < 992) {
 							$('#application-slide-items-container').css('display', 'none');
@@ -489,7 +503,7 @@ CCH.intro = (function () {
 		start: function (step) {
 			CCH.CONFIG.ui.isTouring = true;
 			var startingStep = step;
-
+			
 			if (CCH.ui.isSmall()) {
 				updateForMobile();
 			}
