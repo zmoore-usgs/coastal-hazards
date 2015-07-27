@@ -242,7 +242,7 @@
 				<div id="bucketContentArea" class="topicContentArea">
 					<h1>Bucket</h1>
 
-					<a href ="<%=baseUrl%>/ui/tutorial"><button class="button-tour" id="button-tour-map">Take a Tour</button></a>
+					<a href ="<%=baseUrl%>/ui/tutorial/bucket"><button class="button-tour" id="button-tour-map">Take a Tour</button></a>
 
 					<p>
 						Use the bucket to collect and download data, as well as to customize your map.
