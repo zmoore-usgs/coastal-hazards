@@ -1,3 +1,4 @@
+<%@page import="java.io.File"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page import="org.apache.commons.lang.StringUtils"%>
@@ -9,6 +10,8 @@
 
 	{
 		try {
+			File propsFile = new File(getClass().getClassLoader().getResource("application.properties").toURI());
+			props = new DynamicReadOnlyProperties(propsFile);
 			props = props.addJNDIContexts(new String[0]);
 		} catch (Exception e) {
 			System.out.println("Could not find JNDI - Application will probably not function correctly");
@@ -41,7 +44,7 @@
 			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/cida-cmgp.svg"%>' />
 		</jsp:include>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
-		<%@ include file="../common/ie-check.jsp" %>
+		<%@ include file="/WEB-INF/jsp/ui/common/ie-check.jsp" %>
 		<title>Coastal Change Hazards Information</title>
 		<%-- Google Analytics for CCH --%>
 		<script type="text/javascript">
@@ -53,7 +56,7 @@
 		<div id=“wrapper”>
 			<%-- Title Bar --%>
 			<header>
-				<a id="cch-back-to-portal-link" href="../"><img src="<%=baseUrl%>/images/info/collaborative_logo.png" alt="collaborative logo" /></a>
+				<a id="cch-back-to-portal-link" href="<%=baseUrl%>"><img src="<%=baseUrl%>/images/info/collaborative_logo.png" alt="collaborative logo" /></a>
 				<h1 id="headerDesktop">USGS Coastal Change Hazards Portal</h1>
 				<h1 class="mobile">USGS CCH</h1>
 				<h1 class="mobile_portrait">CCH</h1>
@@ -62,7 +65,7 @@
 			<div id="content">
 
 				<div id="mobileReturnToMap">
-					<a href="<%=baseUrl%>"><button>Return to Map</button></a>
+					<a href="<%=baseUrl%>" id="link-return-button"><button>Return to Map</button></a>
 				</div>
 
 				<div id="mobileTopThree">
@@ -386,6 +389,6 @@
 			<a href="#"><img src="<%=baseUrl%>/images/info/usgs_logo.png" alt="usgs logo"/></a>
 		</footer>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/front/Intro<%= resourceSuffix%>.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/application/info/OnReady<%= resourceSuffix%>.js"></script>
 	</body>
 </html>
