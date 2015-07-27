@@ -90,7 +90,7 @@
 							</ul>
 
 							<a href="#mapContentArea">
-								<button class="learnMoreButton">Learn More</button>
+								<button class="learnMoreButton" id="learn-more-map">Learn More</button>
 							</a>
 						</div>
 					</div>
@@ -104,7 +104,7 @@
 							</ul>
 
 							<a href="#bucketContentArea">
-								<button class="learnMoreButton">Learn More</button>
+								<button class="learnMoreButton" id="learn-more-bucket">Learn More</button>
 							</a>
 						</div>
 					</div>
@@ -118,7 +118,7 @@
 							</ul>
 
 							<a href="#acContentArea">
-								<button class="learnMoreButton">Learn More</button>
+								<button class="learnMoreButton" id="learn-more-ac">Learn More</button>
 							</a>
 						</div>
 					</div>
@@ -157,7 +157,7 @@
 				<div id="mapContentArea" class="topicContentArea">
 					<h1>Map</h1>
 
-					<button class="button-tour">Take a Tour</button>
+					<button class="button-tour" id="button-tour-map">Take a Tour</button>
 
 					<h2>Find and View Data, Reports, and Other Products</h2>
 
@@ -242,7 +242,7 @@
 				<div id="bucketContentArea" class="topicContentArea">
 					<h1>Bucket</h1>
 
-					<button class="button-tour">Take a Tour</button>
+					<button class="button-tour" id="button-tour-bucket">Take a Tour</button>
 
 					<p>
 						Use the bucket to collect and download data, as well as to customize your map.
@@ -317,7 +317,7 @@
 				<div id="acContentArea" class="topicContentArea">
 					<h1>Action Center</h1>
 
-					<button class="button-tour">Take a Tour</button>
+					<button class="button-tour" id="button-tour-ac">Take a Tour</button>
 
 					<p>
 						Get to the Action Center by clicking on the “More Info” icon in any item. The Action Center contains several button options.
