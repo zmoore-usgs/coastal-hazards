@@ -26,21 +26,11 @@ CCH.Auth = {
 				//set authtoken
 				CCH.Auth.setAuthToken(data.tokenId);
 				
-				ga('send', 'event', {
-					'eventCategory': 'auth',
-					'eventAction': 'userAuthenticated',
-					'eventLabel': 'auth event'
-				});
-				
 				//forward
 				window.location = forward || CCH.CONFIG.contextPath + '/publish/item';
 			},
 			error: function (xhr, status, error) {
 				alertify.error(error, 3000);
-				ga('send', 'exception', {
-					'exDescription': 'AuthenticationFailed',
-					'exFatal': false
-				});
 			}
 		});
 	},
@@ -54,23 +44,12 @@ CCH.Auth = {
 				//set authtoken
 				CCH.Auth.setAuthToken("");
 
-				ga('send', 'event', {
-					'eventCategory': 'auth',
-					'eventAction': 'userLoggedOut',
-					'eventLabel': 'auth event'
-				});
-
 				//forward
 				window.location = CCH.CONFIG.contextPath + '/security/auth/login';
 			},
 			error: function () {
 				//forward
 				window.location = CCH.CONFIG.contextPath + '/security/auth/login';
-				
-				ga('send', 'exception', {
-					'exDescription': 'LogoutFailed',
-					'exFatal': false
-				});
 			}
 		});
 	},
@@ -94,12 +73,6 @@ $(document).ajaxError(function (event, jqxhr, settings, thrownError) {
 	if (thrownError === "Forbidden" || thrownError === "Unauthorized") {
 		CCH.Auth.setAuthToken(""); //clear token
 		var currentLocation = window.location;
-		
-		ga('send', 'event', {
-			'eventCategory': 'auth',
-			'eventAction': 'redirectedToLogin',
-			'eventLabel': 'auth event'
-		});
 		
 		//reroute to login page
 		window.location = CCH.CONFIG.contextPath + "/security/auth/login/?forward=" + encodeURI(currentLocation) + "&cause=" + thrownError;
