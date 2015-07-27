@@ -139,47 +139,62 @@
 	}
 }
 
-/* Close button */
-/* Outer close button container */
-.application-slide-bucket-container-card-button-remove {
-	right: -15px;
-	top: -15px;
-	position: relative;
-	float: right;
-	padding: 0px;
-	/* Close button image ("Remove" text) */
-	img {
-		height: 1.5em;
-	}
+.well{
+    padding:0;
+}
+
+#application-slide-bucket-tophalf-container{
+    padding:10px;
 }
 
 /* Card Control Row Div */
 .application-slide-bucket-container-card-controlset-container {
-	width: 100%;
+	padding:10px 5px;
 	text-align: center;
+        border-top:@cch-border;
 	> *:hover {
 		cursor: pointer;
 	}
+        .downward{
+                 padding-top:5px;
+                }
 	> button {
-		width: 22%;
+		width: 18%;
+                border:@cch-border;
+                border-radius:5px;
+                height:35px;
+                padding:2px 3px 6px 3px;
+                outline:none;
+                &:hover{
+                    background:white;
+                    border:@cch-border;
+                }
 		> img{
 			height: 20px;
 		}
 		> i {
-			font-size: 30px;
+			font-size: 25px;
 			color: @cch-primaryColor;
 		}
 	}
 	> div {
+                border:@cch-border;
+                border-radius:5px;
+                height:35px;
+                padding:4px 6px 6px 6px;
+                &:hover{
+                    background:white;
+                    border:@cch-border;
+                }
 		&:not(.popover) {
-			width: 22%;
+			width: 18%;
 			display: inline-block;
-			padding: 6px 12px;
+			padding: 4px 6px 6px 6px;
 			margin-bottom: 0;
 			vertical-align: middle;
 		}
 		> i {
-			font-size: 30px;
+			font-size: 25px;
 			color: @cch-primaryColor;
 		}
 		> img{
@@ -221,6 +236,15 @@ No tab shown on large display. Toggled via button in bar
 			margin:0 0 5px 0;
 		}
 	}
+        
+        .application-slide-bucket-container-card-controlset-container{
+            > button{
+                width:19%;
+            }
+            > div{
+                width:19%;
+            }
+        }
 }
 
 @media (max-width: 991px) {
