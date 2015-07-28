@@ -117,7 +117,7 @@ CCH.intro = (function () {
 			'eventAction': 'backTutorialExited',
 			'eventLabel': 'tutorial event'
 		});
-		window.location.href = CCH.CONFIG.contextPath + "/ui/info/item/" + CCH.CONFIG.item.id;
+		window.location.href = CCH.CONFIG.contextPath + "/info/#acContentArea";
 	});
 	intro.oncomplete(function () {
 		$('html, body').css({
@@ -129,7 +129,7 @@ CCH.intro = (function () {
 			'eventAction': 'backTutorialExited',
 			'eventLabel': 'tutorial event'
 		});
-		window.location.href = CCH.CONFIG.contextPath + "/ui/info/item/" + CCH.CONFIG.item.id;
+		window.location.href = CCH.CONFIG.contextPath + "/info/#acContentArea";
 	});
 	return {
 		intro: intro,
