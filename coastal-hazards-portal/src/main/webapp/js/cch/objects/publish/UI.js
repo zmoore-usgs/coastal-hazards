@@ -421,7 +421,7 @@ CCH.Objects.Publish.UI = function () {
 			activeStorm: activeStorm,
 			featured: featured
 		};
-			
+		
 		// Bbox may be blank and that may be ok (e.g. if it's a template)
 		if (bbox.join('')) {
 			item.bbox = bbox;
@@ -1120,7 +1120,7 @@ CCH.Objects.Publish.UI = function () {
 			}
 
 			// Ribbonable
-			$ribbonableCb.prop(CCH.CONFIG.strings.checked, item.ribbonable);
+			$ribbonableCb.prop(CCH.CONFIG.strings.checked, item.ribboned);
 			$isFeaturedCB.prop(CCH.CONFIG.strings.checked, item.featured);
 
 			// Publications
