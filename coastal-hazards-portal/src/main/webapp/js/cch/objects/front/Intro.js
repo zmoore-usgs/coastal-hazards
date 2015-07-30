@@ -24,7 +24,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '.application-card-add-bucket-btn',
-					intro: 'Click the "Add To Bucket icon" to place the current item or aggregation in your bucket and interact with it there.',
+					intro: 'Click the "Add To Bucket icon" to save the current item or aggregation in your bucket and interact with it there.',
 					position: 'left',
 					name: 'add-to-bucket',
 					onbeforechange: function (targetEle) {
@@ -43,7 +43,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '.application-card-zoom-to-btn',
-					intro: 'Click the zoom to button to zoom to the extent of the data item.',
+					intro: 'Click the "Zoom To" button to zoom to the extent of the data item.',
 					position: 'left',
 					name: 'zoom-to',
 					onbeforechange: function (targetEle) {
@@ -65,7 +65,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '.application-card-more-info-btn',
-					intro: 'Click the more information icon to get more details about the data item.',
+					intro: 'Click the "More Info" icon to get more details about the data item.',
 					position: 'left',
 					name: 'more-info',
 					onbeforechange: function (targetEle) {
@@ -89,7 +89,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#ol-zoom-to-location_innerImage',
-					intro: 'Click this icon in order to zoom to your location. Some browsers and smartphones will first request your permission to share your location.',
+					intro: 'Click this icon in order to zoom to your location. Some browsers and smartphones may request your permission to share your location.',
 					position: 'right',
 					name: 'zoom-to-you',
 					onbeforechange: function (targetEle) {
@@ -104,7 +104,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#OpenLayers_Control_MaximizeDiv_innerImage',
-					intro: 'Choose a base layer from World Imagery, Street, Topo, or Ocean here. You can also choose to display place names.',
+					intro: 'Choose a base layer from World Imagery, Street, Topo, or Ocean here. You can also choose to hide or display Place Names.',
 					position: 'right',
 					name: 'baselayer',
 					onbeforechange: function (targetEle) {
@@ -382,7 +382,7 @@ CCH.intro = (function () {
 				},
                                 {
 					element: '#share-bucket',
-					intro: 'To share the contents for all items in the bucket, click the Share Bucket option.',
+					intro: 'To get a short URL for the contents for all items in the bucket, click the Share Bucket button.',
 					position: 'left',
 					name: 'share-bucket',
 					onbeforechange: function (targetEle) {
@@ -394,7 +394,7 @@ CCH.intro = (function () {
 				},
                                 {
 					element: '#clear-bucket',
-					intro: 'To clear the contents for all items in the bucket, click the Clear Bucket option.',
+					intro: 'To clear the contents for all items in the bucket, click the Clear Bucket button.',
 					position: 'left',
 					name: 'clear-bucket',
 					onbeforechange: function (targetEle) {
