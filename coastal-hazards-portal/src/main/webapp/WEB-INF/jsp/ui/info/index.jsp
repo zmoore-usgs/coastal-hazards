@@ -240,7 +240,7 @@
 					<h3>Click to Identify Visible Data</h3>
 
 					<p>
-						When a data item is visible on the map, a user may click anywhere on the data to retrieve a summary of the values.
+						When a data item is visible on the map, a user may click anywhere on the data to retrieve a value.
 					</p>
 
 					<a href="#content"><p class="returnToTop">Return to Top</p></a>
@@ -281,14 +281,6 @@
 						Click the thumbnail image to zoom to the extent of the data item.
 					</p>
 
-					<h2>Share Data</h2>
-
-					<img src="<%=baseUrl%>/images/info/share.png" alt="share Icon"/>
-
-					<p>
-						Click the share icon to get a short link useful for sharing on social media, or to send to colleagues and friends.
-					</p>
-
 					<h2>Download Data</h2>
 
 					<img src="<%=baseUrl%>/images/info/download.png" alt="download Icon"/>
@@ -297,9 +289,20 @@
 						Click the download icon to download a zipped (.zip) shapefile (.shp) of the item or aggregation of interest.
 					</p>
 
-					<h2>Clear/empty/share Bucket</h2>
+					<h2>More Info</h2>
+
+					<img src="<%=baseUrl%>/images/info/info.png" alt="More Info Icon"/>
+
 					<p>
-						To empty or share the contents for all items in the bucket, click the Manage Bucket button and select Clear or Share Bucket options.
+						Click the information icon to get more details about the item. This will take the user to the action center.
+					</p>
+
+					<h2>Share Data</h2>
+
+					<img src="<%=baseUrl%>/images/info/share.png" alt="share Icon"/>
+
+					<p>
+						Click the share icon to get a short link useful for sharing on social media, or to send to colleagues and friends.
 					</p>
 
 					<h2>Remove Item</h2>
@@ -310,13 +313,17 @@
 						Click the trash can icon to remove the item from your bucket.
 					</p>
 
-					<h2>More Info</h2>
-
-					<img src="<%=baseUrl%>/images/info/info.png" alt="More Info Icon"/>
-
+					<h2>Clear Bucket</h2>
 					<p>
-						Click the information icon to get more details about the item. This will take the user to the action center.
+						Click this button to remove all saved items from your bucket.
 					</p>
+					
+					<h2>Share Bucket</h2>
+					<p>
+						Click this button to get a short URL that allows you to share the contents of all items saved in your bucket.
+					</p>
+
+					
 
 					<a href="#content"><p class="returnToTop">Return to Top</p></a>
 
