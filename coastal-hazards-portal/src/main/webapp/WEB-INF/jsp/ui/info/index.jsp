@@ -234,7 +234,7 @@
 					</p>
 
 					<p>
-						Data are sometimes displayed on the map view with multiple legends (such as the probability of collision/inundation/overwash (pCOI) data items within the Extreme Storms theme). When these data types are displayed on the map, you can scroll over the titles in the legend to highlight which color band on the map it corresponds to. 
+						Data are sometimes displayed on the map view with multiple legends (such as the probability of collision/inundation/overwash data items within the Extreme Storms theme). When these data types are displayed on the map, you can scroll over the titles in the legend to highlight which color band on the map it corresponds to. 
 					</p>
 
 					<h3>Click to Identify Visible Data</h3>
