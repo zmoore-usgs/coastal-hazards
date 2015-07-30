@@ -170,7 +170,7 @@
 					<img src="<%=baseUrl%>/images/info/info-page-add-to-bucket.png" alt="add to bucket Icon"/>
 
 					<p>
-						Click the "Add To Bucket" icon to place the current item or aggregatoin in your bucket and interact with it there.
+						Click the "Add To Bucket" icon to place the current item or aggregation in your bucket and interact with it there.
 					</p>
 
 					<h2>More Information</h2>
@@ -202,6 +202,14 @@
 					<p>
 						Click the icons to zoom in or out on the map.
 					</p>  
+					
+					<h3>Zoom to Item</h3>
+					
+					<img class="longIcon" src="<%=baseUrl%>/images/info/info-page-zoomto-link.png" alt="zoom to item Icon"/>
+					
+					<p>
+						Click the zoom to button to zoom to the extent of the data item.
+					</p>
 
 					<h3>Zoom to Your Location</h3>
 
@@ -214,7 +222,7 @@
 					<img src="<%=baseUrl%>/images/info/base_layer.png" alt="Base layer Icon"/>
 
 					<p>
-						Choose a base layer from World Imagery, Street, Topo, or Ocean. You can also choose to display or hide place names here.
+						Choose a base layer from World Imagery, Street, Topo, or Ocean. You can also choose to display or hide Place Names here.
 					</p>
 
 					<h3>Map Legend</h3>
@@ -226,7 +234,7 @@
 					</p>
 
 					<p>
-						For data that are displayed on the map view with multiple legends, such as the probability of collision/inundation/overwash (pCOI) data items within the Extreme Storms theme, scroll over the titles in the legend to highlight which color band on the map it corresponds to.
+						Data are sometimes displayed on the map view with multiple legends (such as the probability of collision/inundation/overwash (pCOI) data items within the Extreme Storms theme). When these data types are displayed on the map, you can scroll over the titles in the legend to highlight which color band on the map it corresponds to. 
 					</p>
 
 					<h3>Click to Identify Visible Data</h3>
