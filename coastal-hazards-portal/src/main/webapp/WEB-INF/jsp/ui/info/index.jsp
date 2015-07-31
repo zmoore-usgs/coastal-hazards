@@ -157,7 +157,7 @@
 				<div id="mapContentArea" class="topicContentArea">
 					<h1>Map</h1>
 
-					<a href ="<%=baseUrl%>/ui/tutorial"><button class="button-tour" id="button-tour-map">Take a Tour</button></a>
+					<a href ="<%=baseUrl%>/ui/tutorial/map"><button class="button-tour" id="button-tour-map">Take a Tour</button></a>
 
 					<h2>Find and View Data, Reports, and Other Products</h2>
 
