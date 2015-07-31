@@ -141,6 +141,8 @@ CCH.intro = (function () {
 
 			intro.setOptions({
 				showStepNumbers: false,
+				showBullets: false,
+				showProgress: true,
 				steps: steps,
 				scrollToElement: true
 			});
