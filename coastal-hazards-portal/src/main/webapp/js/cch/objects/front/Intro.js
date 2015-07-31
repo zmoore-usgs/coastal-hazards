@@ -11,7 +11,7 @@ CCH.intro = (function () {
 					element: '.panel:nth-child(1)',
 					intro: 'This is an item. Information and products are organized within three coastal change hazard themes: 1) extreme storms, 2) shoreline change, and 3) sea-level rise. Each data item represents an individual research product, with some items grouped together to show the breadth of the topic and make it easy to explore.',
 					position: 'left',
-					name: 'show-item',
+					name: 'map',
 					onbeforechange: function (targetEle) {
 						if (!$('.panel-collapse').hasClass('in')) {
 							$(CCH.ui.accordion.getBellows()[0]).find('.panel-heading').click();
@@ -184,6 +184,9 @@ CCH.intro = (function () {
 					position: 'left',
 					name: 'bucket',
 					onbeforechange: function (targetEle) {
+						if (CCH.CONFIG.params.id === "map") {
+							window.location.href = CCH.CONFIG.contextPath + "/info/#mapContentArea";
+						}
 						if ($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')) {
 							$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 						}
@@ -445,7 +448,7 @@ CCH.intro = (function () {
 				steps[15].position = 'top';
 				steps[16].position = 'top';
 				steps[21].position = 'top';
-                                steps[22].position = 'top';
+				steps[22].position = 'top';
 			};
 
 
