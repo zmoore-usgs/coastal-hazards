@@ -163,6 +163,7 @@ CCH.intro = (function () {
 					position: 'bottom',
 					name: 'search-me-options',
 					onbeforechange: function (targetEle) {
+						CCH.ui.bucketSlide.close();
 						$('#app-navbar-search-dropdown-toggle').dropdown('toggle');
 						var button = $('<a id="tourButton" class="introjs-button">End Tour</a>');
 						button.attr('href', CCH.CONFIG.contextPath + '/info/#mapContentArea');
@@ -513,6 +514,8 @@ CCH.intro = (function () {
 
 			intro.setOptions({
 				showStepNumbers: false,
+				showBullets : false,
+				showProgress: true,
 				steps: steps
 			});
 
