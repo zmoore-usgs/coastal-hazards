@@ -435,7 +435,7 @@ CCH.intro = (function () {
 				steps.removeAt(4);
 
 				//Changing position of text to fit on mobile
-				steps[0].position = 'top';
+				steps[0].position = 'bottom';
 				steps[1].position = 'top';
 				steps[2].position = 'top';
 				steps[3].position = 'top';
