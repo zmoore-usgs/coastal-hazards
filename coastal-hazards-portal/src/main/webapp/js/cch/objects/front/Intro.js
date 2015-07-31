@@ -13,13 +13,17 @@ CCH.intro = (function () {
 					position: 'left',
 					name: 'map',
 					onbeforechange: function (targetEle) {
+						$('#application-slide-items-container').css('display', 'block');
 						if (!$('.panel-collapse').hasClass('in')) {
-							$(CCH.ui.accordion.getBellows()[0]).find('.panel-heading').click();
+							var firstBellowId = $(CCH.ui.accordion.getBellows()[0]).data().id;
+							CCH.ui.accordion.explore(null, {
+								id: firstBellowId
+							});
 						}
 						if ($('.modal-content-share').css('display', 'block')) {
 							$('.close').click();
 						}
-						$('#application-slide-items-container').css('display', 'block');
+						CCH.ui.bucketSlide.close();
 					}
 				},
 				{
@@ -28,12 +32,17 @@ CCH.intro = (function () {
 					position: 'left',
 					name: 'add-to-bucket',
 					onbeforechange: function (targetEle) {
+						$('#application-slide-items-container').css('display', 'block');
 						if (!$('.panel-collapse').hasClass('in')) {
-							$(CCH.ui.accordion.getBellows()[0]).find('.panel-heading').click();
+							var firstBellowId = $(CCH.ui.accordion.getBellows()[0]).data().id;
+							CCH.ui.accordion.explore(null, {
+								id: firstBellowId
+							});
 						}
-						if ($('#application-slide-bucket-content').is(':visible')) {
-							$('#animated-bucket-object').click();
+						if ($('.modal-content-share').css('display', 'block')) {
+							$('.close').click();
 						}
+						CCH.ui.bucketSlide.close();
 					},
 					onafterchange: function () {
 						setTimeout(function () {
@@ -47,12 +56,17 @@ CCH.intro = (function () {
 					position: 'left',
 					name: 'zoom-to',
 					onbeforechange: function (targetEle) {
+						$('#application-slide-items-container').css('display', 'block');
 						if (!$('.panel-collapse').hasClass('in')) {
-							$(CCH.ui.accordion.getBellows()[0]).find('.panel-heading').click();
+							var firstBellowId = $(CCH.ui.accordion.getBellows()[0]).data().id;
+							CCH.ui.accordion.explore(null, {
+								id: firstBellowId
+							});
 						}
-						if ($('#application-slide-bucket-content').is(':visible')) {
-							$('#animated-bucket-object').click();
+						if ($('.modal-content-share').css('display', 'block')) {
+							$('.close').click();
 						}
+						CCH.ui.bucketSlide.close();
 						if ($(window).width() > 991) {
 							$(targetEle).click();
 						}
@@ -69,12 +83,17 @@ CCH.intro = (function () {
 					position: 'left',
 					name: 'more-info',
 					onbeforechange: function (targetEle) {
+						$('#application-slide-items-container').css('display', 'block');
 						if (!$('.panel-collapse').hasClass('in')) {
-							$(CCH.ui.accordion.getBellows()[0]).find('.panel-heading').click();
+							var firstBellowId = $(CCH.ui.accordion.getBellows()[0]).data().id;
+							CCH.ui.accordion.explore(null, {
+								id: firstBellowId
+							});
 						}
-						if ($('#application-slide-bucket-content').is(':visible')) {
-							$('#animated-bucket-object').click();
+						if ($('.modal-content-share').css('display', 'block')) {
+							$('.close').click();
 						}
+						CCH.ui.bucketSlide.close();
 						$('#application-slide-items-container').css('display', 'block');
 					}
 				},
@@ -84,7 +103,11 @@ CCH.intro = (function () {
 					position: 'right',
 					name: 'zoom-in-out',
 					onbeforechange: function () {
-						CCH.ui.accordion.getCurrent().card.close();
+						// If we currently have an item open, switch back to first item and close it
+						var firstBellowId = $(CCH.ui.accordion.getBellows()[0]).data().id;
+						if (CCH.ui.accordion.getCurrent()) {
+							CCH.ui.accordion.explore(null, {id: firstBellowId});
+						}
 					}
 				},
 				{
@@ -112,7 +135,7 @@ CCH.intro = (function () {
 							var ribbonedId = Object.values(CCH.items.getItems()).reverse().find(function (i) {
 								return i.ribboned;
 							}).id;
-							CCH.ui.accordion.explore(null, { id : ribbonedId });
+							CCH.ui.accordion.explore(null, {id: ribbonedId});
 						}
 					}
 				},
@@ -126,7 +149,7 @@ CCH.intro = (function () {
 							var ribbonedId = Object.values(CCH.items.getItems()).reverse().find(function (i) {
 								return i.ribboned;
 							}).id;
-							CCH.ui.accordion.explore(null, { id : ribbonedId });
+							CCH.ui.accordion.explore(null, {id: ribbonedId});
 						}
 						if ($(window).width() < 992) {
 							$('#application-slide-items-container').css('display', 'none');
@@ -384,7 +407,7 @@ CCH.intro = (function () {
 						intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
 					}
 				},
-                                {
+				{
 					element: '#share-bucket',
 					intro: 'To get a short URL for the contents for all items in the bucket, click the Share Bucket button.',
 					position: 'left',
@@ -396,7 +419,7 @@ CCH.intro = (function () {
 						}
 					}
 				},
-                                {
+				{
 					element: '#clear-bucket',
 					intro: 'To clear the contents for all items in the bucket, click the Clear Bucket button.',
 					position: 'left',
@@ -406,7 +429,7 @@ CCH.intro = (function () {
 						if ($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')) {
 							$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 						}
-                                                $('#tourButton').remove();
+						$('#tourButton').remove();
 					},
 					onafterchange: function () {
 						setTimeout(function () {
@@ -507,14 +530,14 @@ CCH.intro = (function () {
 		start: function (step) {
 			CCH.CONFIG.ui.isTouring = true;
 			var startingStep = step;
-			
+
 			if (CCH.ui.isSmall()) {
 				updateForMobile();
 			}
 
 			intro.setOptions({
 				showStepNumbers: false,
-				showBullets : false,
+				showBullets: false,
 				showProgress: true,
 				steps: steps
 			});
