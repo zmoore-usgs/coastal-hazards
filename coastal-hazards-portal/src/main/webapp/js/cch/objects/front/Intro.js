@@ -224,7 +224,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#application-slide-bucket-container',
-					intro: 'Data items you have added to your bucket will be visible here.',
+					intro: 'When you click on the bucket icon, data items you have added to your bucket will be visible here.',
 					position: 'left',
 					name: 'bucket-content',
 					onbeforechange: function (targetEle) {
@@ -439,7 +439,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#hide-your-bucket',
-					intro: 'Click to collapse your Bucket along the side of your browser.',
+					intro: 'To collapse the Bucket and return to the three coastal change hazards themes, click the Hide Bucket button.',
 					position: 'right',
 					name: 'hide-bucket',
 					onbeforechange: function (targetEle) {
