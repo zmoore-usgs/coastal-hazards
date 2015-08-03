@@ -8,7 +8,7 @@ CCH.intro = (function () {
 			steps = [
 				{
 					element: '#application-link-button',
-					intro: 'Return to the Map view of the Portal.',
+					intro: 'To get to the Action Center for an item, click the "More Info" button on any item from the Map view of the Portal. Click this button to return to the Map view of the Portal.',
 					position: 'right',
 					name: 'button-back'
 				},
@@ -56,7 +56,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#publications-row',
-					intro: 'Provides a list of publications where the data were released and addiitonal resources of interest.',
+					intro: 'Provides a list of publications where the data were released and additional resources of interest.',
 					position: 'left',
 					name: 'publications'
 				}
