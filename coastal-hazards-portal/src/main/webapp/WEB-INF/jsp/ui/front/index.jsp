@@ -84,7 +84,7 @@
 	<body>
 		<jsp:include page="../common/application-overlay.jsp">
 			<jsp:param name="application-overlay-description" value="USGS coastal change hazards research produces data, 
-					   knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
+					   knowledge, and tools about storms, shoreline change, and sea-level rise. These products are available 
 					   here. They can be used to increase awareness and provide a basis for decision making." />
 			<jsp:param name="application-overlay-background-image" value="images/splash/splash.svg" />
 			<jsp:param name="base-url" value="<%=baseUrl%>" />
