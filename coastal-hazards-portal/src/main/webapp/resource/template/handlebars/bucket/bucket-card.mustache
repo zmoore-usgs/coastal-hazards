@@ -1,4 +1,5 @@
 <div class="application-slide-bucket-container-card well well-small" id="application-slide-bucket-container-card-{{id}}">
+    <div id="application-slide-bucket-tophalf-container">
 	<div class="application-slide-bucket-container-card-image-container">
 		<img class="application-slide-bucket-container-card-image img-responsive" src="{{baseUrl}}/data/thumbnail/item/{{id}}" alt="Bucket Card Image" title="Explore and zoom to this dataset"/>
 	</div>
@@ -10,10 +11,7 @@
 			</div>
 		</div>
 	</div>
-	<button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button" title="Remove From Bucket">
-		<img src="{{baseUrl}}/images/bucket/trashcan.svg" alt="[Bucket Image]" />
-	</button>
-	<div class="application-slide-bucket-container-card-navigation-container">
+            <div class="application-slide-bucket-container-card-navigation-container">
 		<button class="application-slide-bucket-container-card-button-up btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-up" type="button" title="Sort Layer Up">
 			<i class="fa fa-caret-up"></i>
 		</button>
@@ -21,19 +19,23 @@
 		<button class="application-slide-bucket-container-card-button-down btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-down" type="button" title="Sort Layer Down">
 			<i class="fa fa-caret-down"></i>
 		</button>
-	</div>
+            </div>
+        </div>
 	<div class="application-slide-bucket-container-card-controlset-container">
 		<div class="application-slide-bucket-container-card-button-layer application-slide-bucket-container-card-template-button active" title="Visibility On/Off">
 			<i class="fa fa-eye{{#unless visibility}}-slash{{/unless}}"></i>
 		</div>
-		<button class="application-slide-bucket-container-card-button-download application-slide-bucket-container-card-template-button btn btn-link " type="button" href="{{baseUrl}}/data/download/item/{{id}}" title="Download">
+		<button class="downward application-slide-bucket-container-card-button-download application-slide-bucket-container-card-template-button btn btn-link " type="button" href="{{baseUrl}}/data/download/item/{{id}}" title="Download">
 			<i class="fa fa-cloud-download"></i>
 		</button>
-		<button class="application-slide-bucket-container-card-button-info application-slide-bucket-container-card-template-button btn btn-link " type="button" title="More Info">
+		<button class="downward application-slide-bucket-container-card-button-info application-slide-bucket-container-card-template-button btn btn-link " type="button" title="More Info">
 			<i class="fa fa-info"></i>
 		</button>
 		<button class="application-slide-bucket-container-card-button-share application-slide-bucket-container-card-template-button btn btn-link " type="button" title="Share">
 			<img alt="Share Icon" src="{{baseUrl}}/images/bucket/share.svg"/>
 		</button>
+                <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button" title="Remove From Bucket">
+                        <img src="{{baseUrl}}/images/bucket/trashcan.svg" alt="[Bucket Image]" />
+                </button>
 	</div>
 </div>

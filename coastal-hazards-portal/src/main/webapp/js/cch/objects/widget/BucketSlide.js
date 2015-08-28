@@ -234,7 +234,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			$myCard,
 			evtType = evt.namespace === 'hid.layer.map' ? 'remove' : 'add',
 			findImage = function ($cardItem) {
-				return $cardItem.find('> div:nth-child(5) > div:first-child > i');
+				return $cardItem.find('.application-slide-bucket-container-card-button-layer > i');
 			};
 
 		if ($card.length) {
@@ -471,8 +471,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		me.getContainer().find('>div:not(#application-slide-bucket-content-empty)').each(function (idx, card) {
 			id = $(card).data('id');
 			index = me.getCardIndex(id);
-			$cardUpArrow = $(card).find('> div:nth-child(4) > button:nth-child(1)');
-			$cardDownArrow = $(card).find('> div:nth-child(4)> button:nth-child(3)');
+			$cardUpArrow = $(card).find('.application-slide-bucket-container-card-button-up');
+			$cardDownArrow = $(card).find('.application-slide-bucket-container-card-button-down');
 
 			if (cardsLength === 1) {
 				// If I am the only card

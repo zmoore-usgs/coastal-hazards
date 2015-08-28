@@ -8,37 +8,37 @@ CCH.intro = (function () {
 			steps = [
 				{
 					element: '#application-link-button',
-					intro: 'Returns to the Map view of the Portal.',
+					intro: 'To get to the Action Center for an item, click the "More Info" button on any item from the Map view of the Portal. Click this button to return to the Map view of the Portal.',
 					position: 'right',
 					name: 'button-back'
 				},
 				{
 					element: '#add-bucket-link-button',
-					intro: 'Adds the current item to the Bucket.',
+					intro: 'Add the current item to your Bucket.',
 					position: 'right',
 					name: 'button-bucket'
 				},
 				{
 					element: '#print-button',
-					intro: 'Provides the user with a customizable printer-friendly view of an item summary.',
+					intro: 'Get a customizable printer-friendly summary of the data item.',
 					position: 'right',
 					name: 'button-print'
 				},
 				{
 					element: '#map-services-link-button',
-					intro: 'Provides the user with available services that can be added to other mapping applications.',
+					intro: 'View available services that can be added to other mapping applications.',
 					position: 'right',
 					name: 'button-map-svcs'
 				},
 				{
 					element: '#metadata-link-button',
-					intro: 'Review detailed standardized information about this item.',
+					intro: 'View detailed information about this data item in a standardized format.',
 					position: 'right',
 					name: 'button-metadata'
 				},
 				{
 					element: '#download-link-button',
-					intro: 'Download the current item to your computer for use in geospatial applications.',
+					intro: 'Download the current item to your computer in shapefile format (.shp) for use in geospatial applications.',
 					position: 'right',
 					name: 'button-download'
 				},
@@ -50,13 +50,13 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#summary-row',
-					intro: 'Provides a short description of the item including details about how it was created and the geographic location the data pertain to.',
+					intro: 'Here is a description of the item including details about how it was created and the geographic location the data pertain to.',
 					position: 'left',
 					name: 'summary'
 				},
 				{
 					element: '#publications-row',
-					intro: 'Displays publications where the data were released and additional resources of interest pertaining to the data item.',
+					intro: 'Provides a list of publications where the data were released and additional resources of interest.',
 					position: 'left',
 					name: 'publications'
 				}
@@ -117,7 +117,7 @@ CCH.intro = (function () {
 			'eventAction': 'backTutorialExited',
 			'eventLabel': 'tutorial event'
 		});
-		window.location.href = CCH.CONFIG.contextPath + "/ui/info/item/" + CCH.CONFIG.item.id;
+		window.location.href = CCH.CONFIG.contextPath + "/info/#acContentArea";
 	});
 	intro.oncomplete(function () {
 		$('html, body').css({
@@ -129,7 +129,7 @@ CCH.intro = (function () {
 			'eventAction': 'backTutorialExited',
 			'eventLabel': 'tutorial event'
 		});
-		window.location.href = CCH.CONFIG.contextPath + "/ui/info/item/" + CCH.CONFIG.item.id;
+		window.location.href = CCH.CONFIG.contextPath + "/info/#acContentArea";
 	});
 	return {
 		intro: intro,
@@ -141,6 +141,8 @@ CCH.intro = (function () {
 
 			intro.setOptions({
 				showStepNumbers: false,
+				showBullets: false,
+				showProgress: true,
 				steps: steps,
 				scrollToElement: true
 			});

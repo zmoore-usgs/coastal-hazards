@@ -402,8 +402,9 @@ CCH.Objects.Publish.UI = function () {
 			activeStorm = $isActiveStormChecbox.prop('checked'),
 			featured = $isFeaturedCB.prop('checked'),
 			services = [],
-			displayedChildren = [],
+			displayedChildren = CCH.CONFIG.item && CCH.CONFIG.item.displayedChildren ? CCH.CONFIG.item.displayedChildren : [],
 			bbox = [$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()],
+			children =  CCH.CONFIG.item && CCH.CONFIG.item.children ? CCH.CONFIG.item.children : [],
 			item = {
 			id: id,
 			itemType: itemType,
@@ -412,7 +413,7 @@ CCH.Objects.Publish.UI = function () {
 			type: type,
 			ribbonable: ribbonable,
 			summary: summary,
-			children : CCH.CONFIG.item ? CCH.CONFIG.item.children : [],
+			children : children,
 			showChildren: showChildren,
 			enabled: enabled,
 			services: services,
@@ -420,7 +421,7 @@ CCH.Objects.Publish.UI = function () {
 			activeStorm: activeStorm,
 			featured: featured
 		};
-			
+		
 		// Bbox may be blank and that may be ok (e.g. if it's a template)
 		if (bbox.join('')) {
 			item.bbox = bbox;
@@ -1119,7 +1120,7 @@ CCH.Objects.Publish.UI = function () {
 			}
 
 			// Ribbonable
-			$ribbonableCb.prop(CCH.CONFIG.strings.checked, item.ribbonable);
+			$ribbonableCb.prop(CCH.CONFIG.strings.checked, item.ribboned);
 			$isFeaturedCB.prop(CCH.CONFIG.strings.checked, item.featured);
 
 			// Publications

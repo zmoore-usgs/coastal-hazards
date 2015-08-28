@@ -11,29 +11,38 @@ CCH.intro = (function () {
 					element: '.panel:nth-child(1)',
 					intro: 'This is an item. Information and products are organized within three coastal change hazard themes: 1) extreme storms, 2) shoreline change, and 3) sea-level rise. Each data item represents an individual research product, with some items grouped together to show the breadth of the topic and make it easy to explore.',
 					position: 'left',
-					name: 'show-item',
+					name: 'map',
 					onbeforechange: function (targetEle) {
+						$('#application-slide-items-container').css('display', 'block');
 						if (!$('.panel-collapse').hasClass('in')) {
-							$(CCH.ui.accordion.getBellows()[0]).find('.panel-heading').click();
+							var firstBellowId = $(CCH.ui.accordion.getBellows()[0]).data().id;
+							CCH.ui.accordion.explore(null, {
+								id: firstBellowId
+							});
 						}
 						if ($('.modal-content-share').css('display', 'block')) {
 							$('.close').click();
 						}
-						$('#application-slide-items-container').css('display', 'block');
+						CCH.ui.bucketSlide.close();
 					}
 				},
 				{
 					element: '.application-card-add-bucket-btn',
-					intro: 'Click the "Add To Bucket icon" to place the current item or aggregation in your bucket and interact with it there.',
+					intro: 'Click the "Add To Bucket icon" to save the current item or aggregation in your bucket and interact with it there.',
 					position: 'left',
 					name: 'add-to-bucket',
 					onbeforechange: function (targetEle) {
+						$('#application-slide-items-container').css('display', 'block');
 						if (!$('.panel-collapse').hasClass('in')) {
-							$(CCH.ui.accordion.getBellows()[0]).find('.panel-heading').click();
+							var firstBellowId = $(CCH.ui.accordion.getBellows()[0]).data().id;
+							CCH.ui.accordion.explore(null, {
+								id: firstBellowId
+							});
 						}
-						if ($('#application-slide-bucket-content').is(':visible')) {
-							$('#animated-bucket-object').click();
+						if ($('.modal-content-share').css('display', 'block')) {
+							$('.close').click();
 						}
+						CCH.ui.bucketSlide.close();
 					},
 					onafterchange: function () {
 						setTimeout(function () {
@@ -43,16 +52,21 @@ CCH.intro = (function () {
 				},
 				{
 					element: '.application-card-zoom-to-btn',
-					intro: 'Click the zoom to button to zoom to the extent of the data item.',
+					intro: 'Click the "Zoom To" button to zoom to the extent of the data item.',
 					position: 'left',
 					name: 'zoom-to',
 					onbeforechange: function (targetEle) {
+						$('#application-slide-items-container').css('display', 'block');
 						if (!$('.panel-collapse').hasClass('in')) {
-							$(CCH.ui.accordion.getBellows()[0]).find('.panel-heading').click();
+							var firstBellowId = $(CCH.ui.accordion.getBellows()[0]).data().id;
+							CCH.ui.accordion.explore(null, {
+								id: firstBellowId
+							});
 						}
-						if ($('#application-slide-bucket-content').is(':visible')) {
-							$('#animated-bucket-object').click();
+						if ($('.modal-content-share').css('display', 'block')) {
+							$('.close').click();
 						}
+						CCH.ui.bucketSlide.close();
 						if ($(window).width() > 991) {
 							$(targetEle).click();
 						}
@@ -65,16 +79,21 @@ CCH.intro = (function () {
 				},
 				{
 					element: '.application-card-more-info-btn',
-					intro: 'Click the more information icon to get more details about the data item.',
+					intro: 'Click the "More Info" icon to get more details about the data item.',
 					position: 'left',
 					name: 'more-info',
 					onbeforechange: function (targetEle) {
+						$('#application-slide-items-container').css('display', 'block');
 						if (!$('.panel-collapse').hasClass('in')) {
-							$(CCH.ui.accordion.getBellows()[0]).find('.panel-heading').click();
+							var firstBellowId = $(CCH.ui.accordion.getBellows()[0]).data().id;
+							CCH.ui.accordion.explore(null, {
+								id: firstBellowId
+							});
 						}
-						if ($('#application-slide-bucket-content').is(':visible')) {
-							$('#animated-bucket-object').click();
+						if ($('.modal-content-share').css('display', 'block')) {
+							$('.close').click();
 						}
+						CCH.ui.bucketSlide.close();
 						$('#application-slide-items-container').css('display', 'block');
 					}
 				},
@@ -82,11 +101,18 @@ CCH.intro = (function () {
 					element: '#OpenLayers_Control_Zoom_34',
 					intro: 'Click these icons to zoom in or out on the map.',
 					position: 'right',
-					name: 'zoom-in-out'
+					name: 'zoom-in-out',
+					onbeforechange: function () {
+						// If we currently have an item open, switch back to first item and close it
+						var firstBellowId = $(CCH.ui.accordion.getBellows()[0]).data().id;
+						if (CCH.ui.accordion.getCurrent()) {
+							CCH.ui.accordion.explore(null, {id: firstBellowId});
+						}
+					}
 				},
 				{
 					element: '#ol-zoom-to-location_innerImage',
-					intro: 'Click this icon in order to zoom to your location. Some browsers and smartphones will first request your permission to share your location.',
+					intro: 'Click this icon in order to zoom to your location. Some browsers and smartphones may request your permission to share your location.',
 					position: 'right',
 					name: 'zoom-to-you',
 					onbeforechange: function (targetEle) {
@@ -101,9 +127,17 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#OpenLayers_Control_MaximizeDiv_innerImage',
-					intro: 'Choose a base layer from World Imagery, Street, Topo, or Ocean here. You can also choose to display place names.',
+					intro: 'Choose a base layer from World Imagery, Street, Topo, or Ocean here. You can also choose to hide or display Place Names.',
 					position: 'right',
-					name: 'baselayer'
+					name: 'baselayer',
+					onbeforechange: function (targetEle) {
+						if (!$('.cchMapLegendElement').is(':visible')) {
+							var ribbonedId = Object.values(CCH.items.getItems()).reverse().find(function (i) {
+								return i.ribboned;
+							}).id;
+							CCH.ui.accordion.explore(null, {id: ribbonedId});
+						}
+					}
 				},
 				{
 					element: '.cchMapLegendContainer',
@@ -112,7 +146,10 @@ CCH.intro = (function () {
 					name: 'legend',
 					onbeforechange: function (targetEle) {
 						if (!$('.cchMapLegendElement').is(':visible')) {
-							$(CCH.ui.accordion.getBellows()[0]).find('.panel-heading').click();
+							var ribbonedId = Object.values(CCH.items.getItems()).reverse().find(function (i) {
+								return i.ribboned;
+							}).id;
+							CCH.ui.accordion.explore(null, {id: ribbonedId});
 						}
 						if ($(window).width() < 992) {
 							$('#application-slide-items-container').css('display', 'none');
@@ -149,6 +186,7 @@ CCH.intro = (function () {
 					position: 'bottom',
 					name: 'search-me-options',
 					onbeforechange: function (targetEle) {
+						CCH.ui.bucketSlide.close();
 						$('#app-navbar-search-dropdown-toggle').dropdown('toggle');
 						var button = $('<a id="tourButton" class="introjs-button">End Tour</a>');
 						button.attr('href', CCH.CONFIG.contextPath + '/info/#mapContentArea');
@@ -170,6 +208,9 @@ CCH.intro = (function () {
 					position: 'left',
 					name: 'bucket',
 					onbeforechange: function (targetEle) {
+						if (CCH.CONFIG.params.id === "map") {
+							window.location.href = CCH.CONFIG.contextPath + "/info/#mapContentArea";
+						}
 						if ($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')) {
 							$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 						}
@@ -183,7 +224,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#application-slide-bucket-container',
-					intro: 'Data items you have added to your bucket will be visible here.',
+					intro: 'When you click on the bucket icon, data items you have added to your bucket will be visible here.',
 					position: 'left',
 					name: 'bucket-content',
 					onbeforechange: function (targetEle) {
@@ -366,9 +407,9 @@ CCH.intro = (function () {
 						intro._introItems[intro._currentStep].position = steps[intro._currentStep].position;
 					}
 				},
-                                {
+				{
 					element: '#share-bucket',
-					intro: 'To share the contents for all items in the bucket, click the Share Bucket option.',
+					intro: 'To get a short URL for the contents for all items in the bucket, click the Share Bucket button.',
 					position: 'left',
 					name: 'share-bucket',
 					onbeforechange: function (targetEle) {
@@ -378,9 +419,9 @@ CCH.intro = (function () {
 						}
 					}
 				},
-                                {
+				{
 					element: '#clear-bucket',
-					intro: 'To clear the contents for all items in the bucket, click the Clear Bucket option.',
+					intro: 'To clear the contents for all items in the bucket, click the Clear Bucket button.',
 					position: 'left',
 					name: 'clear-bucket',
 					onbeforechange: function (targetEle) {
@@ -388,7 +429,7 @@ CCH.intro = (function () {
 						if ($('#app-navbar-bucket-button-container').hasClass('app-navbar-bucket-button-container-unpopulated')) {
 							$('.application-card-add-bucket-btn:not(.disabled):lt(3)').click();
 						}
-                                                $('#tourButton').remove();
+						$('#tourButton').remove();
 					},
 					onafterchange: function () {
 						setTimeout(function () {
@@ -398,7 +439,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#hide-your-bucket',
-					intro: 'Click to collapse your Bucket along the side of your browser.',
+					intro: 'To collapse the Bucket and return to the three coastal change hazards themes, click the Hide Bucket button.',
 					position: 'right',
 					name: 'hide-bucket',
 					onbeforechange: function (targetEle) {
@@ -418,7 +459,7 @@ CCH.intro = (function () {
 				steps.removeAt(4);
 
 				//Changing position of text to fit on mobile
-				steps[0].position = 'top';
+				steps[0].position = 'bottom';
 				steps[1].position = 'top';
 				steps[2].position = 'top';
 				steps[3].position = 'top';
@@ -431,7 +472,7 @@ CCH.intro = (function () {
 				steps[15].position = 'top';
 				steps[16].position = 'top';
 				steps[21].position = 'top';
-                                steps[22].position = 'top';
+				steps[22].position = 'top';
 			};
 
 
@@ -496,6 +537,8 @@ CCH.intro = (function () {
 
 			intro.setOptions({
 				showStepNumbers: false,
+				showBullets: false,
+				showProgress: true,
 				steps: steps
 			});
 
