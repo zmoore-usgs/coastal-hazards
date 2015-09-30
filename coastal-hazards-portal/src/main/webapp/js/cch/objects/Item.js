@@ -178,7 +178,8 @@ CCH.Objects.Item = function (args) {
 				bbox = me.bbox,
 				itemType = me.itemType,
 				sldId = id,
-				layer = null;
+				layer = null,
+				CONE_OF_UNCERTAINTY = "6";
 
 		if (itemType !== 'aggregation' && itemType !== 'template') {
 			layer = new OpenLayers.Layer.WMS(
@@ -207,7 +208,7 @@ CCH.Objects.Item = function (args) {
 		}
 
 		if (layer && me.type === 'storm_track') {
-			if (layer.params.LAYERS === "NHC_TRACK_POLY") {
+			if (layer.params.LAYERS === CONE_OF_UNCERTAINTY) {
 				layer.opacity = 0.5;
 			}
 			delete layer.params.STYLES;
