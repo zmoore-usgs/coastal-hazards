@@ -187,7 +187,7 @@ CCH.Objects.Item = function (args) {
 				endpoint,
 				{
 					layers: layers,
-					format: 'image/png',
+					format: 'image/png32',
 					transparent: true,
 					styles: 'cch',
 					version: '1.3.0',
