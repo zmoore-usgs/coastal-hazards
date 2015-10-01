@@ -187,7 +187,7 @@ CCH.Objects.Item = function (args) {
 				endpoint,
 				{
 					layers: layers,
-					format: 'image/png32',
+					format: 'image/png',
 					transparent: true,
 					styles: 'cch',
 					version: '1.3.0',
@@ -208,6 +208,7 @@ CCH.Objects.Item = function (args) {
 		}
 
 		if (layer && me.type === 'storm_track') {
+			layer.params.FORMAT = 'image/png32';
 			if (layer.params.LAYERS === CONE_OF_UNCERTAINTY) {
 				layer.opacity = 0.5;
 			}
