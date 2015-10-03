@@ -10,24 +10,20 @@
 	<modules>
 		<module>coastal-hazards-commons</module>
 		<module>coastal-hazards-uncy-reader</module>
-		<module>coastal-hazards-ui</module>
 		<module>coastal-hazards-n52</module>
 		<module>coastal-hazards-wps</module>
 		<module>coastal-hazards-geoserver</module>
 		<module>coastal-hazards-portal</module>
 		<module>coastal-hazards-liquibase</module>
-		<module>coastal-hazards-dsas-liquibase</module>
 		<module>coastal-hazards-export</module>
 		<module>ehcache-shaded</module>
 	</modules>
   
 	<issueManagement>
-		<system>JIRA</system>
-		<!-- This needs to be corrected -->
-		<url />
+		<system>Trello</system>
 	</issueManagement>
 	
-	<url>http://cida.usgs.gov/</url>
+	<url>http://marine.usgs.gov/coastalchangehazardsportal</url>
 	
 	<inceptionYear>2012</inceptionYear>
 	<organization>
@@ -113,7 +109,7 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<cida.maven.url>http://internal.cida.usgs.gov/maven</cida.maven.url>
+		<cida.maven.url>https://internal.cida.usgs.gov/maven</cida.maven.url>
 		<war.dir>src/main/webapp</war.dir>
 		<build.scm.version>${buildNumber}</build.scm.version>
 		<slf4j.version>1.7.5</slf4j.version>
@@ -136,12 +132,12 @@
 		<repository>
 			<id>cida-releases</id>
 			<name>CIDA Releases</name>
-			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-public-releases</url>
+			<url>${cida.maven.url}/content/repositories/cida-public-releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>cida-snapshots</id>
 			<name>CIDA Snapshots</name>
-			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-public-snapshots</url>
+			<url>${cida.maven.url}/content/repositories/cida-public-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
