@@ -13,7 +13,7 @@
 	<name>Coastal Hazards Liquibase Changesets</name>
 
 	<properties>
-		<liquibase.version>3.3.2</liquibase.version>
+		<liquibase.version>3.4.1</liquibase.version>
 		<db.schema>cch-portal</db.schema>
 		<!-- For goals to run these properties must be set in settings.xml
 		<liquibase.driver></liquibase.driver>
