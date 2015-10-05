@@ -142,6 +142,11 @@
 
 	<repositories>
 		<repository>
+			<id>cida-public</id>
+			<name>CIDA Public Nexus</name>
+			<url>http://cida.usgs.gov/maven/cida-public/</url>
+		</repository>
+		<repository>
 			<id>opengeo</id>
 			<url>http://repo.boundlessgeo.com/main/</url>
 		</repository>
@@ -160,10 +165,11 @@
 			<name>52-north Releases</name>
 			<url>http://52north.org/maven/repo/releases/</url>
 		</repository>
+		
 		<repository>
-			<id>cida-public</id>
-			<name>CIDA Public Nexus</name>
-			<url>http://cida.usgs.gov/maven/cida-public/</url>
+			<id>geosolutions</id>
+			<name>GeoSolutions</name>
+			<url>http://maven.geo-solutions.it/</url>
 		</repository>
 	</repositories>
 	
