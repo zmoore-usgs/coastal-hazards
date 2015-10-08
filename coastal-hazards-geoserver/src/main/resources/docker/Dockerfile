@@ -1,4 +1,4 @@
-FROM tomcat:7-jre8
+FROM andreptb/tomcat:latest
 
 MAINTAINER Ivan Suftin <isuftin@usgs.gov>
 
