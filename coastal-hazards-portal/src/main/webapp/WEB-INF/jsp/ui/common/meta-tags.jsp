@@ -12,7 +12,7 @@
 	}
 %>
 <%
-	String description = ifBlankThenDefaultString(request, "description", "USGS coastal change hazards research produces data, knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available here. They can be used to increase awareness and provide a basis for decision making.");
+	String description = ifBlankThenDefaultString(request, "description", "USGS coastal change hazards research produces data, knowledge, and tools about storms, shoreline change, and sea-level rise. These products are available here. They can be used to increase awareness and provide a basis for decision making.");
 %>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
