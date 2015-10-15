@@ -124,7 +124,7 @@
                         <%-- Logo --%>
                         <span id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
                             <a href="http://usgs.gov" target="_blank">
-                                <img id="app-navbar-coop-logo-img" alt="USGS logo" src="<%=baseUrl%>/images/banner/usgslogo.jpg" />
+                                <img id="app-navbar-coop-logo-img" alt="USGS logo" src="<%=baseUrl%>/images/banner/usgslogo.png" />
                             </a>
                         </span>
                         <%-- Application Title --%>
