@@ -1,15 +1,23 @@
 <%-- Logo --%>
-<a href="${param['baseUrl']}/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
-    <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="${param['baseUrl']}/images/banner/cida-cmgp.svg" />
+<a href="http://usgs.gov" target="_blank" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+    <img id="app-navbar-coop-logo-img" alt="USGS Logo" src="${param['baseUrl']}/images/banner/usgslogo.jpg" />
 </a>
 
 <%-- Application Title --%>
 
 <div id="app-navbar-site-title-container" class="app-navbar-item-container">
-	<div class="app-navbar-title visible-lg hidden-md hidden-sm hidden-xs">USGS Coastal Change Hazards Portal</div>
-	<div class="app-navbar-title hidden-lg visible-md hidden-sm hidden-xs">USGS Coastal Change Hazards</div>
-    <div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">USGS Coastal Change Hazards</div>
-    <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">&nbsp;</div>
+    <a href="${param['baseUrl']}">
+	<div class="app-navbar-title visible-lg hidden-md hidden-sm hidden-xs">Coastal Change Hazards Portal</div>
+    </a>
+    <a href="${param['baseUrl']}">
+	<div class="app-navbar-title hidden-lg visible-md hidden-sm hidden-xs">Coastal Change Hazards</div>
+    </a>
+    <a href="${param['baseUrl']}">
+        <div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">Coastal Change Hazards</div>
+    </a>
+    <a href="${param['baseUrl']}">
+        <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">CCHP&nbsp;</div>
+    </a>
 </div>
 
 <%-- Combination Search Bar --%>
