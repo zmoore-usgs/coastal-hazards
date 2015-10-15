@@ -41,7 +41,7 @@
 	<head>
 		<jsp:include page="/WEB-INF/jsp/ui/common/meta-tags.jsp">
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
-			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/usgslogo.jpg"%>' />
+			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/usgslogo.png"%>' />
 		</jsp:include>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
 		<%@ include file="/WEB-INF/jsp/ui/common/ie-check.jsp" %>
@@ -56,7 +56,7 @@
 		<div id=“wrapper”>
 			<%-- Title Bar --%>
 			<header>
-				<a id="cch-back-to-portal-link" href="http://usgs.gov" target="_blank"><img src="<%=baseUrl%>/images/info/usgslogo.jpg" alt="USGS logo" /></a>
+				<a id="cch-back-to-portal-link" href="http://usgs.gov" target="_blank"><img src="<%=baseUrl%>/images/info/usgslogo.png" alt="USGS logo" /></a>
                                 <a href="<%=baseUrl%>">
                                     <h1 id="headerDesktop">Coastal Change Hazards Portal</h1>
                                 </a>
