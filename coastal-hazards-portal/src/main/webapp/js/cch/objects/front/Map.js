@@ -20,7 +20,7 @@ CCH.Objects.Front.Map = function (args) {
 	me.locationResultIcon = CCH.CONFIG.contextPath + '/images/map/markers/redmarker.png';
 	me.locationResultIconHighlighted = CCH.CONFIG.contextPath + '/images/map/markers/yellowmarker.png';
 	me.displayProjection = new OpenLayers.Projection(me.mapProjection);
-	me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
+	//me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
 
 	// Map Controls
 	me.scaleLineControl = new OpenLayers.Control.ScaleLine({
