@@ -20,7 +20,7 @@ CCH.Objects.Front.Map = function (args) {
 	me.locationResultIcon = CCH.CONFIG.contextPath + '/images/map/markers/redmarker.png';
 	me.locationResultIconHighlighted = CCH.CONFIG.contextPath + '/images/map/markers/yellowmarker.png';
 	me.displayProjection = new OpenLayers.Projection(me.mapProjection);
-	me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
+	//me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
 
 	// Map Controls
 	me.scaleLineControl = new OpenLayers.Control.ScaleLine({
@@ -29,9 +29,9 @@ CCH.Objects.Front.Map = function (args) {
 	me.layerSwitcher = new OpenLayers.Control.LayerSwitcher({
 		roundedCorner: true
 	});
-	me.attributionControl = new OpenLayers.Control.Attribution({
-		'template': '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="' + me.attributionSource + '" /></a>'
-	});
+	//me.attributionControl = new OpenLayers.Control.Attribution({
+	//	'template': '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="' + me.attributionSource + '" /></a>'
+	//});
 	me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
 	me.zoomToCurrentLocationControl = new CCH.Objects.Widget.OLZoomToIcon();
 	me.drawBoxControl =  new CCH.Objects.Widget.OLDrawBoxControl(CCH.CONFIG.map.layers.drawBoxLayer);
@@ -232,7 +232,7 @@ CCH.Objects.Front.Map = function (args) {
 			me.map.addControls([
 				me.layerSwitcher,
 				me.getFeatureInfoControl,
-				me.attributionControl,
+				//me.attributionControl,
 				me.clickControl,
 				me.scaleLineControl,
 				me.legendControl,
