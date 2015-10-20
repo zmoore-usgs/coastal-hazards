@@ -123,7 +123,7 @@
                     <div id="header-row" class="row">
                         <%-- Logo --%>
                         <span id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
-                            <a href="http://usgs.gov" target="_blank">
+                            <a href="http://www.usgs.gov" target="_blank">
                                 <img id="app-navbar-coop-logo-img" alt="USGS logo" src="<%=baseUrl%>/images/banner/usgslogo.png" />
                             </a>
                         </span>
@@ -141,7 +141,7 @@
                              </a>
 
                             <a href="<%=baseUrl%>">    
-                                <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">CCHP&nbsp;</div>
+                                <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">CCH&nbsp;</div>
                             </a>
                         </div>
                         <%-- Help Button --%>

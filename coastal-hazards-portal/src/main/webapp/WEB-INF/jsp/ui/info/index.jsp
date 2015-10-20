@@ -56,15 +56,15 @@
 		<div id=“wrapper”>
 			<%-- Title Bar --%>
 			<header>
-				<a id="cch-back-to-portal-link" href="http://usgs.gov" target="_blank"><img src="<%=baseUrl%>/images/info/usgslogo.png" alt="USGS logo" /></a>
+				<a id="cch-back-to-portal-link" href="http://www.usgs.gov" target="_blank"><img src="<%=baseUrl%>/images/info/usgslogo.png" alt="USGS logo" /></a>
                                 <a href="<%=baseUrl%>">
                                     <h1 id="headerDesktop">Coastal Change Hazards Portal</h1>
                                 </a>
                                 <a href="<%=baseUrl%>">
-                                    <h1 class="mobile">CCHP</h1>
+                                    <h1 class="mobile">CCH</h1>
                                 </a>
                                 <a href="<%=baseUrl%>">
-                                    <h1 class="mobile_portrait">CCHP</h1>
+                                    <h1 class="mobile_portrait">CCH</h1>
                                 </a>
 			</header>
 

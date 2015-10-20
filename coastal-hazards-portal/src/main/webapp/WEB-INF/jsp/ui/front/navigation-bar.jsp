@@ -1,5 +1,5 @@
 <%-- Logo --%>
-<a href="http://usgs.gov" target="_blank" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+<a href="http://www.usgs.gov" target="_blank" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
     <img id="app-navbar-coop-logo-img" alt="USGS Logo" src="${param['baseUrl']}/images/banner/usgslogo.png" />
 </a>
 
@@ -16,7 +16,7 @@
         <div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">Coastal Change Hazards</div>
     </a>
     <a href="${param['baseUrl']}">
-        <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">CCHP&nbsp;</div>
+        <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">CCH&nbsp;</div>
     </a>
 </div>
 
