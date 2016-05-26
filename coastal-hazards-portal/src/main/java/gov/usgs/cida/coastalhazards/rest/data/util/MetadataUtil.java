@@ -49,7 +49,7 @@ public class MetadataUtil {
 	private static final String NAMESPACE_CSW = "http://www.opengis.net/cat/csw/2.0.2";
 	private static final String NAMESPACE_DC = "http://purl.org/dc/elements/1.1/";
 	
-	public static final String XML_PROLOG_PATTERN = "<\\?xml[^>]*>";
+	public static final String[] XML_PROLOG_PATTERNS = {"<\\?xml[^>]*>", "<!DOCTYPE[^>]*>"};
 
 	static {
 		props = JNDISingleton.getInstance();
@@ -63,7 +63,7 @@ public class MetadataUtil {
 
 		MetadataResource metadata = new MetadataResource();
 		Response response = metadata.getFileById(metadataId);
-		String xmlWithoutHeader = response.getEntity().toString().replaceAll(XML_PROLOG_PATTERN, "");
+		String xmlWithoutHeader = stripXMLProlog(response.getEntity().toString());
 		insertedId = doCSWInsert(xmlWithoutHeader);
 
 		return insertedId;
@@ -72,10 +72,18 @@ public class MetadataUtil {
 	public static String doCSWInsertFromString(String metadata) throws IOException, ParserConfigurationException, SAXException {
 		String insertedId = null;
 		
-		String xmlWithoutHeader = metadata.replaceAll(XML_PROLOG_PATTERN, "");
+		String xmlWithoutHeader = stripXMLProlog(metadata);
 		insertedId = doCSWInsert(xmlWithoutHeader);
 		
 		return insertedId;
+	}
+	
+	public static String stripXMLProlog(String xml) {
+		String xmlWithoutHeader = xml;
+		for (String prolog : XML_PROLOG_PATTERNS) {
+			xmlWithoutHeader = xmlWithoutHeader.replaceAll(prolog, "");
+		}
+		return xmlWithoutHeader;
 	}
 
 	private static String doCSWInsert(String xmlWithoutHeader) throws IOException, ParserConfigurationException, SAXException {
