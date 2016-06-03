@@ -118,8 +118,8 @@
 					}
 				},
 				publication: {
-					title: <%= Publication.TITLE_MAX_LENGTH%>,
-					link: <%= Publication.LINK_MAX_LENGTH%>
+					title: <%= Integer.MAX_VALUE %>,
+					link: <%= Integer.MAX_VALUE %>
 				}
 			};
 			CCH.CONFIG.strings = {
