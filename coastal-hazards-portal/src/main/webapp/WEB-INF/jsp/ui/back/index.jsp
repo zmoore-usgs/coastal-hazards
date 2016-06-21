@@ -108,7 +108,7 @@
 
                 <jsp:include page="../common/application-overlay.jsp">
                     <jsp:param name="application-overlay-description" value="USGS coastal change hazards research produces data, 
-                               knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
+                               knowledge, and tools about storms, shoreline change, and sea-level rise. These products are available 
                                here. They can be used to increase awareness and provide a basis for decision making." />
                     <jsp:param name="application-overlay-background-image" value="images/splash/splash.svg" />
                     <jsp:param name="base-url" value="<%=baseUrl%>" />
@@ -123,20 +123,26 @@
                     <div id="header-row" class="row">
                         <%-- Logo --%>
                         <span id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
-                            <img id="app-navbar-coop-logo-img" alt="CIDA/CMGP" src="<%=baseUrl%>/images/banner/cida-cmgp.svg" />
+                            <a href="http://www.usgs.gov" target="_blank">
+                                <img id="app-navbar-coop-logo-img" alt="USGS logo" src="<%=baseUrl%>/images/banner/usgslogo.png" />
+                            </a>
                         </span>
                         <%-- Application Title --%>
                         <div id="app-navbar-site-title-container" class="app-navbar-item-container">
+                            <a href="<%=baseUrl%>">
+                                <div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">
+                                    Coastal Change Hazards Portal
+                                </div>
+                            </a>
+                            <a href="<%=baseUrl%>">
+                                <div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">
+                                    Coastal Change Hazards Portal
+                                </div>
+                             </a>
 
-                            <div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">
-                                USGS Coastal Change Hazards Portal
-                            </div>
-
-                            <div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">
-                                Coastal Change Hazards Portal
-                            </div>
-
-                            <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">&nbsp;</div>
+                            <a href="<%=baseUrl%>">    
+                                <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">CCH&nbsp;</div>
+                            </a>
                         </div>
                         <%-- Help Button --%>
                         <div class='app-navbar-item-container'>

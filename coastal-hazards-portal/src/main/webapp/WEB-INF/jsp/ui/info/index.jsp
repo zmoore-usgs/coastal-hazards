@@ -41,7 +41,7 @@
 	<head>
 		<jsp:include page="/WEB-INF/jsp/ui/common/meta-tags.jsp">
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" />
-			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/cida-cmgp.svg"%>' />
+			<jsp:param name="thumb" value='<%=baseUrl + "/images/banner/usgslogo.png"%>' />
 		</jsp:include>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
 		<%@ include file="/WEB-INF/jsp/ui/common/ie-check.jsp" %>
@@ -56,10 +56,16 @@
 		<div id=“wrapper”>
 			<%-- Title Bar --%>
 			<header>
-				<a id="cch-back-to-portal-link" href="<%=baseUrl%>"><img src="<%=baseUrl%>/images/info/collaborative_logo.png" alt="collaborative logo" /></a>
-				<h1 id="headerDesktop">USGS Coastal Change Hazards Portal</h1>
-				<h1 class="mobile">USGS CCH</h1>
-				<h1 class="mobile_portrait">CCH</h1>
+				<a id="cch-back-to-portal-link" href="http://www.usgs.gov" target="_blank"><img src="<%=baseUrl%>/images/info/usgslogo.png" alt="USGS logo" /></a>
+                                <a href="<%=baseUrl%>">
+                                    <h1 id="headerDesktop">Coastal Change Hazards Portal</h1>
+                                </a>
+                                <a href="<%=baseUrl%>">
+                                    <h1 class="mobile">CCH</h1>
+                                </a>
+                                <a href="<%=baseUrl%>">
+                                    <h1 class="mobile_portrait">CCH</h1>
+                                </a>
 			</header>
 
 			<div id="content">
