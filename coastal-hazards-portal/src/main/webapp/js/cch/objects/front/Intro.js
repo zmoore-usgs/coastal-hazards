@@ -409,7 +409,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#share-bucket',
-					intro: 'To get a short URL for the contents for all items in the bucket, click the Share Bucket button.',
+					intro: 'To get a short URL for the contents for all items in the bucket, click the Share View button.',
 					position: 'left',
 					name: 'share-bucket',
 					onbeforechange: function (targetEle) {
