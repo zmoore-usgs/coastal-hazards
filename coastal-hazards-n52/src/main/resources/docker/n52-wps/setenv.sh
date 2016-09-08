@@ -21,7 +21,7 @@ sed -i -e "s#\(<Property name=\"Script_Dir\" active=\"true\">\).*\(</Property>\)
 sed -i -e "s#\(<Property name=\"Resource_Dir\" active=\"true\">\).*\(</Property>\)#\1${R_SERVE_RESOURCEDIR}\2#g" $CONFIG_FILE
 sed -i -e "s#\(<Property name=\"R_Work_Dir\" active=\"true\">\).*\(</Property>\)#\1${R_SERVE_WORKDIR}\2#g" $CONFIG_FILE
 
-# Figure out what the line number the "Server" node is on and eplace the entire line 
+# Figure out what the line number the "Server" node is on and replace the entire line 
 repl_line_num=$(grep -n "<Server" /wps_config.xml |cut -f1 -d:)
 sed -i -e "${repl_line_num}s/.*/<Server hostname=\"${WPS_HOST}\" hostport=\"${WPS_PORT}\" webappPath=\"wps\" includeDataInputsInResponse=\"true\" computationTimeoutMilliSeconds=\"5\" cacheCapabilites=\"false\">/" $CONFIG_FILE
 

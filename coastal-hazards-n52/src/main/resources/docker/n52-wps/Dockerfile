@@ -14,4 +14,4 @@ COPY wps_config.xml /wps_config.xml
 
 RUN apt-get update && \
    apt-get install -y libxml2-utils && \
-   /download-dsas-wps.sh
+   /download-cch-wps.sh
