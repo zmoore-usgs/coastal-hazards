@@ -1,0 +1,26 @@
+---
+version: '2'
+
+# Building on the DOI network: When building this container, you must set your environment
+# variable "doi_network" to "true" so SSL certificates may be installed.
+#
+# Ex: $ doi_network="true" docker-compose build
+
+networks: 
+  cchnet:
+
+services:
+  cch_rserve:
+    build: 
+      context: ./rserve
+      args:
+        - doi_network=$doi_network
+    image: cch_rserve
+    environment:
+      - PASSWORD=rserve
+    ports:
+      - "6311:6311"
+    networks:
+      cchnet:
+        aliases:
+        - rserve
