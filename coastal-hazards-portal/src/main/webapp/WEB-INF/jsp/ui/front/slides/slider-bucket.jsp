@@ -7,7 +7,7 @@
                 </div>
                 <div id="bucket-option-container" class="btn-group pull-right hidden">
                     <button id="clear-bucket">Clear Bucket</button>
-                    <button id="share-bucket">Share Bucket</button>
+                    <button id="share-bucket">Share View</button>
                 </div>
             </div>
         </div>

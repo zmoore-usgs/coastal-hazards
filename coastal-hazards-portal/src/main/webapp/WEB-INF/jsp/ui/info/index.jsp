@@ -324,7 +324,7 @@
 						Click this button to remove all saved items from your bucket.
 					</p>
 					
-					<h2>Share Bucket</h2>
+					<h2>Share View</h2>
 					<p>
 						Click this button to get a short URL that allows you to share the contents of all items saved in your bucket.
 					</p>
