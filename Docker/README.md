@@ -69,4 +69,14 @@ The container exposes port 6311 if you need to work with this RServe standalone
 #### 52N WPS
 =======
 
-The 52 North WPS container takes advantage of the RServe container to create the WPS4R service. The RServe container should already be running in order for this container to run properly. There is configuration in Docker Compose that causes this container to wait until the CCH RServe container is operational before launching this one. The DOI SSL issue also applies to this container, so if you are on the DOI network, issue `doi_network="true" docker-compose build cch_52n_wps` instead. 
+The 52 North WPS container takes advantage of the RServe container to create the WPS4R service. The RServe container should already be running in order for this container to run properly. There is configuration in Docker Compose that causes this container to wait until the CCH RServe container is operational before launching this one. The DOI SSL issue also applies to this container, so if you are on the DOI network, issue `doi_network="true" docker-compose build cch_52n_wps`. Otherwise, `docker-compose build cch_52n_wps` is sufficient.
+
+When running this container from Docker Compose, RServe will automatically be started if it is not currently running.
+
+Once the server is up and running, you can access the server by pointing your web browser at `http://<docker ip>:8082/wps`
+
+#### Postgres/PostGIS
+================
+
+#### PyCSW
+=====
