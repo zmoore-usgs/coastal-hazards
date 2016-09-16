@@ -1,5 +1,9 @@
 #!/bin/bash
 
+PGPASSWORD="${POSTGRES_PASSWORD}" psql -v ON_ERROR_STOP=1 --dbname "${POSTGRES_DB}" --username "${POSTGRES_USER}"  <<-EOSQL
+	CREATE OR REPLACE LANGUAGE plpythonu;
+EOSQL
+
 cd /liquibase/coastal-hazards-liquibase/src/main/liquibase
 
 echo "Initializing database schema..."

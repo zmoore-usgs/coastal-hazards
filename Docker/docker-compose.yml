@@ -75,6 +75,7 @@ services:
   cch_geoserver:
     build:
         context: ./geoserver
+    image: cch_geoserver
     volumes:
         - cch_geoserver_data:/heapdumps
         - cch_geoserver_data:/data
@@ -83,6 +84,20 @@ services:
           aliases:
           - geoserver
     ports:
-      - "8081:8080"
+      - "8081:8080"  
+
+  cch_pycsw:
+    build:
+        context: ./pycsw
+        args:
+        - doi_network=$doi_network
+    image: cch_pycsw
+    command: dockerize -wait tcp://db:5432 -timeout 30s /bin/sh "run.sh" 
+    networks:
+        cchnet:
+          aliases:
+          - pycsw
+    ports:
+      - "8000:8000"
     depends_on:
       - cch_db
