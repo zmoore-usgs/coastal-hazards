@@ -24,5 +24,6 @@ COPY setenv.sh /usr/local/tomcat/bin/setenv.sh
 COPY wps_config.xml /wps_config.xml
 
 RUN apt-get update && \
-   apt-get install -y libxml2-utils && \
-   /download-cch-wps.sh
+   apt-get install -y libxml2-utils
+   
+RUN chmod +x /download-cch-wps.sh && /download-cch-wps.sh
