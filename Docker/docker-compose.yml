@@ -17,17 +17,15 @@ version: '2'
 #
 # Ex: $ wps_version="0.0.1" docker-compose build cch_n52_wps
 
-networks: 
+networks:
   cchnet:
 
 volumes:
   cch_geoserver_data:
-  # - geoserver_heapdumps:/heapdumps
-  # - geoserver_data:/data
 
 services:
   cch_rserve:
-    build: 
+    build:
       context: ./rserve
       args:
         - doi_network=$doi_network
@@ -42,12 +40,13 @@ services:
         - rserve
 
   cch_n52_wps:
-    build: 
+    build:
       context: ./n52-wps
       args:
         - doi_network=$doi_network
         - wps_version=$wps_version
     image: cch_n52_wps
+    command: dockerize -wait tcp://rserve:6311 -timeout 30s catalina.sh run
     ports:
       - "8082:8080"
     networks:
@@ -71,7 +70,7 @@ services:
         - db
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
-    
+
   cch_geoserver:
     build:
         context: ./geoserver
@@ -84,7 +83,7 @@ services:
           aliases:
           - geoserver
     ports:
-      - "8081:8080"  
+      - "8081:8080"
 
   cch_pycsw:
     build:
@@ -92,7 +91,7 @@ services:
         args:
         - doi_network=$doi_network
     image: cch_pycsw
-    command: dockerize -wait tcp://db:5432 -timeout 30s /bin/sh "run.sh" 
+    command: dockerize -wait tcp://db:5432 -timeout 30s /bin/sh "run.sh"
     networks:
         cchnet:
           aliases:
