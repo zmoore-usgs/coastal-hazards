@@ -25,3 +25,6 @@ RUN apt-get update && \
    apt-get install -y libxml2-utils
    
 RUN chmod +x /download-cch-wps.sh && /download-cch-wps.sh
+
+HEALTHCHECK --interval=15s --timeout=3s \
+	CMD curl -f http://localhost:8080/wps || exit 1
