@@ -1,10 +1,11 @@
 #!/bin/bash 
 
-# Pull down the latest snapshot
+# Pull down the latest release
+version=${geoserver_version:-"LATEST"}
 group="gov.usgs.cida.coastalhazards"
 artifact="coastal-hazards-geoserver"
 nexusUrl="http://cida.usgs.gov/maven/service/local/artifact/maven/"
-gsArtifact="?r=cida-public-snapshots&g=${group}&a=${artifact}&v=LATEST&e=war"
+gsArtifact="?r=cida-public-releases&g=${group}&a=${artifact}&v=${version}&e=war"
 gsFileLocation="/coastal-hazards-geoserver.war"
 finalWarLocation="/usr/local/tomcat/webapps/geoserver.war"
 remoteSHA1=$(curl "${nexusUrl}resolve${gsArtifact}" | xmllint --xpath "string(//sha1)" -)

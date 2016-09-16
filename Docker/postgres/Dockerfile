@@ -61,3 +61,6 @@ COPY liquibase_load_test_data.sh /liquibase_load_test_data.sh
 RUN chmod +x /docker-entrypoint-initdb.d/postgres_entrypoint.sh && \
 	chmod +x /liquibase_bootstrap.sh && \
 	chmod +x /liquibase_load_test_data.sh
+
+HEALTHCHECK --interval=15s --timeout=3s \
+	CMD /usr/lib/postgresql/9.5/bin/pg_isready -U ${POSTGRES_USER} || exit 1
