@@ -3,7 +3,7 @@ FROM camptocamp/postgis:9.5
 MAINTAINER Ivan Suftin <isuftin@usgs.gov>
 
 RUN apt-get update && \
-	apt-get -y install openjdk-7-jre wget && \
+	apt-get -y install openjdk-7-jre wget postgresql-plpython-9.5 && \
 	apt-get clean
 
 ENV LIQUIBASE_HOME "/opt/liquibase"

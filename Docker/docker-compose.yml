@@ -83,6 +83,18 @@ services:
           aliases:
           - geoserver
     ports:
-      - "8081:8080"
+      - "8081:8080"  
+
+  cch_pycsw:
+    build:
+        context: ./pycsw
+        args:
+        - doi_network=$doi_network
+    networks:
+        cchnet:
+          aliases:
+          - pycsw
+    ports:
+      - "8000:8000"
     depends_on:
       - cch_db
