@@ -20,6 +20,11 @@ version: '2'
 networks: 
   cchnet:
 
+volumes:
+  cch_geoserver_data:
+  # - geoserver_heapdumps:/heapdumps
+  # - geoserver_data:/data
+
 services:
   cch_rserve:
     build: 
@@ -66,3 +71,18 @@ services:
         - db
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
+    
+  cch_geoserver:
+    build:
+        context: ./geoserver
+    volumes:
+        - cch_geoserver_data:/heapdumps
+        - cch_geoserver_data:/data
+    networks:
+        cchnet:
+          aliases:
+          - geoserver
+    ports:
+      - "8081:8080"
+    depends_on:
+      - cch_db
