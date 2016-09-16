@@ -51,3 +51,18 @@ services:
         - n52_wps
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
+    depends_on:
+      - cch_rserve
+
+  cch_db:
+    build:
+      context: ./postgres
+    image: cch_db
+    ports:
+      - "5432:5432"
+    networks:
+      cchnet:
+        aliases:
+        - db
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"

@@ -6,11 +6,9 @@ ARG wps_version=LATEST
 
 ARG doi_network=false
 
-RUN echo $doi_network
-
 RUN if [ "${doi_network}" = true ]; then \
 		/usr/bin/wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://blockpage.doi.gov/images/DOIRootCA.crt && \
-		ln -s /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0; \
+		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0; \
 	fi
 
 COPY tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
