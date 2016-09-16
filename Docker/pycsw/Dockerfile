@@ -40,4 +40,13 @@ EXPOSE 8000
 HEALTHCHECK --interval=15s --timeout=3s \
 	CMD curl -f http://localhost:8000/csw?service=CSW&request=GetCapabilities || exit 1
 
-CMD [ "/bin/sh", "run.sh" ]
+# Because this container needs to wait for the database to be up, install Dockerize
+# and control this container running its command based on the database server starting up.
+#
+# https://github.com/jwilder/dockerize
+# https://github.com/mefellows/dockerize-compose-demo
+
+ENV DOCKERIZE_VERSION "0.2.0"
+
+RUN wget --no-check-certificate https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz && \
+	tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz
