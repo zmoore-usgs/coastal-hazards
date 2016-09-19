@@ -18,7 +18,7 @@ public class RasterTest {
        @Test
     public void testGenerateSLD() {
         Item item = new Item();
-        item.setAttr("GRAY_INDEX");
+        item.setAttr("GRAY_INDEX");  //for rasters, this will stay the same. We may need a way to manage the type for a raster(ramp, intervals) etc as that is the volatile piece of data.
         item.setId("EHr6oLT5");  //may want h
         item.setType(Item.Type.vulnerability);
         List<Service> services = new LinkedList<>();
