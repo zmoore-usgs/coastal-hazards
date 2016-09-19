@@ -1,5 +1,5 @@
 <%-- 
-    Document   : raster
+    Document   : raster_ae
     Created on : Sep 16, 2016, 11:47:08 AM
     Author     : smlarson
 --%>
@@ -36,55 +36,23 @@
         <sld:Name>${it.id}</sld:Name>
         <sld:UserStyle>
             <sld:Name>${it.style}</sld:Name>
-            <sld:Title>Coastal Change Hazards Raster Style</sld:Title>
+            <sld:Title>Coastal Change Hazards Interval Raster Style</sld:Title>
             <sld:FeatureTypeStyle>
-				<c:if test="${null != it.ribbon}">
-				<%-- Add in an empty rule to stop the wfs store from trying to filter by RIBBONID --%>
-				<sld:Rule><sld:Geometry></sld:Geometry</sld:Rule>
-				</c:if>
-                <c:forEach var="i" begin="0" end="${it.binCount-1}">
-					<c:forEach var="scale" begin="0" end="${it.scaleCount-2}">
-				<sld:Rule>
-					<sld:MinScaleDenominator>${it.scales[scale+1]}</sld:MinScaleDenominator>
-					<sld:MaxScaleDenominator>${it.scales[scale]}</sld:MaxScaleDenominator>
-					<ogc:Filter>
-						<c:if test="${null != it.ribbon}"> <%-- For raster, test the symbolizer type: ie AE uses intervals, PAE is values and CR is ramp  --%>
-						<ogc:And>
-							<ogc:PropertyIsEqualTo>
-								<ogc:PropertyName>GREY_INDEX</ogc:PropertyName>
-								<ogc:Literal>${it.ribbon}</ogc:Literal>
-							</ogc:PropertyIsEqualTo>
-							</c:if>
-							<c:if test="${it.binCount-1 > i}">
-							<ogc:And>
-							</c:if>
-							<ogc:PropertyIsGreaterThanOrEqualTo>
-								<ogc:PropertyName>${it.attr}</ogc:PropertyName>
-								<ogc:Literal>${it.thresholds[i]}</ogc:Literal>
-							</ogc:PropertyIsGreaterThanOrEqualTo>
-							<c:if test="${it.binCount-1 > i}">
-								<ogc:PropertyIsLessThan>
-									<ogc:PropertyName>${it.attr}</ogc:PropertyName>
-									<ogc:Literal>${it.thresholds[i+1]}</ogc:Literal>
-								</ogc:PropertyIsLessThan>
-							</c:if>
-							<c:if test="${it.binCount-1 > i}">
-							</ogc:And>
-							</c:if>
-							<c:if test="${null != it.ribbon}">
-							</ogc:And>
-							</c:if>
-					</ogc:Filter>
-					<sld:LineSymbolizer>
-						<sld:Stroke>
-							<sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
-							<sld:CssParameter name="stroke-width">${it.strokeWidth + (scale * (5 * it.strokeWidth / it.scaleCount))}</sld:CssParameter>
-							<sld:CssParameter name="stroke-opacity">${it.strokeOpacity}</sld:CssParameter>
-						</sld:Stroke>
-					</sld:LineSymbolizer>
-				</sld:Rule>
-					</c:forEach>
-                </c:forEach>
+                <%-- For raster, test the symbolizer type: ie AE uses intervals, PAE is values and CR is ramp  --%>
+                <sld:Transformation>
+                    <ogc:Function name="gs:RasterSymbolizer"
+		<xsd:element name="ColorMap">
+                    <sld:RasterSymbolizer> 
+                        <sld:Opacity>1.0</sld:Opacity>
+                        <sld:ColorMap>color=${it.color[i]} quantity=${it.thresholds[i]}</sld:ColorMap>
+                    </sld:RasterSymbolizer>
+                </sld:Transformation>    
+                    <sld:rule>
+                        <
+                    </sld:rule>
+                
+                
+                
             </sld:FeatureTypeStyle>
         </sld:UserStyle>
     </sld:NamedLayer>
