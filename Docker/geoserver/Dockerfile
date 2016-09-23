@@ -12,6 +12,8 @@ COPY tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 
 COPY context.xml /usr/local/tomcat/conf/context.xml
 
+COPY server.xml /usr/local/tomcat/conf/server.xml
+
 RUN apt-get update && \
     apt-get install -y libxml2-utils && \
     chmod a+x /download-geoserver.sh && sleep 1 && /download-geoserver.sh

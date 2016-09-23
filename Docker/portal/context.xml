@@ -39,7 +39,7 @@
     <Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="${cch_files_directory_upload}" /> <!-- TODO: Is this used? -->
     <Environment name="coastal-hazards.files.directory.download" type="java.lang.String" value="${cch_files_directory_download}" />
     <Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="${cch_geoserver_endpoint}" /> <!-- TODO: Is this used? -->
-    <Environment name="coastal-hazards.geoserver.datadir" type="java.lang.String" value="${cch_geoserver_datadir}" />
+    <Environment name="coastal-hazards.geoserver.datadir" type="java.lang.String" value="${cch_geoserver_datadir}" /> <!-- TODO: Is this used? -->
     <Environment name="coastal-hazards.workspace.published" type="java.lang.String" value="${cch_geoserver_workspace_published}" />
 	<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="${cch_geoserver_username}" />
     <Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="${cch_geoserver_password}" />
