@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # Pull down the latest snapshot
+version=${wps_version:-"LATEST"}
 group="gov.usgs.cida.coastalhazards"
 artifact="coastal-hazards-n52"
 nexusUrl="http://cida.usgs.gov/maven/service/local/artifact/maven/"
-wpsArtifact="?r=cida-public-snapshots&g=${group}&a=${artifact}&v=LATEST&e=war"
+wpsArtifact="?r=cida-public-snapshots&g=${group}&a=${artifact}&v=${version}&e=war"
 wpsFileLocation="/wps.war"
 finalWarLocation="/usr/local/tomcat/webapps/wps.war"
 remoteSHA1=$(curl "${nexusUrl}resolve${wpsArtifact}" | xmllint --xpath "string(//sha1)" -)

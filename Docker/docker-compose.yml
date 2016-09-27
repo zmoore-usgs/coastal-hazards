@@ -1,0 +1,116 @@
+---
+version: '2'
+
+# Environment variables for building containers
+#
+# Building on the DOI network
+# ---------------------------
+# When building these containers on the DOI network, you must set your environment
+# variable "doi_network" to "true" so SSL certificates may be installed.
+#
+# Ex: $ doi_network="true" docker-compose build
+#
+# CCH WPS Artifact Version
+# ------------------------
+# By default, the latest 52N WPS version will be downloaded for CCH. If you wish
+# to change that, set  the environment variable "wps_version" to a valid version.
+#
+# Ex: $ wps_version="0.0.1" docker-compose build cch_n52_wps
+
+networks:
+  cchnet:
+
+volumes:
+  cch_geoserver_data:
+
+services:
+  cch_rserve:
+    build:
+      context: ./rserve
+      args:
+        - doi_network=$doi_network
+    image: cch_rserve
+    environment:
+      - PASSWORD=rserve
+    ports:
+      - "6311:6311"
+    networks:
+      cchnet:
+        aliases:
+        - rserve
+
+  cch_n52_wps:
+    build:
+      context: ./n52-wps
+      args:
+        - doi_network=$doi_network
+        - wps_version=$wps_version
+    image: cch_n52_wps
+    command: dockerize -wait tcp://rserve:6311 -timeout 30s catalina.sh run
+    ports:
+      - "8082:8080"
+    networks:
+      cchnet:
+        aliases:
+        - n52_wps
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"
+    depends_on:
+      - cch_rserve
+
+  cch_db:
+    build:
+      context: ./postgres
+    image: cch_db
+    ports:
+      - "5432:5432"
+    networks:
+      cchnet:
+        aliases:
+        - db
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"
+
+  cch_portal:
+    build:
+        context: ./portal
+    image: cch_portal
+    volumes:
+        - cch_geoserver_data:/heapdumps
+        - cch_geoserver_data:/data
+    networks:
+        cchnet:
+          aliases:
+          - cch_portal
+    ports:
+      - "8080:8080"
+
+  cch_geoserver:
+    build:
+        context: ./geoserver
+    image: cch_geoserver
+    volumes:
+        - cch_geoserver_data:/heapdumps
+        - cch_geoserver_data:/data
+    networks:
+        cchnet:
+          aliases:
+          - geoserver
+    ports:
+      - "8081:8081"
+
+  cch_pycsw:
+    build:
+        context: ./pycsw
+        args:
+        - doi_network=$doi_network
+    image: cch_pycsw
+    command: dockerize -wait tcp://db:5432 -timeout 30s /bin/sh "run.sh"
+    networks:
+        cchnet:
+          aliases:
+          - pycsw
+    ports:
+      - "8000:8000"
+    depends_on:
+      - cch_db
