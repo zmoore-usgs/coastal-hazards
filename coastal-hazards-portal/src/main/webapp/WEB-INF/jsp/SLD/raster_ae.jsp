@@ -1,5 +1,5 @@
 <%-- 
-    Document   : raster
+    Document   : raster_ae
     Created on : Sep 16, 2016, 11:47:08 AM
     Author     : smlarson
 --%>
@@ -85,6 +85,24 @@
 				</sld:Rule>
 					</c:forEach>
                 </c:forEach>
+
+            <sld:Title>Coastal Change Hazards Interval Raster Style</sld:Title>
+            <sld:FeatureTypeStyle>
+                <%-- For raster, test the symbolizer type: ie AE uses intervals, PAE is values and CR is ramp  --%>
+                <sld:Transformation>
+                    <ogc:Function name="gs:RasterSymbolizer"
+		<xsd:element name="ColorMap">
+                    <sld:RasterSymbolizer> 
+                        <sld:Opacity>1.0</sld:Opacity>
+                        <sld:ColorMap>color=${it.color[i]} quantity=${it.thresholds[i]}</sld:ColorMap>
+                    </sld:RasterSymbolizer>
+                </sld:Transformation>    
+                    <sld:rule>
+                        <
+                    </sld:rule>
+                
+                
+                
             </sld:FeatureTypeStyle>
         </sld:UserStyle>
     </sld:NamedLayer>

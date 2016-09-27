@@ -14,8 +14,8 @@ import java.util.Map;
 public final class Raster {
 private static final String[] attrs = {AE, GRAY_INDEX};
 
-	protected static final String jspPath = "/SLD/raster.jsp";
-	protected static final String units = "meters";
+	protected static final String jspPath = "/SLD/raster_ae.jsp";
+	protected static final String units = "m"; //meters
         protected static final List<Map<String, Object>> bins;
         
         // type = intervals for the ColorMap
