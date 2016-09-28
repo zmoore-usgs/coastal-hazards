@@ -37,7 +37,7 @@ public class GeoserverUtil {
 
 	private static final Logger log = LoggerFactory.getLogger(GeoserverUtil.class);
 
-	private static final String geoserverEndpoint;
+	private static final String geoserverInternalEndpoint;
 	private static final String geoserverExternalEndpoint;
 
 	private static final String geoserverUser;
@@ -50,7 +50,7 @@ public class GeoserverUtil {
 
 	static {
 		props = JNDISingleton.getInstance();
-		geoserverEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
+		geoserverInternalEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
 		geoserverExternalEndpoint = props.getProperty("coastal-hazards.portal.geoserver.external.endpoint");
 		geoserverUser = props.getProperty("coastal-hazards.geoserver.username");
 		geoserverPass = props.getProperty("coastal-hazards.geoserver.password");
@@ -81,14 +81,6 @@ public class GeoserverUtil {
 		}
 		return serviceList;
 	}
-
-//	private static File shpZipToTmpFile(InputStream is) throws IOException {
-//		File tempDirectory = FileUtils.getTempDirectory();
-//		UUID uuid = UUID.randomUUID();
-//		File tmpFile = new File(tempDirectory, uuid.toString() + ".zip");
-//		FileUtils.copyInputStreamToFile(is, tmpFile);
-//		return tmpFile;
-//	}
 
 	/**
 	 * Builds WFS Services
@@ -196,7 +188,7 @@ public class GeoserverUtil {
 					+ "</wps:ResponseForm>"
 					+ "</wps:Execute>").getBytes());
 			
-			layerCreated = postToWPS(geoserverEndpoint + (geoserverEndpoint.endsWith("/") ? "" : "/") +
+			layerCreated = postToWPS(geoserverInternalEndpoint + (geoserverInternalEndpoint.endsWith("/") ? "" : "/") +
 					"wps/WebProcessingService", wpsRequestFile);
 		}
 		finally {
