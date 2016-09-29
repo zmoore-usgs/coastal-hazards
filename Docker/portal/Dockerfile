@@ -4,7 +4,7 @@ MAINTAINER Ivan Suftin <isuftin@usgs.gov>
 
 ENV CCH_PORTAL_VERSION ${cch_portal_version:-"LATEST"}
 
-RUN wget -O /usr/local/tomcat/webapps/auth-manager-console.war "http://cida.usgs.gov/maven/service/local/artifact/maven/?r=cida-public-releases&g=gov.usgs.cida.coastalhazards&a=coasl-hazards-portal&v=${CCH_PORTAL_VERSION}&e=war"
+RUN wget -O /usr/local/tomcat/webapps/auth-manager-console.war "http://cida-eros-maven-public.er.usgs.gov:8080/maven/service/local/artifact/maven/?r=cida-public-releases&g=gov.usgs.cida.coastalhazards&a=coasl-hazards-portal&v=${CCH_PORTAL_VERSION}&e=war"
 
 RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/psi-probe/releases/download/3.0.0.M3/probe.war"
 
