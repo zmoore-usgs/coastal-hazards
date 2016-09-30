@@ -73,6 +73,8 @@ services:
 
   cch_portal:
     build:
+        args:
+        - doi_network=$doi_network
         context: ./portal
     image: cch_portal
     volumes:
