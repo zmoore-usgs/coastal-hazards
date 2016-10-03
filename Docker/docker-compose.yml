@@ -44,7 +44,6 @@ services:
       context: ./n52-wps
       args:
         - doi_network=$doi_network
-        - wps_version=$wps_version
     image: cch_n52_wps
     command: dockerize -wait tcp://rserve:6311 -timeout 30s catalina.sh run
     ports:
