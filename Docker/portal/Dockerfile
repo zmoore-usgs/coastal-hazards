@@ -7,12 +7,12 @@ ARG doi_network=false
 RUN if [ "${doi_network}" = true ]; then \
 		/usr/bin/wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://blockpage.doi.gov/images/DOIRootCA.crt && \
 		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0 && \
-		git config --global http.sslCAInfo /usr/lib/ssl/certs/DOIRootCA.crt; \
+		echo "\\n\\nca-certificate = /usr/lib/ssl/certs/DOIRootCA.crt" >> /etc/wgetrc; \
 	fi
 
 ENV CCH_PORTAL_VERSION ${cch_portal_version:-"LATEST"}
 
-RUN wget -O /usr/local/tomcat/webapps/auth-manager-console.war "http://cida-eros-maven-public.er.usgs.gov:8080/maven/service/local/artifact/maven/redirect?r=cida-public-releases&g=gov.usgs.cida.coastalhazards&a=coastal-hazards-portal&v=${CCH_PORTAL_VERSION}&e=war"
+RUN wget -O /usr/local/tomcat/webapps/coastal-hazards-portal.war "https://cida.usgs.gov/maven/service/local/artifact/maven/redirect?r=cida-public-releases&g=gov.usgs.cida.coastalhazards&a=coastal-hazards-portal&v=${CCH_PORTAL_VERSION}&e=war"
 
 RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/psi-probe/releases/download/3.0.0.M3/probe.war"
 
@@ -27,8 +27,6 @@ COPY tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 COPY server.xml /usr/local/tomcat/conf/server.xml
 
 COPY setenv.sh /usr/local/tomcat/bin/setenv.sh
-
-COPY download-geoserver.sh /download-geoserver.sh
 
 COPY tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 

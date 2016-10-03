@@ -76,6 +76,8 @@ services:
         args:
         - doi_network=$doi_network
         context: ./portal
+        args:
+        - doi_network=$doi_network
     image: cch_portal
     volumes:
         - cch_geoserver_data:/heapdumps

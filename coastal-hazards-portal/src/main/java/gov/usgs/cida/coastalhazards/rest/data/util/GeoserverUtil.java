@@ -37,7 +37,9 @@ public class GeoserverUtil {
 
 	private static final Logger log = LoggerFactory.getLogger(GeoserverUtil.class);
 
-	private static final String geoserverEndpoint;
+	private static final String geoserverInternalEndpoint;
+	private static final String geoserverExternalEndpoint;
+
 	private static final String geoserverUser;
 	private static final String geoserverPass;
 	private static final DynamicReadOnlyProperties props;
@@ -48,7 +50,8 @@ public class GeoserverUtil {
 
 	static {
 		props = JNDISingleton.getInstance();
-		geoserverEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
+		geoserverInternalEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
+		geoserverExternalEndpoint = props.getProperty("coastal-hazards.portal.geoserver.external.endpoint");
 		geoserverUser = props.getProperty("coastal-hazards.geoserver.username");
 		geoserverPass = props.getProperty("coastal-hazards.geoserver.password");
 	}
@@ -79,26 +82,32 @@ public class GeoserverUtil {
 		return serviceList;
 	}
 
-//	private static File shpZipToTmpFile(InputStream is) throws IOException {
-//		File tempDirectory = FileUtils.getTempDirectory();
-//		UUID uuid = UUID.randomUUID();
-//		File tmpFile = new File(tempDirectory, uuid.toString() + ".zip");
-//		FileUtils.copyInputStreamToFile(is, tmpFile);
-//		return tmpFile;
-//	}
-
+	/**
+	 * Builds WFS Services
+	 * Must use the external GeoServer url because after these are persisted, 
+	 * they are retrieved by clients external to the network
+	 * @param layer
+	 * @return Service with a www-accessible url
+	 */
 	private static Service wfsService(String layer) {
 		Service service = new Service();
-		URI uri = UriBuilder.fromUri(geoserverEndpoint).path(PROXY_WORKSPACE).path("wfs").build();
+		URI uri = UriBuilder.fromUri(geoserverExternalEndpoint).path(PROXY_WORKSPACE).path("wfs").build();
 		service.setType(Service.ServiceType.proxy_wfs);
 		service.setEndpoint(uri.toString());
 		service.setServiceParameter(layer);
 		return service;
 	}
 
+	/**
+	 * Builds WMS Services
+	 * Must use the external GeoServer url because after these are persisted, 
+	 * they are retrieved by clients external to the network
+	 * @param layer
+	 * @return Service with a www-accessible url
+	 */
 	private static Service wmsService(String layer) {
 		Service service = new Service();
-		URI uri = UriBuilder.fromUri(geoserverEndpoint).path(PROXY_WORKSPACE).path("wms").build();
+		URI uri = UriBuilder.fromUri(geoserverExternalEndpoint).path(PROXY_WORKSPACE).path("wms").build();
 		service.setType(Service.ServiceType.proxy_wms);
 		service.setEndpoint(uri.toString());
 		service.setServiceParameter(layer);
@@ -179,7 +188,7 @@ public class GeoserverUtil {
 					+ "</wps:ResponseForm>"
 					+ "</wps:Execute>").getBytes());
 			
-			layerCreated = postToWPS(geoserverEndpoint + (geoserverEndpoint.endsWith("/") ? "" : "/") +
+			layerCreated = postToWPS(geoserverInternalEndpoint + (geoserverInternalEndpoint.endsWith("/") ? "" : "/") +
 					"wps/WebProcessingService", wpsRequestFile);
 		}
 		finally {
