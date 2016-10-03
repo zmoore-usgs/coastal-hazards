@@ -18,9 +18,9 @@ RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/ps
 
 RUN mkdir -p /usr/local/tomcat/ssl
 
-RUN keytool -genkey -noprompt -keystore /usr/local/tomcat/ssl/.keystore -validity 999 -keysize 2048 -alias auth-manager-console -keyalg RSA -keypass changeit -storepass changeit -dname "CN=Coastal Change Hazards Portal, OU=owi, O=owi, L=middleton, S=WI, C=US" 
+RUN keytool -genkey -noprompt -keystore /usr/local/tomcat/ssl/.keystore -validity 999 -keysize 2048 -alias cch-portal -keyalg RSA -keypass changeit -storepass changeit -dname "CN=Coastal Change Hazards Portal, OU=owi, O=owi, L=middleton, S=WI, C=US" 
 
-RUN keytool -selfcert -alias auth-manager-console  -keypass changeit -dname "CN=Coastal Change Hazards Portal, OU=owi, O=owi, L=middleton, S=WI, C=US" -keystore /usr/local/tomcat/ssl/.keystore -storepass changeit -validity 999
+RUN keytool -selfcert -alias cch-portal  -keypass changeit -dname "CN=Coastal Change Hazards Portal, OU=owi, O=owi, L=middleton, S=WI, C=US" -keystore /usr/local/tomcat/ssl/.keystore -storepass changeit -validity 999
 
 COPY tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 
