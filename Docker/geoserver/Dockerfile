@@ -14,6 +14,12 @@ RUN if [ "${doi_network}" = true ]; then \
 		echo "\\n\\nca-certificate = /usr/lib/ssl/certs/DOIRootCA.crt" >> /etc/wgetrc; \
 	fi
 
+RUN mkdir -p /usr/local/tomcat/ssl
+
+RUN keytool -genkey -noprompt -keystore /usr/local/tomcat/ssl/.keystore -validity 999 -keysize 2048 -alias cch-geoserver -keyalg RSA -keypass changeit -storepass changeit -dname "CN=cch-geoserver, OU=owi, O=owi, L=middleton, S=WI, C=US" 
+
+RUN keytool -selfcert -alias cch-geoserver -keypass changeit -dname "CN=cch-geoserver , OU=owi, O=owi, L=middleton, S=WI, C=US" -keystore /usr/local/tomcat/ssl/.keystore -storepass changeit -validity 999
+
 RUN wget -O /usr/local/tomcat/webapps/geoserver.war "https://cida.usgs.gov/maven/service/local/artifact/maven/redirect?r=cida-public-releases&g=gov.usgs.cida.coastalhazards&a=coastal-hazards-geoserver&v=${CCH_GEOSERVER_VERSION}&e=war"
 
 RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/psi-probe/releases/download/3.0.0.M3/probe.war"
