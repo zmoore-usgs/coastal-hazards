@@ -90,6 +90,8 @@ services:
   cch_geoserver:
     build:
         context: ./geoserver
+        args:
+        - doi_network=$doi_network
     image: cch_geoserver
     volumes:
         - cch_geoserver_data:/heapdumps
