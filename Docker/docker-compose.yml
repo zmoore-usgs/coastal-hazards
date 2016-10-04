@@ -87,6 +87,8 @@ services:
           - cch_portal
     ports:
       - "8080:8080"
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"
 
   cch_geoserver:
     build:
@@ -103,6 +105,8 @@ services:
           - geoserver
     ports:
       - "8081:8081"
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"
 
   cch_pycsw:
     build:
