@@ -22,6 +22,8 @@ RUN keytool -genkey -noprompt -keystore /usr/local/tomcat/ssl/.keystore -validit
 
 RUN keytool -selfcert -alias cch-portal  -keypass changeit -dname "CN=Coastal Change Hazards Portal, OU=owi, O=owi, L=middleton, S=WI, C=US" -keystore /usr/local/tomcat/ssl/.keystore -storepass changeit -validity 999
 
+ADD https://jdbc.postgresql.org/download/postgresql-9.3-1102.jdbc41.jar /usr/local/tomcat/lib
+
 COPY tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 
 COPY server.xml /usr/local/tomcat/conf/server.xml
