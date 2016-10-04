@@ -39,3 +39,7 @@ export CATALINA_OPTS="$CATALINA_OPTS -Dcch_geoserver_username=$cch_geoserver_use
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_geoserver_password=$cch_geoserver_password"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_is_production=$cch_is_production"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_is_development=$cch_is_development"
+export CATALINA_OPTS="$CATALINA_OPTS -Dcch_http_port=${cch_http_port}"
+export CATALINA_OPTS="$CATALINA_OPTS -Dcch_https_port=${cch_https_port}"
+
+
