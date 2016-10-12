@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
-	<changeSet author="jiwalker" id="add_bbox_to_layer">
+	<changeSet author="jiwalker" id="add_bbox_to_layer"
+logicalFilePath="liquibaseChangeSet/70bboxOnLayer.xml">
 		<addColumn tableName="layer">
 			<column name="bbox_id" type="INT" remarks="Foreign key to the bbox table" />
 		</addColumn>

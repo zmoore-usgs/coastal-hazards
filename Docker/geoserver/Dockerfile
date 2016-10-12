@@ -33,4 +33,4 @@ COPY context.xml /usr/local/tomcat/conf/context.xml
 COPY server.xml /usr/local/tomcat/conf/server.xml
 
 HEALTHCHECK --interval=15s --timeout=3s \
-	CMD curl -f http://localhost:8080/geoserver || exit 1
+	CMD curl -f http://localhost:8081/geoserver || exit 1

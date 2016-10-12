@@ -5,7 +5,8 @@
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-    <changeSet author="jiwalker" id="change7">
+    <changeSet author="jiwalker" id="change7"
+    logicalFilePath="liquibaseChangeSet/change7.xml">
         <createView viewName="ranking" replaceIfExists="true">
             SELECT overall_ranking.id, overall_ranking.total_score
                 FROM ( SELECT score_by_id_and_pop_type.id, sum(score_by_id_and_pop_type.activity_type_score) AS total_score

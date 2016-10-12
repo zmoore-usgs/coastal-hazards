@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
-    <changeSet author="jiwalker" id="cascade_delete_foreign_key">
+    <changeSet author="jiwalker" id="cascade_delete_foreign_key"
+    logicalFilePath="liquibaseChangeSet/fixConstraints.xml">
         <dropForeignKeyConstraint baseTableName="aggregation_children" constraintName="fk_aggregation_children_agg_id" />
         <dropForeignKeyConstraint baseTableName="aggregation_children" constraintName="fk_aggregation_children_item_id" />
         <addForeignKeyConstraint baseColumnNames="aggregation_id" baseTableName="aggregation_children" constraintName="fk_aggregation_children_agg_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" />

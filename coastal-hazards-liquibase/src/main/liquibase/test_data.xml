@@ -3,7 +3,8 @@
     <changeSet id="test_data_tag" author="jiwalker" context="test">
         <tagDatabase tag="test_data" />
     </changeSet>
-    <changeSet author="jiwalker" id="test_data" context="test">
+    <changeSet author="jiwalker" id="test_data" context="test"
+    logicalFilePath="liquibaseChangeSet/test_data.xml">
         <loadData encoding="UTF-8" file="data/activity.csv" quotchar="&quot;" separator="," tableName="activity">
             <column header="id" name="id" type="NUMERIC"/>
             <column header="activity_timestamp" name="activity_timestamp" type="DATE"/>
