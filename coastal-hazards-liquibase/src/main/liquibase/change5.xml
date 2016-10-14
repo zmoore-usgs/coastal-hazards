@@ -5,7 +5,8 @@
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-    <changeSet author="jiwalker" id="change5-1">
+    <changeSet author="jiwalker" id="change5-1"
+    logicalFilePath="liquibaseChangeSet/change5.xml">
         <createTable tableName="tinygov">
             <column name="full_url" type="VARCHAR(512)">
                 <constraints nullable="false"/>
