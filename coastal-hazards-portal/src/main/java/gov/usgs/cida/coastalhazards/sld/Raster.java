@@ -19,7 +19,7 @@ private static final String[] attrs = {AE, GRAY_INDEX};
         protected static final List<Map<String, Object>> bins;
         
         // type = intervals for the ColorMap
-        protected static final float[] thresholds = {-12.0f, -1.0f, 0.0f, 1.0f, 5.0f, 10.0f}; //-12 to -1, -1 to 0, 0 to 1, 1 to 5, 5 to 10  
+        protected static final float[] thresholds = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};//{-12.0f, -1.0f, 0.0f, 1.0f, 5.0f, 10.0f}; //-12 to -1, -1 to 0, 0 to 1, 1 to 5, 5 to 10  
 	protected static final String[] colors = {"#285A94", "#005BE7", "#38A700", "#AAFF01", "#FEFF73"};
         
 	static {

@@ -87,6 +87,7 @@ services:
           - cch_portal
     ports:
       - "8080:8080"
+      - "8443:8443"
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
 
@@ -105,6 +106,7 @@ services:
           - geoserver
     ports:
       - "8081:8081"
+      - "8444:8444"
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
 

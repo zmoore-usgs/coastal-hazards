@@ -1,108 +1,29 @@
-<%-- 
-    Document   : raster_ae
-    Created on : Sep 16, 2016, 11:47:08 AM
-    Author     : smlarson
---%>
-
-<?xml version="1.0" encoding="UTF-8"?>
-<%@page contentType="text/xml" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%-- <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd">
-    <NamedLayer>
-        <Name>Raster Interval</Name>
-        <UserStyle>
-        <Title>Raster SLD Tiff Test</Title>
-        <FeatureTypeStyle>
-    <Rule>
-        <RasterSymbolizer>
-            <Opacity>1.0</Opacity>
-            <ColorMap type="intervals" extended="true">
-                <ColorMapEntry color="#285A94" quantity="-12.0"/>
-                <ColorMapEntry color="#005BE7" quantity="-1.0"/>
-                <ColorMapEntry color="#38A700" quantity="0.0"/>
-                <ColorMapEntry color="#AAFF01" quantity="1.0"/>
-                <ColorMapEntry color="#FEFF73" quantity="5.0"/>
-                <ColorMapEntry color="#FEFF73" quantity="10.0"/>
-            </ColorMap>
-        </RasterSymbolizer>
-    </Rule>
-    </FeatureTypeStyle>
-</UserStyle>
-</NamedLayer>
-</StyledLayerDescriptor> 
---%>
-    <sld:NamedLayer>
+<sld:StyledLayerDescriptor
+    xmlns="http://www.opengis.net/ogc"
+    xmlns:sld="http://www.opengis.net/sld"
+    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="1.0.0"
+    xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+<sld:NamedLayer>
         <sld:Name>${it.id}</sld:Name>
         <sld:UserStyle>
             <sld:Name>${it.style}</sld:Name>
-            <sld:Title>Coastal Change Hazards Raster Style</sld:Title>
+            <sld:Title>Coastal Change Hazards Style</sld:Title>
             <sld:FeatureTypeStyle>
-				<c:if test="${null != it.ribbon}">
-				<%-- Add in an empty rule to stop the wfs store from trying to filter by RIBBONID --%>
-				<sld:Rule><sld:Geometry></sld:Geometry</sld:Rule>
-				</c:if>
-                <c:forEach var="i" begin="0" end="${it.binCount-1}">
-					<c:forEach var="scale" begin="0" end="${it.scaleCount-2}">
-				<sld:Rule>
-					<sld:MinScaleDenominator>${it.scales[scale+1]}</sld:MinScaleDenominator>
-					<sld:MaxScaleDenominator>${it.scales[scale]}</sld:MaxScaleDenominator>
-					<ogc:Filter>
-						<c:if test="${null != it.ribbon}"> <%-- For raster, test the symbolizer type: ie AE uses intervals, PAE is values and CR is ramp  --%>
-						<ogc:And>
-							<ogc:PropertyIsEqualTo>
-								<ogc:PropertyName>GREY_INDEX</ogc:PropertyName>
-								<ogc:Literal>${it.ribbon}</ogc:Literal>
-							</ogc:PropertyIsEqualTo>
-							</c:if>
-							<c:if test="${it.binCount-1 > i}">
-							<ogc:And>
-							</c:if>
-							<ogc:PropertyIsGreaterThanOrEqualTo>
-								<ogc:PropertyName>${it.attr}</ogc:PropertyName>
-								<ogc:Literal>${it.thresholds[i]}</ogc:Literal>
-							</ogc:PropertyIsGreaterThanOrEqualTo>
-							<c:if test="${it.binCount-1 > i}">
-								<ogc:PropertyIsLessThan>
-									<ogc:PropertyName>${it.attr}</ogc:PropertyName>
-									<ogc:Literal>${it.thresholds[i+1]}</ogc:Literal>
-								</ogc:PropertyIsLessThan>
-							</c:if>
-							<c:if test="${it.binCount-1 > i}">
-							</ogc:And>
-							</c:if>
-							<c:if test="${null != it.ribbon}">
-							</ogc:And>
-							</c:if>
-					</ogc:Filter>
-					<sld:LineSymbolizer>
-						<sld:Stroke>
-							<sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
-							<sld:CssParameter name="stroke-width">${it.strokeWidth + (scale * (5 * it.strokeWidth / it.scaleCount))}</sld:CssParameter>
-							<sld:CssParameter name="stroke-opacity">${it.strokeOpacity}</sld:CssParameter>
-						</sld:Stroke>
-					</sld:LineSymbolizer>
-				</sld:Rule>
-					</c:forEach>
-                </c:forEach>
-
-            <sld:Title>Coastal Change Hazards Interval Raster Style</sld:Title>
-            <sld:FeatureTypeStyle>
-                <%-- For raster, test the symbolizer type: ie AE uses intervals, PAE is values and CR is ramp  --%>
-                <sld:Transformation>
-                    <ogc:Function name="gs:RasterSymbolizer"
-		<xsd:element name="ColorMap">
-                    <sld:RasterSymbolizer> 
-                        <sld:Opacity>1.0</sld:Opacity>
-                        <sld:ColorMap>color=${it.color[i]} quantity=${it.thresholds[i]}</sld:ColorMap>
+                <sld:Rule>
+                    <sld:RasterSymbolizer>
+                        <sld:ColorMap>                         
+                            <sld:ColorMapEntry color="#000000" label= "0" quantity="0" opacity="0"/>
+                            <sld:ColorMapEntry color="#004DA7" label= "-12 to -1" quantity="1.0" opacity="1"/>
+                            <sld:ColorMapEntry color="#005BE7" label= "-1 to 0" quantity="2.0" opacity="1"/> 
+                            <sld:ColorMapEntry color="#38A700" label= "0 to 1" quantity="3.0" opacity="1"/>
+                            <sld:ColorMapEntry color="#AAFF01" label= "1 to 5" quantity="4.0" opacity="1"/>
+                            <sld:ColorMapEntry color="#FEFF73" label= "5 to 10" quantity="5.0" opacity="1"/> 
+                        </sld:ColorMap>
                     </sld:RasterSymbolizer>
-                </sld:Transformation>    
-                    <sld:rule>
-                        <
-                    </sld:rule>
-                
-                
-                
+                </sld:Rule>
             </sld:FeatureTypeStyle>
         </sld:UserStyle>
     </sld:NamedLayer>
