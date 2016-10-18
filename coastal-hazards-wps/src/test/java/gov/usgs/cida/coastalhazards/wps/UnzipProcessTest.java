@@ -1,6 +1,7 @@
 package gov.usgs.cida.coastalhazards.wps;
 
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -114,9 +115,26 @@ public class UnzipProcessTest {
             }
         }
         return; //Exceptions were thrown on all HTTP errors
-        
     }
 
+    /**
+     * Test of getZipFromUrl method, of class UnzipProcess.
+     */
+    @Test
+    public void testGetZipFromGoodUrls() {
+        int[] goodCodes = new int[]{200, 301, 302, 304, 307};
+        byte[] empty = new byte[]{};
+        for(int goodCode : goodCodes){
+            HttpClient client = new MockHttpClient(goodCode, new ByteArrayInputStream(empty));
+            try{
+                instance.getZipFromUrl("http://owi.usgs.gov", client);
+            } catch (ProcessException ex){
+                fail("Should not throw exception on HTTP error");
+            }
+        }
+        return; //No Exceptions were thrown on any HTTP status codes
+    }
+    
     /**
      * Test of unzipToDir method, of class UnzipProcess.
      */
