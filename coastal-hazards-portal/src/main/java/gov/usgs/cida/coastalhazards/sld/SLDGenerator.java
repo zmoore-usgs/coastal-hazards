@@ -50,7 +50,8 @@ public class SLDGenerator {
                 sideEffectMapPut(vulnerability, BayesianTidalRangeCVI.tr);
                 sideEffectMapPut(vulnerability, BayesianErateCVI.erate);
 		sideEffectMapPut(vulnerability, OldSchoolComponentCVI.componentOldSchool);
-                sideEffectMapPut(vulnerability, Raster.rasterConfig); //raster
+                sideEffectMapPut(vulnerability, Raster.rasterConfig); //raster ae -adjusted elevation
+                sideEffectMapPut(vulnerability, Raster_pae.rasterConfig); //raster pae -probability
                 sideEffectMapPut(vulnerability, OldSchoolOverallCVI.overallOldSchool);
 		gmap.put(Item.Type.vulnerability, vulnerability);
 		

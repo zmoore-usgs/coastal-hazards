@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.sld;
 
 import static gov.usgs.cida.coastalhazards.Attributes.AE;
-import static gov.usgs.cida.coastalhazards.Attributes.GRAY_INDEX;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.Map;
  * @author smlarson
  */
 public final class Raster {
-private static final String[] attrs = {AE, GRAY_INDEX};
+private static final String[] attrs = {AE};
 
 	protected static final String jspPath = "/SLD/raster_ae.jsp";
 	protected static final String units = "m"; //meters
