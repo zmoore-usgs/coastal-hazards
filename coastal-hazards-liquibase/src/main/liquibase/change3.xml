@@ -4,9 +4,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
-    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-    <changeSet author="jiwalker" id="1372109304375-1"
-    logicalFilePath="liquibaseChangeSet/change3.xml">
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd" logicalFilePath="liquibaseChangeSet/change3.xml">
+    <changeSet author="jiwalker" id="1372109304375-1">
         <createSequence sequenceName="hibernate_sequence"/>
     </changeSet>
     <changeSet author="jlucido" id="1372109304375-2">
