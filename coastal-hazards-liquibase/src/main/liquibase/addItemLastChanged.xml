@@ -5,7 +5,8 @@
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-    <changeSet author="cschroed" id="change8">
+    <changeSet author="cschroed" id="change8"
+    logicalFilePath="liquibaseChangeSet/addItemLastChanged.xml">
         <addColumn tableName="item">
             <column name="last_update" type="DATETIME" defaultValueDate="now()">
 				<constraints nullable="false"/>

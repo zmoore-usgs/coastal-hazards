@@ -44,7 +44,6 @@ services:
       context: ./n52-wps
       args:
         - doi_network=$doi_network
-        - wps_version=$wps_version
     image: cch_n52_wps
     command: dockerize -wait tcp://rserve:6311 -timeout 30s catalina.sh run
     ports:
@@ -71,9 +70,32 @@ services:
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
 
+  cch_portal:
+    build:
+        args:
+        - doi_network=$doi_network
+        context: ./portal
+        args:
+        - doi_network=$doi_network
+    image: cch_portal
+    volumes:
+        - cch_geoserver_data:/heapdumps
+        - cch_geoserver_data:/data
+    networks:
+        cchnet:
+          aliases:
+          - cch_portal
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"
+
   cch_geoserver:
     build:
         context: ./geoserver
+        args:
+        - doi_network=$doi_network
     image: cch_geoserver
     volumes:
         - cch_geoserver_data:/heapdumps
@@ -83,7 +105,10 @@ services:
           aliases:
           - geoserver
     ports:
-      - "8081:8080"
+      - "8081:8081"
+      - "8444:8444"
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"
 
   cch_pycsw:
     build:

@@ -4,18 +4,33 @@ MAINTAINER Ivan Suftin <isuftin@usgs.gov>
 
 VOLUME ["/heapdumps", "/data"]
 
-COPY setenv.sh /usr/local/tomcat/bin/setenv.sh
+ARG doi_network=false
 
-COPY download-geoserver.sh /download-geoserver.sh
+ENV CCH_GEOSERVER_VERSION ${cch_geoserver_version:-"LATEST"}
+
+RUN if [ "${doi_network}" = true ]; then \
+		/usr/bin/wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://blockpage.doi.gov/images/DOIRootCA.crt && \
+		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0 && \
+		echo "\\n\\nca-certificate = /usr/lib/ssl/certs/DOIRootCA.crt" >> /etc/wgetrc; \
+	fi
+
+RUN mkdir -p /usr/local/tomcat/ssl
+
+RUN keytool -genkey -noprompt -keystore /usr/local/tomcat/ssl/.keystore -validity 999 -keysize 2048 -alias cch-geoserver -keyalg RSA -keypass changeit -storepass changeit -dname "CN=cch-geoserver, OU=owi, O=owi, L=middleton, S=WI, C=US" 
+
+RUN keytool -selfcert -alias cch-geoserver -keypass changeit -dname "CN=cch-geoserver , OU=owi, O=owi, L=middleton, S=WI, C=US" -keystore /usr/local/tomcat/ssl/.keystore -storepass changeit -validity 999
+
+RUN wget -O /usr/local/tomcat/webapps/geoserver.war "https://cida.usgs.gov/maven/service/local/artifact/maven/redirect?r=cida-public-releases&g=gov.usgs.cida.coastalhazards&a=coastal-hazards-geoserver&v=${CCH_GEOSERVER_VERSION}&e=war"
+
+RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/psi-probe/releases/download/3.0.0.M3/probe.war"
+
+COPY setenv.sh /usr/local/tomcat/bin/setenv.sh
 
 COPY tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 
 COPY context.xml /usr/local/tomcat/conf/context.xml
 
-RUN apt-get update && \
-    apt-get install -y libxml2-utils
-
-RUN chmod a+x /download-geoserver.sh && sleep 1 && /download-geoserver.sh
+COPY server.xml /usr/local/tomcat/conf/server.xml
 
 HEALTHCHECK --interval=15s --timeout=3s \
-	CMD curl -f http://localhost:8080/geoserver || exit 1
+	CMD curl -f http://localhost:8081/geoserver || exit 1
