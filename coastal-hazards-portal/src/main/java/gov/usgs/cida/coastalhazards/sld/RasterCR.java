@@ -11,20 +11,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- * @author smlarson
- */
-public class Raster_cr {
-private static final String[] attrs = {CR};
-
-	protected static final String jspPath = "/SLD/raster_cr.jsp";
-	protected static final String units = "Inundate to Dynamic"; 
+public final class RasterCR {
+    
+        private static final String[] attrs = {CR};
+        protected static final String jspPath = "/SLD/raster_cr.jsp";
+        protected static final String units = "Inundate to Dynamic"; 
         protected static final List<Map<String, Object>> bins;
-        
-        // type = intervals for the ColorMap
         protected static final float[] thresholds = {0.0f, .31f, .66f, .95f}; //used to evaluate what color the pixel should receive. (index) 
-	protected static final String[] colors = {"#000000", "#5278AB", "#ededc4", "#BB4238"}; 
+        protected static final String[] colors = {"#000000", "#5278AB", "#ededc4", "#BB4238"}; 
         
 	static {
 		List<Map<String, Object>> binsResult = new ArrayList<>();
