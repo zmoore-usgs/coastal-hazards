@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
  *
  * @author cschroed
  */
-public class UnzipProcessTest {
+public class FetchAndUnzipProcessTest {
     
     private FetchAndUnzipProcess instance;
     private static final String TEST_TOKEN = "ASDFQWER";

@@ -29,8 +29,8 @@ import org.geotools.util.logging.Logging;
 @DescribeProcess(title = "Fetch and Unzip", description = "Fetches the specifed zip file, unzips it to GeoServer's file system, and returns the resulting file paths")
 public class FetchAndUnzipProcess {
     static final Logger LOGGER = Logging.getLogger(FetchAndUnzipProcess.class);
-    static final String TOKEN_PROPERTY_NAME = "gov.usgs.cida.coastalhazards.wps.unzip.process.token";
-    static final String UNZIP_BASE_PROPERTY_NAME = "gov.usgs.cida.coastalhazards.wps.unzip.process.unzip.base";
+    static final String TOKEN_PROPERTY_NAME = "gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token";
+    static final String UNZIP_BASE_PROPERTY_NAME = "gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.unzip.base";
     private DynamicReadOnlyProperties properties;
     private HttpClient httpClient;
     
