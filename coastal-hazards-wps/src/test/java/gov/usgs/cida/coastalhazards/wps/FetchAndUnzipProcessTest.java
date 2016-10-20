@@ -143,10 +143,10 @@ public class FetchAndUnzipProcessTest {
      * @param relativePaths
      * @return 
      */
-    private List<String> buildExpectedAbsolutePaths(String zipDestination, String ... relativePaths){
+    private List<String> buildExpectedAbsolutePaths(File zipDestination, String ... relativePaths){
         List<String> expectedPaths = new ArrayList<>();
         for(String relativePath : relativePaths){
-            expectedPaths.add(zipDestination + File.separator + relativePath);
+            expectedPaths.add(new File(zipDestination, relativePath).getAbsolutePath());
         }
         Collections.sort(expectedPaths);
         return expectedPaths;
@@ -159,7 +159,7 @@ public class FetchAndUnzipProcessTest {
     public void assertZipFileUnzipsToPaths(String zipFileResourcePath, String... expectedRelativePaths){
         InputStream file = this.getClass().getClassLoader().getResourceAsStream(zipFileResourcePath);
         ZipInputStream zipStream = new ZipInputStream(file);
-        String zipDestination = instance.getNewZipDestination();
+        File zipDestination = instance.getNewZipDestination();
         List<String> expectedPaths = buildExpectedAbsolutePaths(zipDestination, expectedRelativePaths);
         List<String> actualPaths = instance.unzipToDir(zipStream,zipDestination);
         Collections.sort(actualPaths);
@@ -212,8 +212,9 @@ public class FetchAndUnzipProcessTest {
     
     @Test
     public void testGetNewZipDestination(){
-        String zipDestination = instance.getNewZipDestination("asdf");
-        assertTrue("path string should be non-empty", 0 < zipDestination.length());
+        File zipDestination = instance.getNewZipDestination("asdf");
+        assertNotNull(zipDestination);
+        assertTrue("path string should be non-empty", 0 < zipDestination.getAbsolutePath().length());
     }
     
     public HttpClient mockHttpClient(int code, InputStream content){

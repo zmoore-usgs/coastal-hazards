@@ -67,7 +67,7 @@ public class FetchAndUnzipProcess {
      * Everything except for tests should call this method to get a new zip destination
      * @return a unique path
      */
-    String getNewZipDestination(){
+    File getNewZipDestination(){
         return getNewZipDestination(getProperties().getProperty(UNZIP_BASE_PROPERTY_NAME));
     }
     
@@ -76,12 +76,12 @@ public class FetchAndUnzipProcess {
      * @param unzipBase
      * @return a unique path
      */
-    String getNewZipDestination(String unzipBase){
+    File getNewZipDestination(String unzipBase){
         UUID uuid = UUID.randomUUID();
         if (null == unzipBase) {
             throw new ProcessException("Could not determine base directory in which to unzip. Please ensure that " + UNZIP_BASE_PROPERTY_NAME + " is defined on the server.");
         } else {
-            String zipDir = unzipBase + File.separator + uuid.toString();
+            File zipDir = new File(unzipBase, uuid.toString());
             return zipDir;
         }
     }
@@ -106,7 +106,7 @@ public class FetchAndUnzipProcess {
         return zipStream;
     }
     
-    List<String> unzipToDir(ZipInputStream zipStream, String zipDir) {
+    List<String> unzipToDir(ZipInputStream zipStream, File zipDir) {
         List<String> unzippedFiles = new ArrayList<>();
         try {
             ZipEntry entry;
@@ -114,7 +114,7 @@ public class FetchAndUnzipProcess {
                 if(!entry.isDirectory()){
                     String entryFileName = entry.getName();
 
-                    File entryFile = new File(zipDir + File.separator + entryFileName);
+                    File entryFile = new File(zipDir, entryFileName);
                     String entryFileAbsolutePath = entryFile.getAbsolutePath();
                     LOGGER.fine("unzipping '" + entryFileName + "' to " + entryFileAbsolutePath);
                     new File(entryFile.getParent()).mkdirs();
@@ -143,7 +143,7 @@ public class FetchAndUnzipProcess {
      * @return the properties, defaulting to JNDI
      */
     DynamicReadOnlyProperties getProperties() {
-        return null == properties ? JNDISingleton.getInstance() : properties;
+        return (null == properties) ? JNDISingleton.getInstance() : properties;
     }
 
     /**
@@ -158,7 +158,7 @@ public class FetchAndUnzipProcess {
      * @return the httpClient
      */
     HttpClient getHttpClient() {
-        return null == httpClient ? new DefaultHttpClient() : httpClient;
+        return (null == httpClient) ? new DefaultHttpClient() : httpClient;
     }
 
     /**
