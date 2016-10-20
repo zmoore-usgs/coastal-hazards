@@ -34,7 +34,7 @@ public class FetchAndUnzipProcess {
     private DynamicReadOnlyProperties properties;
     private HttpClient httpClient;
     
-    @DescribeResult(name = "filePath", description = "path to the directory where the file was unzipped")
+    @DescribeResult(name = "filePaths", description = "paths to the unzipped files")
     public List<String> execute(
             @DescribeParameter(name = "zipUrl", min = 1, max = 1, description = "URL to the zipped file to retrieve") String zipUrl,
             @DescribeParameter(name = "token", min = 1, max = 1, description = "Token for authorizing the upload") String token
