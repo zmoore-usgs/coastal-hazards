@@ -38,17 +38,17 @@ import static org.mockito.Mockito.when;
  */
 public class UnzipProcessTest {
     
-    private UnzipProcess instance;
+    private FetchAndUnzipProcess instance;
     private static final String TEST_TOKEN = "ASDFQWER";
     private Path tempDir; 
     
     @Before
     public void setUp() throws IOException {
-        instance = new UnzipProcess();
+        instance = new FetchAndUnzipProcess();
         Map<String, String> kvp = new HashMap<>();
-        kvp.put(UnzipProcess.TOKEN_PROPERTY_NAME, TEST_TOKEN);
+        kvp.put(FetchAndUnzipProcess.TOKEN_PROPERTY_NAME, TEST_TOKEN);
         tempDir = Files.createTempDirectory("temp");
-        kvp.put(UnzipProcess.UNZIP_BASE_PROPERTY_NAME, tempDir.toAbsolutePath().toString());
+        kvp.put(FetchAndUnzipProcess.UNZIP_BASE_PROPERTY_NAME, tempDir.toAbsolutePath().toString());
         instance.setProperties(new DynamicReadOnlyProperties(kvp));
     }
     
@@ -71,7 +71,7 @@ public class UnzipProcessTest {
     }
     
     /**
-     * Test of execute method, of class UnzipProcess.
+     * Test of execute method, of class FetchAndUnzipProcess.
      */
     @Test
     public void testExecuteWithBadAuth() {
@@ -85,7 +85,7 @@ public class UnzipProcessTest {
     }
   
     /**
-     * Test of execute method, of class UnzipProcess.
+     * Test of execute method, of class FetchAndUnzipProcess.
      */
     @Test
     public void testIsAuthorizedWithBadAuth() {
@@ -102,7 +102,7 @@ public class UnzipProcessTest {
         assertTrue("the correct token should be authorized", instance.isAuthorized(TEST_TOKEN));
     }
     /**
-     * Test of getZipFromUrl method, of class UnzipProcess.
+     * Test of getZipFromUrl method, of class FetchAndUnzipProcess.
      */
     @Test
     public void testGetZipFromBadUrl() {
@@ -120,7 +120,7 @@ public class UnzipProcessTest {
     }
 
     /**
-     * Test of getZipFromUrl method, of class UnzipProcess.
+     * Test of getZipFromUrl method, of class FetchAndUnzipProcess.
      */
     @Test
     public void testGetZipFromGoodUrls() {
@@ -168,7 +168,7 @@ public class UnzipProcessTest {
     
    
     /**
-     * Test of unzipToDir method, of class UnzipProcess.
+     * Test of unzipToDir method, of class FetchAndUnzipProcess.
      */
     @Test
     public void testUnzipSingleFileZipToDir() {       
@@ -179,7 +179,7 @@ public class UnzipProcessTest {
     }
     
     /**
-     * Test of unzipToDir method, of class UnzipProcess.
+     * Test of unzipToDir method, of class FetchAndUnzipProcess.
      */
     @Test
     public void testUnzipTwoFileZipToDir() {       
@@ -191,7 +191,7 @@ public class UnzipProcessTest {
     }
     
     /**
-     * Test of unzipToDir method, of class UnzipProcess.
+     * Test of unzipToDir method, of class FetchAndUnzipProcess.
      */
     @Test
     public void testUnzipDeepZipFileToDir() {       
