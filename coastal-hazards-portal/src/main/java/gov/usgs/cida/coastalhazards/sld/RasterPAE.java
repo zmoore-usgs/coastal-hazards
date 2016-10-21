@@ -5,35 +5,29 @@
  */
 package gov.usgs.cida.coastalhazards.sld;
 
-import static gov.usgs.cida.coastalhazards.Attributes.CR;
+import static gov.usgs.cida.coastalhazards.Attributes.PAE;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.List; 
 import java.util.Map;
 
-/**
- *
- * @author smlarson
- */
-public class Raster_cr {
-private static final String[] attrs = {CR};
-
-	protected static final String jspPath = "/SLD/raster_cr.jsp";
-	protected static final String units = "Inundate to Dynamic"; 
+public final class RasterPAE {
+    
+        private static final String[] attrs = {PAE};
+        protected static final String jspPath = "/SLD/raster_pae.jsp";
+        protected static final String units = "probability"; //not applicable
         protected static final List<Map<String, Object>> bins;
-        
-        // type = intervals for the ColorMap
-        protected static final float[] thresholds = {0.0f, .31f, .66f, .95f}; //used to evaluate what color the pixel should receive. (index) 
-	protected static final String[] colors = {"#000000", "#5278AB", "#ededc4", "#BB4238"}; 
+        protected static final float[] thresholds = {0.0f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f}; //used to evaluate what color the pixel should receive. (index) 
+        protected static final String[] colors = {"#00A8E6", "#BEE8FF", "#B4D79D", "#FEFF73", "#FFAA01", "#FF7F7E"}; // type = intervals for the ColorMap
         
 	static {
 		List<Map<String, Object>> binsResult = new ArrayList<>();
                 
-		for (int i = 1; i < colors.length; i++) {
+		for (int i = 0; i < colors.length; i++) {
 			Map<String, Object> binMap = new LinkedHashMap<>();
 			
-                        binMap.put("lowerBound", thresholds[i-1]);
-                        binMap.put("upperBound", thresholds[i]);
+                        binMap.put("lowerBound", thresholds[i]);
+                        binMap.put("upperBound", thresholds[i+1]);
                         binMap.put("color", colors[i]);
                         
 			binsResult.add(binMap);
@@ -43,5 +37,6 @@ private static final String[] attrs = {CR};
 
 	public static final SLDConfig rasterConfig = new SLDConfig(
 			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, attrs, thresholds, colors, bins
-	);    
+	);
+        
 }
