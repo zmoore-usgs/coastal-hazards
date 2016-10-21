@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.data.util;
 
+import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.MetadataResource;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
@@ -28,6 +29,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -236,4 +238,28 @@ public class MetadataUtil {
 		csw.setEndpoint(url);
 		return csw;
 	}
+        
+        public static Bbox getBoundingBoxFromFgdcMetadata(String metadata){
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            //look for the following block in the metadata to parse out the WGS84 bbox:
+            /*
+                <spdom>
+                  <bounding>
+                   <westbc>-77.830618</westbc>
+                   <eastbc>-66.813170</eastbc>
+                   <northbc>46.642941</northbc>
+                   <southbc>35.344738</southbc>
+                  </bounding>
+                 </spdom>
+            */
+
+        }
+        
+        public static CoordinateReferenceSystem getCrsFromFgdcMetadata(String metadata){
+            //Retrieve the key parts from the xml using xpaths
+            
+            //May want to pass the key parts to a new method in here:
+            //https://github.com/USGS-CIDA/coastal-hazards/blob/e5ccc15780f1dfb1f53edc97190ec79c9c501b13/coastal-hazards-wps/src/main/java/gov/usgs/cida/coastalhazards/util/CRSUtils.java
+            return null;
+        }
 }

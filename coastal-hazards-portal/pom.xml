@@ -242,6 +242,14 @@
 			<artifactId>qrgen</artifactId>
 			<version>1.4</version>
 		</dependency>
+                <dependency>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-core</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.geotools</groupId>
+                    <artifactId>gt-wms</artifactId>
+                </dependency>
 	</dependencies>
 
 	<build>

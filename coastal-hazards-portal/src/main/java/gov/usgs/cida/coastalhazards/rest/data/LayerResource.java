@@ -44,6 +44,14 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import static gov.usgs.cida.coastalhazards.rest.data.ItemResource.PUBLIC_URL;
+import java.util.ArrayList;
+import javax.ws.rs.ServerErrorException;
+import javax.ws.rs.core.Response.Status;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Works with ArcGIS and Geoserver services for service like importing layers
@@ -59,6 +67,8 @@ public class LayerResource {
 	private static final String geoserverEndpoint;
 	private static final String geoserverUser;
 	private static final String geoserverPass;
+        static final String RASTER_METADATA_FORM_FIELD_NAME = "metadata";
+        static final String RASTER_FILE_FORM_FIELD_NAME = "data";
 	private static final DynamicReadOnlyProperties props;
 
 	static {
@@ -84,11 +94,11 @@ public class LayerResource {
 	}
 	
 	@POST
-	@Path("/")
+	@Path("/vector")
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
 	@Produces(MediaType.TEXT_PLAIN)
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-	public Response createLayer(@Context HttpServletRequest req, InputStream postBody) {
+	public Response createVectorLayer(@Context HttpServletRequest req, InputStream postBody) {
 		Response response = null;
 		
 		String newId = IdGenerator.generate();
@@ -99,7 +109,7 @@ public class LayerResource {
 			try (ByteArrayInputStream bais = new ByteArrayInputStream(inmemory)) {
 				String metadataId = MetadataUtil.doCSWInsertFromString(MetadataUtil.extractMetadataFromShp(bais));
 				bais.reset();
-				added = GeoserverUtil.addLayer(bais, newId);
+				added = GeoserverUtil.addVectorLayer(bais, newId);
 
 				added.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
 			} finally {
@@ -132,6 +142,81 @@ public class LayerResource {
 		return response;
 	}
 	
+        @POST
+	@Path("/raster")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.TEXT_PLAIN)
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	public Response createRasterLayer(@Context HttpServletRequest req) {
+            DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
+            ServletFileUpload fileUpload = new ServletFileUpload(fileItemFactory);
+            List<Service> services = new ArrayList<>();
+            
+            try{
+                List<FileItem> items = fileUpload.parseRequest(req);
+                Pair<String, InputStream> pair = getMetadataAndZippedRaster(items);
+                String metadata = pair.getLeft();
+                InputStream zipFileStream = pair.getRight();
+                String metadataId;
+                try {
+                    metadataId = MetadataUtil.doCSWInsertFromString(metadata);
+                } catch (IOException | ParserConfigurationException | SAXException ex) {
+                    throw new ServerErrorException("Error inserting metadata to the CSW server.", Status.INTERNAL_SERVER_ERROR, ex);
+                }
+                services.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
+                Bbox bbox = MetadataUtil.getBoundingBoxFromFgdcMetadata(metadata);
+                Service rasterService = GeoserverUtil.addRasterLayer(geoserverEndpoint, zipFileStream, metadataId);
+                services.add(rasterService);
+                if (!services.isEmpty()) {
+			Layer layer = new Layer();
+			layer.setId(metadataId);
+			layer.setServices(services);
+			layer.setBbox(bbox);
+			
+			try (LayerManager manager = new LayerManager()) {
+				manager.save(layer);
+			}
+			return Response.created(layerURI(layer)).build();
+		} else {
+			throw new ServerErrorException("Unable to create layer", Status.INTERNAL_SERVER_ERROR);
+		}
+                
+                
+            } catch (FileUploadException ex) {
+                throw new ServerErrorException("Error parsing upload request", Status.INTERNAL_SERVER_ERROR, ex);
+            } 
+        }
+        
+        Pair<String, InputStream> getMetadataAndZippedRaster(List<FileItem> items){
+            String metadata = null;
+            InputStream zippedTiff = null;
+                if(items != null && !items.isEmpty()) {
+                    for (FileItem item : items) {
+                        String name = item.getName().toLowerCase();
+                        if(RASTER_FILE_FORM_FIELD_NAME.equals(name)) {
+                            try {
+                                zippedTiff = item.getInputStream();
+                            } catch (IOException ex) {
+                                throw new ServerErrorException("Error reading zipped TIFF", Status.INTERNAL_SERVER_ERROR, ex);
+                            }
+                        } else if(RASTER_METADATA_FORM_FIELD_NAME.equals(name)) {
+                            metadata = item.getString();
+                        } else {
+                            log.warn("ignoring extra parameter on raster layer creation: '" + name + "'.");
+                        }
+                    }
+                    if(null == metadata){
+                        throw new ServerErrorException("No metadata file found for field '" + RASTER_METADATA_FORM_FIELD_NAME + "'.", Status.INTERNAL_SERVER_ERROR);
+                    }
+                    if(null == zippedTiff){
+                        throw new ServerErrorException("No zipped TIFF file found for field" + RASTER_FILE_FORM_FIELD_NAME + "'.", Status.INTERNAL_SERVER_ERROR);
+                    }
+                } else {
+                    throw new ServerErrorException("Could not find any files to iterate over. Were files uploaded?", Status.INTERNAL_SERVER_ERROR);
+                }
+            return Pair.of(metadata, zippedTiff);
+        }
+        
 	@DELETE
 	@Path("/{layer}")
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})

@@ -3,6 +3,7 @@ package gov.usgs.cida.coastalhazards.rest.data.util;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
+import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,7 +63,7 @@ public class GeoserverUtil {
 	 * @param name Layer name to use
 	 * @return List of services if successful, empty list otherwise
 	 */
-	public static List<Service> addLayer(InputStream is, String name) {
+	public static List<Service> addVectorLayer(InputStream is, String name) {
 		List<Service> serviceList = new LinkedList<>();
 
 		try {
@@ -224,5 +225,37 @@ public class GeoserverUtil {
 			FileUtils.deleteQuietly(wpsRequestFile);
 		}
 	}
+    /**
+     * 
+     * @param token - the security token
+     * @param zipUrl - the url that GeoServer will retrieve the file from
+     * @return the absolute path to the file on GeoServer after `zipUrl` is retrieved and unzipped
+     */
+    public static String callFetchAndUnzip(String token, String zipUrl){
+        
+        return null;
+    }
+    public static Service addRasterLayer(String geoServerEndpoint, InputStream zipFileStream, String metadataId) {
+        //File tempFile <- write zip file into a temporary location on the portal's disk
+        //String zipUrl <- create a url for the retrieval of the file
+        String unzippedFilePath = null;
+        try{
+            //get the security token from DynamicReadOnlyProperties
+            //String token = props.getProperty("something like gov.usgs.cida.coastal.hazards.wps.fetch.and.unzip.token"); //real value is defined in the FetchAndUnzip WPS Process
+          
+            //unzippedFilePath = call FetchAndUnzip wps proc with two arguments(token, zipUrl)
+        } finally{
+            //regardless of success or failure of wps proc
+            //tempFile.delete()
+        }
+        File unzippedFile = new File(unzippedFilePath);
+        GeoServerRESTPublisher publisher = new GeoServerRESTPublisher(geoServerEndpoint, geoserverUser, geoserverPass);
+        //Then use the GeoServerRESTPublisher to create the stores and layers
+        //publisher.publishExternalGeoTIFF(PROXY_WORKSPACE, metadataId, unzippedFile, metadataId, PROXY_STORE, GSResourceEncoder.ProjectionPolicy.NONE, metadataId)
+        // or
+        //publisher.publishGeoTIFF(PROXY_WORKSPACE, metadataId, metadataId, unzippedFile, PROXY_STORE, GSResourceEncoder.ProjectionPolicy.NONE, metadataId, bbox)
+        Service rasterService = wmsService(metadataId);
+        return rasterService;
+    }
 
 }
