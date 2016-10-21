@@ -258,6 +258,40 @@ public class MetadataUtil {
         public static CoordinateReferenceSystem getCrsFromFgdcMetadata(String metadata){
             //Retrieve the key parts from the xml using xpaths
             
+            //look for the following block in the metadata to parse out the CRS:
+            /*
+                <spref>
+                    <horizsys>
+                     <planar>
+                      <mapproj>
+                       <mapprojn>Albers Conical Equal Area</mapprojn>
+                       <mapprojp>
+                        <feast>0.0</feast>
+                        <fnorth>0.0</fnorth>
+                        <latprjo>23.0</latprjo>
+                        <longcm>-96.0</longcm>
+                        <stdparll>29.5</stdparll>
+                        <stdparll>45.5</stdparll>
+                       </mapprojp>
+                      </mapproj>
+                      <planci>
+                       <plance>row and column</plance>
+                       <coordrep>
+                        <absres>30.0</absres>
+                        <ordres>30.0</ordres>
+                       </coordrep>
+                       <plandu>Meters</plandu>
+                      </planci>
+                     </planar>
+                     <geodetic>
+                      <horizdn>North American Datum 1983</horizdn>
+                      <ellips>GRS 1980</ellips>
+                      <semiaxis>6378137.0</semiaxis>
+                      <denflat>298.257222101</denflat>
+                     </geodetic>
+                    </horizsys>
+               </spref>
+            */
             //May want to pass the key parts to a new method in here:
             //https://github.com/USGS-CIDA/coastal-hazards/blob/e5ccc15780f1dfb1f53edc97190ec79c9c501b13/coastal-hazards-wps/src/main/java/gov/usgs/cida/coastalhazards/util/CRSUtils.java
             return null;
