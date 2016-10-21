@@ -1,6 +1,8 @@
 package gov.usgs.cida.coastalhazards.rest.data.util;
 
 import gov.usgs.cida.coastalhazards.model.Service;
+import gov.usgs.cida.coastalhazards.rest.data.DataURI;
+import gov.usgs.cida.coastalhazards.rest.data.TempFileResource;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
@@ -15,6 +17,7 @@ import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.io.FileUtils;
@@ -232,21 +235,33 @@ public class GeoserverUtil {
      * @return the absolute path to the file on GeoServer after `zipUrl` is retrieved and unzipped
      */
     public static String callFetchAndUnzip(String token, String zipUrl){
-        
+        //Do string templating
         return null;
     }
     public static Service addRasterLayer(String geoServerEndpoint, InputStream zipFileStream, String metadataId) {
-        //File tempFile <- write zip file into a temporary location on the portal's disk
+        String fileId = UUID.randomUUID().toString();
+        String realFileName = TempFileResource.getFileNameForId(fileId);
+        //temp file must not include fileId, it should include the realFileName
+        File tempFile = new File(TempFileResource.getTempFileSubdirectory(), realFileName);
+        try {
+            IOUtils.copy(zipFileStream, new FileOutputStream(tempFile));
+        } catch (IOException ex) {
+            throw new RuntimeException("Error writing zip to file '" + tempFile.getAbsolutePath() + "'.", ex);
+        }
+        String uri = props.getProperty("coastal-hazards.base.secure.url");
+        uri += "/" + DataURI.TEMP_FILE_PATH + "/" + fileId;
+        
+        
         //String zipUrl <- create a url for the retrieval of the file
         String unzippedFilePath = null;
         try{
             //get the security token from DynamicReadOnlyProperties
             //String token = props.getProperty("something like gov.usgs.cida.coastal.hazards.wps.fetch.and.unzip.token"); //real value is defined in the FetchAndUnzip WPS Process
           
-            //unzippedFilePath = call FetchAndUnzip wps proc with two arguments(token, zipUrl)
+            //unzippedFilePath = call FetchAndUnzip wps proc with two arguments(token, uri)
         } finally{
             //regardless of success or failure of wps proc
-            //tempFile.delete()
+            tempFile.delete();
         }
         File unzippedFile = new File(unzippedFilePath);
         GeoServerRESTPublisher publisher = new GeoServerRESTPublisher(geoServerEndpoint, geoserverUser, geoserverPass);

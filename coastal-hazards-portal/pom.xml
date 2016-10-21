@@ -250,6 +250,11 @@
                     <groupId>org.geotools</groupId>
                     <artifactId>gt-wms</artifactId>
                 </dependency>
+                <dependency>
+                    <groupId>gov.usgs.cida.simplehash</groupId>
+                    <artifactId>simplehash</artifactId>
+                    <version>0.1.2</version>
+                </dependency>
 	</dependencies>
 
 	<build>
