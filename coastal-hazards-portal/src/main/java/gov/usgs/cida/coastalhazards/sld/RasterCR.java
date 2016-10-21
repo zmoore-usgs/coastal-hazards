@@ -17,7 +17,7 @@ public final class RasterCR {
         protected static final String jspPath = "/SLD/raster_cr.jsp";
         protected static final String units = "percent"; 
         protected static final List<Map<String, Object>> bins;
-        protected static final float[] thresholds = {0.0f, .31f, .66f, .95f}; //used to evaluate what color the pixel should receive. (index) 
+        protected static final float[] thresholds = {0.0f, .33f, .67f, 1.0f}; //used to evaluate what color the pixel should receive. (index) 
         protected static final String[] colors = {"#000000", "#5278AB", "#ededc4", "#BB4238"}; 
         
 	static {
