@@ -13,6 +13,10 @@
 	<name>Coastal Hazards WPS Processes</name>
 
 	<dependencies>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+            </dependency>
         <dependency>
 		    <groupId>xml-apis</groupId>
 		    <artifactId>xml-apis</artifactId>
