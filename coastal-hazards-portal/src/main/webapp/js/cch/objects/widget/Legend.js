@@ -395,9 +395,17 @@ CCH.Objects.Widget.Legend = function (args) {
 					item : item
 				});
 			} else {
-				var msg = "Could not determine legend renderer."; 
-				$legendTable = $('<div style="color:red;">' + msg + '</div>');
-				LOG.warn(msg + "\n" + JSON.stringify(sld));
+				var name = null;
+				try{
+					name = item.summary.tiny.text;
+				} catch(e){};
+				
+				var msg = "Could not determine legend renderer"; 
+				if(name){
+					msg+= " for item '" + name + "'.";
+				}
+				$legendTable = $('<table><tbody><tr><td><div style="color:red;">' + msg + '</td/></tr></tbody></table></div>');
+				LOG.warn(msg + "\ngot domain type '" + sld.domain + "'.");
 				if (me.onError) {
 					me.onError.call(me, arguments);
 				}
