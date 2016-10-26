@@ -26,7 +26,7 @@ public class SLDGenerator {
 	protected static final String style = "cch";
 	protected static final int STROKE_WIDTH_DEFAULT = 3;
 	protected static final float STROKE_OPACITY_DEFAULT = 1;
-
+        protected static final Domain DOMAIN_DEFAULT = Domain.DISCRETE;
 	protected final Item item;
 	protected final Integer ribbon;
 	protected final SLDConfig config;
@@ -136,6 +136,7 @@ public class SLDGenerator {
 		sldInfo.put("units", this.config.getUnits());
 		sldInfo.put("style", this.config.getStyle());
 		sldInfo.put("bins", this.config.getBins());
+                sldInfo.put("domain", this.config.getDomain());
 		String toJson = GsonUtil.getDefault().toJson(sldInfo, HashMap.class);
 		return Response.ok(toJson).build();
 	}

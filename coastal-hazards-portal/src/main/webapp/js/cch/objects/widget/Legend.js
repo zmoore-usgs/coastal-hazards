@@ -78,8 +78,47 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		return me;
 	};
-
-	me.generateGenericLegendTable = function (args) {
+        me.generateGenericContinuousLegendTable = function (args) {
+		args = args || {};
+		var sld = args.sld,
+			$table = $('<table />'),
+			$thead = $('<thead />'),
+			$caption = $('<caption />'),
+			$theadTr = $('<tr />'),
+			$theadUOM = $('<td />'),
+			bins = sld.bins,
+			uom = sld.units || '',
+			title = (args.item && args.item.summary && args.item.summary && args.item.summary.medium) ? args.item.summary.medium.title : sld.title || ''
+			;
+		
+		var sortByLowerBound = function(a,b){return a.lowerBound-b.lowerBound;};
+		var binsForTemplate = bins.sort(sortByLowerBound).map(function(bin, index, bins){
+			return {
+				'color': bin.color,
+				'percent': (index / bins.length) * 100,
+				'rangeString': me.generateRangeString(bin.upperBound, bin.lowerBound)
+			};
+		});
+		var $legendElt = CCH.Objects.Widget.Legend.prototype.templates.continuous({
+			browserSpecificGradients : [
+				//order matters
+				'-webkit-linear-gradient',/* For Safari 5.1 to 6.0 */
+				'-o-linear-gradient',/*For Opera 11.1 to 12.0 */
+				'-moz-linear-gradient',/*For Firefox 3.6 to 15 */
+				'linear-gradient'/*Standard syntax */
+			],
+			bins: binsForTemplate
+		});
+		// Create the table head which displays the unit of measurements
+		$caption.html(title);
+		$theadUOM.html(uom);
+		$theadTr.append($('<td />'), $theadUOM);
+		$thead.append($theadTr);
+		$table.append($caption, $thead);
+		$table.append($legendElt);
+		return $table; 
+        };
+	me.generateGenericDiscreteLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
 			$table = $('<table />'),
@@ -162,7 +201,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				sld = args.sld;
 
 
-		$legendTable = me.generateGenericLegendTable({
+		$legendTable = me.generateGenericDiscreteLegendTable({
 			sld: sld,
 			item : item
 		});
@@ -240,7 +279,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				$legendTableTBody,
 				$yearRows;
 
-		$legendTable = me.generateGenericLegendTable({
+		$legendTable = me.generateGenericDiscreteLegendTable({
 			sld: sld,
 			item : item
 		});
@@ -307,7 +346,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			item = args.item,
 			index = args.index,
 			attr = item.attr,
-			$legendTable = me.generateGenericLegendTable({
+			$legendTable = me.generateGenericDiscreteLegendTable({
 				sld: sld,
 				item : item
 			});
@@ -344,10 +383,25 @@ CCH.Objects.Widget.Legend = function (args) {
 			item = args.item,
 			index = args.index,
 			attr = item.attr,
-			$legendTable = me.generateGenericLegendTable({
-				sld: sld,
-				item : item
-			});
+                        $legendTable;
+			var domainToLegendRenderer = {
+				'CONTINUOUS': me.generateGenericContinuousLegendTable,
+				'DISCRETE': me.generateGenericDiscreteLegendTable
+			};
+			var legendRenderer = domainToLegendRenderer[sld.domain];
+			if(legendRenderer){
+				$legendTable = legendRenderer({
+					sld: sld,
+					item : item
+				});
+			} else {
+				var msg = "Could not determine legend renderer."; 
+				$legendTable = $('<div style="color:red;">' + msg + '</div>');
+				LOG.warn(msg + "\n" + JSON.stringify(sld));
+				if (me.onError) {
+					me.onError.call(me, arguments);
+				}
+			}
 		
 		$legendTable.attr({
 			'legend-attribute': attr,
@@ -641,16 +695,28 @@ CCH.Objects.Widget.Legend = function (args) {
 
 (function () {
 	"use strict";
-	$.ajax({
-		url: CCH.CONFIG.contextPath + '/resource/template/handlebars/legend/real_time_storms.html',
-		success: function (data) {
+	function assignToTemplate(name) {
+		return function (data) {
 			if (!CCH.Objects.Widget.Legend.prototype.templates) {
 				CCH.Objects.Widget.Legend.prototype.templates = {};
 			}
-			CCH.Objects.Widget.Legend.prototype.templates.rts_legend = Handlebars.compile(data);
-		},
-		error: function () {
-			window.alert('Unable to load resources required for a functional publication page. Please contact CCH admin team.');
-		}
+			CCH.Objects.Widget.Legend.prototype.templates[name] = Handlebars.compile(data);
+		};
+	};
+	
+	var nameToPath = {
+		rts_legend: 'real_time_storms.html',
+		continuous: 'continuous.html'
+	};
+	Object.keys(nameToPath).forEach(function(name){
+		var path = nameToPath[name];
+		$.ajax({
+			url: CCH.CONFIG.contextPath + '/resource/template/handlebars/legend/' + path,
+			success: assignToTemplate(name),
+			error: function () {
+				window.alert('Unable to load resources required for a functional publication page. Please contact CCH admin team.');
+			}
+		});
 	});
+	
 })();
