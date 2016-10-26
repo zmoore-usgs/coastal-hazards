@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
 public class Horizsys {
 
     Geodetic geodetic;
+    Planar planar;
 
     public Geodetic getGeodetic() {
         return geodetic;
@@ -18,5 +19,14 @@ public class Horizsys {
     @XmlElement
     public void setGeodetic(Geodetic geodetic) {
         this.geodetic = geodetic;
+    }
+    
+    public Planar getPlanar() {
+        return planar;
+    }
+
+    @XmlElement
+    public void setPlanar(Planar planar) {
+        this.planar = planar;
     }
 }

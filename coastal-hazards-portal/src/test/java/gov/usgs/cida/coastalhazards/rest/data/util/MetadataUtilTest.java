@@ -366,6 +366,27 @@ public class MetadataUtilTest {
         assertEquals(expDenflat, denflat, expDenflat-denflat);
         assertEquals(expSemiaxis, semiaxis,expSemiaxis-semiaxis);
         
+        // part II
+        String mapprojn = horizsys.getPlanar().getMapproj().getMapprojn();
+        double feast = horizsys.getPlanar().getMapproj().getMapprojp().getFeast();
+        double fnorth = horizsys.getPlanar().getMapproj().getMapprojp().getFnorth();
+        double latprjo = horizsys.getPlanar().getMapproj().getMapprojp().getLatprjo();
+        double longcm = horizsys.getPlanar().getMapproj().getMapprojp().getLongcm();
+        double stdparll = horizsys.getPlanar().getMapproj().getMapprojp().getStdparll();
+        
+        String expMapprojn = "Albers Conical Equal Area";
+        double expFeast = 0.0;
+        double expFnorth = 0.0;
+        double expLatprjo = 23.0;
+        double expLongcm = -96.0;
+        double expStdparll = 45.5;
+        
+        assertTrue(expMapprojn.equalsIgnoreCase(mapprojn));
+        assertEquals(expFeast, feast,expFeast-feast);
+        assertEquals(expFnorth, fnorth, expFnorth-fnorth);
+        assertEquals(expLatprjo, latprjo,expLatprjo-latprjo);
+        assertEquals(expLongcm, longcm, expLongcm-longcm);
+        assertEquals(expStdparll, stdparll,expStdparll-stdparll);
         //CoordinateReferenceSystem expResult = null;
         //CoordinateReferenceSystem result = MetadataUtil.getCrsFromFgdcMetadata(metadata);
         //assertEquals(expResult, result);
