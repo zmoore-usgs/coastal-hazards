@@ -8,9 +8,12 @@ package gov.usgs.cida.coastalhazards.rest.data.util;
 import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.xml.model.Bounding;
+import gov.usgs.cida.coastalhazards.xml.model.Geodetic;
+import gov.usgs.cida.coastalhazards.xml.model.Horizsys;
 import gov.usgs.cida.coastalhazards.xml.model.Idinfo;
 import gov.usgs.cida.coastalhazards.xml.model.Metadata;
 import gov.usgs.cida.coastalhazards.xml.model.Spdom;
+import gov.usgs.cida.coastalhazards.xml.model.Spref;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -33,45 +36,44 @@ import org.junit.Ignore;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.LoggerFactory;
 
-
 public class MetadataUtilTest {
-    
+
     public MetadataUtilTest() {
-        
+
     }
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(MetadataUtilTest.class);
     private static File workDir; // place to copy
     private static final String tempDir = System.getProperty("java.io.tmpdir");
     private static String AExml = "ne_AEmeta.xml";
     private static String PAExml = "ne_PAEmeta.xml";
-    private static String CRxml = "ne_CRmeta.xml";   
-    
+    private static String CRxml = "ne_CRmeta.xml";
+
     @BeforeClass
     public static void setUpClass() throws IOException {
-		workDir = new File(tempDir, String.valueOf(new Date().getTime()));
-		FileUtils.deleteQuietly(workDir);
-		FileUtils.forceMkdir(workDir);
+        workDir = new File(tempDir, String.valueOf(new Date().getTime()));
+        FileUtils.deleteQuietly(workDir);
+        FileUtils.forceMkdir(workDir);
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
         FileUtils.deleteQuietly(workDir);
     }
-    
+
     @Before
     public void setUp() throws IOException, URISyntaxException {
         String packagePath = "/";
         FileUtils.copyDirectory(new File(getClass().getResource(packagePath).toURI()), workDir);
 
     }
-    
+
     @After
     public void tearDown() {
-       // FileUtils.listFiles(workDir, null, true).stream().forEach((file) -> {
-			//FileUtils.deleteQuietly(file);
-		//});
-        Collection<File> files= FileUtils.listFiles(workDir, null, true);
-        for (File file:files){
+        // FileUtils.listFiles(workDir, null, true).stream().forEach((file) -> {
+        //FileUtils.deleteQuietly(file);
+        //});
+        Collection<File> files = FileUtils.listFiles(workDir, null, true);
+        for (File file : files) {
             FileUtils.deleteQuietly(file);
         }
     }
@@ -190,9 +192,8 @@ public class MetadataUtilTest {
         System.out.println("testGetBoundingBoxFromFgdcMetadataPAE");
         // This method tests the parsing that occurs in: Bbox result = MetadataUtil.getBoundingBoxFromFgdcMetadata(metadata); // file is ~40kb
         // spdom is the WGS84 bbox, format for the Bbox is "BOX(%f %f, %f %f)"
-        
-        //get the metadata from the test file as a string using this package to locate it ...
 
+        //get the metadata from the test file as a string using this package to locate it ...
         String packageName = this.getClass().getCanonicalName();
         System.out.println("PackageName: " + packageName); //PackageName: gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtilTest
         // this is where the test resource is located - gov.usgs.cida.coastalhazards.rest.data + /ne_AEmeta.xml
@@ -200,57 +201,57 @@ public class MetadataUtilTest {
         String[] names = replaced.split("/util/MetadataUtilTest");
         String packageNameShort = names[0];
         String testFileFullName = packageNameShort + "/" + CRxml;
-        
+
         String metadataXml = loadResourceAsString(testFileFullName);
-      
+
         InputStream in = new ByteArrayInputStream(metadataXml.getBytes("UTF-8"));
         Metadata metadata = null;
 
-       // JAXB will require jaxb-api.jar and jaxb-impl.jar part of java 1.6. Much safer way to interrogate xml and maintain than regex
-     	 try {
-		//File file = new File(xmlFile);  // FYI: can also be done via file rather than inputStream
-		JAXBContext jaxbContext = JAXBContext.newInstance(Metadata.class);
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		metadata = (Metadata) jaxbUnmarshaller.unmarshal(in);               
+        // JAXB will require jaxb-api.jar and jaxb-impl.jar part of java 1.6. Much safer way to interrogate xml and maintain than regex
+        try {
+            //File file = new File(xmlFile);  // FYI: can also be done via file rather than inputStream
+            JAXBContext jaxbContext = JAXBContext.newInstance(Metadata.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            metadata = (Metadata) jaxbUnmarshaller.unmarshal(in);
 
-	  } catch (JAXBException e) {
-		e.printStackTrace();
-	  }  
-         
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+
         assertNotNull(metadata);
         Idinfo idinfo = metadata.getIdinfo();
         Spdom spdom = idinfo.getSpdom();
         Bounding bounding = spdom.getBounding();
-        
+
         double minx = bounding.getWestbc();
         double miny = bounding.getSouthbc();
         double maxx = bounding.getEastbc();
         double maxy = bounding.getNorthbc();
-        
+
         Bbox result = new Bbox();
         result.setBbox(minx, miny, maxx, maxy);
-        
+
         System.out.println("Parsed Bbox is: " + result.getBbox());
-         
+
         Bbox expResult = new Bbox();
         expResult.setBbox("BOX(-77.830618 35.344738, -66.813170 46.642941)");
 
-        assertNotNull(result);        
+        assertNotNull(result);
         assertTrue(expResult.getBbox().startsWith("BOX(-77.830618 35."));
         assertTrue(expResult.getBbox().equalsIgnoreCase(result.getBbox()));
-    }    
-    
+    }
+
     /**
      * Test of getBoundingBoxFromFgdcMetadataAE method, of class MetadataUtil.
      */
     @Test
+
     public void testGetBoundingBoxFromFgdcMetadataAE() throws IOException {
         System.out.println("testGetBoundingBoxFromFgdcMetadataAE");
         // This method tests the parsing that occurs in: Bbox result = MetadataUtil.getBoundingBoxFromFgdcMetadata(metadata); // file is ~40kb
         // spdom is the WGS84 bbox, format for the Bbox is "BOX(%f %f, %f %f)"
-        
-        //get the metadata from the test file as a string using this package to locate it ...
 
+        //get the metadata from the test file as a string using this package to locate it ...
         String packageName = this.getClass().getCanonicalName();
         System.out.println("PackageName: " + packageName); //PackageName: gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtilTest
         // this is where the test resource is located - gov.usgs.cida.coastalhazards.rest.data + /ne_AEmeta.xml
@@ -258,42 +259,42 @@ public class MetadataUtilTest {
         String[] names = replaced.split("/util/MetadataUtilTest");
         String packageNameShort = names[0];
         String testFileFullName = packageNameShort + "/" + AExml;
-        
+
         String metadataXml = loadResourceAsString(testFileFullName);
-      
+
         InputStream in = new ByteArrayInputStream(metadataXml.getBytes("UTF-8"));
         Metadata metadata = null;
 
-       // JAXB will require jaxb-api.jar and jaxb-impl.jar part of java 1.6. Much safer way to interrogate xml and maintain than regex
-     	 try {
-		//File file = new File(xmlFile);  // FYI: can also be done via file rather than inputStream
-		JAXBContext jaxbContext = JAXBContext.newInstance(Metadata.class);
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		metadata = (Metadata) jaxbUnmarshaller.unmarshal(in);               
+        // JAXB will require jaxb-api.jar and jaxb-impl.jar part of java 1.6. Much safer way to interrogate xml and maintain than regex
+        try {
+            //File file = new File(xmlFile);  // FYI: can also be done via file rather than inputStream
+            JAXBContext jaxbContext = JAXBContext.newInstance(Metadata.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            metadata = (Metadata) jaxbUnmarshaller.unmarshal(in);
 
-	  } catch (JAXBException e) {
-		e.printStackTrace();
-	  }  
-         
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+
         assertNotNull(metadata);
         Idinfo idinfo = metadata.getIdinfo();
         Spdom spdom = idinfo.getSpdom();
         Bounding bounding = spdom.getBounding();
-        
+
         double minx = bounding.getWestbc();
         double miny = bounding.getSouthbc();
         double maxx = bounding.getEastbc();
         double maxy = bounding.getNorthbc();
-        
+
         Bbox result = new Bbox();
         result.setBbox(minx, miny, maxx, maxy);
-        
+
         System.out.println("Parsed Bbox is: " + result.getBbox());
-         
+
         Bbox expResult = new Bbox();
         expResult.setBbox("BOX(-77.830618 35.344738, -66.813170 46.642941)");
 
-        assertNotNull(result);        
+        assertNotNull(result);
         assertTrue(expResult.getBbox().startsWith("BOX(-77.830618 35."));
         assertTrue(expResult.getBbox().equalsIgnoreCase(result.getBbox()));
     }
@@ -302,22 +303,73 @@ public class MetadataUtilTest {
         Scanner scanner = new Scanner(getClass().getClassLoader().getResourceAsStream(fileName));
         String contents = scanner.useDelimiter("\\A").next();
         scanner.close();
-    return contents;
-}
+        return contents;
+    }
+
     /**
      * Test of getCrsFromFgdcMetadata method, of class MetadataUtil.
      */
-    @Ignore
+ 
     @Test
-    public void testGetCrsFromFgdcMetadata() {
+    public void testGetCrsFromFgdcMetadata() throws IOException {
         System.out.println("getCrsFromFgdcMetadata");
         //spref is used to determine hte SRS
-        String metadata = "";
-        CoordinateReferenceSystem expResult = null;
-        CoordinateReferenceSystem result = MetadataUtil.getCrsFromFgdcMetadata(metadata);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+       
+        System.out.println("testGetBoundingBoxFromFgdcMetadataAE");
+
+        //get the metadata from the test file as a string using this package to locate it ...
+        String packageName = this.getClass().getCanonicalName();
+        System.out.println("PackageName: " + packageName); //PackageName: gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtilTest
+        // this is where the test resource is located - gov.usgs.cida.coastalhazards.rest.data + /ne_AEmeta.xml
+        String replaced = packageName.replaceAll("[.]", "/");
+        String[] names = replaced.split("/util/MetadataUtilTest");
+        String packageNameShort = names[0];
+        String testFileFullName = packageNameShort + "/" + CRxml;
+
+        String metadataXml = loadResourceAsString(testFileFullName);
+
+        InputStream in = new ByteArrayInputStream(metadataXml.getBytes("UTF-8"));
+        Metadata metadata = null;
+
+        // JAXB will require jaxb-api.jar and jaxb-impl.jar part of java 1.6. Much safer way to interrogate xml and maintain than regex
+        try {
+            //File file = new File(xmlFile);  // FYI: can also be done via file rather than inputStream
+            JAXBContext jaxbContext = JAXBContext.newInstance(Metadata.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            metadata = (Metadata) jaxbUnmarshaller.unmarshal(in);
+
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+
+        assertNotNull(metadata);
+        Spref spref = metadata.getSpref();
+        Horizsys horizsys = spref.getHorizsys();
+        Geodetic geodetic = horizsys.getGeodetic();
+
+        assertNotNull(geodetic);
+        String ellips = geodetic.getEllips();
+        String horizdn = geodetic.getHorizdn();
+        double denflat = geodetic.getDenflat();
+        double semiaxis = geodetic.getSemiaxis();
+
+        String expEllips = "GRS 1980";
+        String expHorizdn = "North American Datum 1983";
+        double expDenflat = 298.257222101;
+        double expSemiaxis = 6378137.0;
+        
+        assertTrue(expEllips.equalsIgnoreCase(ellips));
+        assertTrue(expHorizdn.equalsIgnoreCase(horizdn));
+        System.out.println("denflat: " + denflat);
+        System.out.println("semiaxis: " + semiaxis);
+        
+        assertEquals(expDenflat, denflat, expDenflat-denflat);
+        assertEquals(expSemiaxis, semiaxis,expSemiaxis-semiaxis);
+        
+        //CoordinateReferenceSystem expResult = null;
+        //CoordinateReferenceSystem result = MetadataUtil.getCrsFromFgdcMetadata(metadata);
+        //assertEquals(expResult, result);
+       
     }
-    
+
 }

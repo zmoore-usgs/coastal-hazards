@@ -7,15 +7,15 @@ package gov.usgs.cida.coastalhazards.xml.model;
 
 import javax.xml.bind.annotation.XmlElement;
 
-public class Spdom {
-    Bounding bounding;
+public class Spref {
+    Horizsys horizsys;
     
-    public Bounding getBounding(){
-        return bounding;
+    public Horizsys getHorizsys(){
+        return horizsys;
     }
     
     @XmlElement
-    public void setBounding(Bounding bounding){
-        this.bounding = bounding;
-    }
+    public void setHorizsys(Horizsys horizsys){
+        this.horizsys = horizsys;
+    }    
 }

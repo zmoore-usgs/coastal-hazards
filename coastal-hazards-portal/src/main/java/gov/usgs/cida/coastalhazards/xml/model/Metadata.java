@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement ( name = "metadata" )
 public class Metadata {
     Idinfo idinfo;
+    Spref spref;
     
     public Idinfo getIdinfo(){
         return idinfo;
@@ -15,4 +16,13 @@ public class Metadata {
     public void setIdnfo(Idinfo idinfo){
         this.idinfo = idinfo;
     }
+    
+    public Spref getSpref(){
+        return spref;
+    }
+    
+    @XmlElement( name = "spref" )
+    public void setSpref(Spref spref){
+        this.spref = spref;
+    }    
 }
