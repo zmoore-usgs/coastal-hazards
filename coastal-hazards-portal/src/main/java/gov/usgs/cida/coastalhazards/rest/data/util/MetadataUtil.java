@@ -3,6 +3,10 @@ package gov.usgs.cida.coastalhazards.rest.data.util;
 import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.MetadataResource;
+import gov.usgs.cida.coastalhazards.xml.model.Bounding;
+import gov.usgs.cida.coastalhazards.xml.model.Idinfo;
+import gov.usgs.cida.coastalhazards.xml.model.Metadata;
+import gov.usgs.cida.coastalhazards.xml.model.Spdom;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.BufferedReader;
@@ -11,11 +15,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
@@ -239,20 +247,39 @@ public class MetadataUtil {
 		return csw;
 	}
         
-        public static Bbox getBoundingBoxFromFgdcMetadata(String metadata){
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            //look for the following block in the metadata to parse out the WGS84 bbox:
-            /*
-                <spdom>
-                  <bounding>
-                   <westbc>-77.830618</westbc>
-                   <eastbc>-66.813170</eastbc>
-                   <northbc>46.642941</northbc>
-                   <southbc>35.344738</southbc>
-                  </bounding>
-                 </spdom>
-            */
+        public static Bbox getBoundingBoxFromFgdcMetadata(String inMetadata) throws JAXBException, UnsupportedEncodingException{
+            
+                Bbox bbox = new Bbox();
+                //parse out the WGS84 bbox from the metadata xml
+                Metadata metadata = null;
 
+                // JAXB will require jaxb-api.jar and jaxb-impl.jar part of java 1.6. Much safer way to interrogate xml and maintain than regex
+                try {
+                        JAXBContext jaxbContext = JAXBContext.newInstance(Metadata.class);
+
+                        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+                        metadata = (Metadata) jaxbUnmarshaller.unmarshal(new ByteArrayInputStream(inMetadata.getBytes("UTF-8")));               
+
+                }     catch (JAXBException e) { //schema used https: www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd
+                            log.error("Unable to parse xml file. Has the schema changed? https:www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd :" + e.getMessage());
+                            throw e;
+                }  
+         
+                Idinfo idinfo = metadata.getIdinfo();
+                Spdom spdom = idinfo.getSpdom();
+                Bounding bounding = spdom.getBounding();
+        
+                double minx = bounding.getWestbc();
+                double miny = bounding.getSouthbc();
+                double maxx = bounding.getEastbc();
+                double maxy = bounding.getNorthbc();
+        
+                Bbox result = new Bbox();
+                result.setBbox(minx, miny, maxx, maxy);
+
+                bbox.setBbox(minx, miny, maxx, maxy);
+            
+                return bbox;
         }
         
         public static CoordinateReferenceSystem getCrsFromFgdcMetadata(String metadata){

@@ -44,9 +44,12 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import static gov.usgs.cida.coastalhazards.rest.data.ItemResource.PUBLIC_URL;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.JAXBException;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -182,9 +185,9 @@ public class LayerResource {
 		}
                 
                 
-            } catch (FileUploadException ex) {
+            } catch (FileUploadException  | JAXBException  | UnsupportedEncodingException ex) {
                 throw new ServerErrorException("Error parsing upload request", Status.INTERNAL_SERVER_ERROR, ex);
-            } 
+            }
         }
         
         Pair<String, InputStream> getMetadataAndZippedRaster(List<FileItem> items){
