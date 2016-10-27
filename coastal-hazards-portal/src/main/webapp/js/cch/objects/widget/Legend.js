@@ -78,9 +78,22 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		return me;
 	};
+	/**
+	 * 
+	 * @param {Object} args an object that contains the following (
+	 *	@param {Object} sld
+	 *	@param {Function} binLabeler a function for labeling each bin.
+	 *		This function can accept the following params:
+	 *		@param {Object} bin
+	 *		@param {Number} index - the index of iteration
+	 *		@param {Array<Object>} bins - an array of bins sorted in ascending order according to each bin's 'lowerBound' property.
+	 * )
+	 * @returns {jQuery} a legend table element
+	 */
         me.generateGenericContinuousLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
+			binLabeler = args.binLabeler,
 			$table = $('<table />'),
 			$thead = $('<thead />'),
 			$caption = $('<caption />'),
@@ -103,7 +116,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			return {
 				'color': bin.color,
 				'percent': percent,
-				'rangeString': percent + "%"
+				'binLabel': binLabeler(bin, index, bins)
 			};
 		});
 		var $legendElt = $(CCH.Objects.Widget.Legend.prototype.templates.continuous({
@@ -388,7 +401,36 @@ CCH.Objects.Widget.Legend = function (args) {
 			generateLegendTable: me.generateVulnerabilityLegendTable
 		});
 	};
-
+	/**
+	 * Inspect the sld and/or item. If the legend rendering needs to be
+	 * customized, change what would be returned. By default return:
+	 * {
+	 *	sld: sld,
+	 *	item : item
+	 * }
+	 * 
+	 * @param {Object} sld
+	 * @param {Object} item
+	 * @returns {Object} an object to pass to a legend renderer function
+	 */
+	me.customizeLegendRendererArguments = function(sld, item) {
+		var legendRendererArguments = {
+			sld: sld,
+			item: item
+		};
+		if("CR" === item.attr){
+			//customize the bin label
+			var indexToText = {
+				0 : '100% Dynamic',
+				1 : '&nbsp;',
+				2 : '100% Inundate'
+			};
+			legendRendererArguments.binLabeler = function(bin, index, bins){
+				return indexToText[index];
+			};
+		}
+		return legendRendererArguments;
+	};
 	me.generateVulnerabilityLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
@@ -402,10 +444,8 @@ CCH.Objects.Widget.Legend = function (args) {
 			};
 			var legendRenderer = domainToLegendRenderer[sld.domain];
 			if(legendRenderer){
-				$legendTable = legendRenderer({
-					sld: sld,
-					item : item
-				});
+				var rendererArguments = me.customizeLegendRendererArguments(sld, item);
+				$legendTable = legendRenderer(rendererArguments);
 			} else {
 				var name = null;
 				try{
