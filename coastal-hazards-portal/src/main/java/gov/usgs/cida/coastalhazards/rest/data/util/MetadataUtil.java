@@ -4,6 +4,7 @@ import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.MetadataResource;
 import gov.usgs.cida.coastalhazards.xml.model.Bounding;
+import gov.usgs.cida.coastalhazards.xml.model.Horizsys;
 import gov.usgs.cida.coastalhazards.xml.model.Idinfo;
 import gov.usgs.cida.coastalhazards.xml.model.Metadata;
 import gov.usgs.cida.coastalhazards.xml.model.Spdom;
@@ -37,6 +38,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -282,45 +285,172 @@ public class MetadataUtil {
                 return bbox;
         }
         
-        public static CoordinateReferenceSystem getCrsFromFgdcMetadata(String metadata){
-            //Retrieve the key parts from the xml using xpaths
+        public static CoordinateReferenceSystem getCrsFromFgdcMetadata(String inMetadata) throws FactoryException, JAXBException, UnsupportedEncodingException{
+           //create the WKT to instantiate a CRS object from org.geotools.referencing
+                final String lineSep = System.getProperty("line.separator", "\n");
+           
+                Metadata metadata = null;
+                try {
+                        JAXBContext jaxbContext = JAXBContext.newInstance(Metadata.class);
+
+                        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+                        metadata = (Metadata) jaxbUnmarshaller.unmarshal(new ByteArrayInputStream(inMetadata.getBytes("UTF-8")));               
+
+                }     catch (JAXBException e) { //schema used https: www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd
+                            log.error("Unable to parse xml file. Has the schema changed? https:www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd :" + e.getMessage());
+                            throw e;
+                }  
+                
+                Horizsys horizsys = metadata.getSpref().getHorizsys();
+                
+                String ellips = horizsys.getGeodetic().getEllips();
+                String horizdn = horizsys.getGeodetic().getHorizdn();
+                double denflat = horizsys.getGeodetic().getDenflat();
+                double semiaxis = horizsys.getGeodetic().getSemiaxis();
+                
+                String mapprojn = horizsys.getPlanar().getMapproj().getMapprojn();
+                double feast = horizsys.getPlanar().getMapproj().getMapprojp().getFeast();
+                double fnorth = horizsys.getPlanar().getMapproj().getMapprojp().getFnorth();
+                double latprjo = horizsys.getPlanar().getMapproj().getMapprojp().getLatprjo();
+                double longcm = horizsys.getPlanar().getMapproj().getMapprojp().getLongcm();
+                double stdparll = horizsys.getPlanar().getMapproj().getMapprojp().getStdparll();
+                
+        /*      PROJCS["USA_Contiguous_Albers_Equal_Area_Conic_USGS_version", //mapprojn
+                GEOGCS["GCS_North_American_1983",
+                DATUM["D_North_American_1983", //horizdn
+                SPHEROID["GRS_1980",6378137.0,298.257222101]],
+                PRIMEM["Greenwich",0.0],
+                UNIT["Degree",0.0174532925199433]],
+                PROJECTION["Albers"],
+                PARAMETER["False_Easting",0.0],
+                PARAMETER["False_Northing",0.0],
+                PARAMETER["Central_Meridian",-96.0],
+                PARAMETER["Standard_Parallel_1",29.5],
+                PARAMETER["Standard_Parallel_2",45.5],
+                PARAMETER["Latitude_Of_Origin",23.0],
+                UNIT["Meter",1.0]]  */
+                
+                // these defaults were derived from the first 3 raster files meta-data CR, AE, PAE
+                // Hoping that these can be optional or located in future metadata in which case 
+                // an if check should be performed and the value replaced if it doesn't match the default
+                String defaultGcs = "GCS_North_American_1983";
+                String defaultPrimeM = "Greenwich\",0.0]";
+                String defaultUnit = "Degree\",0.0174532925199433]]";
+                String defaultProjection = "Albers";
+                String defaultLengthUnit = "Meter";
+                double defaultLengthValue = 1.0;
+                
+                StringBuilder builder = new StringBuilder(500);
+                
+                builder.append("PROJCS[");
+                builder.append("\"");  // quote
+                builder.append(mapprojn);
+                builder.append("\"");  // quote
+                builder.append(",");   // comma
+                builder.append(lineSep);
+                
+                builder.append("GEOGCS[");
+                builder.append("\"");  // quote
+                builder.append(defaultGcs);  // replace if the Gcs is found in the meta-data
+                builder.append("\"");  // quote
+                builder.append(",");   // comma
+                builder.append(lineSep);
+                
+                builder.append("DATUM[");
+                builder.append("\"");  // quote
+                builder.append(horizdn);
+                builder.append("\"");  // quote
+                builder.append(",");   // comma
+                builder.append(lineSep);                
+                               
+                builder.append("SPHEROID[");
+                builder.append("\"");  // quote
+                builder.append(ellips);
+                builder.append("\"");  // quote
+                builder.append(",");   // comma                
+                builder.append(semiaxis);
+                builder.append(",");   // comma
+                builder.append(denflat);
+                builder.append("]]");
+                builder.append(",");   // comma
+                builder.append(lineSep);
+                
+                builder.append("PRIMEM[");
+                builder.append("\"");  // quote
+                builder.append(defaultPrimeM);
+                builder.append(",");
+                builder.append(lineSep);
+                
+                builder.append("UNIT[");
+                builder.append("\"");  // quote
+                builder.append(defaultUnit);  //get pa
+                builder.append(",");
+                builder.append(lineSep);
+             
+                builder.append("PROJECTION[");
+                builder.append("\"");  // quote
+                builder.append(defaultProjection);
+                builder.append("\"]");  // quote
+                builder.append(",");
+                builder.append(lineSep);
+                
+                builder.append(getParameterNode("False_Easting",feast));
+                builder.append(",");
+                builder.append(lineSep);
+                
+                builder.append(getParameterNode("False_Northing",fnorth));
+                builder.append(",");
+                builder.append(lineSep);
+
+                builder.append(getParameterNode("Central_Meridian",longcm));
+                builder.append(",");
+                builder.append(lineSep);                
+                
+                builder.append(getParameterNode("Standard_Parallel_1",29.5)); //#TODO# relace with value
+                builder.append(",");
+                builder.append(lineSep);
+                
+                builder.append(getParameterNode("Standard_Parallel_2",stdparll));
+                builder.append(",");
+                builder.append(lineSep);
+
+                builder.append(getParameterNode("Latitude_Of_Origin",latprjo));
+                builder.append(","); 
+                builder.append(lineSep);
+                
+                builder.append("UNIT[");
+                builder.append("\"");  // quote
+                builder.append(defaultLengthUnit); //Meter
+                builder.append("\"");  // quote
+                builder.append(",");
+                builder.append(defaultLengthValue);
+                builder.append("]]");
+
+                String wkt = builder.toString();
+
+           CoordinateReferenceSystem crs = CRS.parseWKT(wkt); // same as FactoryFinder.getCRSFactory(null).createFromWKT(wkt);
+            
+          //  CoordinateReferenceSystem crs = new DefaultGeocentricCRS(props, datum, cs);
             
             //look for the following block in the metadata to parse out the CRS:
-            /*
-                <spref>
-                    <horizsys>
-                     <planar>
-                      <mapproj>
-                       <mapprojn>Albers Conical Equal Area</mapprojn>
-                       <mapprojp>
-                        <feast>0.0</feast>
-                        <fnorth>0.0</fnorth>
-                        <latprjo>23.0</latprjo>
-                        <longcm>-96.0</longcm>
-                        <stdparll>29.5</stdparll>
-                        <stdparll>45.5</stdparll>
-                       </mapprojp>
-                      </mapproj>
-                      <planci>
-                       <plance>row and column</plance>
-                       <coordrep>
-                        <absres>30.0</absres>
-                        <ordres>30.0</ordres>
-                       </coordrep>
-                       <plandu>Meters</plandu>
-                      </planci>
-                     </planar>
-                     <geodetic>
-                      <horizdn>North American Datum 1983</horizdn>
-                      <ellips>GRS 1980</ellips>
-                      <semiaxis>6378137.0</semiaxis>
-                      <denflat>298.257222101</denflat>
-                     </geodetic>
-                    </horizsys>
-               </spref>
-            */
+
             //May want to pass the key parts to a new method in here:
             //https://github.com/USGS-CIDA/coastal-hazards/blob/e5ccc15780f1dfb1f53edc97190ec79c9c501b13/coastal-hazards-wps/src/main/java/gov/usgs/cida/coastalhazards/util/CRSUtils.java
-            return null;
+            return crs;
+        }
+        
+        private static String getParameterNode(String name, double value){
+            //exp PARAMETER["False_Easting",0.0]
+            StringBuilder sb = new StringBuilder(50);
+            
+            sb.append("PARAMETER[");
+            sb.append("\"");  // quote
+            sb.append(name);
+            sb.append("\"");  // quote
+            sb.append(",");   // comma
+            sb.append(value);
+            sb.append("]");
+            
+            return sb.toString();
         }
 }
