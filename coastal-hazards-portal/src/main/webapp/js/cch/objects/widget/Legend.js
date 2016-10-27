@@ -84,6 +84,9 @@ CCH.Objects.Widget.Legend = function (args) {
 			$table = $('<table />'),
 			$thead = $('<thead />'),
 			$caption = $('<caption />'),
+			$tbody = $('<tbody/>'),
+			$innerTr = $('<tr/>'),
+			$innerTd = $('<td colspan="2"/>'),
 			$theadTr = $('<tr />'),
 			$theadUOM = $('<td />'),
 			bins = sld.bins,
@@ -92,14 +95,18 @@ CCH.Objects.Widget.Legend = function (args) {
 			;
 		
 		var sortByLowerBound = function(a,b){return a.lowerBound-b.lowerBound;};
+		//assume that the gradient is evenly-spaced
+		var numberOfNonTerminalBins = bins.length - 2;
+		var gradientIncrement = 100 / (1 + numberOfNonTerminalBins);
 		var binsForTemplate = bins.sort(sortByLowerBound).map(function(bin, index, bins){
+			var percent = index * gradientIncrement;
 			return {
 				'color': bin.color,
-				'percent': (index / bins.length) * 100,
-				'rangeString': me.generateRangeString(bin.upperBound, bin.lowerBound)
+				'percent': percent,
+				'rangeString': percent + "%"
 			};
 		});
-		var $legendElt = CCH.Objects.Widget.Legend.prototype.templates.continuous({
+		var $legendElt = $(CCH.Objects.Widget.Legend.prototype.templates.continuous({
 			browserSpecificGradients : [
 				//order matters
 				'-webkit-linear-gradient',/* For Safari 5.1 to 6.0 */
@@ -108,15 +115,18 @@ CCH.Objects.Widget.Legend = function (args) {
 				'linear-gradient'/*Standard syntax */
 			],
 			bins: binsForTemplate
-		});
+		}));
 		// Create the table head which displays the unit of measurements
 		$caption.html(title);
 		$theadUOM.html(uom);
 		$theadTr.append($('<td />'), $theadUOM);
 		$thead.append($theadTr);
 		$table.append($caption, $thead);
-		$table.append($legendElt);
-		return $table; 
+		$table.append($tbody);
+		$tbody.append($innerTr);
+		$innerTr.append($innerTd);
+		$innerTd.append($legendElt);
+		return $table;
         };
 	me.generateGenericDiscreteLegendTable = function (args) {
 		args = args || {};
@@ -149,7 +159,9 @@ CCH.Objects.Widget.Legend = function (args) {
 		bins.each(function (bin) {
 			$tr = $('<tr />');
 			$colorTd = $('<td />');
+			$colorTd.addClass('discrete_legend_color_entry');
 			$rangeTd = $('<td />');
+			$rangeTd.addClass('discrete_legend_text_cell');
 			$colorContainer = $('<span />');
 			upperBound = bin.upperBound;
 			lowerBound = bin.lowerBound;
@@ -404,6 +416,9 @@ CCH.Objects.Widget.Legend = function (args) {
 				if(name){
 					msg+= " for item '" + name + "'.";
 				}
+				//user-facing error message should be in a tbody
+				//other code breaks if there is no tbody present
+				//after this function runs
 				$legendTable = $('<table><tbody><tr><td><div style="color:red;">' + msg + '</td/></tr></tbody></table></div>');
 				LOG.warn(msg + "\ngot domain type '" + sld.domain + "'.");
 				if (me.onError) {
