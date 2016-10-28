@@ -462,11 +462,11 @@ CCH.Objects.Widget.Legend = function (args) {
 	};
 
 	me.generateRangeString = function (ub, lb) {
-		if (lb && ub) {
+		if (lb !== undefined && ub !== undefined) { 
 			return lb + ' to ' + ub;
-		} else if (lb && !ub) {
+		} else if (lb !== undefined && ub === undefined) {
 			return '> ' + lb;
-		} else if (!lb && ub) {
+		} else if (lb === undefined  && ub !== undefined) {
 			return '< ' + ub;
 		}
 		return '';

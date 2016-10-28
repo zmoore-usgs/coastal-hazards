@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <%@page contentType="text/xml" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<sld:StyledLayerDescriptor
+ <sld:StyledLayerDescriptor
     xmlns="http://www.opengis.net/ogc"
     xmlns:sld="http://www.opengis.net/sld"
     xmlns:ogc="http://www.opengis.net/ogc"
@@ -33,3 +33,5 @@
         </sld:UserStyle>
     </sld:NamedLayer>
 </sld:StyledLayerDescriptor>
+            
+            
