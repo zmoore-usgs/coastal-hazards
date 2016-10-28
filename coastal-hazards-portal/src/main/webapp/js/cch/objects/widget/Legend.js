@@ -438,11 +438,11 @@ CCH.Objects.Widget.Legend = function (args) {
 			index = args.index,
 			attr = item.attr,
                         $legendTable;
-			var domainToLegendRenderer = {
+			var dataDistributionToRenderer = {
 				'CONTINUOUS': me.generateGenericContinuousLegendTable,
 				'DISCRETE': me.generateGenericDiscreteLegendTable
 			};
-			var legendRenderer = domainToLegendRenderer[sld.domain];
+			var legendRenderer = dataDistributionToRenderer[sld.dataDistribution];
 			if(legendRenderer){
 				var rendererArguments = me.customizeLegendRendererArguments(sld, item);
 				$legendTable = legendRenderer(rendererArguments);
@@ -460,7 +460,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				//other code breaks if there is no tbody present
 				//after this function runs
 				$legendTable = $('<table><tbody><tr><td><div style="color:red;">' + msg + '</td/></tr></tbody></table></div>');
-				LOG.warn(msg + "\ngot domain type '" + sld.domain + "'.");
+				LOG.warn(msg + "\ngot data distribution '" + sld.dataDistribution + "'.");
 				if (me.onError) {
 					me.onError.call(me, arguments);
 				}

@@ -36,6 +36,6 @@ public final class RasterCR {
 	}
 
 	public static final SLDConfig rasterConfig = new SLDConfig(
-			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins, Domain.CONTINUOUS
+			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins, DataDistribution.CONTINUOUS
 	);
 }
