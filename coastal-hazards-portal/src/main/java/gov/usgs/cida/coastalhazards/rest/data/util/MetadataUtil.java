@@ -428,15 +428,9 @@ public class MetadataUtil {
 
                 String wkt = builder.toString();
 
-           CoordinateReferenceSystem crs = CRS.parseWKT(wkt); // same as FactoryFinder.getCRSFactory(null).createFromWKT(wkt);
-            
-          //  CoordinateReferenceSystem crs = new DefaultGeocentricCRS(props, datum, cs);
-            
-            //look for the following block in the metadata to parse out the CRS:
-
-            //May want to pass the key parts to a new method in here:
-            //https://github.com/USGS-CIDA/coastal-hazards/blob/e5ccc15780f1dfb1f53edc97190ec79c9c501b13/coastal-hazards-wps/src/main/java/gov/usgs/cida/coastalhazards/util/CRSUtils.java
-            return crs;
+                CoordinateReferenceSystem crs = CRS.parseWKT(wkt); // same as FactoryFinder.getCRSFactory(null).createFromWKT(wkt);
+                // to look up the EPSG code use Integer eCode = CRS.lookupEpsgCode(crs, true); yields 5070 and/or String idCode = CRS.lookupIdentifier(crs, true); yields EPSG:5070                    
+                return crs;
         }
         
         private static String getParameterNode(String name, double value){

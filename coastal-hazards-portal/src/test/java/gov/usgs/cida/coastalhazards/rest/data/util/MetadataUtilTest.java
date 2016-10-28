@@ -21,11 +21,14 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Scanner;
+import java.util.Set;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import org.apache.commons.io.FileUtils;
+import org.geotools.referencing.CRS;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -33,7 +36,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.cs.CoordinateSystem;
 import org.slf4j.LoggerFactory;
 
 public class MetadataUtilTest {
@@ -504,7 +510,7 @@ public class MetadataUtilTest {
     }
 
     @Test
-    public void testAnotherStringWKTBuilder() {
+    public void testAnotherStringWKTBuilder() throws FactoryException {
         final String lineSep = System.getProperty("line.separator", "\n");
 
         String ellips = "GRS 1980";
@@ -615,6 +621,16 @@ public class MetadataUtilTest {
         System.out.println(wkt);
 
         assertNotNull(wkt);
+        CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
+        assertNotNull(crs);
+        // use some CRSUtils.lookup() feature to get the EPSG code
+        Integer eCode = CRS.lookupEpsgCode(crs, true);
+        String idCode = CRS.lookupIdentifier(crs, true);
+        
+        System.out.println("EPSG: " + eCode);
+        System.out.println("Id : " + idCode);
+        assertNotNull(idCode);
+        //assertNull(wkt); // force a fail to see the output
     }
 
     private static String getParameterNode(String name, double value) {
