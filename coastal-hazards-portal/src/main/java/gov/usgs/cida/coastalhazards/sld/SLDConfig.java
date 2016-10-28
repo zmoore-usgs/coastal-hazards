@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 public class SLDConfig {
     
 	private static final Logger log = LoggerFactory.getLogger(SLDConfig.class);
-	protected final DataDistribution dataDistribution;
+	protected final LegendType legendType;
 	protected final String jspPath;
 	protected final String units;
 	protected final String style;
@@ -56,12 +56,12 @@ public class SLDConfig {
      * @param bins 
      */
 	public SLDConfig(String jspPath, String units, String style, int strokeWidth, String[] attrs, float[] thresholds, String[] colors, List<Map<String,Object>> bins) {
-            this(jspPath, units, style, strokeWidth, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins, SLDGenerator.DOMAIN_DEFAULT);
+            this(jspPath, units, style, strokeWidth, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins, SLDGenerator.LEGEND_TYPE_DEFAULT);
 	}
     public SLDConfig(String jspPath, String units, String style, int strokeWidth, float strokeOpacity, String[] attrs, float[] thresholds, String[] colors, List<Map<String,Object>> bins) {
-        this(jspPath, units, style, strokeWidth, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins, SLDGenerator.DOMAIN_DEFAULT);
+        this(jspPath, units, style, strokeWidth, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins, SLDGenerator.LEGEND_TYPE_DEFAULT);
     }
-    public SLDConfig(String jspPath, String units, String style, int strokeWidth, float strokeOpacity, String[] attrs, float[] thresholds, String[] colors, List<Map<String,Object>> bins, DataDistribution domain) {
+    public SLDConfig(String jspPath, String units, String style, int strokeWidth, float strokeOpacity, String[] attrs, float[] thresholds, String[] colors, List<Map<String,Object>> bins, LegendType legendType) {
         this.jspPath = jspPath;
 		this.units = units;
 		this.style = style;
@@ -71,7 +71,7 @@ public class SLDConfig {
 		this.colors = colors;
 		this.bins = bins;
         this.strokeOpacity = strokeOpacity;
-        this.dataDistribution = domain;
+        this.legendType = legendType;
     }   
 	
 	public String getJspPath() {
@@ -114,7 +114,7 @@ public class SLDConfig {
 		return this.scales;
 	}
 	
-        DataDistribution getDataDistribution(){
-            return this.dataDistribution;
+        LegendType getLegendType(){
+            return this.legendType;
         }
 }

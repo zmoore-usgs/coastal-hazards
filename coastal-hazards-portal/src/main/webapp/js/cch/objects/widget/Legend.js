@@ -418,18 +418,56 @@ CCH.Objects.Widget.Legend = function (args) {
 			sld: sld,
 			item: item
 		};
-		if("CR" === item.attr){
-			//customize the bin label
-			var indexToText = {
-				0 : '100% Dynamic',
-				1 : '&nbsp;',
-				2 : '100% Inundate'
-			};
-			legendRendererArguments.binLabeler = function(bin, index, bins){
-				return indexToText[index];
-			};
+		if('CONTINUOUS' === sld.legendType){
+			//if it is continuous then you need a bin labeler
+			var binLabeler = null;
+			if("CR" === item.attr){
+				//customize the bin label
+				var indexToText = {
+					0 : '100% Dynamic',
+					1 : '&nbsp;',
+					2 : '100% Inundate'
+				};
+				binLabeler = function(bin, index, bins){
+					return indexToText[index];
+				};
+			}
+			if(null === binLabeler){
+				throw 'Could not find a bin labeler for the item "' + me.getItemTinyText(item) + '", and the following continuous legend sld:\n\n' + JSON.stringify(sld);
+			} else {
+				legendRendererArguments.binLabeler = binLabeler;
+			}
 		}
 		return legendRendererArguments;
+	};
+	/**
+	 * @param {Object} item 
+	 * @returns {String} tiny summary text for the specified item, or '' if 
+	 * the item is improperly structured. Mostly for error-reporting.
+	 */
+	me.getItemTinyText = function(item){
+		var name = '';
+		try{
+			name = item.summary.tiny.text;
+		} catch(e){}//intentionally do nothing
+		return name;
+	};
+	/**
+	 * @param {String} msg the message to display to the user
+	 * @returns {jQuery}
+	 */
+	me.createErrorLegendEntry = function(msg){
+		var $legendTable = $('<table><tbody><tr><td><div style="color:red;">' + msg + '</td/></tr></tbody></table></div>');
+		return $legendTable;
+	};
+	
+	var legendTypeToRenderer = {};
+	legendTypeToRenderer['CONTINUOUS'] = me.generateGenericContinuousLegendTable;
+	legendTypeToRenderer['DISCRETE'] = me.generateGenericDiscreteLegendTable;
+	
+	me.getLegendRenderer = function(legendType){
+		var legendRenderer = legendTypeToRenderer[legendType];
+		return legendRenderer;
 	};
 	me.generateVulnerabilityLegendTable = function (args) {
 		args = args || {};
@@ -438,20 +476,23 @@ CCH.Objects.Widget.Legend = function (args) {
 			index = args.index,
 			attr = item.attr,
                         $legendTable;
-			var dataDistributionToRenderer = {
-				'CONTINUOUS': me.generateGenericContinuousLegendTable,
-				'DISCRETE': me.generateGenericDiscreteLegendTable
-			};
-			var legendRenderer = dataDistributionToRenderer[sld.dataDistribution];
+
+			var legendRenderer = me.getLegendType(sld.legendType);
 			if(legendRenderer){
-				var rendererArguments = me.customizeLegendRendererArguments(sld, item);
-				$legendTable = legendRenderer(rendererArguments);
+				try {
+					var rendererArguments = me.customizeLegendRendererArguments(sld, item);
+					$legendTable = legendRenderer(rendererArguments);
+				} catch (e){
+					LOG.warn(e);
+					$legendTable = me.createErrorLegendEntry('Could not customize rendering the legend of item "' + me.getItemTinyText() + '".');
+					if (me.onError) {
+						me.onError.call(me, arguments);
+					}
+					//do not re-throw. We want other potentially successful legend rendering to get a chance
+				}
 			} else {
-				var name = null;
-				try{
-					name = item.summary.tiny.text;
-				} catch(e){};
-				
+				var name = me.getItemTinyText(item);
+
 				var msg = "Could not determine legend renderer"; 
 				if(name){
 					msg+= " for item '" + name + "'.";
@@ -459,8 +500,8 @@ CCH.Objects.Widget.Legend = function (args) {
 				//user-facing error message should be in a tbody
 				//other code breaks if there is no tbody present
 				//after this function runs
-				$legendTable = $('<table><tbody><tr><td><div style="color:red;">' + msg + '</td/></tr></tbody></table></div>');
-				LOG.warn(msg + "\ngot data distribution '" + sld.dataDistribution + "'.");
+				$legendTable = me.createLegendTableEntry(msg);
+				LOG.warn(msg + "\ngot legend type '" + sld.legendType + "'.");
 				if (me.onError) {
 					me.onError.call(me, arguments);
 				}
