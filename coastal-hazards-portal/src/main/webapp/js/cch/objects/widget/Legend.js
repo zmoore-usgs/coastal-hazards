@@ -12,7 +12,7 @@ CCH.Objects.Widget = CCH.Objects.Widget || {};
 CCH.Objects.Widget.LegendTypes = {
 	//clientId : serverId
 	CONTINUOUS: 'CONTINUOUS',
-	DISCRETE: 'DISCRETE,'
+	DISCRETE: 'DISCRETE'
 };
 
 CCH.Objects.Widget.Legend = function (args) {
@@ -501,7 +501,7 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		var legendRenderer = null;
 		try {
-			legendRenderer = me.getLegendType(sld.legendType);
+			legendRenderer = me.getLegendRenderer(sld.legendType);
 		} catch(e){
 			var name = me.getItemTinyText(item);
 
