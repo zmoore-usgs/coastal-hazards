@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.data.util;
 
+import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.DataURI;
 import gov.usgs.cida.coastalhazards.rest.data.TempFileResource;
@@ -228,49 +229,114 @@ public class GeoserverUtil {
 			FileUtils.deleteQuietly(wpsRequestFile);
 		}
 	}
-    /**
-     * 
-     * @param token - the security token
-     * @param zipUrl - the url that GeoServer will retrieve the file from
-     * @return the absolute path to the file on GeoServer after `zipUrl` is retrieved and unzipped
-     */
-    public static String callFetchAndUnzip(String token, String zipUrl){
-        //Do string templating
-        return null;
-    }
-    public static Service addRasterLayer(String geoServerEndpoint, InputStream zipFileStream, String metadataId) {
-        String fileId = UUID.randomUUID().toString();
-        String realFileName = TempFileResource.getFileNameForId(fileId);
-        //temp file must not include fileId, it should include the realFileName
-        File tempFile = new File(TempFileResource.getTempFileSubdirectory(), realFileName);
-        try {
-            IOUtils.copy(zipFileStream, new FileOutputStream(tempFile));
-        } catch (IOException ex) {
-            throw new RuntimeException("Error writing zip to file '" + tempFile.getAbsolutePath() + "'.", ex);
+        /**
+         * 
+         * @param token - the security token
+         * @param zipUrl - the url that GeoServer will retrieve the file from
+         * @return the absolute path to the file on GeoServer after `zipUrl` is retrieved and unzipped
+         */
+        public static String callFetchAndUnzip(String token, String zipUrl){
+                    String absPath = null;
+                    try {
+                    // create a version of the xml needed to post to geoserver so that it will unzip the file and place it on its data location
+                            absPath = postRasterWpsXml(token, zipUrl);
+                    } catch (IOException ex) {
+                            java.util.logging.Logger.getLogger(GeoserverUtil.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            return absPath;
         }
-        String uri = props.getProperty("coastal-hazards.base.secure.url");
-        uri += "/" + DataURI.TEMP_FILE_PATH + "/" + fileId;
-        
-        
-        //String zipUrl <- create a url for the retrieval of the file
-        String unzippedFilePath = null;
-        try{
-            //get the security token from DynamicReadOnlyProperties
-            //String token = props.getProperty("something like gov.usgs.cida.coastal.hazards.wps.fetch.and.unzip.token"); //real value is defined in the FetchAndUnzip WPS Process
-          
-            //unzippedFilePath = call FetchAndUnzip wps proc with two arguments(token, uri)
-        } finally{
-            //regardless of success or failure of wps proc
-            tempFile.delete();
-        }
-        File unzippedFile = new File(unzippedFilePath);
-        GeoServerRESTPublisher publisher = new GeoServerRESTPublisher(geoServerEndpoint, geoserverUser, geoserverPass);
-        //Then use the GeoServerRESTPublisher to create the stores and layers
-        //publisher.publishExternalGeoTIFF(PROXY_WORKSPACE, metadataId, unzippedFile, metadataId, PROXY_STORE, GSResourceEncoder.ProjectionPolicy.NONE, metadataId)
-        // or
-        //publisher.publishGeoTIFF(PROXY_WORKSPACE, metadataId, metadataId, unzippedFile, PROXY_STORE, GSResourceEncoder.ProjectionPolicy.NONE, metadataId, bbox)
-        Service rasterService = wmsService(metadataId);
-        return rasterService;
-    }
+    
+    //#TODO# why is it a list of paths? isn't there only one? note the response form etc. I dont see the wps declared in the app.xml either
+            private static String postRasterWpsXml(String token, String zipUrl) throws FileNotFoundException, IOException {
+                    String urlString = null;
+
+                    FileOutputStream wpsRequestOutputStream = null;
+                    FileInputStream uploadedInputStream = null;
+
+                    File tempDirectory = FileUtils.getTempDirectory();
+                    UUID uuid = UUID.randomUUID();
+                    File wpsRequestFile = new File(tempDirectory, uuid.toString() + ".xml");
+
+                    try {
+
+                            wpsRequestOutputStream = new FileOutputStream(wpsRequestFile);
+
+                            wpsRequestOutputStream.write(new String(
+                                            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                                            + "<wps:Execute service=\"WPS\" version=\"1.0.0\" "
+                                            + "xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" "
+                                            + "xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
+                                            + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
+                                            + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                                            + "xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 "
+                                            + "http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd\">"
+                                            + "<ows:Identifier>ras:FetchAndUnzip</ows:Identifier>"
+                                            + "<wps:DataInputs>"
+                                            + "<wps:Input>"
+                                            + "<ows:Identifier>zipUrl</ows:Identifier>"
+                                            + "<wps:Data>"
+                                            + "<wps:LiteralData>" + zipUrl + "</wps:LiteralData>"
+                                            + "</wps:Data>"
+                                            + "</wps:Input>"
+                                            + "<wps:Input>"
+                                            + "<ows:Identifier>token</ows:Identifier>"
+                                            + "<wps:Data>"
+                                            + "<wps:LiteralData>" + token + "</wps:LiteralData>"
+                                            + "</wps:Data>"
+                                            + "</wps:Input>"
+                                            + "</wps:DataInputs>"
+                                            + "<wps:ResponseForm>"
+                                            + "<wps:RawDataOutput>"
+                                            + "<ows:Identifier>filePaths</ows:Identifier>"
+                                            + "</wps:RawDataOutput>"
+                                            + "</wps:ResponseForm>"
+                                            + "</wps:Execute>").getBytes());
+
+                            urlString = postToWPS(geoserverInternalEndpoint + (geoserverInternalEndpoint.endsWith("/") ? "" : "/") +
+                                            "wps/WebProcessingService", wpsRequestFile);
+                    }
+                    finally {
+                            IOUtils.closeQuietly(wpsRequestOutputStream);
+                            IOUtils.closeQuietly(uploadedInputStream);
+                            FileUtils.deleteQuietly(wpsRequestFile);
+                    }
+                    return urlString;
+            }
+            
+            public static Service addRasterLayer(String geoServerEndpoint, InputStream zipFileStream, String layerName, Bbox bbox, String EPSGcode) throws FileNotFoundException {
+                    String fileId = UUID.randomUUID().toString();
+                    String realFileName = TempFileResource.getFileNameForId(fileId);
+                    //temp file must not include fileId, it should include the realFileName
+                    File tempFile = new File(TempFileResource.getTempFileSubdirectory(), realFileName);
+                    try {
+                        IOUtils.copy(zipFileStream, new FileOutputStream(tempFile));
+                    } catch (IOException ex) {
+                        throw new RuntimeException("Error writing zip to file '" + tempFile.getAbsolutePath() + "'.", ex);
+                    }
+                    String uri = props.getProperty("coastal-hazards.base.secure.url");
+                    uri += "/" + DataURI.TEMP_FILE_PATH + "/" + fileId;
+
+
+                    //String zipUrl <- create a url for the retrieval of the file
+                    String unzippedFilePath = null;
+                    try{
+                        //get the security token from DynamicReadOnlyProperties
+                            String token = props.getProperty("gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token"); 
+
+                            unzippedFilePath = callFetchAndUnzip(token, uri);//call FetchAndUnzip wps proc with two arguments(token, uri)
+                    } finally{
+                        //regardless of success or failure of wps proc
+                        tempFile.delete();
+                    }
+                    File unzippedFile = new File(unzippedFilePath);
+                    GeoServerRESTPublisher publisher = new GeoServerRESTPublisher(geoServerEndpoint, geoserverUser, geoserverPass);
+                    //Then use the GeoServerRESTPublisher to create the stores and layers.   Consider passing in the ProjectionPolicy as part of the method sig
+                    publisher.publishExternalGeoTIFF(PROXY_WORKSPACE, layerName, unzippedFile, layerName, PROXY_STORE, GSResourceEncoder.ProjectionPolicy.FORCE_DECLARED, layerName);
+                    // or
+                    //publisher.publishGeoTIFF(PROXY_WORKSPACE, layerName, layerName, unzippedFile, PROXY_STORE, GSResourceEncoder.ProjectionPolicy.NONE, metadataId, bbox)
+                    Service rasterService = wmsService(layerName);
+                    return rasterService;
+            }
 
 }

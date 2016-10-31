@@ -44,9 +44,9 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import static gov.usgs.cida.coastalhazards.rest.data.ItemResource.PUBLIC_URL;
+import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.JAXBException;
@@ -55,6 +55,8 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.tuple.Pair;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
 
 /**
  * Works with ArcGIS and Geoserver services for service like importing layers
@@ -168,7 +170,12 @@ public class LayerResource {
                 }
                 services.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
                 Bbox bbox = MetadataUtil.getBoundingBoxFromFgdcMetadata(metadata);
-                Service rasterService = GeoserverUtil.addRasterLayer(geoserverEndpoint, zipFileStream, metadataId);
+                String EPSGcode = CRS.lookupIdentifier(MetadataUtil.getCrsFromFgdcMetadata(metadata), true);
+                if (bbox == null || EPSGcode == null) {
+                    throw new ServerErrorException("Unable to identify bbox or epsg code from metadata.", Status.INTERNAL_SERVER_ERROR);
+                }
+                               
+                Service rasterService = GeoserverUtil.addRasterLayer(geoserverEndpoint, zipFileStream, metadataId, bbox, EPSGcode);
                 services.add(rasterService);
                 if (!services.isEmpty()) {
 			Layer layer = new Layer();
@@ -185,7 +192,7 @@ public class LayerResource {
 		}
                 
                 
-            } catch (FileUploadException  | JAXBException  | UnsupportedEncodingException ex) {
+            } catch (FileUploadException  | JAXBException  | UnsupportedEncodingException | FactoryException | FileNotFoundException ex) {
                 throw new ServerErrorException("Error parsing upload request", Status.INTERNAL_SERVER_ERROR, ex);
             }
         }
