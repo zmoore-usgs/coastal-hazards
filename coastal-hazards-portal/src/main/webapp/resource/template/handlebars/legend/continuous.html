@@ -1,0 +1,22 @@
+<table class="continuous_legend">
+  <tr>
+    <td class="continuous_legend_color_ramp" style="
+	background: red; /* For browsers that do not support gradients */
+	{{#each browserSpecificGradients }}
+		background: {{{this}}}(
+		{{#each ../bins}}
+			{{{color}}} {{{ percent }}}%{{#unless @last}},{{/unless}}
+		{{/each}});
+	{{/each}}
+	"></td>
+    <td>
+      <table class="continuous_legend_text_table">
+	{{#each bins}}
+	<tr class="continuous_legend_text_row">
+		<td class="continuous_legend_text_cell">{{{binLabel}}}</td>
+	</tr>
+	{{/each}}
+      </table>
+    </td>
+  </tr>
+</table>

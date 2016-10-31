@@ -15,7 +15,7 @@ public final class RasterCR {
     
         private static final String[] attrs = {CR};
         protected static final String jspPath = "/SLD/raster_cr.jsp";
-        protected static final String units = "percent"; 
+        protected static final String units = "likelihood"; 
         protected static final List<Map<String, Object>> bins;
         protected static final float[] thresholds = {0.0f, .33f, .67f, 1.0f}; //used to evaluate what color the pixel should receive. (index) 
         protected static final String[] colors = {"#000000", "#5278AB", "#ededc4", "#BB4238"}; 
@@ -36,6 +36,6 @@ public final class RasterCR {
 	}
 
 	public static final SLDConfig rasterConfig = new SLDConfig(
-			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, attrs, thresholds, colors, bins
-	);    
+			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins, LegendType.CONTINUOUS
+	);
 }
