@@ -8,6 +8,13 @@
 window.CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
 CCH.Objects.Widget = CCH.Objects.Widget || {};
+
+CCH.Objects.Widget.LegendTypes = {
+	//clientId : serverId
+	CONTINUOUS: 'CONTINUOUS',
+	DISCRETE: 'DISCRETE,'
+};
+
 CCH.Objects.Widget.Legend = function (args) {
 	"use strict";
 	var me = (this === window) ? {} : this;
@@ -418,7 +425,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			sld: sld,
 			item: item
 		};
-		if('CONTINUOUS' === sld.legendType){
+		if(CCH.Objects.Widget.LegendTypes.CONTINUOUS === sld.legendType){
 			//if it is continuous then you need a bin labeler
 			var binLabeler = null;
 			if("CR" === item.attr){
@@ -452,7 +459,11 @@ CCH.Objects.Widget.Legend = function (args) {
 		} catch(e){}//intentionally do nothing
 		return name;
 	};
+	
 	/**
+	 * Creates a user-facing error message.
+	 * It wraps the user-facing error message in a tbody. Other code breaks
+	 * if there is no tbody present after this function runs.
 	 * @param {String} msg the message to display to the user
 	 * @returns {jQuery}
 	 */
@@ -462,11 +473,22 @@ CCH.Objects.Widget.Legend = function (args) {
 	};
 	
 	var legendTypeToRenderer = {};
-	legendTypeToRenderer['CONTINUOUS'] = me.generateGenericContinuousLegendTable;
-	legendTypeToRenderer['DISCRETE'] = me.generateGenericDiscreteLegendTable;
+	legendTypeToRenderer[CCH.Objects.Widget.LegendTypes.CONTINUOUS] = me.generateGenericContinuousLegendTable;
+	legendTypeToRenderer[CCH.Objects.Widget.LegendTypes.DISCRETE] = me.generateGenericDiscreteLegendTable;
 	
+	/**
+	 * 
+	 * @param {String} legendType
+	 * @returns {Function} a legend renderer
+	 * @throws {Exception} if a legend renderer cannot be found for the specified type
+	 */
 	me.getLegendRenderer = function(legendType){
 		var legendRenderer = legendTypeToRenderer[legendType];
+		
+		//intentional type-coercion
+		if(undefined == legendRenderer){
+			throw 'legend type "' + legendType + '" not found.';
+		}
 		return legendRenderer;
 	};
 	me.generateVulnerabilityLegendTable = function (args) {
@@ -475,37 +497,38 @@ CCH.Objects.Widget.Legend = function (args) {
 			item = args.item,
 			index = args.index,
 			attr = item.attr,
-                        $legendTable;
+			$legendTable;
 
-			var legendRenderer = me.getLegendType(sld.legendType);
-			if(legendRenderer){
-				try {
-					var rendererArguments = me.customizeLegendRendererArguments(sld, item);
-					$legendTable = legendRenderer(rendererArguments);
-				} catch (e){
-					LOG.warn(e);
-					$legendTable = me.createErrorLegendEntry('Could not customize rendering the legend of item "' + me.getItemTinyText() + '".');
-					if (me.onError) {
-						me.onError.call(me, arguments);
-					}
-					//do not re-throw. We want other potentially successful legend rendering to get a chance
-				}
-			} else {
-				var name = me.getItemTinyText(item);
+		var legendRenderer = null;
+		try {
+			legendRenderer = me.getLegendType(sld.legendType);
+		} catch(e){
+			var name = me.getItemTinyText(item);
 
-				var msg = "Could not determine legend renderer"; 
-				if(name){
-					msg+= " for item '" + name + "'.";
-				}
-				//user-facing error message should be in a tbody
-				//other code breaks if there is no tbody present
-				//after this function runs
-				$legendTable = me.createLegendTableEntry(msg);
-				LOG.warn(msg + "\ngot legend type '" + sld.legendType + "'.");
+			var msg = "Could not determine legend renderer"; 
+			if(name){
+				msg+= " for item '" + name + "'.";
+			}
+			$legendTable = me.createErrorLegendEntry(msg);
+			LOG.warn(msg + "\ngot legend type '" + sld.legendType + "'.");
+			if (me.onError) {
+				me.onError.call(me, arguments);
+			}
+		}
+
+		if(legendRenderer){
+			try {
+				var rendererArguments = me.customizeLegendRendererArguments(sld, item);
+				$legendTable = legendRenderer(rendererArguments);
+			} catch (e){
+				LOG.warn(e);
+				$legendTable = me.createErrorLegendEntry('Could not customize rendering the legend of item "' + me.getItemTinyText() + '".');
 				if (me.onError) {
 					me.onError.call(me, arguments);
 				}
+				//do not re-throw. We want other potentially successful legend rendering to get a chance
 			}
+		}
 		
 		$legendTable.attr({
 			'legend-attribute': attr,
