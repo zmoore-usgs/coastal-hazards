@@ -431,9 +431,9 @@ CCH.Objects.Widget.Legend = function (args) {
 			if("CR" === item.attr){
 				//customize the bin label
 				var indexToText = {
-					0 : '100% Dynamic',
+					0 : '100% Inundate',
 					1 : '&nbsp;',
-					2 : '100% Inundate'
+					2 : '100% Dynamic'
 				};
 				binLabeler = function(bin, index, bins){
 					return indexToText[index];
