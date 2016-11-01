@@ -4,7 +4,32 @@
 /*global LOG*/
 /*global CCH*/
 /*global OpenLayers*/
-CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFeatureInfo, {
+CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFeatureInfo, 
+(function(){
+	/**
+	 * If the features are from a vector data source, return 'attrName', 
+	 * else if the features are from a raster source, override them with the
+	 * only attribute name that GeoServer 2.4 supports for raster layers.
+	 * 
+	 * @param {Array<Object>} features
+	 * @param {String} attrName
+	 * @returns {String} attribute name
+	 */
+	var overrideAttributeName = function(features, attrName){
+		var GRAY_INDEX = 'GRAY_INDEX';
+		var overrideName = attrName;
+		if(features.length){
+			var firstFeature = features[0];
+			if('object' === typeof firstFeature && null !== firstFeature){
+				if(1 === Object.keys(firstFeature).length && undefined !== firstFeature[GRAY_INDEX]){
+					overrideName = GRAY_INDEX;
+				}
+			}
+		}
+		return overrideName;
+	};	
+	
+return {
 	title: 'identify-control',
 	layers: [],
 	queryVisible: true,
@@ -158,15 +183,15 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 			layerId = args.layerId,
 			item = CCH.items.getById({id: layerId}),
 			title = item.summary.medium.title,
-			attr = item.attr,
 			features = args.features,
+			attr = overrideAttributeName(features, item.attr),
 			attrAvg = 0,
 			category,
 			incomingFeatures = args.features,
 			incomingFeatureCount = incomingFeatures.length,
 			layers = args.layers,
-			color,
-			buildLegend = function (args) {
+			color;
+		var buildLegend = function (args) {
 				args = args || {};
 				var binIdx = 0,
 					openlayersPopupPaddingHeight = 42,
@@ -205,7 +230,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					ub,
 					width,
 					height;
-
+				
 				if (layerName.indexOf('_r_') !== -1) {
 					ribbonIndex = parseInt(layerName.split('_').last(), 10);
 				}
@@ -302,7 +327,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 								displayedAttrValue = attrAvg.toFixed(1);
 							}
 						}
-						displayedAttrValue += units;
+						displayedAttrValue += "&nbsp;" + units;
 					}
 					$valueContainer.append(displayedAttrValue);
 
@@ -382,7 +407,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 				});
 			},
 			isMissing = function(val) {
-				return isNaN(val) || val === -999;
+				return isNaN(val) || val === -999 || val === -3.4028234663852886e+38;
 			};
 
 		if (item.type.toLowerCase() === 'vulnerability' ||
@@ -438,4 +463,5 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 		this.events.register("getfeatureinfo", this, this.layerIdClickHandler);
 	},
 	CLASS_NAME: "OpenLayers.Control.WMSGetFeatureInfo"
-});
+}
+}()));
