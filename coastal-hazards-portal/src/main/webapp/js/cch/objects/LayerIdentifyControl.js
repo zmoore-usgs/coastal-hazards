@@ -310,8 +310,8 @@ return {
 					// Create the color container for this row
 					$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
 					
-					if (attrName === 'cvirisk') {
-						displayedAttrValue = bins[attrAvg.toFixed(0) - 1].category;
+					if ('cvirisk' === attrName || 'ae' === attrName) {
+						displayedAttrValue = bins[attrAvg.toFixed(0) - 1].category;S
 						//don't append units
 					} else {
 						if (!$.isNumeric(attrAvg)) {
