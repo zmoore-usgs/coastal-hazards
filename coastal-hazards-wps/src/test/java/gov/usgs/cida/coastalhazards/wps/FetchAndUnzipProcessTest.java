@@ -23,9 +23,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.geotools.process.ProcessException;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -161,9 +159,9 @@ public class FetchAndUnzipProcessTest {
         ZipInputStream zipStream = new ZipInputStream(file);
         File zipDestination = instance.getNewZipDestination();
         List<String> expectedPaths = buildExpectedAbsolutePaths(zipDestination, expectedRelativePaths);
-        List<String> actualPaths = instance.unzipToDir(zipStream,zipDestination);
-        Collections.sort(actualPaths);
-        assertEquals(expectedPaths, actualPaths);
+        String expPath = expectedPaths.get(0);
+        String actualPath = instance.unzipToDir(zipStream,zipDestination);
+        assertEquals(expPath, actualPath);
     }
     
    
@@ -177,34 +175,7 @@ public class FetchAndUnzipProcessTest {
             "test.txt"
         );
     }
-    
-    /**
-     * Test of unzipToDir method, of class FetchAndUnzipProcess.
-     */
-    @Test
-    public void testUnzipTwoFileZipToDir() {       
-        assertZipFileUnzipsToPaths(
-            "gov/usgs/cida/coastalhazards/wps/twoFiles.zip",
-            "test.txt",
-            "test2.txt"
-        );
-    }
-    
-    /**
-     * Test of unzipToDir method, of class FetchAndUnzipProcess.
-     */
-    @Test
-    public void testUnzipDeepZipFileToDir() {       
-        assertZipFileUnzipsToPaths(
-            "gov/usgs/cida/coastalhazards/wps/deepDirs.zip",
-            "parent/child/grandchild/test3.txt",
-            "parent/child/test2.txt",
-            "parent/child2/grandchild/test3.txt",
-            "parent/child2/test2.txt",
-            "parent/test.txt"
-        );
-    }
-    
+          
     @Test(expected = ProcessException.class)
     public void testGetNewZipDestinationWithMissingBase(){
         instance.getNewZipDestination(null);

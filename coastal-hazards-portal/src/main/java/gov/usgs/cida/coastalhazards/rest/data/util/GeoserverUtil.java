@@ -247,7 +247,6 @@ public class GeoserverUtil {
             return absPath;
         }
     
-    //#TODO# why is it a list of paths? isn't there only one? note the response form etc. I dont see the wps declared in the app.xml either
             private static String postRasterWpsXml(String token, String zipUrl) throws FileNotFoundException, IOException {
                     String urlString = null;
 
@@ -271,7 +270,7 @@ public class GeoserverUtil {
                                             + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
                                             + "xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 "
                                             + "http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd\">"
-                                            + "<ows:Identifier>ras:FetchAndUnzip</ows:Identifier>"
+                                            + "<ows:Identifier>gs:FetchAndUnzip</ows:Identifier>"
                                             + "<wps:DataInputs>"
                                             + "<wps:Input>"
                                             + "<ows:Identifier>zipUrl</ows:Identifier>"
@@ -324,7 +323,7 @@ public class GeoserverUtil {
                         //get the security token from DynamicReadOnlyProperties
                             String token = props.getProperty("gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token"); 
 
-                            unzippedFilePath = callFetchAndUnzip(token, uri);//call FetchAndUnzip wps proc with two arguments(token, uri)
+                            unzippedFilePath = callFetchAndUnzip(token, uri); // call the wps process
                     } finally{
                         //regardless of success or failure of wps proc
                         tempFile.delete();
