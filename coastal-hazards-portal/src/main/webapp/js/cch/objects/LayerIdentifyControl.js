@@ -311,7 +311,7 @@ return {
 					$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
 					
 					if ('cvirisk' === attrName || 'ae' === attrName) {
-						displayedAttrValue = bins[attrAvg.toFixed(0) - 1].category;S
+						displayedAttrValue = bins[attrAvg.toFixed(0) - 1].category;
 						//don't append units
 					} else {
 						if (!$.isNumeric(attrAvg)) {
