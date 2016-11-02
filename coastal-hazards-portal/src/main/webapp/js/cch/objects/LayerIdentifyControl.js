@@ -28,7 +28,37 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 		}
 		return overrideName;
 	};	
-	
+	/**
+	 * 
+	 * @param {Array<Object>} bins
+	 * @param {Number} attrAvg
+	 * @returns {String} css-compatible color
+	 */
+	var getBinColorForValue = function(bins, attrAvg){
+		var color = '',
+			binIdx,
+			lb,
+			ub;
+		for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
+			lb = bins[binIdx].lowerBound;
+			ub = bins[binIdx].upperBound;
+			if (lb !== undefined && ub !== undefined) {
+				if (attrAvg <= ub && attrAvg >= lb) {
+					color = bins[binIdx].color;
+				}
+			} else if (lb === undefined && ub !== undefined) {
+				if (attrAvg <= ub) {
+					color = bins[binIdx].color;
+				}
+			} else {
+				if (attrAvg >= lb) {
+					color = bins[binIdx].color;
+				}
+			}
+		}
+
+		return color;
+	};
 return {
 	title: 'identify-control',
 	layers: [],
@@ -287,30 +317,21 @@ return {
 						$legendRow.append($titleContainer, $colorContainer, $valueContainer);
 						$table.append($legendRow);
 					}
+				
 				} else {
-					for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
-						lb = bins[binIdx].lowerBound;
-						ub = bins[binIdx].upperBound;
-						if (lb !== undefined && ub !== undefined) {
-							if (attrAvg <= ub && attrAvg >= lb) {
-								color = bins[binIdx].color;
-							}
-						} else if (lb === undefined && ub !== undefined) {
-							if (attrAvg <= ub) {
-								color = bins[binIdx].color;
-							}
-						} else {
-							if (attrAvg >= lb) {
-								color = bins[binIdx].color;
-							}
-						}
+					if('ae' === attrName){
+						//raster value is a 1-based index, but we use 0-based
+						color = bins[attrAvg - 1].color;
+					} else {
+						color = getBinColorForValue(bins, attrAvg);
 					}
+					
 					$titleContainer.html(title);
 					
 					// Create the color container for this row
 					$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
 					
-					if (attrName === 'cvirisk') {
+					if ('cvirisk' === attrName || 'ae' === attrName) {
 						displayedAttrValue = bins[attrAvg.toFixed(0) - 1].category;
 						//don't append units
 					} else {
