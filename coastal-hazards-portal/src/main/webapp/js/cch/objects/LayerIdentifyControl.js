@@ -229,6 +229,7 @@ return {
 					bins = args.bins,
 					color = args.color,
 					attrAvg = args.attrAvg,
+					category = args.category,
 					title = args.title,
 					popup = args.popup,
 					units = args.units,
@@ -319,10 +320,7 @@ return {
 					}
 				
 				} else {
-					if('ae' === attrName){
-						//raster value is a 1-based index, but we use 0-based
-						color = bins[attrAvg - 1].color;
-					} else {
+					if(!color){
 						color = getBinColorForValue(bins, attrAvg);
 					}
 					
@@ -331,8 +329,8 @@ return {
 					// Create the color container for this row
 					$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
 					
-					if ('cvirisk' === attrName || 'ae' === attrName) {
-						displayedAttrValue = bins[attrAvg.toFixed(0) - 1].category;
+					if (category) {
+						displayedAttrValue = category;
 						//don't append units
 					} else {
 						if (!$.isNumeric(attrAvg)) {
@@ -452,7 +450,7 @@ return {
 			} else {
 				// Average them out
 				attrAvg /= incomingFeatureCount;
-				if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(attr.toUpperCase()) !== -1) {
+				if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK", "AE"].indexOf(item.attr.toUpperCase()) !== -1) {
 					attrAvg = Math.ceil(attrAvg);
 					category = sld.bins[attrAvg - 1].category;
 					color = sld.bins[attrAvg - 1].color;
@@ -471,7 +469,8 @@ return {
 			units: units,
 			layers: layers,
 			layerId: layerId,
-			naAttrText: this.naAttrText
+			naAttrText: this.naAttrText,
+			category: category
 		});
 	},
 	initialize: function (options) {
