@@ -154,6 +154,7 @@
 							</button>
 							<ul class="dropdown-menu" role="menu">
 								<li><a id="publish-button-create-item-option" href="#">Item</a></li>
+								<li><a id="publish-button-create-raster-item-option" href="<%=baseUrl%>/publish/item/raster">Raster Item</a></li>
 								<li><a id="publish-button-create-aggregation-option" href="#">Aggregation</a></li>
 								<li><a id="publish-button-create-template-option" href="#">Template</a></li>
 							</ul>
