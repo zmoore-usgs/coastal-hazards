@@ -154,8 +154,8 @@
 						For more information about the organizations who created this portal:
 					</p>
 
-					<a href="http://marine.usgs.gov/coastalchangehazards/" target="_blank">USGS National Assessment of Coastal Change Hazards</a>
-					<a href="http://cida.usgs.gov/" target="_blank">USGS Center for Integrated Data Analytics</a>
+					<a href="https://marine.usgs.gov/coastalchangehazards/" target="_blank">USGS National Assessment of Coastal Change Hazards</a>
+					<a href="https://cida.usgs.gov/" target="_blank">USGS Center for Integrated Data Analytics</a>
 					<a href="https://github.com/USGS-CIDA/coastal-hazards" target="_blank">Review the open source software behind the Portal available on Github</a>
 					<a href="mailto:cch_help@usgs.gov">Contact us at cch_help@usgs.gov</a>
 				</div> 
@@ -402,10 +402,10 @@
 
 		<footer>
 			<p id="usgsfooterbar">
-				<a href="http://www.usgs.gov/laws/accessibility.html" title="Accessibility Policy (Section 508)">Accessibility</a>
-				<a href="http://www.usgs.gov/foia/" title="Freedom of Information Act">FOIA</a>
-				<a href="http://www.usgs.gov/laws/privacy.html" title="Privacy policies of the U.S. Geological Survey.">Privacy</a>
-				<a href="http://www.usgs.gov/laws/policies_notices.html" title="Policies and notices that govern information posted on USGS Web sites.">Policies and Notices</a>
+				<a href="https://www.usgs.gov/laws/accessibility.html" title="Accessibility Policy (Section 508)">Accessibility</a>
+				<a href="https://www.usgs.gov/foia/" title="Freedom of Information Act">FOIA</a>
+				<a href="https://www.usgs.gov/laws/privacy.html" title="Privacy policies of the U.S. Geological Survey.">Privacy</a>
+				<a href="https://www.usgs.gov/laws/policies_notices.html" title="Policies and notices that govern information posted on USGS Web sites.">Policies and Notices</a>
 			</p>
 			<a href="#"><img src="<%=baseUrl%>/images/info/usgs_logo.png" alt="usgs logo"/></a>
 		</footer>

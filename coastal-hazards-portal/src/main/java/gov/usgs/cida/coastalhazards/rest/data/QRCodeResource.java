@@ -33,7 +33,7 @@ public class QRCodeResource {
 	static private final int MAX_WIDTH = 4096;
 	static private final int MAX_HEIGHT = 4096;
 	static private final String BASE_URL = JNDISingleton.getInstance().getProperty("coastal-hazards.public.url",
-			"http://marine.usgs.gov/coastalchangehazardsportal");
+			"https://marine.usgs.gov/coastalchangehazardsportal");
 
 	/**
 	 * Produces a QR code that directs to back of card for a given item ID
