@@ -239,6 +239,7 @@ public class GeoserverUtil {
                     String absPath = null;
                     try {
                     // create a version of the xml needed to post to geoserver so that it will unzip the file and place it on its data location
+                            log.info("callFetchAndUnzip ... about to post Raster with zipUrl: " + zipUrl);
                             absPath = postRasterWpsXml(token, zipUrl);
                     } catch (IOException ex) {
                             java.util.logging.Logger.getLogger(GeoserverUtil.class.getName()).log(Level.SEVERE, null, ex);
@@ -291,7 +292,8 @@ public class GeoserverUtil {
                                             + "</wps:RawDataOutput>"
                                             + "</wps:ResponseForm>"
                                             + "</wps:Execute>").getBytes());
-
+                            
+                            log.info("WPS abs path: " + wpsRequestFile.getAbsolutePath());
                             urlString = postToWPS(geoserverInternalEndpoint + (geoserverInternalEndpoint.endsWith("/") ? "" : "/") +
                                             "wps/WebProcessingService", wpsRequestFile);
                     }
@@ -322,18 +324,26 @@ public class GeoserverUtil {
                     try{
                         //get the security token from DynamicReadOnlyProperties
                             String token = props.getProperty("gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token"); 
-
+                            log.info("token has been found : " + token); //#TODO# remove this before check in
                             unzippedFilePath = callFetchAndUnzip(token, uri); // call the wps process
                     } finally{
                         //regardless of success or failure of wps proc
                         tempFile.delete();
                     }
+                    if (unzippedFilePath == null || unzippedFilePath.isEmpty()){
+                        log.info("File path to unzipped geotiff returned null. SEVERE..."); //#TODO# throw server exception
+                    }
+                    log.info("______File path to unzipped is: " + unzippedFilePath);
                     File unzippedFile = new File(unzippedFilePath);
+                    
+                    log.info("In GeoserverUtil, about to publishGeoTiff with layer name: " + layerName);
                     GeoServerRESTPublisher publisher = new GeoServerRESTPublisher(geoServerEndpoint, geoserverUser, geoserverPass);
                     //Then use the GeoServerRESTPublisher to create the stores and layers.   Consider passing in the ProjectionPolicy as part of the method sig
-                    publisher.publishExternalGeoTIFF(PROXY_WORKSPACE, layerName, unzippedFile, layerName, PROXY_STORE, GSResourceEncoder.ProjectionPolicy.FORCE_DECLARED, layerName);
+                    //publisher.publishExternalGeoTIFF(PROXY_WORKSPACE, layerName, unzippedFile, layerName, PROXY_STORE, GSResourceEncoder.ProjectionPolicy.FORCE_DECLARED, layerName);
                     // or
-                    //publisher.publishGeoTIFF(PROXY_WORKSPACE, layerName, layerName, unzippedFile, PROXY_STORE, GSResourceEncoder.ProjectionPolicy.NONE, metadataId, bbox)
+                    //publisher.publishGeoTIFF(PROXY_WORKSPACE, layerName, layerName, unzippedFile, PROXY_STORE, GSResourceEncoder.ProjectionPolicy.FORCE_DECLARED, layerName); //double []
+                     double[] geoBbox = {bbox.makeEnvelope().getMinX(), bbox.makeEnvelope().getMinY(), bbox.makeEnvelope().getMaxX(), bbox.makeEnvelope().getMaxY()};
+                    publisher.publishGeoTIFF(PROXY_WORKSPACE, PROXY_STORE, layerName, unzippedFile, EPSGcode, GSResourceEncoder.ProjectionPolicy.FORCE_DECLARED, "raster", geoBbox);
                     Service rasterService = wmsService(layerName);
                     return rasterService;
             }

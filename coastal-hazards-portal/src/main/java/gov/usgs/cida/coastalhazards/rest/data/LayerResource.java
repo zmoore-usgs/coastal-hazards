@@ -41,12 +41,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
+import org.xml.sax.SAXException; 
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import static gov.usgs.cida.coastalhazards.rest.data.ItemResource.PUBLIC_URL;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import javax.servlet.annotation.MultipartConfig;
 import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.JAXBException;
@@ -56,6 +57,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.tuple.Pair;
 import org.geotools.referencing.CRS;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.opengis.referencing.FactoryException;
 
 /**
@@ -63,6 +65,7 @@ import org.opengis.referencing.FactoryException;
  *
  * @author isuftin
  */
+@MultipartConfig
 @Path(DataURI.LAYER_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class LayerResource {
@@ -152,31 +155,54 @@ public class LayerResource {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.TEXT_PLAIN)
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-	public Response createRasterLayer(@Context HttpServletRequest req) {
-            DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
-            ServletFileUpload fileUpload = new ServletFileUpload(fileItemFactory);
+	public Response createRasterLayer(
+                @Context HttpServletRequest req, 
+                @FormDataParam("data") String metadata,                
+                @FormDataParam("file") InputStream zipFileStream,
+                @FormDataParam("file") FormDataContentDisposition fileDisposition
+        ) {
+          
+         //   DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
+         //   ServletFileUpload fileUpload = new ServletFileUpload(fileItemFactory);
             List<Service> services = new ArrayList<>();
+            System.out.println("In createRasterLayer.___________________________");
             
             try{
-                List<FileItem> items = fileUpload.parseRequest(req);
-                Pair<String, InputStream> pair = getMetadataAndZippedRaster(items);
-                String metadata = pair.getLeft();
-                InputStream zipFileStream = pair.getRight();
+                log.info("Raster layer create - about to parseRequest");
+            //    List<FileItem> items = fileUpload.parseRequest(req);
+            //    Pair<String, InputStream> pair = getMetadataAndZippedRaster(items);
+              //  String metadata = pair.getLeft();
+               // InputStream zipFileStream = pair.getRight();
                 String metadataId;
-                try {
-                    metadataId = MetadataUtil.doCSWInsertFromString(metadata);
-                } catch (IOException | ParserConfigurationException | SAXException ex) {
-                    throw new ServerErrorException("Error inserting metadata to the CSW server.", Status.INTERNAL_SERVER_ERROR, ex);
+                if (metadata == null || metadata.isEmpty()) {
+                    throw new ServerErrorException("Metadata file is missing or empty.", Status.INTERNAL_SERVER_ERROR);
                 }
+                log.info("Raster layer create - about to doCSWInsertFromString");
+                log.info("metatdata received looks like: " + metadata.substring(0, 65));
+                try {
+                    log.info("Raster layer create - about to doCSWInsertFromString");
+                    metadataId = MetadataUtil.doCSWInsertFromString(metadata);
+                    } catch (IOException | ParserConfigurationException | SAXException ex) {
+                        throw new ServerErrorException("Error inserting metadata to the CSW server.", Status.INTERNAL_SERVER_ERROR, ex);
+                    }
+                log.info("Raster layer create - about to makeCSWServiceForUrl");
                 services.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
+                log.info("Raster layer create - about to getBoundingBox.");
                 Bbox bbox = MetadataUtil.getBoundingBoxFromFgdcMetadata(metadata);
+                log.info("Raster layer create - about to EPSG.");
                 String EPSGcode = CRS.lookupIdentifier(MetadataUtil.getCrsFromFgdcMetadata(metadata), true);
                 if (bbox == null || EPSGcode == null) {
                     throw new ServerErrorException("Unable to identify bbox or epsg code from metadata.", Status.INTERNAL_SERVER_ERROR);
                 }
-                               
+                
+                log.info("Raster layer create - about to addRasterLayer to geoserver with a id of: " + metadataId); 
+                log.info("Raster layer create - about to addRasterLayer to geoserver with a bbox: " + bbox.getBbox());
+                log.info("Raster layer create - about to addRasterLayer to geoserver with a EPSG of: " + EPSGcode);
+                
                 Service rasterService = GeoserverUtil.addRasterLayer(geoserverEndpoint, zipFileStream, metadataId, bbox, EPSGcode);
+               
                 services.add(rasterService);
+                
                 if (!services.isEmpty()) {
 			Layer layer = new Layer();
 			layer.setId(metadataId);
@@ -192,41 +218,11 @@ public class LayerResource {
 		}
                 
                 
-            } catch (FileUploadException  | JAXBException  | UnsupportedEncodingException | FactoryException | FileNotFoundException ex) {
+            } catch (JAXBException  | UnsupportedEncodingException | FactoryException | FileNotFoundException ex) {
                 throw new ServerErrorException("Error parsing upload request", Status.INTERNAL_SERVER_ERROR, ex);
             }
         }
-        
-        Pair<String, InputStream> getMetadataAndZippedRaster(List<FileItem> items){
-            String metadata = null;
-            InputStream zippedTiff = null;
-                if(items != null && !items.isEmpty()) {
-                    for (FileItem item : items) {
-                        String name = item.getName().toLowerCase();
-                        if(RASTER_FILE_FORM_FIELD_NAME.equals(name)) {
-                            try {
-                                zippedTiff = item.getInputStream();
-                            } catch (IOException ex) {
-                                throw new ServerErrorException("Error reading zipped TIFF", Status.INTERNAL_SERVER_ERROR, ex);
-                            }
-                        } else if(RASTER_METADATA_FORM_FIELD_NAME.equals(name)) {
-                            metadata = item.getString();
-                        } else {
-                            log.warn("ignoring extra parameter on raster layer creation: '" + name + "'.");
-                        }
-                    }
-                    if(null == metadata){
-                        throw new ServerErrorException("No metadata file found for field '" + RASTER_METADATA_FORM_FIELD_NAME + "'.", Status.INTERNAL_SERVER_ERROR);
-                    }
-                    if(null == zippedTiff){
-                        throw new ServerErrorException("No zipped TIFF file found for field" + RASTER_FILE_FORM_FIELD_NAME + "'.", Status.INTERNAL_SERVER_ERROR);
-                    }
-                } else {
-                    throw new ServerErrorException("Could not find any files to iterate over. Were files uploaded?", Status.INTERNAL_SERVER_ERROR);
-                }
-            return Pair.of(metadata, zippedTiff);
-        }
-        
+             
 	@DELETE
 	@Path("/{layer}")
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
