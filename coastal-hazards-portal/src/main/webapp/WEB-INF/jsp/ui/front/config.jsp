@@ -87,7 +87,7 @@
                 },
                 'tooltip-prevalence' : 2000,
 				'endpoints' : {
-					'tutorial' : 'https://go.usa.gov/K5fP'
+					'tutorial' : 'https://go.usa.gov/xkufe'
 				}
             },
 			map: {
