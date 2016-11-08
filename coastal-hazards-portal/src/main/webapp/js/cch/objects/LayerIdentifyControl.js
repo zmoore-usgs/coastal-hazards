@@ -28,37 +28,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 		}
 		return overrideName;
 	};	
-	/**
-	 * 
-	 * @param {Array<Object>} bins
-	 * @param {Number} attrAvg
-	 * @returns {String} css-compatible color
-	 */
-	var getBinColorForValue = function(bins, attrAvg){
-		var color = '',
-			binIdx,
-			lb,
-			ub;
-		for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
-			lb = bins[binIdx].lowerBound;
-			ub = bins[binIdx].upperBound;
-			if (lb !== undefined && ub !== undefined) {
-				if (attrAvg <= ub && attrAvg >= lb) {
-					color = bins[binIdx].color;
-				}
-			} else if (lb === undefined && ub !== undefined) {
-				if (attrAvg <= ub) {
-					color = bins[binIdx].color;
-				}
-			} else {
-				if (attrAvg >= lb) {
-					color = bins[binIdx].color;
-				}
-			}
-		}
-
-		return color;
-	};
 	
 	/**
 	 * @param {Number} x the 'x' coordinate of the desired pixel
@@ -367,9 +336,6 @@ return {
 					}
 				
 				} else {
-					if(!color){
-						color = getBinColorForValue(bins, attrAvg);
-					}
 					
 					$titleContainer.html(title);
 					
