@@ -71,7 +71,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 		// html canvas context api for getImageData expects following order of args:
 		// (x, y, width, height)
 		var rgba = canvasContext.getImageData(x, y, 1, 1).data;
-		var strRgba = "rgba(" + rgba.join(rgba, ',') + ")";
+		var strRgba = "rgba(" + rgba.join(',') + ")";
 		return strRgba;
 	};
 	
