@@ -59,7 +59,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 		var tile = tileData.tile;
 		var ctx = tile.getCanvasContext();
 		
-		//order of i and j might be wrong:
 		var color = getCanvasPixelColor(i, j, ctx);
 		
 		return color;
