@@ -59,6 +59,42 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 
 		return color;
 	};
+	
+	/**
+	 * @param {Number} x the 'x' coordinate of the desired pixel
+	 * @param {Number} y the 'y' coordinate of the desired pixel
+	 * @param {2dCanvasContext} canvasContext
+	 * @returns {String} valid css color for the pixel beneath the click event
+	 */
+	var getCanvasPixelColor = function(x, y, canvasContext){
+		// https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData
+		// html canvas context api for getImageData expects following order of args:
+		// (x, y, width, height)
+		var rgba = canvasContext.getImageData(x, y, 1, 1).data;
+		var strRgba = "rgba(" + rgba.join(rgba, ',') + ")";
+		return strRgba;
+	};
+	
+	/**
+	 * 
+	 * @param {OpenLayers.Pixel} xy
+	 * @param {OpenLayers.Map} map
+	 * @param {OpenLayers.Layer.Tile}
+	 * @returns {String} valid css color for the pixel beneath the click event
+	 */
+	var getMapPixelColor = function(xy, map, tileLayer){
+		var lonLat = map.getLonLatFromPixel(xy);
+		var tileData = tileLayer.getTileData(lonLat);
+		var i = tileData.i;
+		var j = tileData.j;
+		var tile = tileData.tile;
+		var ctx = tile.getCanvasContext();
+		
+		//order of i and j might be wrong:
+		var color = getCanvasPixelColor(i, j, ctx);
+		
+		return color;
+	};
 return {
 	title: 'identify-control',
 	layers: [],
@@ -119,6 +155,8 @@ return {
 			// over with a different SLD for each layer. In order to handle
 			// that, I need to make an array for the layer name (item.id) 
 			// to be able to process this going forward
+			var layerNameToPixelColor = {};
+			
 			cchLayers.each(function (l) {
 				var lName = trimLayerName(l.name);
 
@@ -127,6 +165,8 @@ return {
 				}
 
 				layerUrlToId[l.params.LAYERS].push(lName);
+				//this may not work because layer names could be duplicated, thus overwriting previous results
+				layerNameToPixelColor[lName] = getMapPixelColor(evt.xy, evt.object.map, l);
 				featuresByName[lName] = [];
 			});
 
