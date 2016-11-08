@@ -69,7 +69,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 	var getCanvasPixelColor = function(x, y, canvasContext){
 		// https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData
 		// html canvas context api for getImageData expects following order of args:
-		// (x, y, width, height)
+		// 2dCanvasContext#getImageData(x, y, width, height)
 		var rgba = canvasContext.getImageData(x, y, 1, 1).data;
 		var strRgba = "rgba(" + rgba.join(',') + ")";
 		return strRgba;
@@ -79,7 +79,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 	 * 
 	 * @param {OpenLayers.Pixel} xy
 	 * @param {OpenLayers.Map} map
-	 * @param {OpenLayers.Layer.Tile}
+	 * @param {OpenLayers.Layer.Tile} tileLayer
 	 * @returns {String} valid css color for the pixel beneath the click event
 	 */
 	var getMapPixelColor = function(xy, map, tileLayer){
@@ -120,12 +120,18 @@ return {
 			popupHtml,
 			splitName,
 			layerId,
-			trimLayerName = function (name) {
+			/**
+			 * Trims extra information from the layer name so that
+			 * only the item id remains
+			 * @param {String} layerName layer name
+			 * @returns {String} item id
+			 */
+			trimLayerName = function (layerName) {
 				// Names can be:
 				// aggregationId_itemId_r_ribbonIndex
 				// aggregationId_itemId
 				// itemId
-				splitName = name.split('_');
+				splitName = layerName.split('_');
 				if (splitName.length > 3) {
 					return splitName[1];
 				} else if (splitName.length > 2) {
@@ -165,7 +171,6 @@ return {
 				}
 
 				layerUrlToId[l.params.LAYERS].push(lName);
-				//this may not work because layer names could be duplicated, thus overwriting previous results
 				layerNameToPixelColor[lName] = getMapPixelColor(evt.xy, evt.object.map, l);
 				featuresByName[lName] = [];
 			});
@@ -229,7 +234,8 @@ return {
 												popup: this.popup,
 												features: this.features,
 												layers: this.layers,
-												layerId: this.layerId
+												layerId: this.layerId,
+												layerNameToPixelColor: layerNameToPixelColor
 											});
 										}],
 									error: [
@@ -256,11 +262,12 @@ return {
 			features = args.features,
 			attr = overrideAttributeName(features, item.attr),
 			attrAvg = 0,
+			color,
 			category,
 			incomingFeatures = args.features,
 			incomingFeatureCount = incomingFeatures.length,
 			layers = args.layers,
-			color;
+			layerNameToPixelColor = args.layerNameToPixelColor;
 		var buildLegend = function (args) {
 				args = args || {};
 				var binIdx = 0,
@@ -492,7 +499,6 @@ return {
 				attrAvg /= incomingFeatureCount;
 				if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK", "AE"].indexOf(item.attr.toUpperCase()) !== -1) {
 					attrAvg = Math.ceil(attrAvg);
-					color = sld.bins[attrAvg - 1].color;
 					category = sld.bins[attrAvg - 1].category;
 					if("AE" === item.attr.toUpperCase()){
 						category +=  units;
@@ -500,7 +506,7 @@ return {
 				}
 			}
 		}
-
+		color = layerNameToPixelColor[layerId];
 		buildLegend({
 			bins: bins,
 			color: color,
