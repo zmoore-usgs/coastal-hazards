@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -509,6 +511,29 @@ public class MetadataUtilTest {
         return builder.toString();
     }
 
+    @Test 
+    public void testTrimMetatdataId() {  //for LayerResource 
+        //trim the metadataId to just the id  urn:uuid:e28612b4-a6d2-11e6-a70c-0242ac120007  -> e28612b4-a6d2-11e6-a70c-0242ac120007
+        String metadataId = "urn:uuid:e28612b4-a6d2-11e6-a70c-0242ac120007";
+        String expResult = "e28612b4-a6d2-11e6-a70c-0242ac120007";
+        
+        String delim = "[:]+";
+        String[] tokens = metadataId.split(delim);      
+        String parsedMetaId = tokens[tokens.length-1];
+        
+        assertEquals(expResult, parsedMetaId);
+    }
+    
+     @Test
+     @Ignore
+    public void testFilePathBuilder() throws FactoryException, IOException {
+        final String TEMP_FILE_SUBDIRECTORY_PATH = "cch-temp";
+        java.nio.file.Path TEMP_FILE_SUBDIRECTORY =Files.createDirectory(Paths.get(TEMP_FILE_SUBDIRECTORY_PATH));
+      //  TEMP_FILE_SUBDIRECTORY = Files.createDirectory(Paths.get(TEMP_FILE_SUBDIRECTORY_PATH));
+        String fileDir = TEMP_FILE_SUBDIRECTORY.toFile().toString();
+        System.out.println("getTempFileSubdirectory: " + fileDir);
+    }
+    
     @Test
     public void testAnotherStringWKTBuilder() throws FactoryException {
         final String lineSep = System.getProperty("line.separator", "\n");

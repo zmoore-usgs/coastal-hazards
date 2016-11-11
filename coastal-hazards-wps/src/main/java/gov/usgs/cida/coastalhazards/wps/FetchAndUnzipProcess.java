@@ -39,6 +39,12 @@ public class FetchAndUnzipProcess implements GeoServerProcess {
             @DescribeParameter(name = "token", min = 1, max = 1, description = "Token for authorizing the upload") String token
             ){
         String unzippedPath = null;
+        if (zipUrl.isEmpty() || token.isEmpty()) {
+            LOGGER.info("Missing zipUrl or token in the FetchAndUnzipProcess.");
+        }
+        else {
+            LOGGER.info("In FetchAndUnzipProcess on Geoserver with zip url and token:" + zipUrl);
+        }
         
         if(isAuthorized(token)){
             ZipInputStream zipStream = getZipFromUrl(zipUrl, getHttpClient());
@@ -93,7 +99,7 @@ public class FetchAndUnzipProcess implements GeoServerProcess {
         ZipInputStream zipStream = null;
         try {
             LOGGER.fine("retrieving zip from: " + zipUrl);
-            response = client.execute(req);
+            response = client.execute(req);  // this will call the portal viat the URI which will trigger the jersey TempFileResource search
             StatusLine status = response.getStatusLine();
             int statusCode = status.getStatusCode();
             if (400 <= statusCode) {

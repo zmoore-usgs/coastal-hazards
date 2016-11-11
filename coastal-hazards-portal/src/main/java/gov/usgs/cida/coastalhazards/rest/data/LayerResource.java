@@ -161,51 +161,44 @@ public class LayerResource {
                 @FormDataParam("file") InputStream zipFileStream,
                 @FormDataParam("file") FormDataContentDisposition fileDisposition
         ) {
-          
-         //   DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
-         //   ServletFileUpload fileUpload = new ServletFileUpload(fileItemFactory);
-            List<Service> services = new ArrayList<>();
-            System.out.println("In createRasterLayer.___________________________");
+                      List<Service> services = new ArrayList<>();
             
             try{
-                log.info("Raster layer create - about to parseRequest");
-            //    List<FileItem> items = fileUpload.parseRequest(req);
-            //    Pair<String, InputStream> pair = getMetadataAndZippedRaster(items);
-              //  String metadata = pair.getLeft();
-               // InputStream zipFileStream = pair.getRight();
+                log.info("Raster layer upload - about to parseRequest");
+                String newId = IdGenerator.generate();
+                
                 String metadataId;
                 if (metadata == null || metadata.isEmpty()) {
                     throw new ServerErrorException("Metadata file is missing or empty.", Status.INTERNAL_SERVER_ERROR);
                 }
-                log.info("Raster layer create - about to doCSWInsertFromString");
-                log.info("metatdata received looks like: " + metadata.substring(0, 65));
+
                 try {
                     log.info("Raster layer create - about to doCSWInsertFromString");
                     metadataId = MetadataUtil.doCSWInsertFromString(metadata);
                     } catch (IOException | ParserConfigurationException | SAXException ex) {
                         throw new ServerErrorException("Error inserting metadata to the CSW server.", Status.INTERNAL_SERVER_ERROR, ex);
                     }
-                log.info("Raster layer create - about to makeCSWServiceForUrl");
+                log.info("Raster layer create - about to makeCSWServiceForUrl with metadataId: " + metadataId);
                 services.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
-                log.info("Raster layer create - about to getBoundingBox.");
+
                 Bbox bbox = MetadataUtil.getBoundingBoxFromFgdcMetadata(metadata);
-                log.info("Raster layer create - about to EPSG.");
                 String EPSGcode = CRS.lookupIdentifier(MetadataUtil.getCrsFromFgdcMetadata(metadata), true);
+                
                 if (bbox == null || EPSGcode == null) {
                     throw new ServerErrorException("Unable to identify bbox or epsg code from metadata.", Status.INTERNAL_SERVER_ERROR);
                 }
                 
-                log.info("Raster layer create - about to addRasterLayer to geoserver with a id of: " + metadataId); 
-                log.info("Raster layer create - about to addRasterLayer to geoserver with a bbox: " + bbox.getBbox());
-                log.info("Raster layer create - about to addRasterLayer to geoserver with a EPSG of: " + EPSGcode);
+                log.info("Raster layer create - about to addRasterLayer to geoserver with an id of: " + newId); 
+                log.info("Raster layer create - about to addRasterLayer to geoserver with a  bbox: " + bbox.getBbox());
+                log.info("Raster layer create - about to addRasterLayer to geoserver with an EPSG of: " + EPSGcode);
                 
-                Service rasterService = GeoserverUtil.addRasterLayer(geoserverEndpoint, zipFileStream, metadataId, bbox, EPSGcode);
+                Service rasterService = GeoserverUtil.addRasterLayer(geoserverEndpoint, zipFileStream, newId, bbox, EPSGcode);
                
                 services.add(rasterService);
                 
                 if (!services.isEmpty()) {
 			Layer layer = new Layer();
-			layer.setId(metadataId);
+			layer.setId(newId); 
 			layer.setServices(services);
 			layer.setBbox(bbox);
 			
