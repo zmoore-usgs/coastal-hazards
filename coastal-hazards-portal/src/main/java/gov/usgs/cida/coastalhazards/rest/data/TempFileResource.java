@@ -3,15 +3,9 @@ package gov.usgs.cida.coastalhazards.rest.data;
 import gov.usgs.cida.simplehash.SimpleHash;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.util.Date;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -21,6 +15,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +31,7 @@ public class TempFileResource {
         try {
             //only need to create one temp subdirectory per class load
                 TEMP_FILE_SUBDIRECTORY = Files.createTempDirectory(TEMP_FILE_SUBDIRECTORY_PATH);  //#TODO# make this a stable location rather than creating a new subdir every time
+               // File tempDirectory = FileUtils.getTempDirectory();
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -51,18 +47,12 @@ public class TempFileResource {
         File realFile = new File(getTempFileSubdirectory(), realFileName);
 
         LOG.info("_____getTempFile ---searching for file id " + id + " with real file name: " + realFileName + " in the temp dir: " + getTempFileSubdirectory().getAbsolutePath());
-        //first get the contents out of the zip file using streams 
         
         if (realFile.isFile())
             LOG.info("Temp file is a File.");
         if (realFile.isDirectory())
             LOG.info("Temp file is a Directory.");
 
-//stream out the file
-        //http://stackoverflow.com/questions/29637151/jersey-streamingoutput-as-response-entity
-        //http://stackoverflow.com/questions/12012724/example-of-using-streamingoutput-as-response-entity-in-jersey //or this one !
-        //http://stackoverflow.com/questions/23869228/how-to-read-file-from-zip-using-inputstream
-        //return Response.ok(new FeedReturnStreamingOutput()).build();
         return Response.ok(new FeedReturnStreamingOutput(new FileInputStream(realFile))).build();
     }
 
@@ -92,55 +82,6 @@ public class TempFileResource {
                 }
           
         }
-    }
-
-    private OutputStream getZipContents(File realFile) throws FileNotFoundException, IOException {
-        OutputStream result = null;
-
-        // create a buffer to improve copy performance later.
-        byte[] buffer = new byte[2048];
-
-        // open the zip file stream
-        InputStream theFile = new FileInputStream(realFile);
-        ZipInputStream stream = new ZipInputStream(theFile);
-        String outdir = getTempFileSubdirectory().getPath(); //args[1];
-
-        try {
-
-            // now iterate through each item in the stream. The get next
-            // entry call will return a ZipEntry for each file in the
-            // stream
-            ZipEntry entry;
-            while ((entry = stream.getNextEntry()) != null) {
-                String s = String.format("Entry: %s len %d added %TD",
-                        entry.getName(), entry.getSize(),
-                        new Date(entry.getTime()));
-                System.out.println(s);
-
-                // Once we get the entry from the stream, the stream is
-                // positioned read to read the raw data, and we keep
-                // reading until read returns 0 or less.
-                String outpath = outdir + "/" + entry.getName();
-                FileOutputStream output = null;
-                try {
-                    output = new FileOutputStream(outpath);
-                    int len = 0;
-                    while ((len = stream.read(buffer)) > 0) {
-                        output.write(buffer, 0, len);  // call the Jersey helper class here
-                    }
-                } finally {
-                    // we must always close the output file
-                    if (output != null) {
-                        output.close();
-                    }
-                }
-            }
-        } finally {
-            // we must always close the zip file.
-            stream.close();
-        }
-
-        return result;
     }
 
     /**

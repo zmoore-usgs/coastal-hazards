@@ -44,18 +44,11 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException; 
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import static gov.usgs.cida.coastalhazards.rest.data.ItemResource.PUBLIC_URL;
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import javax.servlet.annotation.MultipartConfig;
 import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.JAXBException;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.lang3.tuple.Pair;
 import org.geotools.referencing.CRS;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.opengis.referencing.FactoryException;
@@ -210,8 +203,7 @@ public class LayerResource {
 			throw new ServerErrorException("Unable to create layer", Status.INTERNAL_SERVER_ERROR);
 		}
                 
-                
-            } catch (JAXBException  | UnsupportedEncodingException | FactoryException | FileNotFoundException ex) {
+            } catch (JAXBException | FactoryException | IOException ex) {
                 throw new ServerErrorException("Error parsing upload request", Status.INTERNAL_SERVER_ERROR, ex);
             }
         }

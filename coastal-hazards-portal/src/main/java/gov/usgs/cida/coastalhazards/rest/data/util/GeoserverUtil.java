@@ -20,7 +20,6 @@ import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.io.FileUtils;
@@ -239,14 +238,16 @@ public class GeoserverUtil {
          * @param zipUrl - the url that GeoServer will retrieve the file from
          * @return the absolute path to the file on GeoServer after `zipUrl` is retrieved and unzipped
          */
-        public static String importRasterUsingWps(String token, String zipUrl){
+        public static String importRasterUsingWps(String token, String zipUrl) throws IOException{
                 String absPath = null;
                 try {
                     // create a version of the xml needed to post to geoserver so that it will unzip the file and place it on its data location                   
                         log.info("importRasterUsingWps ... about to post to wps to transfer raster with zipUrl: " + zipUrl);
                         absPath = postRasterWpsXml(token, zipUrl);
                 } catch (IOException ex) {
-                        java.util.logging.Logger.getLogger(GeoserverUtil.class.getName()).log(Level.SEVERE, null, ex);
+                        log.error("Unable to post wps request. Error creating xml request.");
+                        throw ex;
+                        
                 }
 
             return absPath;
@@ -310,7 +311,7 @@ public class GeoserverUtil {
                     return urlString;
             }
                                             
-            public static Service addRasterLayer(String geoServerEndpoint, InputStream zipFileStream, String layerId, Bbox bbox, String EPSGcode) throws FileNotFoundException {                   
+            public static Service addRasterLayer(String geoServerEndpoint, InputStream zipFileStream, String layerId, Bbox bbox, String EPSGcode) throws FileNotFoundException, IOException {                   
                     String fileId = UUID.randomUUID().toString();
                     String realFileName = TempFileResource.getFileNameForId(fileId);
                     //temp file must not include fileId, it should include the realFileName. We don't hand out the realFileName.

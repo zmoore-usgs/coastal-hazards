@@ -22,7 +22,6 @@ public class DataRestApplication extends ResourceConfig {
 
 	public DataRestApplication() {
 		packages(this.getClass().getPackage().getName());
-		//property(JspMvcFeature.TEMPLATES_BASE_PATH, "/WEB-INF/jsp");
                 property(JspMvcFeature.TEMPLATE_BASE_PATH, "/WEB-INF/jsp");
 		property(ServletProperties.FILTER_STATIC_CONTENT_REGEX, "(/WEB-INF/jsp/*)");
 		register(JspMvcFeature.class);
