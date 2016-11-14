@@ -68,8 +68,8 @@ public class LayerResource {
 	private static final String geoserverEndpoint;
 	private static final String geoserverUser;
 	private static final String geoserverPass;
-        static final String RASTER_METADATA_FORM_FIELD_NAME = "metadata";
-        static final String RASTER_FILE_FORM_FIELD_NAME = "data";
+        private static final String RASTER_METADATA_FORM_FIELD_NAME = "metadata";
+        private static final String RASTER_FILE_FORM_FIELD_NAME = "data";
 	private static final DynamicReadOnlyProperties props;
 
 	static {
@@ -150,7 +150,7 @@ public class LayerResource {
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response createRasterLayer(
                 @Context HttpServletRequest req, 
-                @FormDataParam("data") String metadata,                
+                @FormDataParam("data") String metadata,
                 @FormDataParam("file") InputStream zipFileStream,
                 @FormDataParam("file") FormDataContentDisposition fileDisposition
         ) {

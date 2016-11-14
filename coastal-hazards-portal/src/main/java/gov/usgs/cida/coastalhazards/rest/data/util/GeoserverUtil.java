@@ -217,11 +217,8 @@ public class GeoserverUtil {
 		FileInputStream wpsRequestInputStream = null;
 		try {
 			wpsRequestInputStream = new FileInputStream(wpsRequestFile);
-
 			AbstractHttpEntity entity = new InputStreamEntity(wpsRequestInputStream, wpsRequestFile.length());
-
 			post.setEntity(entity);
-
 			HttpResponse response = httpClient.execute(post);
 
 			return EntityUtils.toString(response.getEntity());
@@ -340,7 +337,7 @@ public class GeoserverUtil {
                         log.info("Deleted contents of temp file");
                     }
                     if (unzippedFilePath == null || unzippedFilePath.isEmpty()){
-                        log.info("File path to unzipped geotiff returned null. Is the Geoserver wps fetchAndUnzip call working? ");
+                        log.error("File path to unzipped geotiff returned null. Is the Geoserver wps fetchAndUnzip call working? ");
                         throw new RuntimeException("Error attempting to call wps process '" + tempFile.getAbsolutePath() + "'.");
                     }
                     

@@ -5,27 +5,25 @@
  */
 package gov.usgs.cida.coastalhazards.rest.data.util;
 
+import gov.usgs.cida.coastalhazards.metadata.CRSParameters;
 import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.xml.model.Bounding;
-import gov.usgs.cida.coastalhazards.xml.model.Geodetic;
 import gov.usgs.cida.coastalhazards.xml.model.Horizsys;
 import gov.usgs.cida.coastalhazards.xml.model.Idinfo;
 import gov.usgs.cida.coastalhazards.xml.model.Metadata;
 import gov.usgs.cida.coastalhazards.xml.model.Spdom;
-import gov.usgs.cida.coastalhazards.xml.model.Spref;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Scanner;
-import java.util.Set;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -39,9 +37,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystem;
 import org.slf4j.LoggerFactory;
 
 public class MetadataUtilTest {
@@ -397,7 +393,7 @@ public class MetadataUtilTest {
         //assertEquals(expResult, result);
 
     }
-    
+
     public void testBuildWKt(String ellips, String horizdn, double denflat, double semiaxis) {
         String replaceMe = "REPLACEME";
         final String lineSep = System.getProperty("line.separator", "\n");
@@ -511,31 +507,154 @@ public class MetadataUtilTest {
         return builder.toString();
     }
 
-    @Test 
+    @Test
     public void testTrimMetatdataId() {  //for LayerResource 
         //trim the metadataId to just the id  urn:uuid:e28612b4-a6d2-11e6-a70c-0242ac120007  -> e28612b4-a6d2-11e6-a70c-0242ac120007
         String metadataId = "urn:uuid:e28612b4-a6d2-11e6-a70c-0242ac120007";
         String expResult = "e28612b4-a6d2-11e6-a70c-0242ac120007";
-        
+
         String delim = "[:]+";
-        String[] tokens = metadataId.split(delim);      
-        String parsedMetaId = tokens[tokens.length-1];
-        
+        String[] tokens = metadataId.split(delim);
+        String parsedMetaId = tokens[tokens.length - 1];
+
         assertEquals(expResult, parsedMetaId);
     }
-    
-     @Test
-     @Ignore
+
+    @Test
     public void testFilePathBuilder() throws FactoryException, IOException {
         final String TEMP_FILE_SUBDIRECTORY_PATH = "cch-temp";
-        java.nio.file.Path TEMP_FILE_SUBDIRECTORY =Files.createDirectory(Paths.get(TEMP_FILE_SUBDIRECTORY_PATH));
-      //  TEMP_FILE_SUBDIRECTORY = Files.createDirectory(Paths.get(TEMP_FILE_SUBDIRECTORY_PATH));
+        //java.nio.file.Path TEMP_FILE_SUBDIRECTORY =Files.createDirectory(Paths.get(TEMP_FILE_SUBDIRECTORY_PATH));
+        //  TEMP_FILE_SUBDIRECTORY = Files.createDirectory(Paths.get(TEMP_FILE_SUBDIRECTORY_PATH));
+        String tempPath = FileUtils.getTempDirectoryPath() + TEMP_FILE_SUBDIRECTORY_PATH;
+        java.nio.file.Path TEMP_FILE_SUBDIRECTORY = Paths.get(tempPath);
+
         String fileDir = TEMP_FILE_SUBDIRECTORY.toFile().toString();
-        System.out.println("getTempFileSubdirectory: " + fileDir);
+        System.out.println("getTempFileUtils: " + fileDir);
+
+        String tempDir = System.getProperty("java.io.tmpdir") + "cch-temp";
+        System.out.println("get System temp file: " + tempDir);
+
+        java.nio.file.Path path = Paths.get(System.getProperty("java.io.tmpdir"));
+        try (DirectoryStream<java.nio.file.Path> newDirectoryStream = Files.newDirectoryStream(path, TEMP_FILE_SUBDIRECTORY_PATH + "*")) {
+            for (final java.nio.file.Path newDirectoryStreamItem : newDirectoryStream) {
+                System.out.println("DIR that would be DELETED: " + newDirectoryStreamItem.getFileName());
+                // Files.delete(newDirectoryStreamItem);
+            }
+        } catch (final Exception e) { // empty
+            System.out.println(e);
+        }
+
+        assertEquals(fileDir, tempDir);
     }
-    
+
     @Test
-    public void testAnotherStringWKTBuilder() throws FactoryException {
+    public void testWktBuilder() throws FactoryException {
+        String expString = getStringFromWKTBuilder();
+
+        CRSParameters parms = new CRSParameters();
+        parms.setDenflat(298.257222101);
+        parms.setEllips("GRS 1980");
+        parms.setFeast(0.0);
+        parms.setFnorth(0.0);
+        parms.setGcs("GCS_North_American_1983");
+        parms.setHorizdn("North American Datum 1983");
+        parms.setLatprjo(23.0);
+        parms.setLengthUnit("Meter");
+        parms.setLengthValue(1.0);
+        parms.setLongcm(-96.0);
+        parms.setMapprojn("Albers Conical Equal Area");
+        parms.setPrimeM("Greenwich\",0.0]");
+        parms.setProjection("Albers");
+        parms.setSemiaxis(6378137.0);
+        parms.setStdparll(45.5);
+        parms.setUnit("Degree\",0.0174532925199433]]");
+
+        String built = buildWkt(parms);
+        System.out.println("String builtVia wkt parm dto: " + built);
+
+        assertEquals(expString, built);
+
+    }
+
+    private String buildWkt(CRSParameters parms) {
+        StringBuilder builder = new StringBuilder(500);
+        final String lineSep = System.getProperty("line.separator", "\n");
+
+        builder.append("PROJCS[")
+                .append("\"") // quote
+                .append(parms.getMapprojn())
+                .append("\"") // quote
+                .append(",") // comma
+                .append(lineSep)
+                .append("GEOGCS[")
+                .append("\"") // quote
+                .append(parms.getGcs()) // replace if the Gcs is found in the meta-data
+                .append("\"") // quote
+                .append(",") // comma
+                .append(lineSep)
+                .append("DATUM[")
+                .append("\"") // quote
+                .append(parms.getHorizdn())
+                .append("\"") // quote
+                .append(",") // comma
+                .append(lineSep)
+                .append("SPHEROID[")
+                .append("\"") // quote
+                .append(parms.getEllips())
+                .append("\"") // quote
+                .append(",") // comma                
+                .append(parms.getSemiaxis())
+                .append(",") // comma
+                .append(parms.getDenflat())
+                .append("]]")
+                .append(",") // comma
+                .append(lineSep)
+                .append("PRIMEM[")
+                .append("\"") // quote
+                .append(parms.getPrimeM())
+                .append(",")
+                .append(lineSep)
+                .append("UNIT[")
+                .append("\"") // quote
+                .append(parms.getUnit()) //get pa
+                .append(",")
+                .append(lineSep)
+                .append("PROJECTION[")
+                .append("\"") // quote
+                .append(parms.getProjection())
+                .append("\"]") // quote
+                .append(",")
+                .append(lineSep)
+                .append(getParameterNode("False_Easting", parms.getFeast()))
+                .append(",")
+                .append(lineSep)
+                .append(getParameterNode("False_Northing", parms.getFnorth()))
+                .append(",")
+                .append(lineSep)
+                .append(getParameterNode("Central_Meridian", parms.getLongcm()))
+                .append(",")
+                .append(lineSep)
+                .append(getParameterNode("Standard_Parallel_1", 29.5)) //#TODO# relace with value
+                .append(",")
+                .append(lineSep)
+                .append(getParameterNode("Standard_Parallel_2", parms.getStdparll()))
+                .append(",")
+                .append(lineSep)
+                .append(getParameterNode("Latitude_Of_Origin", parms.getLatprjo()))
+                .append(",")
+                .append(lineSep)
+                .append("UNIT[")
+                .append("\"") // quote
+                .append(parms.getLengthUnit()) //Meter
+                .append("\"") // quote
+                .append(",")
+                .append(parms.getLengthValue()) 
+                .append("]]");
+        
+        return builder.toString();
+    }
+
+    private String getStringFromWKTBuilder() throws FactoryException {
         final String lineSep = System.getProperty("line.separator", "\n");
 
         String ellips = "GRS 1980";
@@ -643,7 +762,7 @@ public class MetadataUtilTest {
         builder.append("]]");
 
         String wkt = builder.toString();
-        System.out.println(wkt);
+        System.out.println("Hand created WKT: " + wkt);
 
         assertNotNull(wkt);
         CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
@@ -651,11 +770,12 @@ public class MetadataUtilTest {
         // use some CRSUtils.lookup() feature to get the EPSG code
         Integer eCode = CRS.lookupEpsgCode(crs, true);
         String idCode = CRS.lookupIdentifier(crs, true);
-        
+
         System.out.println("EPSG: " + eCode);
         System.out.println("Id : " + idCode);
         assertNotNull(idCode);
         //assertNull(wkt); // force a fail to see the output
+        return wkt;
     }
 
     private static String getParameterNode(String name, double value) {
