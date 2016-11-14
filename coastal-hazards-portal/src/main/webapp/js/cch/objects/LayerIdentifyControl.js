@@ -76,7 +76,7 @@ return {
 	infoFormat: 'application/vnd.ogc.gml',
 	naAttrText: '--',
 	vendorParams: {
-		radius: 3
+		radius: 1
 	},
 	layerIdClickHandler: function (evt) {
 		"use strict";
