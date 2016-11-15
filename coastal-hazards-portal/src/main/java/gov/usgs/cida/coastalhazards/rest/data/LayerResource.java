@@ -150,7 +150,7 @@ public class LayerResource {
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response createRasterLayer(
                 @Context HttpServletRequest req, 
-                @FormDataParam("data") String metadata,
+                @FormDataParam("metadata") String metadata, 
                 @FormDataParam("file") InputStream zipFileStream,
                 @FormDataParam("file") FormDataContentDisposition fileDisposition
         ) {

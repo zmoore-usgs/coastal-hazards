@@ -677,89 +677,89 @@ public class MetadataUtilTest {
         double defaultLengthValue = 1.0;
         StringBuilder builder = new StringBuilder(500);
 
-        builder.append("PROJCS[");
-        builder.append("\"");  // quote
-        builder.append(mapprojn);
-        builder.append("\"");  // quote
-        builder.append(",");   // comma
-        builder.append(lineSep);
+        builder.append("PROJCS[")
+        .append("\"")  // quote
+        .append(mapprojn)
+        .append("\"")  // quote
+        .append(",")   // comma
+        .append(lineSep)
 
-        builder.append("GEOGCS[");
-        builder.append("\"");  // quote
-        builder.append(defaultGcs);  // replace if the Gcs is found in the meta-data
-        builder.append("\"");  // quote
-        builder.append(",");   // comma
-        builder.append(lineSep);
+        .append("GEOGCS[")
+        .append("\"")  // quote
+        .append(defaultGcs)  // replace if the Gcs is found in the meta-data
+        .append("\"")  // quote
+        .append(",")   // comma
+        .append(lineSep)
 
-        builder.append("DATUM[");
-        builder.append("\"");  // quote
-        builder.append(horizdn);
-        builder.append("\"");  // quote
-        builder.append(",");   // comma
-        builder.append(lineSep);
+        .append("DATUM[")
+        .append("\"")  // quote
+        .append(horizdn)
+        .append("\"")  // quote
+        .append(",")   // comma
+        .append(lineSep)
 
-        builder.append("SPHEROID[");
-        builder.append("\"");  // quote
-        builder.append(ellips);
-        builder.append("\"");  // quote
-        builder.append(",");   // comma                
-        builder.append(semiaxis);
-        builder.append(",");   // comma
-        builder.append(denflat);
-        builder.append("]]");
-        builder.append(",");   // comma
-        builder.append(lineSep);
+        .append("SPHEROID[")
+        .append("\"")  // quote
+        .append(ellips)
+        .append("\"")  // quote
+        .append(",")   // comma                
+        .append(semiaxis)
+        .append(",")   // comma
+        .append(denflat)
+        .append("]]")
+        .append(",")   // comma
+        .append(lineSep)
 
-        builder.append("PRIMEM[");
-        builder.append("\"");  // quote
-        builder.append(defaultPrimeM);
-        builder.append(",");
-        builder.append(lineSep);
+        .append("PRIMEM[")
+        .append("\"")  // quote
+        .append(defaultPrimeM)
+        .append(",")
+        .append(lineSep)
 
-        builder.append("UNIT[");
-        builder.append("\"");  // quote
-        builder.append(defaultUnit);  //get pa
-        builder.append(",");
-        builder.append(lineSep);
+        .append("UNIT[")
+        .append("\"")  // quote
+        .append(defaultUnit)  //get pa
+        .append(",")
+        .append(lineSep)
 
-        builder.append("PROJECTION[");
-        builder.append("\"");  // quote
-        builder.append(defaultProjection);
-        builder.append("\"]");  // quote
-        builder.append(",");
-        builder.append(lineSep);
+        .append("PROJECTION[")
+        .append("\"")  // quote
+        .append(defaultProjection)
+        .append("\"]")  // quote
+        .append(",")
+        .append(lineSep)
 
-        builder.append(getParameterNode("False_Easting", feast));
-        builder.append(",");
-        builder.append(lineSep);
+        .append(getParameterNode("False_Easting", feast))
+        .append(",")
+        .append(lineSep)
 
-        builder.append(getParameterNode("False_Northing", fnorth));
-        builder.append(",");
-        builder.append(lineSep);
+        .append(getParameterNode("False_Northing", fnorth))
+        .append(",")
+        .append(lineSep)
 
-        builder.append(getParameterNode("Central_Meridian", longcm));
-        builder.append(",");
-        builder.append(lineSep);
+        .append(getParameterNode("Central_Meridian", longcm))
+        .append(",")
+        .append(lineSep)
 
-        builder.append(getParameterNode("Standard_Parallel_1", 29.5)); //#TODO# relace with value
-        builder.append(",");
-        builder.append(lineSep);
+        .append(getParameterNode("Standard_Parallel_1", 29.5)) //#TODO# relace with value
+        .append(",")
+        .append(lineSep)
 
-        builder.append(getParameterNode("Standard_Parallel_2", stdparll));
-        builder.append(",");
-        builder.append(lineSep);
+        .append(getParameterNode("Standard_Parallel_2", stdparll))
+        .append(",")
+        .append(lineSep)
 
-        builder.append(getParameterNode("Latitude_Of_Origin", latprjo));
-        builder.append(",");
-        builder.append(lineSep);
+        .append(getParameterNode("Latitude_Of_Origin", latprjo))
+        .append(",")
+        .append(lineSep)
 
-        builder.append("UNIT[");
-        builder.append("\"");  // quote
-        builder.append(defaultLengthUnit); //Meter
-        builder.append("\"");  // quote
-        builder.append(",");
-        builder.append(defaultLengthValue);
-        builder.append("]]");
+        .append("UNIT[")
+        .append("\"")  // quote
+        .append(defaultLengthUnit) //Meter
+        .append("\"")  // quote
+        .append(",")
+        .append(defaultLengthValue)
+        .append("]]");
 
         String wkt = builder.toString();
         System.out.println("Hand created WKT: " + wkt);
@@ -782,13 +782,13 @@ public class MetadataUtilTest {
         //exp PARAMETER["False_Easting",0.0]
         StringBuilder sb = new StringBuilder(50);
 
-        sb.append("PARAMETER[");
-        sb.append("\"");  // quote
-        sb.append(name);
-        sb.append("\"");  // quote
-        sb.append(",");   // comma
-        sb.append(value);
-        sb.append("]");
+        sb.append("PARAMETER[")
+        .append("\"")  // quote
+        .append(name)
+        .append("\"")  // quote
+        .append(",")   // comma
+        .append(value)
+        .append("]");
 
         return sb.toString();
     }
