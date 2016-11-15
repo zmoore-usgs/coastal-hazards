@@ -154,7 +154,6 @@
 							</button>
 							<ul class="dropdown-menu" role="menu">
 								<li><a id="publish-button-create-item-option" href="#">Item</a></li>
-								<li><a id="publish-button-create-raster-item-option" href="<%=baseUrl%>/publish/item/raster">Raster Item</a></li>
 								<li><a id="publish-button-create-aggregation-option" href="#">Aggregation</a></li>
 								<li><a id="publish-button-create-template-option" href="#">Template</a></li>
 							</ul>
@@ -166,7 +165,9 @@
 							</button>
 							<ul id="publish-list-edit-metadata-existing" class="dropdown-menu" role="menu"></ul>
 						</div>
-
+						<div id="publish-button-create-raster-layer-grp" class="btn-group">
+							<a href="<%=baseUrl%>/publish/layer/raster" class="btn btn-lg btn-success">Create Raster Layer</a>
+						</div>
 						<div id="qq-uploader-dummy"></div>
 						<button type="button" id="publish-button-save" class="btn btn-lg btn-success" disabled="disabled">
 							Save

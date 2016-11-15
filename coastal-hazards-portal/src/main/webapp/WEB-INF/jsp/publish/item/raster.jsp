@@ -80,10 +80,17 @@
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="/WEB-INF/jsp/ui/front/config.jsp"></jsp:include>
+		<script>
+			CCH.baseUrl = '<%= baseUrl%>';
+			CCH.CONFIG.contextPath = '<%= baseUrl%>';
+		</script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Auth.js"></script>
 	</head>
 	<body>
 		<h1>Raster Data Upload</h1>
-		<form id="upload" action="<%=baseUrl%>/data/layer/raster" method="POST">
+		<form id="upload-form" enctype="multipart/form-data">
 			<div>
 				<label for="metadata">Metadata XML</label>
 				<input type="file" name="metadata"/>
@@ -92,7 +99,8 @@
 				<label for="data">Zipped GeoTIFF</label>
 				<input type="file" name="data"/>
 			</div>
-			<button type="submit" id="upload">Submit</button>
+			<button type="button" id="upload-btn">Submit</button>
 		</form>
+	<script type="text/javascript" src="<%=baseUrl%>/js/application/publish/raster.js"></script>
 	</body>
 </html>
