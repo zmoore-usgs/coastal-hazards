@@ -7,8 +7,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -20,35 +18,43 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.util.logging.Logging;
 
-@DescribeProcess(title = "Fetch and Unzip", description = "Fetches the specifed zip file, unzips it to GeoServer's file system, and returns the resulting file paths")
-public class FetchAndUnzipProcess {
+@DescribeProcess(title = "FetchAndUnzip ", description = "Fetches the specifed zip file, unzips it to GeoServer's file system, and returns the resulting Geoserver file path. ", version = "1.0.0")
+public class FetchAndUnzipProcess implements GeoServerProcess {
     static final Logger LOGGER = Logging.getLogger(FetchAndUnzipProcess.class);
     static final String TOKEN_PROPERTY_NAME = "gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token";
     static final String UNZIP_BASE_PROPERTY_NAME = "gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.unzip.base";
     private DynamicReadOnlyProperties properties;
     private HttpClient httpClient;
     
-    @DescribeResult(name = "filePaths", description = "paths to the unzipped files")
-    public List<String> execute(
+    @DescribeResult(name = "filePath", description = "path to the unzipped file")
+    public String execute(
             @DescribeParameter(name = "zipUrl", min = 1, max = 1, description = "URL to the zipped file to retrieve") String zipUrl,
             @DescribeParameter(name = "token", min = 1, max = 1, description = "Token for authorizing the upload") String token
             ){
-        List<String> unzippedPaths = null;
+        String unzippedPath = null;
+        if (zipUrl.isEmpty() || token.isEmpty()) {
+            LOGGER.info("Missing zipUrl or token in the FetchAndUnzipProcess.");
+        }
+        else {
+            LOGGER.info("In FetchAndUnzipProcess on Geoserver with zip url and token:" + zipUrl);
+        }
         
         if(isAuthorized(token)){
             ZipInputStream zipStream = getZipFromUrl(zipUrl, getHttpClient());
-            unzippedPaths = unzipToDir(zipStream, getNewZipDestination());
+            unzippedPath = unzipToDir(zipStream, getNewZipDestination());
         } else {
             throw new ProcessException( new SecurityException("Not Authorized."));
         }
-        return unzippedPaths;
+        return unzippedPath;
     }
+    
     boolean isAuthorized(String token){
         boolean authorized = false;
         String expectedToken = getProperties().getProperty(TOKEN_PROPERTY_NAME);
@@ -63,6 +69,7 @@ public class FetchAndUnzipProcess {
         }
         return authorized;
     }
+    
     /**
      * Everything except for tests should call this method to get a new zip destination
      * @return a unique path
@@ -92,7 +99,7 @@ public class FetchAndUnzipProcess {
         ZipInputStream zipStream = null;
         try {
             LOGGER.fine("retrieving zip from: " + zipUrl);
-            response = client.execute(req);
+            response = client.execute(req);  // this will call the portal viat the URI which will trigger the jersey TempFileResource search
             StatusLine status = response.getStatusLine();
             int statusCode = status.getStatusCode();
             if (400 <= statusCode) {
@@ -106,11 +113,12 @@ public class FetchAndUnzipProcess {
         return zipStream;
     }
     
-    List<String> unzipToDir(ZipInputStream zipStream, File zipDir) {
-        List<String> unzippedFiles = new ArrayList<>();
+    String unzipToDir(ZipInputStream zipStream, File zipDir) {
+        //return only one path back
+        String path = null;
         try {
             ZipEntry entry;
-            while (null != (entry = zipStream.getNextEntry())) {
+            if (null != (entry = zipStream.getNextEntry())) {
                 if(!entry.isDirectory()){
                     String entryFileName = entry.getName();
 
@@ -129,7 +137,7 @@ public class FetchAndUnzipProcess {
                     } finally {
                         IOUtils.closeQuietly(fos);
                     }
-                    unzippedFiles.add(entryFileAbsolutePath);
+                    path = entryFileAbsolutePath;
                 }
             }
         } catch (IOException ex) {
@@ -137,7 +145,7 @@ public class FetchAndUnzipProcess {
         } finally {
             IOUtils.closeQuietly(zipStream);
         }
-        return unzippedFiles;
+        return path;
     }
     /**
      * @return the properties, defaulting to JNDI

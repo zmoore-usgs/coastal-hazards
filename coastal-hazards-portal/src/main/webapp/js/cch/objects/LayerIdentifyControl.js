@@ -4,7 +4,69 @@
 /*global LOG*/
 /*global CCH*/
 /*global OpenLayers*/
-CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFeatureInfo, {
+CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFeatureInfo, 
+(function(){
+	/**
+	 * If the features are from a vector data source, return 'attrName', 
+	 * else if the features are from a raster source, override them with the
+	 * only attribute name that GeoServer 2.4 supports for raster layers.
+	 * 
+	 * @param {Array<Object>} features
+	 * @param {String} attrName
+	 * @returns {String} attribute name
+	 */
+	var overrideAttributeName = function(features, attrName){
+		var GRAY_INDEX = 'GRAY_INDEX';
+		var overrideName = attrName;
+		if(features.length){
+			var firstFeature = features[0];
+			if('object' === typeof firstFeature && null !== firstFeature){
+				if(1 === Object.keys(firstFeature).length && undefined !== firstFeature[GRAY_INDEX]){
+					overrideName = GRAY_INDEX;
+				}
+			}
+		}
+		return overrideName;
+	};	
+	
+	/**
+	 * @param {Number} x the 'x' coordinate of the desired pixel
+	 * @param {Number} y the 'y' coordinate of the desired pixel
+	 * @param {2dCanvasContext} canvasContext
+	 * @returns {String} valid css color for the pixel beneath the click event
+	 */
+	var getCanvasPixelColor = function(x, y, canvasContext){
+		// https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData
+		// html canvas context api for getImageData expects following order of args:
+		// 2dCanvasContext#getImageData(x, y, width, height)
+		var rgba = canvasContext.getImageData(x, y, 1, 1).data;
+		var strRgba = "rgba(" + rgba.join(',') + ")";
+		return strRgba;
+	};
+	
+	/**
+	 * 
+	 * @param {OpenLayers.Pixel} xy
+	 * @param {OpenLayers.Map} map
+	 * @param {OpenLayers.Layer.Tile} tileLayer
+	 * @returns {String} valid css color for the pixel beneath the click event
+	 */
+	var getMapPixelColor = function(xy, map, tileLayer){
+		var lonLat = map.getLonLatFromPixel(xy);
+		var tileData = tileLayer.getTileData(lonLat);
+		var i = tileData.i;
+		var j = tileData.j;
+		var tile = tileData.tile;
+		if(!tile.imgDiv){
+			tile.renderTile();
+		}
+		var ctx = tile.getCanvasContext();
+		
+		var color = getCanvasPixelColor(i, j, ctx);
+		
+		return color;
+	};
+return {
 	title: 'identify-control',
 	layers: [],
 	queryVisible: true,
@@ -29,12 +91,18 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 			popupHtml,
 			splitName,
 			layerId,
-			trimLayerName = function (name) {
+			/**
+			 * Trims extra information from the layer name so that
+			 * only the item id remains
+			 * @param {String} layerName layer name
+			 * @returns {String} item id
+			 */
+			trimLayerName = function (layerName) {
 				// Names can be:
 				// aggregationId_itemId_r_ribbonIndex
 				// aggregationId_itemId
 				// itemId
-				splitName = name.split('_');
+				splitName = layerName.split('_');
 				if (splitName.length > 3) {
 					return splitName[1];
 				} else if (splitName.length > 2) {
@@ -64,6 +132,8 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 			// over with a different SLD for each layer. In order to handle
 			// that, I need to make an array for the layer name (item.id) 
 			// to be able to process this going forward
+			var layerNameToPixelColor = {};
+			
 			cchLayers.each(function (l) {
 				var lName = trimLayerName(l.name);
 
@@ -72,6 +142,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 				}
 
 				layerUrlToId[l.params.LAYERS].push(lName);
+				layerNameToPixelColor[lName] = getMapPixelColor(evt.xy, evt.object.map, l);
 				featuresByName[lName] = [];
 			});
 
@@ -134,7 +205,8 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 												popup: this.popup,
 												features: this.features,
 												layers: this.layers,
-												layerId: this.layerId
+												layerId: this.layerId,
+												layerNameToPixelColor: layerNameToPixelColor
 											});
 										}],
 									error: [
@@ -158,15 +230,16 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 			layerId = args.layerId,
 			item = CCH.items.getById({id: layerId}),
 			title = item.summary.medium.title,
-			attr = item.attr,
 			features = args.features,
+			attr = overrideAttributeName(features, item.attr),
 			attrAvg = 0,
+			color,
 			category,
 			incomingFeatures = args.features,
 			incomingFeatureCount = incomingFeatures.length,
 			layers = args.layers,
-			color,
-			buildLegend = function (args) {
+			layerNameToPixelColor = args.layerNameToPixelColor;
+		var buildLegend = function (args) {
 				args = args || {};
 				var binIdx = 0,
 					openlayersPopupPaddingHeight = 42,
@@ -174,6 +247,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					bins = args.bins,
 					color = args.color,
 					attrAvg = args.attrAvg,
+					category = args.category,
 					title = args.title,
 					popup = args.popup,
 					units = args.units,
@@ -205,7 +279,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					ub,
 					width,
 					height;
-
+				
 				if (layerName.indexOf('_r_') !== -1) {
 					ribbonIndex = parseInt(layerName.split('_').last(), 10);
 				}
@@ -262,31 +336,16 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 						$legendRow.append($titleContainer, $colorContainer, $valueContainer);
 						$table.append($legendRow);
 					}
+				
 				} else {
-					for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
-						lb = bins[binIdx].lowerBound;
-						ub = bins[binIdx].upperBound;
-						if (lb !== undefined && ub !== undefined) {
-							if (attrAvg <= ub && attrAvg >= lb) {
-								color = bins[binIdx].color;
-							}
-						} else if (lb === undefined && ub !== undefined) {
-							if (attrAvg <= ub) {
-								color = bins[binIdx].color;
-							}
-						} else {
-							if (attrAvg >= lb) {
-								color = bins[binIdx].color;
-							}
-						}
-					}
+					
 					$titleContainer.html(title);
 					
 					// Create the color container for this row
 					$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
 					
-					if (attrName === 'cvirisk') {
-						displayedAttrValue = bins[attrAvg.toFixed(0) - 1].category;
+					if (category) {
+						displayedAttrValue = category;
 						//don't append units
 					} else {
 						if (!$.isNumeric(attrAvg)) {
@@ -302,7 +361,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 								displayedAttrValue = attrAvg.toFixed(1);
 							}
 						}
-						displayedAttrValue += units;
+						displayedAttrValue += "&nbsp;" + units;
 					}
 					$valueContainer.append(displayedAttrValue);
 
@@ -382,7 +441,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 				});
 			},
 			isMissing = function(val) {
-				return isNaN(val) || val === -999;
+				return isNaN(val) || val === -999 || val === -3.4028234663852886e+38;
 			};
 
 		if (item.type.toLowerCase() === 'vulnerability' ||
@@ -406,14 +465,16 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 			} else {
 				// Average them out
 				attrAvg /= incomingFeatureCount;
-				if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(attr.toUpperCase()) !== -1) {
+				if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK", "AE"].indexOf(item.attr.toUpperCase()) !== -1) {
 					attrAvg = Math.ceil(attrAvg);
 					category = sld.bins[attrAvg - 1].category;
-					color = sld.bins[attrAvg - 1].color;
+					if("AE" === item.attr.toUpperCase()){
+						category +=  units;
+					}
 				}
 			}
 		}
-
+		color = layerNameToPixelColor[layerId];
 		buildLegend({
 			bins: bins,
 			color: color,
@@ -425,7 +486,8 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 			units: units,
 			layers: layers,
 			layerId: layerId,
-			naAttrText: this.naAttrText
+			naAttrText: this.naAttrText,
+			category: category
 		});
 	},
 	initialize: function (options) {
@@ -438,4 +500,5 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 		this.events.register("getfeatureinfo", this, this.layerIdClickHandler);
 	},
 	CLASS_NAME: "OpenLayers.Control.WMSGetFeatureInfo"
-});
+}
+}()));
