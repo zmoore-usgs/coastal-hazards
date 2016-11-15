@@ -83,112 +83,6 @@ public class MetadataUtilTest {
     }
 
     /**
-     * Test of doCSWInsertFromUploadId method, of class MetadataUtil.
-     */
-    @Ignore
-    @Test
-    public void testDoCSWInsertFromUploadId() throws Exception {
-        System.out.println("doCSWInsertFromUploadId");
-        String metadataId = "";
-        String expResult = "";
-        String result = MetadataUtil.doCSWInsertFromUploadId(metadataId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of doCSWInsertFromString method, of class MetadataUtil.
-     */
-    @Ignore
-    @Test
-    public void testDoCSWInsertFromString() throws Exception {
-        System.out.println("doCSWInsertFromString");
-        String metadata = null;
-        String expResult = "";
-        String result = MetadataUtil.doCSWInsertFromString(metadata);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of stripXMLProlog method, of class MetadataUtil.
-     */
-    @Ignore
-    @Test
-    public void testStripXMLProlog() {
-        System.out.println("stripXMLProlog");
-        String xml = "";
-        String expResult = "";
-        String result = MetadataUtil.stripXMLProlog(xml);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getSummaryFromWPS method, of class MetadataUtil.
-     */
-    @Ignore
-    @Test
-    public void testGetSummaryFromWPS() throws Exception {
-        System.out.println("getSummaryFromWPS");
-        String metadataEndpoint = "";
-        String attr = "";
-        String expResult = "";
-        String result = MetadataUtil.getSummaryFromWPS(metadataEndpoint, attr);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of extractMetadataFromShp method, of class MetadataUtil.
-     */
-    @Ignore
-    @Test
-    public void testExtractMetadataFromShp() {
-        System.out.println("extractMetadataFromShp");
-        InputStream is = null;
-        String expResult = "";
-        String result = MetadataUtil.extractMetadataFromShp(is);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getMetadataByIdUrl method, of class MetadataUtil.
-     */
-    @Ignore
-    @Test
-    public void testGetMetadataByIdUrl() {
-        System.out.println("getMetadataByIdUrl");
-        String id = "";
-        String expResult = "";
-        String result = MetadataUtil.getMetadataByIdUrl(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of makeCSWServiceForUrl method, of class MetadataUtil.
-     */
-    @Ignore
-    @Test
-    public void testMakeCSWServiceForUrl() {
-        System.out.println("makeCSWServiceForUrl");
-        String url = "";
-        Service expResult = null;
-        Service result = MetadataUtil.makeCSWServiceForUrl(url);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
      * Test of getBoundingBoxFromFgdcMetadataCR method, of class MetadataUtil.
      */
     @Test
@@ -505,19 +399,6 @@ public class MetadataUtilTest {
         builder.append("]]");
 
         return builder.toString();
-    }
-
-    @Test
-    public void testTrimMetatdataId() {  //for LayerResource 
-        //trim the metadataId to just the id  urn:uuid:e28612b4-a6d2-11e6-a70c-0242ac120007  -> e28612b4-a6d2-11e6-a70c-0242ac120007
-        String metadataId = "urn:uuid:e28612b4-a6d2-11e6-a70c-0242ac120007";
-        String expResult = "e28612b4-a6d2-11e6-a70c-0242ac120007";
-
-        String delim = "[:]+";
-        String[] tokens = metadataId.split(delim);
-        String parsedMetaId = tokens[tokens.length - 1];
-
-        assertEquals(expResult, parsedMetaId);
     }
 
     @Test
