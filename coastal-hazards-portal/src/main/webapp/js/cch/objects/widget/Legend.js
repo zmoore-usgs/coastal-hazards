@@ -8,6 +8,13 @@
 window.CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
 CCH.Objects.Widget = CCH.Objects.Widget || {};
+
+CCH.Objects.Widget.LegendTypes = {
+	//clientId : serverId
+	CONTINUOUS: 'CONTINUOUS',
+	DISCRETE: 'DISCRETE'
+};
+
 CCH.Objects.Widget.Legend = function (args) {
 	"use strict";
 	var me = (this === window) ? {} : this;
@@ -78,8 +85,70 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		return me;
 	};
-
-	me.generateGenericLegendTable = function (args) {
+	/**
+	 * 
+	 * @param {Object} args an object that contains the following (
+	 *	@param {Object} sld
+	 *	@param {Function} binLabeler a function for labeling each bin.
+	 *		This function can accept the following params:
+	 *		@param {Object} bin
+	 *		@param {Number} index - the index of iteration
+	 *		@param {Array<Object>} bins - an array of bins sorted in ascending order according to each bin's 'lowerBound' property.
+	 * )
+	 * @returns {jQuery} a legend table element
+	 */
+        me.generateGenericContinuousLegendTable = function (args) {
+		args = args || {};
+		var sld = args.sld,
+			binLabeler = args.binLabeler,
+			$table = $('<table />'),
+			$thead = $('<thead />'),
+			$caption = $('<caption />'),
+			$tbody = $('<tbody/>'),
+			$innerTr = $('<tr/>'),
+			$innerTd = $('<td colspan="2"/>'),
+			$theadTr = $('<tr />'),
+			$theadUOM = $('<td />'),
+			bins = sld.bins,
+			uom = sld.units || '',
+			title = (args.item && args.item.summary && args.item.summary && args.item.summary.medium) ? args.item.summary.medium.title : sld.title || ''
+			;
+		
+		var sortByLowerBound = function(a,b){return a.lowerBound-b.lowerBound;};
+		//assume that the gradient is evenly-spaced
+		var numberOfNonTerminalBins = bins.length - 2;
+		var gradientIncrement = 100 / (1 + numberOfNonTerminalBins);
+		var binsForTemplate = bins.sort(sortByLowerBound).map(function(bin, index, bins){
+			var percent = index * gradientIncrement;
+			return {
+				'color': bin.color,
+				'percent': percent,
+				'binLabel': binLabeler(bin, index, bins)
+			};
+		});
+		var $legendElt = $(CCH.Objects.Widget.Legend.prototype.templates.continuous({
+			browserSpecificGradients : [
+				//order matters
+				'-webkit-linear-gradient',/* For Safari 5.1 to 6.0 */
+				'-o-linear-gradient',/*For Opera 11.1 to 12.0 */
+				'-moz-linear-gradient',/*For Firefox 3.6 to 15 */
+				'linear-gradient'/*Standard syntax */
+			],
+			bins: binsForTemplate
+		}));
+		// Create the table head which displays the unit of measurements
+		$caption.html(title);
+		$theadUOM.html(uom);
+		$theadTr.append($('<td />'), $theadUOM);
+		$thead.append($theadTr);
+		$table.append($caption, $thead);
+		$table.append($tbody);
+		$tbody.append($innerTr);
+		$innerTr.append($innerTd);
+		$innerTd.append($legendElt);
+		return $table;
+        };
+	me.generateGenericDiscreteLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
 			$table = $('<table />'),
@@ -110,7 +179,9 @@ CCH.Objects.Widget.Legend = function (args) {
 		bins.each(function (bin) {
 			$tr = $('<tr />');
 			$colorTd = $('<td />');
+			$colorTd.addClass('discrete_legend_color_entry');
 			$rangeTd = $('<td />');
+			$rangeTd.addClass('discrete_legend_text_cell');
 			$colorContainer = $('<span />');
 			upperBound = bin.upperBound;
 			lowerBound = bin.lowerBound;
@@ -162,7 +233,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				sld = args.sld;
 
 
-		$legendTable = me.generateGenericLegendTable({
+		$legendTable = me.generateGenericDiscreteLegendTable({
 			sld: sld,
 			item : item
 		});
@@ -240,7 +311,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				$legendTableTBody,
 				$yearRows;
 
-		$legendTable = me.generateGenericLegendTable({
+		$legendTable = me.generateGenericDiscreteLegendTable({
 			sld: sld,
 			item : item
 		});
@@ -307,7 +378,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			item = args.item,
 			index = args.index,
 			attr = item.attr,
-			$legendTable = me.generateGenericLegendTable({
+			$legendTable = me.generateGenericDiscreteLegendTable({
 				sld: sld,
 				item : item
 			});
@@ -337,17 +408,127 @@ CCH.Objects.Widget.Legend = function (args) {
 			generateLegendTable: me.generateVulnerabilityLegendTable
 		});
 	};
-
+	/**
+	 * Inspect the sld and/or item. If the legend rendering needs to be
+	 * customized, change what would be returned. By default return:
+	 * {
+	 *	sld: sld,
+	 *	item : item
+	 * }
+	 * 
+	 * @param {Object} sld
+	 * @param {Object} item
+	 * @returns {Object} an object to pass to a legend renderer function
+	 */
+	me.customizeLegendRendererArguments = function(sld, item) {
+		var legendRendererArguments = {
+			sld: sld,
+			item: item
+		};
+		if(CCH.Objects.Widget.LegendTypes.CONTINUOUS === sld.legendType){
+			//if it is continuous then you need a bin labeler
+			var binLabeler = null;
+			if("CR" === item.attr){
+				//customize the bin label
+				var indexToText = {
+					0 : '100% Inundate',
+					1 : '&nbsp;',
+					2 : '100% Dynamic'
+				};
+				binLabeler = function(bin, index, bins){
+					return indexToText[index];
+				};
+			}
+			if(null === binLabeler){
+				throw 'Could not find a bin labeler for the item "' + me.getItemTinyText(item) + '", and the following continuous legend sld:\n\n' + JSON.stringify(sld);
+			} else {
+				legendRendererArguments.binLabeler = binLabeler;
+			}
+		}
+		return legendRendererArguments;
+	};
+	/**
+	 * @param {Object} item 
+	 * @returns {String} tiny summary text for the specified item, or '' if 
+	 * the item is improperly structured. Mostly for error-reporting.
+	 */
+	me.getItemTinyText = function(item){
+		var name = '';
+		try{
+			name = item.summary.tiny.text;
+		} catch(e){}//intentionally do nothing
+		return name;
+	};
+	
+	/**
+	 * Creates a user-facing error message.
+	 * It wraps the user-facing error message in a tbody. Other code breaks
+	 * if there is no tbody present after this function runs.
+	 * @param {String} msg the message to display to the user
+	 * @returns {jQuery}
+	 */
+	me.createErrorLegendEntry = function(msg){
+		var $legendTable = $('<table><tbody><tr><td><div style="color:red;">' + msg + '</td/></tr></tbody></table></div>');
+		return $legendTable;
+	};
+	
+	var legendTypeToRenderer = {};
+	legendTypeToRenderer[CCH.Objects.Widget.LegendTypes.CONTINUOUS] = me.generateGenericContinuousLegendTable;
+	legendTypeToRenderer[CCH.Objects.Widget.LegendTypes.DISCRETE] = me.generateGenericDiscreteLegendTable;
+	
+	/**
+	 * 
+	 * @param {String} legendType
+	 * @returns {Function} a legend renderer
+	 * @throws {Exception} if a legend renderer cannot be found for the specified type
+	 */
+	me.getLegendRenderer = function(legendType){
+		var legendRenderer = legendTypeToRenderer[legendType];
+		
+		//intentional type-coercion
+		if(undefined == legendRenderer){
+			throw 'legend type "' + legendType + '" not found.';
+		}
+		return legendRenderer;
+	};
 	me.generateVulnerabilityLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
 			item = args.item,
 			index = args.index,
 			attr = item.attr,
-			$legendTable = me.generateGenericLegendTable({
-				sld: sld,
-				item : item
-			});
+			$legendTable;
+
+		var legendRenderer = null;
+		try {
+			legendRenderer = me.getLegendRenderer(sld.legendType);
+		} catch(e){
+			var name = me.getItemTinyText(item);
+
+			var msg = "Could not determine legend renderer"; 
+			if(name){
+				msg+= " for item '" + name + "'.";
+			}
+			$legendTable = me.createErrorLegendEntry(msg);
+			LOG.warn(msg + "\ngot legend type '" + sld.legendType + "'.");
+			if (me.onError) {
+				me.onError.call(me, arguments);
+			}
+		}
+
+		if(legendRenderer){
+			try {
+				var rendererArguments = me.customizeLegendRendererArguments(sld, item);
+				$legendTable = legendRenderer(rendererArguments);
+			} catch (e){
+				LOG.warn(e);
+				$legendTable = me.createErrorLegendEntry('Could not customize rendering the legend of item "' + me.getItemTinyText() + '".');
+				if (me.onError) {
+					me.onError.call(me, arguments);
+				}
+				//do not re-throw. We want other potentially successful legend rendering to get a chance
+			}
+		}
 		
 		$legendTable.attr({
 			'legend-attribute': attr,
@@ -641,16 +822,28 @@ CCH.Objects.Widget.Legend = function (args) {
 
 (function () {
 	"use strict";
-	$.ajax({
-		url: CCH.CONFIG.contextPath + '/resource/template/handlebars/legend/real_time_storms.html',
-		success: function (data) {
+	function assignToTemplate(name) {
+		return function (data) {
 			if (!CCH.Objects.Widget.Legend.prototype.templates) {
 				CCH.Objects.Widget.Legend.prototype.templates = {};
 			}
-			CCH.Objects.Widget.Legend.prototype.templates.rts_legend = Handlebars.compile(data);
-		},
-		error: function () {
-			window.alert('Unable to load resources required for a functional publication page. Please contact CCH admin team.');
-		}
+			CCH.Objects.Widget.Legend.prototype.templates[name] = Handlebars.compile(data);
+		};
+	};
+	
+	var nameToPath = {
+		rts_legend: 'real_time_storms.html',
+		continuous: 'continuous.html'
+	};
+	Object.keys(nameToPath).forEach(function(name){
+		var path = nameToPath[name];
+		$.ajax({
+			url: CCH.CONFIG.contextPath + '/resource/template/handlebars/legend/' + path,
+			success: assignToTemplate(name),
+			error: function () {
+				window.alert('Unable to load resources required for a functional publication page. Please contact CCH admin team.');
+			}
+		});
 	});
+	
 })();
