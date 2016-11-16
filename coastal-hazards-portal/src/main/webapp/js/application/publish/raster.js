@@ -7,7 +7,7 @@ $(document).ready(function(){
 			url: CCH.baseUrl + "/data/layer/raster",
 			type: 'POST',
 			data: formData,
-			contentType: 'multipart/form-data',
+			contentType: false,
 			processData: false
 		})
 		.done(function(){
