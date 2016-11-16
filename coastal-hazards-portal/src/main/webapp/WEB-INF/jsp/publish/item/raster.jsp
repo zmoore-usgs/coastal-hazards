@@ -96,8 +96,8 @@
 				<input type="file" name="metadata"/>
 			</div>
 			<div>
-				<label for="data">Zipped GeoTIFF</label>
-				<input type="file" name="data"/>
+				<label for="file">Zipped GeoTIFF</label>
+				<input type="file" name="file"/>
 			</div>
 			<button type="button" id="upload-btn">Submit</button>
 		</form>
