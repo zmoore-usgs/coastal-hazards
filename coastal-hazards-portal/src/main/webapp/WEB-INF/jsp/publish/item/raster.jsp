@@ -101,6 +101,7 @@
 			</div>
 			<button type="button" id="upload-btn">Submit</button>
 		</form>
+		<p id="result"></p>
 	<script type="text/javascript" src="<%=baseUrl%>/js/application/publish/raster.js"></script>
 	</body>
 </html>
