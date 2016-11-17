@@ -30,7 +30,7 @@ $(document).ready(function(){
 			var layerId = getLayerIdFromUrl(layerUrl);
 			if(201 === status){
 				
-				$result.append("Successfully published layer . Click ");
+				$result.append("Successfully published layer " +layerId + " . Click ");
 				$result.append('<a href="' + layerUrl + '">here</a> to see the layer');
 				
 			} else {
