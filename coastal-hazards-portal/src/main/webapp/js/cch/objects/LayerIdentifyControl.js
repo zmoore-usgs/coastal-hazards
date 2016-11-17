@@ -28,42 +28,35 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 		}
 		return overrideName;
 	};	
-	
-	/**
-	 * @param {Number} x the 'x' coordinate of the desired pixel
-	 * @param {Number} y the 'y' coordinate of the desired pixel
-	 * @param {2dCanvasContext} canvasContext
-	 * @returns {String} valid css color for the pixel beneath the click event
-	 */
-	var getCanvasPixelColor = function(x, y, canvasContext){
-		// https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData
-		// html canvas context api for getImageData expects following order of args:
-		// 2dCanvasContext#getImageData(x, y, width, height)
-		var rgba = canvasContext.getImageData(x, y, 1, 1).data;
-		var strRgba = "rgba(" + rgba.join(',') + ")";
-		return strRgba;
-	};
-	
 	/**
 	 * 
-	 * @param {OpenLayers.Pixel} xy
-	 * @param {OpenLayers.Map} map
-	 * @param {OpenLayers.Layer.Tile} tileLayer
-	 * @returns {String} valid css color for the pixel beneath the click event
+	 * @param {Array<Object>} bins
+	 * @param {Number} attrAvg
+	 * @returns {String} css-compatible color
 	 */
-	var getMapPixelColor = function(xy, map, tileLayer){
-		var lonLat = map.getLonLatFromPixel(xy);
-		var tileData = tileLayer.getTileData(lonLat);
-		var i = tileData.i;
-		var j = tileData.j;
-		var tile = tileData.tile;
-		if(!tile.imgDiv){
-			tile.renderTile();
+	var getBinColorForValue = function(bins, attrAvg){
+		var color = '',
+			binIdx,
+			lb,
+			ub;
+		for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
+			lb = bins[binIdx].lowerBound;
+			ub = bins[binIdx].upperBound;
+			if (lb !== undefined && ub !== undefined) {
+				if (attrAvg <= ub && attrAvg >= lb) {
+					color = bins[binIdx].color;
+				}
+			} else if (lb === undefined && ub !== undefined) {
+				if (attrAvg <= ub) {
+					color = bins[binIdx].color;
+				}
+			} else {
+				if (attrAvg >= lb) {
+					color = bins[binIdx].color;
+				}
+			}
 		}
-		var ctx = tile.getCanvasContext();
-		
-		var color = getCanvasPixelColor(i, j, ctx);
-		
+
 		return color;
 	};
 return {
@@ -91,18 +84,12 @@ return {
 			popupHtml,
 			splitName,
 			layerId,
-			/**
-			 * Trims extra information from the layer name so that
-			 * only the item id remains
-			 * @param {String} layerName layer name
-			 * @returns {String} item id
-			 */
-			trimLayerName = function (layerName) {
+			trimLayerName = function (name) {
 				// Names can be:
 				// aggregationId_itemId_r_ribbonIndex
 				// aggregationId_itemId
 				// itemId
-				splitName = layerName.split('_');
+				splitName = name.split('_');
 				if (splitName.length > 3) {
 					return splitName[1];
 				} else if (splitName.length > 2) {
@@ -132,8 +119,6 @@ return {
 			// over with a different SLD for each layer. In order to handle
 			// that, I need to make an array for the layer name (item.id) 
 			// to be able to process this going forward
-			var layerNameToPixelColor = {};
-			
 			cchLayers.each(function (l) {
 				var lName = trimLayerName(l.name);
 
@@ -142,7 +127,6 @@ return {
 				}
 
 				layerUrlToId[l.params.LAYERS].push(lName);
-				layerNameToPixelColor[lName] = getMapPixelColor(evt.xy, evt.object.map, l);
 				featuresByName[lName] = [];
 			});
 
@@ -205,8 +189,7 @@ return {
 												popup: this.popup,
 												features: this.features,
 												layers: this.layers,
-												layerId: this.layerId,
-												layerNameToPixelColor: layerNameToPixelColor
+												layerId: this.layerId
 											});
 										}],
 									error: [
@@ -233,12 +216,11 @@ return {
 			features = args.features,
 			attr = overrideAttributeName(features, item.attr),
 			attrAvg = 0,
-			color,
 			category,
 			incomingFeatures = args.features,
 			incomingFeatureCount = incomingFeatures.length,
 			layers = args.layers,
-			layerNameToPixelColor = args.layerNameToPixelColor;
+			color;
 		var buildLegend = function (args) {
 				args = args || {};
 				var binIdx = 0,
@@ -338,6 +320,9 @@ return {
 					}
 				
 				} else {
+					if(!color){
+						color = getBinColorForValue(bins, attrAvg);
+					}
 					
 					$titleContainer.html(title);
 					
@@ -467,6 +452,7 @@ return {
 				attrAvg /= incomingFeatureCount;
 				if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK", "AE"].indexOf(item.attr.toUpperCase()) !== -1) {
 					attrAvg = Math.ceil(attrAvg);
+					color = sld.bins[attrAvg - 1].color;
 					category = sld.bins[attrAvg - 1].category;
 					if("AE" === item.attr.toUpperCase()){
 						category +=  units;
@@ -474,7 +460,7 @@ return {
 				}
 			}
 		}
-		color = layerNameToPixelColor[layerId];
+
 		buildLegend({
 			bins: bins,
 			color: color,
