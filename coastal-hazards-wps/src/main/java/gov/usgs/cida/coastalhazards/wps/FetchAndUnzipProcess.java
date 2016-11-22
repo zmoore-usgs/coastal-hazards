@@ -39,6 +39,7 @@ public class FetchAndUnzipProcess implements GeoServerProcess {
             @DescribeParameter(name = "token", min = 1, max = 1, description = "Token for authorizing the upload") String token
             ){
         String unzippedPath = null;
+        File unzippedFile = null;
         if (zipUrl.isEmpty() || token.isEmpty()) {
             LOGGER.info("Missing zipUrl or token in the FetchAndUnzipProcess.");
         }
@@ -48,7 +49,8 @@ public class FetchAndUnzipProcess implements GeoServerProcess {
         
         if(isAuthorized(token)){
             ZipInputStream zipStream = getZipFromUrl(zipUrl, getHttpClient());
-            unzippedPath = unzipToDir(zipStream, getNewZipDestination());
+            unzippedFile = unzipToDir(zipStream, getNewZipDestination());
+            unzippedPath = unzippedFile.getAbsolutePath();
         } else {
             throw new ProcessException( new SecurityException("Not Authorized."));
         }
@@ -113,23 +115,22 @@ public class FetchAndUnzipProcess implements GeoServerProcess {
         return zipStream;
     }
     
-    String unzipToDir(ZipInputStream zipStream, File zipDir) {
+    File unzipToDir(ZipInputStream zipStream, File zipDir) {
         //return only one path back
-        String path = null;
+        File unzippedFile = null;
         try {
             ZipEntry entry;
             if (null != (entry = zipStream.getNextEntry())) {
                 if(!entry.isDirectory()){
                     String entryFileName = entry.getName();
-
-                    File entryFile = new File(zipDir, entryFileName);
-                    String entryFileAbsolutePath = entryFile.getAbsolutePath();
+                    unzippedFile = new File(zipDir, UUID.randomUUID().toString());
+                    String entryFileAbsolutePath = unzippedFile.getAbsolutePath();
                     LOGGER.fine("unzipping '" + entryFileName + "' to " + entryFileAbsolutePath);
-                    new File(entryFile.getParent()).mkdirs();
+                    new File(unzippedFile.getParent()).mkdirs();
                     FileOutputStream fos = null;
                     try{
-                        fos = new FileOutputStream(entryFile);
-                        IOUtils.copy(zipStream, fos);
+                        fos = new FileOutputStream(unzippedFile);
+                        IOUtils.copyLarge(zipStream, fos);
                     } catch (FileNotFoundException ex) {
                         throw new ProcessException("Error finding file '" + entryFileAbsolutePath + "'.", ex);
                     } catch (IOException ex) {
@@ -137,7 +138,6 @@ public class FetchAndUnzipProcess implements GeoServerProcess {
                     } finally {
                         IOUtils.closeQuietly(fos);
                     }
-                    path = entryFileAbsolutePath;
                 }
             }
         } catch (IOException ex) {
@@ -145,7 +145,7 @@ public class FetchAndUnzipProcess implements GeoServerProcess {
         } finally {
             IOUtils.closeQuietly(zipStream);
         }
-        return path;
+        return unzippedFile;
     }
     /**
      * @return the properties, defaulting to JNDI

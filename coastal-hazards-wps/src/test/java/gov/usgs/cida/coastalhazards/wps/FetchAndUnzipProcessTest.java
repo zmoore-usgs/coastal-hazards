@@ -170,10 +170,15 @@ public class FetchAndUnzipProcessTest {
      */
     @Test
     public void testUnzipSingleFileZipToDir() {       
-        assertZipFileUnzipsToPaths(
-            "gov/usgs/cida/coastalhazards/wps/oneFile.zip",
-            "test.txt"
-        );
+        String zipFileResourcePath = "gov/usgs/cida/coastalhazards/wps/oneFile.zip";
+
+        InputStream file = this.getClass().getClassLoader().getResourceAsStream(zipFileResourcePath);
+        ZipInputStream zipStream = new ZipInputStream(file);
+        File zipDestination = instance.getNewZipDestination();
+        File actualFile = instance.unzipToDir(zipStream,zipDestination);
+        String expectedText = "test";
+        
+        assertEquals(expPath, actualPath);
     }
           
     @Test(expected = ProcessException.class)
