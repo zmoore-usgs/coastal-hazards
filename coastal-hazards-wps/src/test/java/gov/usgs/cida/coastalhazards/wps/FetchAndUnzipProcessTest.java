@@ -3,8 +3,11 @@ package gov.usgs.cida.coastalhazards.wps;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -135,50 +138,24 @@ public class FetchAndUnzipProcessTest {
         }
         return; //No Exceptions were thrown on any HTTP status codes
     }
-    /**
-     * Convenience method for returning a sorted list of absolute paths, built from a shared base and several relative paths
-     * @param zipDestination
-     * @param relativePaths
-     * @return 
-     */
-    private List<String> buildExpectedAbsolutePaths(File zipDestination, String ... relativePaths){
-        List<String> expectedPaths = new ArrayList<>();
-        for(String relativePath : relativePaths){
-            expectedPaths.add(new File(zipDestination, relativePath).getAbsolutePath());
-        }
-        Collections.sort(expectedPaths);
-        return expectedPaths;
-    }
-    /**
-     * 
-     * @param zipFileResourcePath the classLoader.getResource()-style path to a zip file
-     * @param expectedRelativePaths The paths that should be found after unzipping
-     */
-    public void assertZipFileUnzipsToPaths(String zipFileResourcePath, String... expectedRelativePaths){
-        InputStream file = this.getClass().getClassLoader().getResourceAsStream(zipFileResourcePath);
-        ZipInputStream zipStream = new ZipInputStream(file);
-        File zipDestination = instance.getNewZipDestination();
-        List<String> expectedPaths = buildExpectedAbsolutePaths(zipDestination, expectedRelativePaths);
-        String expPath = expectedPaths.get(0);
-        String actualPath = instance.unzipToDir(zipStream,zipDestination);
-        assertEquals(expPath, actualPath);
-    }
-    
-   
+
     /**
      * Test of unzipToDir method, of class FetchAndUnzipProcess.
      */
     @Test
-    public void testUnzipSingleFileZipToDir() {       
+    public void testUnzipSingleFileZipToDir() throws FileNotFoundException, IOException {
         String zipFileResourcePath = "gov/usgs/cida/coastalhazards/wps/oneFile.zip";
 
         InputStream file = this.getClass().getClassLoader().getResourceAsStream(zipFileResourcePath);
         ZipInputStream zipStream = new ZipInputStream(file);
         File zipDestination = instance.getNewZipDestination();
         File actualFile = instance.unzipToDir(zipStream,zipDestination);
-        String expectedText = "test";
-        
-        assertEquals(expPath, actualPath);
+        assertTrue(actualFile.exists());
+        assertTrue(actualFile.canRead());
+        assertTrue(actualFile.isFile());
+        String actualContents = new String(Files.readAllBytes(actualFile.toPath()));
+        String expectedContents = "test\n";
+        assertEquals(expectedContents, actualContents);
     }
           
     @Test(expected = ProcessException.class)
