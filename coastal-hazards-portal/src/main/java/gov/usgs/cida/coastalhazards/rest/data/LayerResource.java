@@ -146,7 +146,7 @@ public class LayerResource {
         @POST
 	@Path("/raster")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response createRasterLayer(
                 @Context HttpServletRequest req, 
