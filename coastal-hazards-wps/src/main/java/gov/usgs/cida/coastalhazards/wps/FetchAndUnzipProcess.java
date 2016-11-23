@@ -130,7 +130,13 @@ public class FetchAndUnzipProcess implements GeoServerProcess {
                     FileOutputStream fos = null;
                     try{
                         fos = new FileOutputStream(unzippedFile);
+                        long start = System.nanoTime();
+                        LOGGER.info("Starting to unzip the zipped stream to local disk");
                         IOUtils.copyLarge(zipStream, fos);
+                        long end = System.nanoTime();
+                        long duration = (end - start) / 1000000; //duration in ms
+                        LOGGER.info("Finished unzipping the zipped stream to local disk. Duration: " + duration +" ms");
+                        
                     } catch (FileNotFoundException ex) {
                         throw new ProcessException("Error finding file '" + entryFileAbsolutePath + "'.", ex);
                     } catch (IOException ex) {
