@@ -13,6 +13,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.MalformedChunkCodingException;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -132,6 +133,8 @@ public class FetchAndUnzipProcess implements GeoServerProcess {
                         IOUtils.copy(zipStream, fos);
                     } catch (FileNotFoundException ex) {
                         throw new ProcessException("Error finding file '" + entryFileAbsolutePath + "'.", ex);
+		    } catch (MalformedChunkCodingException ex) {
+			    throw new ProcessException("Error writing file '" + entryFileName + "' to '" + entryFileAbsolutePath+ "'. This can happen if the zip file contains multiple files. Only one file is allowed.", ex);
                     } catch (IOException ex) {
                         throw new ProcessException("Error writing file '" + entryFileName + "' to '" + entryFileAbsolutePath+ "'.", ex);
                     } finally {
