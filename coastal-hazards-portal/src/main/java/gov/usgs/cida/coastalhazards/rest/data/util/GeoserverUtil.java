@@ -79,7 +79,7 @@ public class GeoserverUtil {
 
 			if (StringUtils.isNotBlank(created)) {
 				serviceList.add(wfsService(created));
-				serviceList.add(wmsService(created, PROXY_WORKSPACE));
+				serviceList.add(wmsService(created));
 			}
 		}
 		catch (FileNotFoundException ex) {
@@ -114,9 +114,9 @@ public class GeoserverUtil {
 	 * @param layer
 	 * @return Service with a www-accessible url
 	 */
-	private static Service wmsService(String layer, String workspace) {
+	private static Service wmsService(String layer) {
 		Service service = new Service();
-		URI uri = UriBuilder.fromUri(geoserverExternalEndpoint).path(workspace).path("wms").build();
+		URI uri = UriBuilder.fromUri(geoserverExternalEndpoint).path(PROXY_WORKSPACE).path("wms").build();
 		service.setType(Service.ServiceType.proxy_wms);
 		service.setEndpoint(uri.toString());
 		service.setServiceParameter(layer);
@@ -374,7 +374,7 @@ public class GeoserverUtil {
                     } else {
                             log.info("Published GeoTiff!!!");
                             log.info("In GeoserverUtil, about to add wmsService with layer name: " + layerId);
-                            rasterService = wmsService(fileName, PORTAL_WORKSPACE);
+                            rasterService = wmsService(layerId);
                             log.info("Added layer to wms service.");
                     }
                     return rasterService;
