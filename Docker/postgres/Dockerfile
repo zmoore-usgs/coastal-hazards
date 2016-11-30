@@ -14,7 +14,7 @@ ENV POSTGRES_USER "postgres"
 
 ENV POSTGRES_DB "public"
 
-ENV CCH_LIQUIBASE_VERSION "1.1.18"
+ENV CCH_LIQUIBASE_VERSION "1.1.47"
 
 ENV JAVA_HOME "/usr/lib/jvm/java-7-openjdk-amd64"
 
