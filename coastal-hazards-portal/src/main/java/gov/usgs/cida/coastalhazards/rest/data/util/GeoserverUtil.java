@@ -54,7 +54,6 @@ public class GeoserverUtil {
 	// TODO move these centrally or into configuration
 	private static final String PROXY_STORE = "proxied";
         private static final String PROXY_WORKSPACE = "proxied";
-	private static final String PORTAL_WORKSPACE = "portal";
         private static final String DEFAULT_RASTER_STYLE = "raster";
 
 	static {
@@ -366,7 +365,7 @@ public class GeoserverUtil {
                         layerEncoder.setDefaultStyle(DEFAULT_RASTER_STYLE);
                 
                     // Geoserver Manager BUG Alert for v2.4 ...Creating a GeoTIFF coverage via REST works if the coverage's name is the same as the store name, but fails otherwise. Setting nativeName or nativeCoverageName does not help. Changing the name after creating the coverage works fine.    
-                    RESTCoverageStore store = publisher.publishExternalGeoTIFF(PORTAL_WORKSPACE, fileName, unzippedFile, coverageEncoder, layerEncoder); // #TODO# what to do if the workspace:fileName is already in use?
+                    RESTCoverageStore store = publisher.publishExternalGeoTIFF(PROXY_WORKSPACE, fileName, unzippedFile, coverageEncoder, layerEncoder); // #TODO# what to do if the workspace:fileName is already in use?
                     if (null == store) {
                             //if store or layer creation failed
                             log.info("Error publishing GeoTiff in GeoServer.");
@@ -374,7 +373,7 @@ public class GeoserverUtil {
                     } else {
                             log.info("Published GeoTiff!!!");
                             log.info("In GeoserverUtil, about to add wmsService with layer name: " + layerId);
-                            rasterService = wmsService(layerId);
+                            rasterService = wmsService(fileName);
                             log.info("Added layer to wms service.");
                     }
                     return rasterService;
