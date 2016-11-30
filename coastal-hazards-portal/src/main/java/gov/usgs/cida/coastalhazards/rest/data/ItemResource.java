@@ -49,7 +49,7 @@ public class ItemResource {
 	private static final Logger log = LoggerFactory.getLogger(ItemResource.class);
 
 	public static final String PUBLIC_URL = JNDISingleton.getInstance()
-			.getProperty("coastal-hazards.public.url", "https://localhost:8443/coastal-hazards-portal");
+			.getProperty("coastal-hazards.public.url", "http://localhost:8080/coastal-hazards-portal");
 
 	/**
 	 * Retrieves representation of an instance of

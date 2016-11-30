@@ -10,4 +10,4 @@ Disallow: /data/sld/
 Disallow: /data/thumbnail/
 Disallow: /data/minifier/
 Disallow: /data/download/
-Sitemap: https://marine.usgs.gov/coastalchangehazardsportal
+Sitemap: http://marine.usgs.gov/coastalchangehazardsportal

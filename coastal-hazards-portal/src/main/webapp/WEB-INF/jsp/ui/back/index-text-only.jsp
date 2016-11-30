@@ -102,5 +102,5 @@
 </aside>
 
 <footer>
-	<p><a href="https://www.usgs.gov/">USGS - Science For A Changing World</a></p>
+	<p><a href="http://www.usgs.gov/">USGS - Science For A Changing World</a></p>
 </footer>

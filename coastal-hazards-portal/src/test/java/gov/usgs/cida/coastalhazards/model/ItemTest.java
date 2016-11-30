@@ -17,11 +17,11 @@ public class ItemTest {
    String itemJSON =  "{\"id\":\"abc123\"," +
 "            \"metadata\": \"testMetaUrl\"," +
 "            \"wfsService\": {\n" +
-"                    \"endpoint\": \"https://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs\",\n" +
+"                    \"endpoint\": \"http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs\",\n" +
 "                    \"typeName\": \"published:KauaiE_shorelines\"\n" +
 "                },\n" +
 "            \"wmsService\": {\n" +
-"                    \"endpoint\": \"https://cida.usgs.gov/qa/DSASweb/geoserver/published/wms\",\n" +
+"                    \"endpoint\": \"http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms\",\n" +
 "                    \"layers\": \"KauaiE_shorelines\"\n" +
 "                }," +
 "            \"name\": \"Linear Regression Rate of shorelines in eastern Kauai, HI\",\n" +

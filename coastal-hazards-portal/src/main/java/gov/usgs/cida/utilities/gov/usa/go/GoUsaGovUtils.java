@@ -35,7 +35,7 @@ public class GoUsaGovUtils {
 
 	static {
 		props = JNDISingleton.getInstance();
-		usagovEndpoint = props.getProperty(endpointyParam, "https://go.usa.gov/api/");
+		usagovEndpoint = props.getProperty(endpointyParam, "http://go.usa.gov/api/");
 		login = props.getProperty(loginParam);
 		apiKey = props.getProperty(apiKeyParam);
 	}

@@ -56,12 +56,12 @@
 	String userAgent = request.getHeader("user-agent");
 
 	String relPath = baseUrl + "/";
-	String publicUrl = props.getProperty("coastal-hazards.public.url", "https://127.0.0.1:8443/coastal-hazards-portal");
-	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
+	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
+	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
 	String geoserverEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
 	String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
 	String marineArcServerEndpoint = props.getProperty("coastal-hazards.marine.endpoint");
-	String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "https://localhost:4443/pycsw");
+	String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");
 	String version = props.getProperty("application.version");
 	String resourceSuffix = development ? "" : "-" + version + "-min";
 	String vJquery = getProp("version.jquery");
@@ -123,7 +123,7 @@
                     <div id="header-row" class="row">
                         <%-- Logo --%>
                         <span id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
-                            <a href="https://www.usgs.gov" target="_blank">
+                            <a href="http://www.usgs.gov" target="_blank">
                                 <img id="app-navbar-coop-logo-img" alt="USGS logo" src="<%=baseUrl%>/images/banner/usgslogo.png" />
                             </a>
                         </span>

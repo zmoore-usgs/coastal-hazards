@@ -24,7 +24,7 @@ public class SingleDownloadTest {
         SingleDownload singleDownload = new SingleDownload();
         singleDownload.setName("test");
         WFSService wfs = new WFSService();
-		wfs.setEndpoint("http://cidasddvascch.cr.usgs.gov:8081/geoserver/wfs");
+        wfs.setEndpoint("http://cida-wiwsc-cchdev:8081/geoserver/wfs");
         wfs.setTypeName("proxied:sandy_example");
         singleDownload.setWfs(wfs);
         singleDownload.addAttr("PCOL");

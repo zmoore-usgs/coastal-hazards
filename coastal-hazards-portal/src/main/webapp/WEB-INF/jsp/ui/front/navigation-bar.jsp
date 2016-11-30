@@ -1,5 +1,5 @@
 <%-- Logo --%>
-<a href="https://www.usgs.gov" target="_blank" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+<a href="http://www.usgs.gov" target="_blank" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
     <img id="app-navbar-coop-logo-img" alt="USGS Logo" src="${param['baseUrl']}/images/banner/usgslogo.png" />
 </a>
 

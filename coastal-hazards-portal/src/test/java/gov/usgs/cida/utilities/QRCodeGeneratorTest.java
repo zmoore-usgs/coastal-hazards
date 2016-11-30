@@ -24,7 +24,7 @@ public class QRCodeGeneratorTest {
 	public void testGenerateToFile() throws Exception {
 		System.out.println("generateToFile");
 		File result = new QRCodeGenerator()
-				.setUrl(new URL("https://cida.usgs.gov"))
+				.setUrl(new URL("http://cida.usgs.gov"))
 				.generateToFile();
 
 		assertNotNull(result);
@@ -35,7 +35,7 @@ public class QRCodeGeneratorTest {
 	@Test
 	public void testWriteToOutputStream() throws IOException, URISyntaxException {
 		System.out.println("testWriteToOutputStream");
-		QRCodeGenerator instance = new QRCodeGenerator().setUrl(new URL("https://cida.usgs.gov"));
+		QRCodeGenerator instance = new QRCodeGenerator().setUrl(new URL("http://cida.usgs.gov"));
 		File result = File.createTempFile(String.valueOf((new Date()).getTime()), "deleteme");
 		result.deleteOnExit();
 

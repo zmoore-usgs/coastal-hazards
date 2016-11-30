@@ -23,8 +23,8 @@
 	String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
 	String marineArcServerEndpoint = props.getProperty("coastal-hazards.marine.endpoint");
 	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "//geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
-	String publicUrl = props.getProperty("coastal-hazards.public.url", "https://127.0.0.1:8443/coastal-hazards-portal");
-	String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "https://localhost:8043/pycsw");
+	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
+	String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");
 %>
 <%
 	Set<String> stormTrackSet = Attributes.getStormTrackAttrs();
@@ -87,7 +87,7 @@
                 },
                 'tooltip-prevalence' : 2000,
 				'endpoints' : {
-					'tutorial' : 'https://go.usa.gov/xkufe'
+					'tutorial' : 'http://go.usa.gov/K5fP'
 				}
             },
 			map: {
