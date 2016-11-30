@@ -175,9 +175,14 @@ public class LayerResource {
                 services.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
 
                 Bbox bbox = MetadataUtil.getBoundingBoxFromFgdcMetadata(metadata);
+                log.info("Starting CRS Identifier Lookup");
+                long startTime = System.nanoTime();
                 String EPSGcode = CRS.lookupIdentifier(MetadataUtil.getCrsFromFgdcMetadata(metadata), true);
+                long endTime = System.nanoTime();
+                long duration = (endTime - startTime)/1000000;  //divide by 1000000 to get milliseconds
+                log.info("Finished CRS Identifier Lookup. Took " + duration + "ms.");
                 
-                if (bbox == null || EPSGcode == null) {
+               if (bbox == null || EPSGcode == null) {
                     throw new ServerErrorException("Unable to identify bbox or epsg code from metadata.", Status.INTERNAL_SERVER_ERROR);
                 }
                 
@@ -186,8 +191,11 @@ public class LayerResource {
                 log.info("Raster layer create - about to addRasterLayer to geoserver with an EPSG of: " + EPSGcode);
                 
                 Service rasterService = GeoserverUtil.addRasterLayer(geoserverEndpoint, zipFileStream, newId, bbox, EPSGcode);
-               
-                services.add(rasterService);
+                if(null == rasterService) {
+                        throw new ServerErrorException("Unable to create a store and/or layer in GeoServer.", Status.INTERNAL_SERVER_ERROR);
+                } else {
+                        services.add(rasterService);
+                }
                 
                 if (!services.isEmpty()) {
 			Layer layer = new Layer();
