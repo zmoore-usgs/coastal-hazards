@@ -33,7 +33,7 @@ public class FetchAndUnzipProcess implements GeoServerProcess {
     static final String UNZIP_BASE_PROPERTY_NAME = "gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.unzip.base";
     private DynamicReadOnlyProperties properties;
     private HttpClient httpClient;
-    
+    public static final String FILE_NAME_PREFIX = "_";
     @DescribeResult(name = "filePath", description = "path to the unzipped file")
     public String execute(
             @DescribeParameter(name = "zipUrl", min = 1, max = 1, description = "URL to the zipped file to retrieve") String zipUrl,
@@ -115,6 +115,21 @@ public class FetchAndUnzipProcess implements GeoServerProcess {
         }
         return zipStream;
     }
+    /**
+     * 
+     * @return an XML-safe file name
+     */
+        public String makeSafeFileName(){
+                /*
+                 * Why prefix the file name?
+                 * UUIDs sometimes begin with numbers. Sometimes the file 
+                 * names are used as XML element names. XML element names
+                 * cannot begin with numbers. To ensure that an unzipped
+                 * file name could be used as an XML elment name, prefix it
+                 * with a valid character for the start of an XML element name
+                 */
+            return FILE_NAME_PREFIX + UUID.randomUUID().toString();
+        }
     
     File unzipToDir(ZipInputStream zipStream, File zipDir) {
         //return only one path back
@@ -124,7 +139,8 @@ public class FetchAndUnzipProcess implements GeoServerProcess {
             if (null != (entry = zipStream.getNextEntry())) {
                 if(!entry.isDirectory()){
                     String entryFileName = entry.getName();
-                    unzippedFile = new File(zipDir, UUID.randomUUID().toString());
+                    String safeFileName = makeSafeFileName();
+                    unzippedFile = new File(zipDir, safeFileName);
                     String entryFileAbsolutePath = unzippedFile.getAbsolutePath();
                     LOGGER.fine("unzipping '" + entryFileName + "' to " + entryFileAbsolutePath);
                     new File(unzippedFile.getParent()).mkdirs();

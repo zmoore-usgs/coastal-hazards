@@ -32,6 +32,10 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *
@@ -157,7 +161,27 @@ public class FetchAndUnzipProcessTest {
         String expectedContents = "test\n";
         assertEquals(expectedContents, actualContents);
     }
-          
+    @Test
+    public void testMakeSafeFileName(){
+        for(int i = 0; i < 1000; i++){
+                String fileName = instance.makeSafeFileName();
+                assertTrue("'" + fileName +"' is not a valid XML elment name", isValidXmlElementName(fileName));
+        }
+    }
+        public boolean isValidXmlElementName(String name){
+                String xml = "<" + name + "/>";
+                boolean valid = false;
+                try{
+                        XMLReader parser = XMLReaderFactory.createXMLReader();
+                        parser.setContentHandler(new DefaultHandler());
+                        InputSource source = new InputSource(new ByteArrayInputStream(xml.getBytes()));
+                        parser.parse(source);
+                        valid = true;
+                } catch (Exception e){
+                        valid = false;
+                }
+                return valid;
+        }
     @Test(expected = ProcessException.class)
     public void testGetNewZipDestinationWithMissingBase(){
         instance.getNewZipDestination(null);
