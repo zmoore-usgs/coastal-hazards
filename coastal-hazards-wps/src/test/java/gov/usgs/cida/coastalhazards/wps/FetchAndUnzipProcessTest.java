@@ -161,8 +161,31 @@ public class FetchAndUnzipProcessTest {
         String expectedContents = "test\n";
         assertEquals(expectedContents, actualContents);
     }
+    
     @Test
     public void testMakeSafeFileName(){
+            /*
+             * UUIDs have some structure, but according to the RFC (Sec 4.4 
+             * https://www.ietf.org/rfc/rfc4122.txt), and this empirical test 
+             * (https://repl.it/EeqN/6), the first hex digit is randomly generated.
+             * 
+             * Since the first digit is randomly generated, we can focus only on
+             * the first digit and determine how many iterations are acceptable 
+             * using the classic probability problem of colored marble drawing 
+             * with replacement. Slide one of this presentation has an example:
+             * http://homepages.math.uic.edu/~bpower6/stat101/probability%20examples.pdf
+             * In our case, our jar has 10 blue marbles (digits '0' through '9') and 
+             * 6 red marbles (digits 'a' through 'f'). The probability of generating
+             * 'N' UUIDs without a single one beginning with a digit 'a' through
+             * 'f' is the same as the probability of drawing 'N' marbles from 
+             * our jar without selecting a single red marble. For a single event,
+             * P(not red) = 10/16. For 'N' events, 
+             * P(not red 'N' times) = P(not red)^N = (10/16)^N
+             * 
+             * Accordingly, P(not red 1000 times) = (10/16)^1000 = 7.586E-205
+             * 
+             * This is an acceptably small probability.
+             */
         for(int i = 0; i < 1000; i++){
                 String fileName = instance.makeSafeFileName();
                 assertTrue("'" + fileName +"' is not a valid XML elment name", isValidXmlElementName(fileName));
