@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.TinyGovManager;
 import gov.usgs.cida.coastalhazards.model.TinyGov;
+import gov.usgs.cida.coastalhazards.rest.data.util.HttpUtil;
 import gov.usgs.cida.utilities.gov.usa.go.GoUsaGovUtils;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -43,14 +44,20 @@ public class MinifyResource {
                 if (tinygov == null) {
                     String encodedUrl = URLEncoder.encode(url, "UTF-8");
                     String minified = GoUsaGovUtils.minify(encodedUrl);
-                    String short_url = GoUsaGovUtils.getUrlFromResponse(minified);
-                    if (short_url == null) {
+                    String short_http_url = GoUsaGovUtils.getUrlFromResponse(minified);
+                    if (short_http_url == null) {
                         throw new Exception("Cannot get url from go.usa.gov");
                     }
                     else {
+                        String short_https_url;
+                        try{
+                            short_https_url = HttpUtil.convertUriToHttps(short_http_url);
+                        } catch(URISyntaxException e){
+                            throw new RuntimeException("Tiny url '" + short_http_url + "' from go.usa.gov could not be converted to https", e);
+                        }
                         tinygov = new TinyGov();
                         tinygov.setFullUrl(url);
-                        tinygov.setTinyUrl(short_url);
+                        tinygov.setTinyUrl(short_https_url);
                         boolean save = urlManager.save(tinygov);
                         if (!save) {
                             LOG.warn("Could not save this to the database, this is probably not your biggest problem.");
@@ -94,7 +101,7 @@ public class MinifyResource {
 			responseMap.put("message", ex.getMessage());
 			response = Response.status(Response.Status.BAD_REQUEST)
                     .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
-		} catch (Exception ex) {
+		} catch (Exception ex) { 
 			responseMap.put("message", ex.getMessage());
 			response = Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
