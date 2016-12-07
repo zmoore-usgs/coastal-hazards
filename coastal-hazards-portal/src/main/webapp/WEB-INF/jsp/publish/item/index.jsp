@@ -197,11 +197,31 @@
 								</div>
 							</div>
 
+							<%-- Featured Item --%>
 							<div class="row row-id">
 								<div class="form-group">
-									<label>
-										<input type="checkbox" id="checkbox-featured"> Is Featured?
-									</label>
+									<div class="checkbox">
+										<input id="checkbox-featured" type="checkbox" disabled="disabled">
+										<label for="checkbox-featured">Is Featured?</label>
+									</div>
+								</div>
+							</div>
+							<%-- Ribbonable --%>
+							<div class="row row-ribbonable">
+								<div class="form-group">
+									<div class="checkbox">
+										<input id="form-publish-item-ribbonable" type="checkbox" disabled="disabled">
+										<label for="form-publish-item-ribbonable">Ribbonable?</label>
+									</div>
+								</div>
+							</div>
+							<%-- Show Children --%>
+							<div class="row row-showchildren">
+								<div class="form-group">
+									<div class="checkbox">
+										<input id="form-publish-item-showchildren" type="checkbox" disabled="disabled" checked="checked">
+										<label for="form-publish-item-showchildren">Show Children?</label>
+									</div>
 								</div>
 							</div>
 							
@@ -262,6 +282,20 @@
 									<h3 class="panel-title">Services</h3>
 								</div>
 								<div class="panel-body">
+									<%-- Populate from layer --%>
+									<div id="form-publish-info-item-service-layer">
+										<div class="form-group">
+											<label for="form-publish-item-service-layer">Populate from layer</label>
+											<div class="input-group">
+												<input type="text" class="form-control" id="form-publish-item-service-layer" disabled="disabled" />
+												<span class="input-group-btn">
+													<button id="form-publish-item-service-layer-button-pop" class="btn btn-default" type="button" disabled="disabled">Populate</button>
+												</span>
+											</div>
+										</div>
+									</div>
+									
+									<%-- CSW url --%>
 									<div id="form-publish-info-item-service-csw" class="row row-csw">
 										<div class="form-group">
 											<label for="form-publish-item-service-csw">CSW</label>
@@ -272,30 +306,16 @@
 									<%-- Source WFS --%>
 									<div id="form-publish-info-item-service-source-wfs" class="row row-src-wfs">
 										<div class="form-group">
-											<label for="form-publish-item-service-source-wfs"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Source WFS</label>
+											<label for="form-publish-item-service-source-wfs">Source WFS</label>
 											<div class="input-group">
-												<div class="input-group-btn">
-													<button id="form-publish-item-service-source-wfs-import-button-service-select" class="btn btn-default" type="button" disabled="disabled" data-toggle="dropdown">
-														<i class="fa fa-asterisk"></i>  <span class="caret"></span>
-													</button>
-													<ul class="dropdown-menu" role="menu">
-														<li><a id="form-publish-item-service-source-wfs-import-button-service-cidags" class="form-publish-item-service-source-wfs-import-button-service-help-link" data-attr="dsas-geoserver" href="#" onclick="return false;">Geoserver</a></li>
-														<li><a id="form-publish-item-service-source-wfs-import-button-service-marine" class="form-publish-item-service-source-wfs-import-button-service-help-link" data-attr="marine-arcserver" href="#" onclick="return false;">Marine</a></li>
-														<li><a id="form-publish-item-service-source-wfs-import-button-service-olga" class="form-publish-item-service-source-wfs-import-button-service-help-link" data-attr="stpete-arcserver" href="#" onclick="return false;">Olga</a></li>
-													</ul>
-												</div>
-												<input type="text" class="form-control" id="form-publish-item-service-source-wfs" disabled="disabled"  maxlength="<%= Service.ENDPOINT_MAX_LENGTH%>"  />
+												<input type="text" class="form-control" id="form-publish-item-service-source-wfs" disabled="disabled" maxlength="<%= Service.ENDPOINT_MAX_LENGTH%>" />
 												<span class="input-group-btn">
 													<button id="form-publish-item-service-source-wfs-import-button-check" class="btn btn-default" type="button" disabled="disabled">Check</button>
 												</span>
 											</div>
-											<label for="form-publish-item-service-source-wfs-serviceparam"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Service Parameter</label>
 											<div class="input-group">
-												<input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH%>"  />
-												<span class="input-group-btn">
-													<button id="form-publish-item-service-source-wfs-copy-button" class="btn btn-default" type="button" disabled="disabled">Use As WMS Source</button>
-													<button id="form-publish-item-service-source-wfs-import-button" class="btn btn-default" type="button">Import</button>
-												</span>
+												<label for="form-publish-item-service-source-wfs-serviceparam">Service Parameter</label>
+												<input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled" maxlength="<%= Service.PARAMETER_MAX_LENGTH%>" />
 											</div>
 										</div>
 									</div>
@@ -303,53 +323,52 @@
 									<%-- Source WMS --%>
 									<div id="form-publish-info-item-service-source-wms" class="row row-src-wms">
 										<div class="form-group">
-											<label for="form-publish-item-service-source-wms"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Source WMS</label>
+											<label for="form-publish-item-service-source-wms">Source WMS</label>
 											<div class="input-group">
-												<div class="input-group-btn">
-													<button id="form-publish-item-service-source-wms-import-button-service-select" class="btn btn-default" type="button" disabled="disabled" data-toggle="dropdown">
-														<i class="fa fa-asterisk"></i>  <span class="caret"></span>
-													</button>
-													<ul class="dropdown-menu" role="menu">
-														<li><a id="form-publish-item-service-source-wms-import-button-service-cidags" class="form-publish-item-service-source-wms-import-button-service-help-link" data-attr="dsas-geoserver" href="#" onclick="return false;">Geoserver</a></li>
-														<li><a id="form-publish-item-service-source-wms-import-button-service-marine" class="form-publish-item-service-source-wms-import-button-service-help-link" data-attr="marine-arcserver" href="#" onclick="return false;">Marine</a></li>
-														<li><a id="form-publish-item-service-source-wms-import-button-service-olga" class="form-publish-item-service-source-wms-import-button-service-help-link" data-attr="stpete-arcserver" href="#" onclick="return false;">Olga</a></li>
-													</ul>
-												</div>
-												<input type="text" class="form-control" id="form-publish-item-service-source-wms" disabled="disabled"  maxlength="<%= Service.ENDPOINT_MAX_LENGTH%>" />
+												<input type="text" class="form-control" id="form-publish-item-service-source-wms" disabled="disabled" maxlength="<%= Service.ENDPOINT_MAX_LENGTH%>" />
 												<span class="input-group-btn">
 													<button id="form-publish-item-service-source-wms-import-button-check" class="btn btn-default" type="button" disabled="disabled">Check</button>
 												</span>
 											</div>
-											<label for="form-publish-item-service-source-wms-serviceparam"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Service Parameter</label>
-											<input type="text" class="form-control" id="form-publish-item-service-source-wms-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH%>" />
+											<div class="input-group">
+												<label for="form-publish-item-service-source-wms-serviceparam">Service Parameter</label>
+												<input type="text" class="form-control" id="form-publish-item-service-source-wms-serviceparam" disabled="disabled" maxlength="<%= Service.PARAMETER_MAX_LENGTH%>" />
+											</div>
 										</div>
 									</div>
+										
+									<%-- Proxy WFS --%>
 									<div id="form-publish-info-item-service-proxy-wfs" class="row row-prx-wfs">
 										<div class="form-group">
 											<label for="form-publish-item-service-proxy-wfs">Proxy WFS</label>
 											<input type="text" class="form-control" id="form-publish-item-service-proxy-wfs" disabled="disabled"  maxlength="<%= Service.ENDPOINT_MAX_LENGTH%>" />
-											<label for="form-publish-item-service-proxy-wfs-serviceparam">Service Parameter</label>
-											<div class="input-group">
-												<div class="input-group-btn">
-													<button id="form-publish-item-service-proxy-wfs-import-button-check" class="btn btn-default" type="button" disabled="disabled">Check</button>
-												</div>
-												<input type="text" class="form-control" id="form-publish-item-service-proxy-wfs-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH%>"/>
-												<div class="input-group-btn">
-													<button id="form-publish-item-service-proxy-wfs-pull-attributes-button" class="btn btn-default" type="button" disabled="disabled">Get Attributes</button>
+											<div>
+												<label for="form-publish-item-service-proxy-wfs-serviceparam">Service Parameter</label>
+												<div class="input-group">
+													<div class="input-group-btn">
+														<button id="form-publish-item-service-proxy-wfs-import-button-check" class="btn btn-default" type="button" disabled="disabled">Check</button>
+													</div>
+													<input type="text" class="form-control" id="form-publish-item-service-proxy-wfs-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH%>"/>
+													<div class="input-group-btn">
+														<button id="form-publish-item-service-proxy-wfs-pull-attributes-button" class="btn btn-default" type="button" disabled="disabled">Get Attributes</button>
+													</div>
 												</div>
 											</div>
 										</div>
 									</div>
+									<%-- Proxy WMS --%>
 									<div id="form-publish-info-item-service-proxy-wms" class="row row-prx-wms">
 										<div class="form-group">
 											<label for="form-publish-item-service-proxy-wms">Proxy WMS</label>
 											<input type="text" class="form-control" id="form-publish-item-service-proxy-wms" disabled="disabled"  maxlength="<%= Service.ENDPOINT_MAX_LENGTH%>" />
-											<label for="form-publish-item-service-proxy-wms-serviceparam">Service Parameter</label>
-											<div class="input-group">
-												<div class="input-group-btn">
-													<button id="form-publish-item-service-proxy-wms-import-button-check" class="btn btn-default" type="button" disabled="disabled">Check</button>
+											<div>
+												<label for="form-publish-item-service-proxy-wms-serviceparam">Service Parameter</label>
+												<div class="input-group">
+													<div class="input-group-btn">
+														<button id="form-publish-item-service-proxy-wms-import-button-check" class="btn btn-default" type="button" disabled="disabled">Check</button>
+													</div>
+													<input type="text" class="form-control" id="form-publish-item-service-proxy-wms-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH%>"/>
 												</div>
-												<input type="text" class="form-control" id="form-publish-item-service-proxy-wms-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH%>"/>
 											</div>
 										</div>
 									</div>
@@ -486,23 +505,7 @@
 								</div>
 							</div>
 
-							<%-- Ribbonable --%>
-							<div class="row row-ribbonable">
-								<div class="form-group">
-									<div class="checkbox">
-										<input id="form-publish-item-ribbonable" type="checkbox" disabled="disabled">
-										<label for="form-publish-item-ribbonable">Ribbonable</label>
-									</div>
-								</div>
-							</div>
-							<div class="row row-showchildren">
-								<div class="form-group">
-									<div class="checkbox">
-										<input id="form-publish-item-showchildren" type="checkbox" disabled="disabled" checked="checked">
-										<label for="form-publish-item-showchildren">Show Children</label>
-									</div>
-								</div>
-							</div>
+							
 						</div>
 					</form>
 				</div>

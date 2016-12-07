@@ -71,6 +71,8 @@ CCH.Objects.Publish.UI = function () {
 		$proxyWfsCheckButton = $form.find('#form-publish-item-service-proxy-wfs-import-button-check'),
 		$proxyWmsCheckButton = $form.find('#form-publish-item-service-proxy-wms-import-button-check'),
 		$getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button'),
+		$popFromLayerInput = $form.find('#form-publish-item-service-layer'),
+		$popFromLayerButton = $form.find('#form-publish-item-service-layer-button-pop'),
 		$emphasisItemSpan = $form.find('.emphasis-item'),
 		$emphasisAggregationSpan = $form.find('.emphasis-aggregation'),
 		$isActiveStormRow = $form.find('#form-publish-info-item-active-storm'),
@@ -155,11 +157,12 @@ CCH.Objects.Publish.UI = function () {
 		
 		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $bboxNorth,
-			$typeSb, $attributeSelect,
-			$srcWfsServiceInput, $srcWfsServiceParamInput,
+			$typeSb, $attributeSelect, $isFeaturedCB, $ribbonableCb,
+			$popFromLayerInput, $popFromLayerButton,
+			$cswServiceInput, $srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
-			$proxyWmsServiceParamInput, $ribbonableCb, $name, $wfsServerHelpButton,
+			$proxyWmsServiceParamInput,  $name, $wfsServerHelpButton,
 			$wfsSourceCopyButton, $sourceWfsCheckButton,
 			$sourceWmsCheckButton, $wmsServerHelpButton, $proxyWfsCheckButton,
 			$proxyWmsCheckButton, $buttonSave, $buttonDelete,
@@ -170,8 +173,6 @@ CCH.Objects.Publish.UI = function () {
 					$item.removeAttr(CCH.CONFIG.strings.disabled);
 				});
 		
-		$proxyWfsServiceInput.val(gsBaseUrl + 'wfs');
-		$proxyWmsServiceInput.val(gsBaseUrl + 'wms');
 		$showChildrenCb.prop(CCH.CONFIG.strings.checked, false);
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
 		$isFeaturedCB.prop(CCH.CONFIG.strings.checked, false);
@@ -263,51 +264,33 @@ CCH.Objects.Publish.UI = function () {
 				}
 				
 
-				if (me.isBlank($srcWfsServiceInput)) {
-					errors.push('Source WFS Endpoint not provided');
-				} else if ($srcWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+				if ($srcWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('WFS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
-				
-				if (me.isBlank($srcWfsServiceParamInput)) {
-					errors.push('Source WFS parameter not provided');
-				} else if ($srcWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+				if ($srcWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
 					errors.push('WFS Source parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
-				if (me.isBlank($srcWmsServiceInput)) {
-					errors.push('Source WMS Endpoint not provided');
-				} else if ($srcWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+				if ($srcWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('WMS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
-				
-				if (me.isBlank($srcWmsServiceParamInput)) {
-					errors.push('Source WMS Endpoint not provided');
-				} else if ($srcWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+				if ($srcWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
 					errors.push('WMS Source parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
-				if (me.isBlank($proxyWfsServiceInput)) {
-					errors.push('Proxy WFS endpoint not provided');
-				} else if ($proxyWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+				if ($proxyWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('WFS Proxy endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
 				
-				if (me.isBlank($proxyWfsServiceParamInput)) {
-					errors.push('Proxy WFS parameter not provided');
-				} else if ($proxyWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+				if ($proxyWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
 					errors.push('WFS Proxy parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
-				if (me.isBlank($proxyWmsServiceInput)) {
-					errors.push('Proxy WMS endpoint not provided');
-				} else if ($proxyWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+				if ($proxyWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('WMS Proxy endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
 				
-				if (me.isBlank($proxyWmsServiceParamInput)) {
-					errors.push('Proxy WMS parameter not provided');
-				} else if ($proxyWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+				if ($proxyWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
 					errors.push('WMS Proxy parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
@@ -1369,6 +1352,47 @@ CCH.Objects.Publish.UI = function () {
 			});
 		}
 	};
+	
+	me.loadLayerInfo = function (layerid) {
+		if (layerid) {
+			var layerurl = CCH.CONFIG.contextPath + '/data/layer/' + layerid;
+			$.ajax({
+				url: layerurl,
+				success: function (data) {
+					for (var service in data.services) {
+						if (service.type === "csw") {
+							$cswServiceInput.val(service.endpoint);
+						} else if (service.type === "source_wfs") {
+							$srcWfsServiceInput.val(service.endpoint);
+							$srcWfsServiceParamInput.val(service.serviceParameter);
+						} else if (service.type === "source_wms") {
+							$srcWmsServiceInput.val(service.endpoint);
+							$srcWmsServiceParamInput.val(service.serviceParameter);
+						} else if (service.type === "proxy_wfs") {
+							$proxyWfsServiceInput.val(service.endpoint);
+							$proxyWfsServiceParamInput.val(service.serviceParameter);
+						} else if (service.type === "proxy_wms") {
+							$proxyWmsServiceInput.val(service.endpoint);
+							$proxyWmsServiceParamInput.val(service.serviceParameter);
+						}
+					}
+				},
+				error: function (err) {
+					$alertModal.modal(CCH.CONFIG.strings.hide);
+					$alertModalTitle.html('Unable To Load layer');
+					$alertModalBody.html(err.statusText + ' <br /><br />Correct id and try again or contact system administrator');
+					$alertModal.modal(CCH.CONFIG.strings.show);
+				}
+			});
+		} else {
+			(function () {
+				$alertModal.modal(CCH.CONFIG.strings.hide);
+				$alertModalTitle.html('Layer id required');
+				$alertModalBody.html('input layer id and try again');
+				$alertModal.modal(CCH.CONFIG.strings.show);
+			})();
+		}
+	};
 
 	me.getDataForAttribute = function () {
 		var attribute = $attributeSelect.val();
@@ -1780,6 +1804,10 @@ CCH.Objects.Publish.UI = function () {
 
 	$attributeRetrieveDataButton.on(CCH.CONFIG.strings.click, function () {
 		me.getDataForAttribute();
+	});
+
+	$popFromLayerButton.on(CCH.CONFIG.strings.click, function() {
+		me.loadLayerInfo($popFromLayerInput.val());
 	});
 
 	$sourceWfsCheckButton.on(CCH.CONFIG.strings.click, function () {
