@@ -95,7 +95,7 @@ public class LayerResource {
 	}
 	
 	@POST
-	@Path("/vector")
+	@Path("/")
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
 	@Produces(MediaType.TEXT_PLAIN)
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
