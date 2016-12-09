@@ -56,13 +56,12 @@ public class Service implements Serializable {
 		this.id = id;
 	}
 
-	@Column(name = "service_endpoint", length = ENDPOINT_MAX_LENGTH)
+	@Column(name = "service_endpoint")
 	public String getEndpoint() {
 		return endpoint;
 	}
 
 	public void setEndpoint(String endpoint) {
-		StringPrecondition.checkStringArgument(endpoint, ENDPOINT_MAX_LENGTH);
 		this.endpoint = endpoint;
 	}
 
