@@ -264,9 +264,9 @@ public class TemplateResource {
 			log.error("Problem getting summary from item", ex);
 		}
 		Gson gson = GsonUtil.getDefault();
-		log.debug("gson", gson);
+		log.debug(String.valueOf(gson));
 		Summary summary = gson.fromJson(summaryJson, Summary.class);
-		log.debug("summary", summary);
+		log.debug(String.valueOf(summary));
 		return summary;
 	}
 	
