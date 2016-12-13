@@ -252,14 +252,13 @@ public class TemplateResource {
 
 	private Summary makeSummary(Layer layer, String attr) throws JsonSyntaxException {
 		OGCService cswService = Service.ogcHelper(Service.ServiceType.csw, layer.getServices());
-		log.debug("cswService", cswService);
+		log.debug("cswService {}", cswService);
 		String cswEndpoint = cswService.getEndpoint();
-		log.debug("cswEndpoint", cswEndpoint);
+		log.debug("cswEndpoint {}", cswEndpoint);
 		String summaryJson = null;
-		log.debug("summaryJson", summaryJson);
 		try {
 			summaryJson = MetadataUtil.getSummaryFromWPS(cswEndpoint, attr);
-			log.debug("summaryJsonMetadataUtil", summaryJson);
+			log.debug("summaryJsonMetadataUtil {}", summaryJson);
 		} catch (IOException | ParserConfigurationException | SAXException | URISyntaxException ex) {
 			log.error("Problem getting summary from item", ex);
 		}
