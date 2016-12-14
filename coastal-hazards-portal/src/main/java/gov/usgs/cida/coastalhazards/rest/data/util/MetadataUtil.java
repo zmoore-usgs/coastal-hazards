@@ -68,7 +68,7 @@ public class MetadataUtil {
 	static {
 		props = JNDISingleton.getInstance();
 		cswLocalEndpoint = props.getProperty("coastal-hazards.csw.internal.endpoint");
-		cswExternalEndpoint = props.getProperty("coastal-hazards.csw.endpoint");
+		cswExternalEndpoint = props.getProperty("coastal-hazards.csw.external.endpoint");
 		cchn52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
 	}
 
