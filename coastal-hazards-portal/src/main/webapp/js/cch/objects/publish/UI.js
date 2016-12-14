@@ -27,6 +27,7 @@ CCH.Objects.Publish.UI = function () {
 		$bboxes = $('.bbox'),
 		$typeSb = $form.find('#form-publish-item-type'),
 		$attributeSelect = $form.find('#form-publish-item-attribute'),
+		$attributeSelectHelper = $form.find('#form-publish-item-attribute'),
 		$attributeRetrieveDataButton = $form.find('#form-publish-item-attribute-button'),
 		$keywordGroup = $form.find('.form-group-keyword'),
 		$cswServiceInput = $form.find('#form-publish-item-service-csw'),
@@ -110,7 +111,7 @@ CCH.Objects.Publish.UI = function () {
 	me.clearForm = function () {
 		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $descriptionTinyTextArea,
-			$typeSb, $attributeSelect,
+			$typeSb, $attributeSelect, $attributeSelectHelper,
 			$srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $proxyWmsServiceParamInput,
@@ -124,7 +125,7 @@ CCH.Objects.Publish.UI = function () {
 
 		[$itemIdInput, $titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $typeSb, 
-			$itemEnabledField, $attributeSelect,
+			$itemEnabledField, $attributeSelect, $attributeSelectHelper,
 			$cswServiceInput, $srcWfsServiceInput,
 			$srcWfsServiceParamInput, $srcWmsServiceInput, $srcWmsServiceParamInput,
 			$proxyWfsServiceInput, $proxyWfsServiceParamInput, $proxyWmsServiceInput,
@@ -742,8 +743,12 @@ CCH.Objects.Publish.UI = function () {
 				ftName,
 				ftNameLower;
 
-		$attributeSelect.empty();
-
+		$attributeSelectHelper.empty();
+		var emptyOption = $('<option>')
+				.attr('value', '')
+				.html('');
+		$attributeSelectHelper.append(emptyOption);
+		
 		if (featureTypes) {
 			featureTypes = featureTypes[0];
 			featureTypes.properties.each(function (ft) {
@@ -753,13 +758,19 @@ CCH.Objects.Publish.UI = function () {
 					$option = $('<option>')
 							.attr('value', ft.name)
 							.html(ft.name);
-					$attributeSelect.append($option);
+					$attributeSelectHelper.append($option);
 				}
 			});
 		}
-		$attributeSelect.removeAttr(CCH.CONFIG.strings.disabled);
+		$attributeSelectHelper.removeAttr(CCH.CONFIG.strings.disabled);
 		$attributeRetrieveDataButton.removeAttr(CCH.CONFIG.strings.disabled);
 	};
+	
+	me.updateSelectChange = function () {
+		if ($attributeSelect.val() !== '' && $attributeSelectHelper.val() !== '') {
+			$attributeSelect.val($attributeSelectHelper.val());
+		}
+	}
 
 	me.metadataPublishCallback = function (mdObject, status) {
 		if (status === 'success') {
@@ -1359,21 +1370,24 @@ CCH.Objects.Publish.UI = function () {
 			$.ajax({
 				url: layerurl,
 				success: function (data) {
-					for (var service in data.services) {
+					for (var i=0; i < data.services.length; i++) {
+						var service = data.services[i];
+						var serviceEndpoint = (service.hasOwnProperty("endpoint")) ? service.endpoint : "";
+						var serviceParameter = (service.hasOwnProperty("serviceParameter")) ? service.serviceParameter : "";
 						if (service.type === "csw") {
-							$cswServiceInput.val(service.endpoint);
+							$cswServiceInput.val(serviceEndpoint);
 						} else if (service.type === "source_wfs") {
-							$srcWfsServiceInput.val(service.endpoint);
-							$srcWfsServiceParamInput.val(service.serviceParameter);
+							$srcWfsServiceInput.val(serviceEndpoint);
+							$srcWfsServiceParamInput.val(serviceParameter);
 						} else if (service.type === "source_wms") {
-							$srcWmsServiceInput.val(service.endpoint);
-							$srcWmsServiceParamInput.val(service.serviceParameter);
+							$srcWmsServiceInput.val(serviceEndpoint);
+							$srcWmsServiceParamInput.val(serviceParameter);
 						} else if (service.type === "proxy_wfs") {
-							$proxyWfsServiceInput.val(service.endpoint);
-							$proxyWfsServiceParamInput.val(service.serviceParameter);
+							$proxyWfsServiceInput.val(serviceEndpoint);
+							$proxyWfsServiceParamInput.val(serviceParameter);
 						} else if (service.type === "proxy_wms") {
-							$proxyWmsServiceInput.val(service.endpoint);
-							$proxyWmsServiceParamInput.val(service.serviceParameter);
+							$proxyWmsServiceInput.val(serviceEndpoint);
+							$proxyWmsServiceParamInput.val(serviceParameter);
 						}
 					}
 				},
@@ -1805,6 +1819,8 @@ CCH.Objects.Publish.UI = function () {
 	$attributeRetrieveDataButton.on(CCH.CONFIG.strings.click, function () {
 		me.getDataForAttribute();
 	});
+	
+	$attributeSelectHelper.on(CCH.CONFIG.strings.change, me.updateSelectChange);
 
 	$popFromLayerButton.on(CCH.CONFIG.strings.click, function() {
 		me.loadLayerInfo($popFromLayerInput.val());

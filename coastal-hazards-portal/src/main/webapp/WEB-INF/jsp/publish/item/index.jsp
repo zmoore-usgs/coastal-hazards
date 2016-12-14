@@ -130,7 +130,8 @@
 				hidden: 'hidden',
 				enabled: 'enabled',
 				checked: 'checked',
-				click: 'click'
+				click: 'click',
+				change: 'change'
 			}
 		</script>
 	</head>
@@ -411,10 +412,12 @@
 							<div class="row row-attribute">
 								<div class="form-group">
 									<label for="form-publish-item-attribute"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Attribute</label>
-									<select class="form-control" id="form-publish-item-attribute" disabled="disabled"></select>
+									<input type="text" class="form-control" id="form-publish-item-attribute" disabled="disabled" />
+									<label for="form-publish-item-attribute-helper"></span>Type above (raster) or choose below (other)</label>
+									<select class="form-control" id="form-publish-item-attribute-helper" disabled="disabled"></select>
 									<div class="input-group">
 										<div class="input-group-btn">
-											<button id="form-publish-item-attribute-button" class="btn btn-default" type="button" disabled="disabled">Populate Data</button>
+											<button id="form-publish-item-attribute-button" class="btn btn-default" type="button" disabled="disabled">Populate Resources</button>
 										</div>
 									</div>
 								</div>
