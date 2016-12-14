@@ -27,7 +27,7 @@ CCH.Objects.Publish.UI = function () {
 		$bboxes = $('.bbox'),
 		$typeSb = $form.find('#form-publish-item-type'),
 		$attributeSelect = $form.find('#form-publish-item-attribute'),
-		$attributeSelectHelper = $form.find('#form-publish-item-attribute'),
+		$attributeSelectHelper = $form.find('#form-publish-item-attribute-helper'),
 		$attributeRetrieveDataButton = $form.find('#form-publish-item-attribute-button'),
 		$keywordGroup = $form.find('.form-group-keyword'),
 		$cswServiceInput = $form.find('#form-publish-item-service-csw'),
@@ -767,7 +767,7 @@ CCH.Objects.Publish.UI = function () {
 	};
 	
 	me.updateSelectChange = function () {
-		if ($attributeSelect.val() !== '' && $attributeSelectHelper.val() !== '') {
+		if ($attributeSelectHelper.val() !== '') {
 			$attributeSelect.val($attributeSelectHelper.val());
 		}
 	}
@@ -1023,7 +1023,7 @@ CCH.Objects.Publish.UI = function () {
 
 				[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
 					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
-					$proxyWmsCheckButton,
+					$proxyWmsCheckButton, $attributeSelect,
 					$titleFullTextArea, $titleMediumTextArea, $ribbonableCb,
 					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
 					$buttonSave, $buttonDelete]
