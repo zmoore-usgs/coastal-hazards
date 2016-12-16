@@ -452,8 +452,11 @@ return {
 				attrAvg /= incomingFeatureCount;
 				if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK", "AE"].indexOf(item.attr.toUpperCase()) !== -1) {
 					attrAvg = Math.ceil(attrAvg);
-					category = sld.bins[attrAvg - 1].category;
 					color = sld.bins[attrAvg - 1].color;
+					category = sld.bins[attrAvg - 1].category;
+					if("AE" === item.attr.toUpperCase()){
+						category +=  units;
+					}
 				}
 			}
 		}

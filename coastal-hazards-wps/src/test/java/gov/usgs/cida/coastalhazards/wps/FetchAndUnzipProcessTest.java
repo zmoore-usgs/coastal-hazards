@@ -3,8 +3,11 @@ package gov.usgs.cida.coastalhazards.wps;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,14 +26,16 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.geotools.process.ProcessException;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *
@@ -137,74 +142,69 @@ public class FetchAndUnzipProcessTest {
         }
         return; //No Exceptions were thrown on any HTTP status codes
     }
+
     /**
-     * Convenience method for returning a sorted list of absolute paths, built from a shared base and several relative paths
-     * @param zipDestination
-     * @param relativePaths
-     * @return 
+     * Test of unzipToDir method, of class FetchAndUnzipProcess.
      */
-    private List<String> buildExpectedAbsolutePaths(File zipDestination, String ... relativePaths){
-        List<String> expectedPaths = new ArrayList<>();
-        for(String relativePath : relativePaths){
-            expectedPaths.add(new File(zipDestination, relativePath).getAbsolutePath());
-        }
-        Collections.sort(expectedPaths);
-        return expectedPaths;
-    }
-    /**
-     * 
-     * @param zipFileResourcePath the classLoader.getResource()-style path to a zip file
-     * @param expectedRelativePaths The paths that should be found after unzipping
-     */
-    public void assertZipFileUnzipsToPaths(String zipFileResourcePath, String... expectedRelativePaths){
+    @Test
+    public void testUnzipSingleFileZipToDir() throws FileNotFoundException, IOException {
+        String zipFileResourcePath = "gov/usgs/cida/coastalhazards/wps/oneFile.zip";
+
         InputStream file = this.getClass().getClassLoader().getResourceAsStream(zipFileResourcePath);
         ZipInputStream zipStream = new ZipInputStream(file);
         File zipDestination = instance.getNewZipDestination();
-        List<String> expectedPaths = buildExpectedAbsolutePaths(zipDestination, expectedRelativePaths);
-        List<String> actualPaths = instance.unzipToDir(zipStream,zipDestination);
-        Collections.sort(actualPaths);
-        assertEquals(expectedPaths, actualPaths);
+        File actualFile = instance.unzipToDir(zipStream,zipDestination);
+        assertTrue(actualFile.exists());
+        assertTrue(actualFile.canRead());
+        assertTrue(actualFile.isFile());
+        String actualContents = new String(Files.readAllBytes(actualFile.toPath()));
+        String expectedContents = "test\n";
+        assertEquals(expectedContents, actualContents);
     }
     
-   
-    /**
-     * Test of unzipToDir method, of class FetchAndUnzipProcess.
-     */
     @Test
-    public void testUnzipSingleFileZipToDir() {       
-        assertZipFileUnzipsToPaths(
-            "gov/usgs/cida/coastalhazards/wps/oneFile.zip",
-            "test.txt"
-        );
+    public void testMakeSafeFileName(){
+            /*
+             * UUIDs have some structure, but according to the RFC (Sec 4.4 
+             * https://www.ietf.org/rfc/rfc4122.txt), and this empirical test 
+             * (https://repl.it/EeqN/6), the first hex digit is randomly generated.
+             * 
+             * Since the first digit is randomly generated, we can focus only on
+             * the first digit and determine how many iterations are acceptable 
+             * using the classic probability problem of colored marble drawing 
+             * with replacement. Slide one of this presentation has an example:
+             * http://homepages.math.uic.edu/~bpower6/stat101/probability%20examples.pdf
+             * In our case, our jar has 10 blue marbles (digits '0' through '9') and 
+             * 6 red marbles (digits 'a' through 'f'). The probability of generating
+             * 'N' UUIDs without a single one beginning with a digit 'a' through
+             * 'f' is the same as the probability of drawing 'N' marbles from 
+             * our jar without selecting a single red marble. For a single event,
+             * P(not red) = 10/16. For 'N' events, 
+             * P(not red 'N' times) = P(not red)^N = (10/16)^N
+             * 
+             * Accordingly, P(not red 1000 times) = (10/16)^1000 = 7.586E-205
+             * 
+             * This is an acceptably small probability.
+             */
+        for(int i = 0; i < 1000; i++){
+                String fileName = instance.makeSafeFileName();
+                assertTrue("'" + fileName +"' is not a valid XML elment name", isValidXmlElementName(fileName));
+        }
     }
-    
-    /**
-     * Test of unzipToDir method, of class FetchAndUnzipProcess.
-     */
-    @Test
-    public void testUnzipTwoFileZipToDir() {       
-        assertZipFileUnzipsToPaths(
-            "gov/usgs/cida/coastalhazards/wps/twoFiles.zip",
-            "test.txt",
-            "test2.txt"
-        );
-    }
-    
-    /**
-     * Test of unzipToDir method, of class FetchAndUnzipProcess.
-     */
-    @Test
-    public void testUnzipDeepZipFileToDir() {       
-        assertZipFileUnzipsToPaths(
-            "gov/usgs/cida/coastalhazards/wps/deepDirs.zip",
-            "parent/child/grandchild/test3.txt",
-            "parent/child/test2.txt",
-            "parent/child2/grandchild/test3.txt",
-            "parent/child2/test2.txt",
-            "parent/test.txt"
-        );
-    }
-    
+        public boolean isValidXmlElementName(String name){
+                String xml = "<" + name + "/>";
+                boolean valid = false;
+                try{
+                        XMLReader parser = XMLReaderFactory.createXMLReader();
+                        parser.setContentHandler(new DefaultHandler());
+                        InputSource source = new InputSource(new ByteArrayInputStream(xml.getBytes()));
+                        parser.parse(source);
+                        valid = true;
+                } catch (Exception e){
+                        valid = false;
+                }
+                return valid;
+        }
     @Test(expected = ProcessException.class)
     public void testGetNewZipDestinationWithMissingBase(){
         instance.getNewZipDestination(null);

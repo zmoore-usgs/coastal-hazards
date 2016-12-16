@@ -1,7 +1,14 @@
 package gov.usgs.cida.coastalhazards.rest.data.util;
 
+import gov.usgs.cida.coastalhazards.metadata.CRSParameters;
+import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.MetadataResource;
+import gov.usgs.cida.coastalhazards.xml.model.Bounding;
+import gov.usgs.cida.coastalhazards.xml.model.Horizsys;
+import gov.usgs.cida.coastalhazards.xml.model.Idinfo;
+import gov.usgs.cida.coastalhazards.xml.model.Metadata;
+import gov.usgs.cida.coastalhazards.xml.model.Spdom;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.BufferedReader;
@@ -10,11 +17,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
@@ -28,6 +39,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -54,7 +68,7 @@ public class MetadataUtil {
 	static {
 		props = JNDISingleton.getInstance();
 		cswLocalEndpoint = props.getProperty("coastal-hazards.csw.internal.endpoint");
-		cswExternalEndpoint = props.getProperty("coastal-hazards.csw.endpoint");
+		cswExternalEndpoint = props.getProperty("coastal-hazards.csw.external.endpoint");
 		cchn52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
 	}
 
@@ -236,4 +250,209 @@ public class MetadataUtil {
 		csw.setEndpoint(url);
 		return csw;
 	}
+        
+        public static Bbox getBoundingBoxFromFgdcMetadata(String inMetadata) throws JAXBException, UnsupportedEncodingException{
+            
+                Bbox bbox = new Bbox();
+                //parse out the WGS84 bbox from the metadata xml
+                Metadata metadata = null;
+
+                // JAXB will require jaxb-api.jar and jaxb-impl.jar part of java 1.6. Much safer way to interrogate xml and maintain than regex
+                try {
+                        JAXBContext jaxbContext = JAXBContext.newInstance(Metadata.class);
+
+                        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+                        metadata = (Metadata) jaxbUnmarshaller.unmarshal(new ByteArrayInputStream(inMetadata.getBytes("UTF-8")));               
+
+                }     catch (JAXBException e) { //schema used https: www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd
+                            log.error("Unable to parse xml file. Has the schema changed? https://www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd :" + e.getMessage());
+                            throw e;
+                }  
+         
+                Idinfo idinfo = metadata.getIdinfo();
+                Spdom spdom = idinfo.getSpdom();
+                Bounding bounding = spdom.getBounding();
+        
+                double minx = bounding.getWestbc();
+                double miny = bounding.getSouthbc();
+                double maxx = bounding.getEastbc();
+                double maxy = bounding.getNorthbc();
+        
+                Bbox result = new Bbox();
+                result.setBbox(minx, miny, maxx, maxy);
+
+                bbox.setBbox(minx, miny, maxx, maxy);
+            
+                return bbox;
+        }
+        
+        public static CoordinateReferenceSystem getCrsFromFgdcMetadata(String inMetadata) throws FactoryException, JAXBException, UnsupportedEncodingException{
+           //create the WKT to instantiate a CRS object from org.geotools.referencing
+                
+                CRSParameters crsParms = new CRSParameters();
+                
+                Metadata metadata = null;
+                try {
+                        JAXBContext jaxbContext = JAXBContext.newInstance(Metadata.class);
+
+                        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+                        metadata = (Metadata) jaxbUnmarshaller.unmarshal(new ByteArrayInputStream(inMetadata.getBytes("UTF-8")));               
+
+                }     catch (JAXBException e) { //schema used https: www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd
+                            log.error("Unable to parse xml file. Has the schema changed? https:www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd :" + e.getMessage());
+                            throw e;
+                }  
+                
+                Horizsys horizsys = metadata.getSpref().getHorizsys();
+                               
+                String ellips = horizsys.getGeodetic().getEllips();
+                String horizdn = horizsys.getGeodetic().getHorizdn();
+                double denflat = horizsys.getGeodetic().getDenflat();
+                double semiaxis = horizsys.getGeodetic().getSemiaxis();
+                
+                String mapprojn = horizsys.getPlanar().getMapproj().getMapprojn();
+                double feast = horizsys.getPlanar().getMapproj().getMapprojp().getFeast();
+                double fnorth = horizsys.getPlanar().getMapproj().getMapprojp().getFnorth();
+                double latprjo = horizsys.getPlanar().getMapproj().getMapprojp().getLatprjo();
+                double longcm = horizsys.getPlanar().getMapproj().getMapprojp().getLongcm();
+                double stdparll = horizsys.getPlanar().getMapproj().getMapprojp().getStdparll();
+                
+                // these defaults were derived from the first 3 raster files meta-data CR, AE, PAE
+                // Hoping that these can be optional or located in future metadata in which case 
+                // an if check should be performed and the value replaced if it doesn't match the default
+                String defaultGcs = "GCS_North_American_1983";
+                String defaultPrimeM = "Greenwich\",0.0]";
+                String defaultUnit = "Degree\",0.0174532925199433]]";
+                String defaultProjection = "Albers";
+                String defaultLengthUnit = "Meter";
+                double defaultLengthValue = 1.0;                
+                
+                crsParms.setEllips(ellips);
+                crsParms.setHorizdn(horizdn);
+                crsParms.setDenflat(denflat);
+                crsParms.setSemiaxis(semiaxis);
+                crsParms.setMapprojn(mapprojn);
+                crsParms.setFeast(feast);
+                crsParms.setFnorth(fnorth);
+                crsParms.setLatprjo(latprjo);
+                crsParms.setLongcm(longcm);
+                crsParms.setStdparll(stdparll);
+                
+                crsParms.setGcs(defaultGcs);
+                crsParms.setPrimeM(defaultPrimeM);
+                crsParms.setUnit(defaultUnit);
+                crsParms.setProjection(defaultProjection);
+                crsParms.setLengthUnit(defaultLengthUnit);
+                crsParms.setLengthValue(defaultLengthValue);
+                              
+                // to look up the EPSG code use Integer eCode = CRS.lookupEpsgCode(crs, true); yields 5070 and/or String idCode = CRS.lookupIdentifier(crs, true); yields EPSG:5070 
+                return CRS.parseWKT(buildWkt(crsParms));// same as FactoryFinder.getCRSFactory(null).createFromWKT(wkt);
+        }       
+       
+        private static String buildWkt(CRSParameters parms)
+                {
+                StringBuilder builder = new StringBuilder(500);
+                final String lineSep = System.getProperty("line.separator", "\n");
+                
+                builder.append("PROJCS[")
+                .append("\"")  // quote
+                .append(parms.getMapprojn())
+                .append("\"")  // quote
+                .append(",")   // comma
+                .append(lineSep)
+                
+                .append("GEOGCS[")
+                .append("\"")  // quote
+                .append(parms.getGcs())  // replace if the Gcs is found in the meta-data
+                .append("\"")  // quote
+                .append(",")   // comma
+                .append(lineSep)
+                
+                .append("DATUM[")
+                .append("\"")  // quote
+                .append(parms.getHorizdn())
+                .append("\"")  // quote
+                .append(",")   // comma
+                .append(lineSep)                
+                               
+                .append("SPHEROID[")
+                .append("\"")  // quote
+                .append(parms.getEllips())
+                .append("\"")  // quote
+                .append(",")   // comma                
+                .append(parms.getSemiaxis())
+                .append(",")   // comma
+                .append(parms.getDenflat())
+                .append("]]")
+                .append(",")   // comma
+                .append(lineSep)
+                
+                .append("PRIMEM[")
+                .append("\"")  // quote
+                .append(parms.getPrimeM())
+                .append(",")
+                .append(lineSep)
+                
+                .append("UNIT[")
+                .append("\"")  // quote
+                .append(parms.getUnit())  //get pa
+                .append(",")
+                .append(lineSep)
+             
+                .append("PROJECTION[")
+                .append("\"")  // quote
+                .append(parms.getProjection())
+                .append("\"]")  // quote
+                .append(",")
+                .append(lineSep)
+                
+                .append(getParameterNode("False_Easting",parms.getFeast()))
+                .append(",")
+                .append(lineSep)
+                
+                .append(getParameterNode("False_Northing",parms.getFnorth()))
+                .append(",")
+                .append(lineSep)
+
+                .append(getParameterNode("Central_Meridian",parms.getLongcm()))
+                .append(",")
+                .append(lineSep)                
+                
+                .append(getParameterNode("Standard_Parallel_1",29.5)) //#TODO# relace with value
+                .append(",")
+                .append(lineSep)
+                
+                .append(getParameterNode("Standard_Parallel_2",parms.getStdparll()))
+                .append(",")
+                .append(lineSep)
+
+                .append(getParameterNode("Latitude_Of_Origin",parms.getLatprjo()))
+                .append(",") 
+                .append(lineSep)
+                
+                .append("UNIT[")
+                .append("\"")  // quote
+                .append(parms.getLengthUnit()) //Meter
+                .append("\"")  // quote
+                .append(",")
+                .append(parms.getLengthValue())
+                .append("]]");
+                   
+                return builder.toString();
+        }   
+             
+        private static String getParameterNode(String name, double value){
+            //exp PARAMETER["False_Easting",0.0]
+            StringBuilder sb = new StringBuilder(50);
+            
+            sb.append("PARAMETER[")
+              .append("\"")  // quote
+              .append(name)
+              .append("\"")  // quote
+              .append(",")   // comma
+              .append(value)
+              .append("]");
+            
+            return sb.toString();
+        }
 }

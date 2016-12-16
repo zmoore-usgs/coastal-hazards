@@ -12,18 +12,19 @@
 <sld:NamedLayer>
         <sld:Name>${it.id}</sld:Name>
         <sld:UserStyle>
-            <sld:Name>${it.style}</sld:Name>
+            <sld:Name>${it.style}</sld:Name> 
             <sld:Title>Coastal Change Hazards Style</sld:Title>
             <sld:FeatureTypeStyle>
                 <sld:Rule>
                     <sld:RasterSymbolizer>
-                        <sld:ColorMap> 
+                        <sld:ColorMap type="intervals"> 
                             <c:forEach var="i" begin="0" end="${it.binCount-1}"> 
                                 <c:if test="${(i == 0)}"> 
-                                    <sld:ColorMapEntry color="${it.colors[i]}" label="0" quantity="${it.thresholds[i]}" opacity="0"/>
-                                </c:if>
+                                    <sld:ColorMapEntry color="#ffffff" label="0" quantity="${it.thresholds[i]}" opacity="0"/>
+                                    <sld:ColorMapEntry color="${it.colors[i]}" label="1" quantity="${it.thresholds[i+1]}" opacity="1"/>
+                                </c:if>                                   
                                 <c:if test="${(i > 0)}">
-                                    <sld:ColorMapEntry color="${it.colors[i]}" label="1" quantity="${it.thresholds[i]}" opacity="1"/>
+                                    <sld:ColorMapEntry color="${it.colors[i]}" label="1" quantity="${it.thresholds[i+1]}" opacity="1"/>
                                 </c:if>
                             </c:forEach>
                         </sld:ColorMap>

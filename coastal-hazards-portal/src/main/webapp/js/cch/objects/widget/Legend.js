@@ -114,11 +114,11 @@ CCH.Objects.Widget.Legend = function (args) {
 			title = (args.item && args.item.summary && args.item.summary && args.item.summary.medium) ? args.item.summary.medium.title : sld.title || ''
 			;
 		
-		var sortByLowerBound = function(a,b){return a.lowerBound-b.lowerBound;};
+		var sortByDescendingLowerBound = function(a,b){return b.lowerBound - a.lowerBound;};
 		//assume that the gradient is evenly-spaced
 		var numberOfNonTerminalBins = bins.length - 2;
 		var gradientIncrement = 100 / (1 + numberOfNonTerminalBins);
-		var binsForTemplate = bins.sort(sortByLowerBound).map(function(bin, index, bins){
+		var binsForTemplate = bins.sort(sortByDescendingLowerBound).map(function(bin, index, bins){
 			var percent = index * gradientIncrement;
 			return {
 				'color': bin.color,
@@ -431,9 +431,9 @@ CCH.Objects.Widget.Legend = function (args) {
 			if("CR" === item.attr){
 				//customize the bin label
 				var indexToText = {
-					0 : '100% Inundate',
+					0 : '100% Dynamic',
 					1 : '&nbsp;',
-					2 : '100% Dynamic'
+					2 : '0% Dynamic'
 				};
 				binLabeler = function(bin, index, bins){
 					return indexToText[index];
