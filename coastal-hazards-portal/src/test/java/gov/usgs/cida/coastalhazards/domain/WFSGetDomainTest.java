@@ -25,7 +25,7 @@ public class WFSGetDomainTest {
     @Ignore // ignoring until I can actually mock this sort of thing out
     public void testGetDomainValuesAsStrings() throws Exception {
         WFSService service = new WFSService();
-        service.setEndpoint("http://marine.usgs.gov/coastalchangehazardsportal/geoserver/proxied/ows");
+        service.setEndpoint("https://marine.usgs.gov/coastalchangehazardsportal/geoserver/proxied/ows");
         service.setTypeName("proxied:MauiK_shorelines");
         WFSGetDomain instance = new WFSGetDomain();
         Set<String> result = instance.getDomainValuesAsStrings(service, "DATE_");
