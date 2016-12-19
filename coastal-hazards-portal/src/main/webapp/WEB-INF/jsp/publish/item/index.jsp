@@ -300,7 +300,12 @@
 									<div id="form-publish-info-item-service-csw" class="row row-csw">
 										<div class="form-group">
 											<label for="form-publish-item-service-csw">CSW</label>
-											<input type="text" class="form-control" id="form-publish-item-service-csw" disabled="disabled" maxlength="<%= Service.ENDPOINT_MAX_LENGTH%>" />
+											<div class="input-group">
+												<input type="text" class="form-control" id="form-publish-item-service-csw" disabled="disabled" maxlength="<%= Service.ENDPOINT_MAX_LENGTH%>" />
+												<span class="input-group-btn">
+													<button id="form-publish-item-service-csw-button-fetch" class="btn btn-default" type="button" disabled="disabled">Fetch Metadata</button>
+												</span>
+											</div>
 										</div>
 									</div>
 

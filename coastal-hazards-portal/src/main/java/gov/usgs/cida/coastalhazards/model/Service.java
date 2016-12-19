@@ -1,7 +1,5 @@
 package gov.usgs.cida.coastalhazards.model;
 
-import gov.usgs.cida.coastalhazards.model.summary.Full;
-import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.util.ogc.CSWService;
 import gov.usgs.cida.coastalhazards.util.ogc.OGCService;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
@@ -28,7 +26,7 @@ public class Service implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final int ENDPOINT_MAX_LENGTH = 255;
+	public static final int ENDPOINT_MAX_LENGTH = Integer.MAX_VALUE;
 	public static final int PARAMETER_MAX_LENGTH = 255;
 
 	private transient int id;
