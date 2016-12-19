@@ -426,7 +426,7 @@ return {
 				});
 			},
 			isMissing = function(val) {
-				return isNaN(val) || val === -999 || val === -3.4028234663852886e+38;
+				return isNaN(val) || val === -999;
 			};
 
 		if (item.type.toLowerCase() === 'vulnerability' ||
