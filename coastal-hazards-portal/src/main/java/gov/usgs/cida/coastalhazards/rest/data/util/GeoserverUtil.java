@@ -309,7 +309,7 @@ public class GeoserverUtil {
             }
                                             
             public static Service addRasterLayer(String geoServerEndpoint, InputStream zipFileStream, String layerId, Bbox bbox, String EPSGcode) throws FileNotFoundException, IOException {                   
-		    Service rasterService = null;
+                    Service rasterService = null;
                     String fileId = UUID.randomUUID().toString();
                     String realFileName = TempFileResource.getFileNameForId(fileId);
                     //temp file must not include fileId, it should include the realFileName. We don't hand out the realFileName.
@@ -366,14 +366,16 @@ public class GeoserverUtil {
                 
                     // Geoserver Manager BUG Alert for v2.4 ...Creating a GeoTIFF coverage via REST works if the coverage's name is the same as the store name, but fails otherwise. Setting nativeName or nativeCoverageName does not help. Changing the name after creating the coverage works fine.    
                     RESTCoverageStore store = publisher.publishExternalGeoTIFF(PROXY_WORKSPACE, fileName, unzippedFile, coverageEncoder, layerEncoder); // #TODO# what to do if the workspace:fileName is already in use?
+
                     if (null == store) {
                             //if store or layer creation failed
                             log.info("Error publishing GeoTiff in GeoServer.");
                             rasterService = null;
                     } else {
+                            String newLayerName = store.getWorkspaceName() + ":" + fileName;
                             log.info("Published GeoTiff!!!");
                             log.info("In GeoserverUtil, about to add wmsService with layer name: " + layerId);
-                            rasterService = wmsService(fileName);
+                            rasterService = wmsService(newLayerName);
                             log.info("Added layer to wms service.");
                     }
                     return rasterService;
