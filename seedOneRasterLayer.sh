@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 CCH_BASE_URL="${1}" #no trailing slash. Ex: https://cida-test.er.usgs.gov/dev/coastalchangehazardsportal
 LAYER_NAME="${2}" #Ex: _0b57c74f-d8d6-4686-a4fb-0de9b5c7f6d0
 ITEM_ID="${3}" #Ex: EWyGbdyH
