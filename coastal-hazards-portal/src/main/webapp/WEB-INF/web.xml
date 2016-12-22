@@ -44,6 +44,10 @@
 			<param-value>coastal-hazards.portal.geoserver.cache.name</param-value>
 		</init-param>
 		<init-param>
+			<param-name>ignored-server-response-headers</param-name>
+			<param-value>expires,cache-control,age</param-value>
+		</init-param>
+		<init-param>
 			<param-name>max-megabytes-on-disk</param-name>
 			<param-value>8096</param-value>
 		</init-param>
