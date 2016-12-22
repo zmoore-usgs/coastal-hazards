@@ -215,9 +215,9 @@ public class GeoserverUtil {
 		post = new HttpPost(url);
 
 		FileInputStream wpsRequestInputStream = null;
-	    try {
-            wpsRequestInputStream = new FileInputStream(wpsRequestFile);
-    		AbstractHttpEntity entity = new InputStreamEntity(wpsRequestInputStream, wpsRequestFile.length());
+		try {
+			wpsRequestInputStream = new FileInputStream(wpsRequestFile);
+			AbstractHttpEntity entity = new InputStreamEntity(wpsRequestInputStream, wpsRequestFile.length());
 			post.setEntity(entity);
 			HttpResponse response = httpClient.execute(post);
 
