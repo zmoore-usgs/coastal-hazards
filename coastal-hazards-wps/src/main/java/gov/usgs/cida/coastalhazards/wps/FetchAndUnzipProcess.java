@@ -161,6 +161,9 @@ public class FetchAndUnzipProcess implements GeoServerProcess {
                     } catch (IOException ex) {
                         throw new ProcessException("Error writing file '" + entryFileName + "' to '" + entryFileAbsolutePath+ "'.", ex);
                     } finally {
+                        if (null != fos) {
+                            fos.flush();
+                        }
                         IOUtils.closeQuietly(fos);
                     }
                 }
