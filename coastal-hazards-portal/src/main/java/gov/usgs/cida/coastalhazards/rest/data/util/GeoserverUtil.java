@@ -314,15 +314,19 @@ public class GeoserverUtil {
                     String realFileName = TempFileResource.getFileNameForId(fileId);
                     //temp file must not include fileId, it should include the realFileName. We don't hand out the realFileName.
                     File tempFile = new File(TempFileResource.getTempFileSubdirectory(), realFileName);
+                    FileOutputStream fileOut = null;
                     try {
-                        FileOutputStream fileOut = new FileOutputStream(tempFile);
+                        fileOut = new FileOutputStream(tempFile);
                         IOUtils.copy(zipFileStream, fileOut);  // this is the renamed zip file (the raster tif)
                     } catch (IOException ex) {
                         throw new RuntimeException("Error writing zip to file '" + tempFile.getAbsolutePath() + "'.", ex);
+                    } finally {
+                        IOUtils.closeQuietly(zipFileStream);
+                        IOUtils.closeQuietly(fileOut);
                     }
                     // tempFile should now have all the data transferred to it
                     log.info("Data should now have been copied to the tempFile located here:" + tempFile.getAbsoluteFile()); //this puts it under <tomcat>/temp/cch-temp<randomkeyA>/<randomkeyB>  without the .zip ext
-                    log.info("The file id is: " + fileId);                       
+                    log.info("The file id is: " + fileId);
                     String uri = props.getProperty("coastal-hazards.base.url"); 
                     log.info("The uri from the props is: " + uri);
                     uri += DataURI.DATA_SERVICE_ENDPOINT + DataURI.TEMP_FILE_PATH + "/" + fileId;
