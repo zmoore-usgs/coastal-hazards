@@ -2,7 +2,7 @@
 
 CCH_BASE_URL="${1}" #no trailing slash. Ex: https://cida-test.er.usgs.gov/dev/coastalchangehazardsportal
 LAYER_NAME="${2}" #Ex: _0b57c74f-d8d6-4686-a4fb-0de9b5c7f6d0
-ITEM_ID="${3}"
+ITEM_ID="${3}" #Ex: EWyGbdyH
 
 #http://stackoverflow.com/a/10660730
 rawurlencode() {
@@ -24,8 +24,6 @@ rawurlencode() {
 }
 
 ENCODED_CCH_BASE_URL=$( rawurlencode "${CCH_BASE_URL}")
-
-echo "${ENCODED_CCH_BASE_URL}"
 
 
 time curl -v -s -o /dev/null "${CCH_BASE_URL}/geoserver/proxied/wms?LAYERS=proxied%3A${LAYER_NAME}&FORMAT=image%2Fpng&TRANSPARENT=TRUE&STYLES=cch&VERSION=1.3.0&SLD=${ENCODED_CCH_BASE_URL}%2Fdata%2Fsld%2F${ITEM_ID}&EXCEPTIONS=application%2Fvnd.ogc.se_blank&SERVICE=WMS&REQUEST=GetMap&CRS=EPSG%3A3857&BBOX=-8664064.964392,4210828.910601,1354689.205608,14229583.080601&WIDTH=256&HEIGHT=256" -H 'Host: cida-test.er.usgs.gov' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' --compressed -H 'Referer: https://cida-test.er.usgs.gov/dev/coastalchangehazardsportal/' -H 'Connection: keep-alive' -H 'Cache-Control: max-age=0'
