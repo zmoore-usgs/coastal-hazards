@@ -96,4 +96,5 @@ time curl -v -s -o /dev/null "${CCH_BASE_URL}/geoserver/proxied/wms?LAYERS=proxi
 
 time curl -v -s -o /dev/null "${CCH_BASE_URL}/geoserver/proxied/wms?LAYERS=proxied%3A${LAYER_NAME}&FORMAT=image%2Fpng&TRANSPARENT=TRUE&STYLES=&VERSION=1.3.0&SLD=${ENCODED_CCH_BASE_URL}%2Fdata%2Fsld%2F${ITEM_ID}&EXCEPTIONS=application%2Fvnd.ogc.se_blank&SERVICE=WMS&REQUEST=GetMap&CRS=EPSG%3A3857&BBOX=-7724806.7609545,4210828.910601,-7411720.693142,4523914.9784135&WIDTH=256&HEIGHT=256" -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' --compressed  -H 'Connection: keep-alive'
 
+time curl -v -s -o /dev/null "${CCH_BASE_URL}/geoserver/proxied/wms?LAYERS=proxied%3A${LAYER_NAME}&FORMAT=image%2Fpng&TRANSPARENT=TRUE&STYLES=&VERSION=1.3.0&SLD=${ENCODED_CCH_BASE_URL}%2Fdata%2Fsld%2F${ITEM_ID}&EXCEPTIONS=application%2Fvnd.ogc.se_blank&SERVICE=WMS&REQUEST=GetMap&CRS=EPSG%3A3857&BBOX=-8664064.964392,4210828.910601,-7411720.693142,5463173.181851&WIDTH=256&HEIGHT=256" -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' --compressed  -H 'Connection: keep-alive'
 
