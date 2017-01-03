@@ -113,3 +113,14 @@ The DOI SSL issue also applies to this container, so if you are on the DOI netwo
 
 `doi_network="true" docker-compose build cch_pycsw`
 
+
+#### Troubleshooting
+=====================
+
+Not seeing the changes you expect? Try building without a cache by using `--build` and/or `--force-recreate`.
+
+Example:
+
+```
+CCH_ENV_LOCAL="_johns_laptop" doi_network="true" docker-compose up --build --force-recreate cch_db cch_rserve cch_n52_wps cch_pycsw
+```
