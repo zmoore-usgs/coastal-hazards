@@ -37,6 +37,17 @@ If you are building these containers on a machine on the DOI network, there is a
 
 With this modification, the containers that need it will include pulling the SSL root certificate from DOI and install it into openssl as a valid certificate.
 
+#### Parameterized Environment Variables
+===============================
+Several of the containers accept parameterized environment files. By default, `docker-compose` will use `compose.env`. To customize the parameters, first create a copy of `compose.env`. Make sure the copy's file name starts with`compose` and ends with `.env`. An example valid custom env file name is `compose_johns_laptop.env`. Subsequently prepend each of your `docker-compose` commands with the middle portion of your custom env file. For example:
+
+```
+$ CCH_ENV_LOCAL="_johns_laptop" doi_network="true" docker-compose up cch_db cch_rserve cch_n52_wps cch_pycsw
+```
+
+Known Bugs:
+Not all parameterizations work. In particular, most version numbers in custom env files are ignored in favor of the default values. This is detailed further [on Slack](https://usgs-cida.slack.com/archives/cch/p1476487434000753).
+
 #### Geoserver
 =========
 
