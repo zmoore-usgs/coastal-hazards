@@ -39,7 +39,7 @@ With this modification, the containers that need it will include pulling the SSL
 
 #### Parameterized Environment Variables
 ===============================
-Several of the containers accept parameterized environment files. By default, `docker-compose` will use `compose.env`. To customize the parameters, first create a copy of `compose.env`. Make sure the copy's file name starts with`compose` and ends with `.env`. An example valid custom env file name is `compose_johns_laptop.env`. Subsequently prepend each of your `docker-compose` commands with the middle portion of your custom env file. For example:
+Several of the containers accept parameterized environment files. By default, `docker-compose` will use `compose.env`. To customize the parameters, first create a copy of `compose.env`. Make sure the copy's file name starts with`compose` and ends with `.env`. An example valid custom env file name is `compose_johns_laptop.env`. To take advantage of your custom env file, prepend each of your `docker-compose` commands with an assignment to the `CCH_ENV_LOCAL` variable. Use the middle portion of your custom env file name as the value. For example:
 
 ```
 $ CCH_ENV_LOCAL="_johns_laptop" doi_network="true" docker-compose up cch_db cch_rserve cch_n52_wps cch_pycsw
