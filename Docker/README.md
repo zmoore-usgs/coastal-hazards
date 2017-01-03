@@ -6,12 +6,13 @@ Contents:
 - Docker Compose
 - Docker Machine
 - Building on the DOI network
+- Parameterized Environment Variables
 - Geoserver
 - RServe
 - 52N WPS
 - Postgres/PostGIS
 - PyCSW
-
+- Troubleshooting
 
 #### Docker
 ======
