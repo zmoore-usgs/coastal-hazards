@@ -78,9 +78,27 @@ Once the server is up and running, you can access the server by pointing your we
 #### Postgres/PostGIS
 ================
 
-TODO
+
+This container is standalone and does not depend on any other containers to run. You can run the container by issuing:
+
+`docker-compose up cch_db`
+
+The DOI SSL issue also applies to this container, so if you are on the DOI network, issue:
+
+`doi_network="true" docker-compose build cch_db`
+
+You will then be able to connect to the database via the ports and credentials described in `docker-compose.yml` and `postgres/Dockerfile`
 
 #### PyCSW
 =====
 
-TODO
+PyCSW requires a database. Accordingly, this container requires the postgres (`cch_db`) container.
+
+You can run the container and its dependent db container by issuing:
+
+`docker-compose up cch_pycsw`
+
+The DOI SSL issue also applies to this container, so if you are on the DOI network, issue:
+
+`doi_network="true" docker-compose build cch_pycsw`
+
