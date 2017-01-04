@@ -139,12 +139,14 @@ CCH_ENV_LOCAL="_johns_laptop" doi_network="true" docker-compose up --build --for
 ```
 
 The postgres and PyCSW containers may fail to start the first time you try to `docker-compose up` them, logging messages like:
+
 `
 docker_cch_db_1 exited with code 255
 docker_cch_pycsw_1 exited with code 1
 `
 
 In that case, try running the same command again. You may get an error like this:
+
 `
 ERROR: for cch_db  oci runtime error: container with id exists: 5ca07708b997ab70562ae32f79d4925b0bf7e35c7997a00ded90cf416685e038
 Traceback (most recent call last):
@@ -154,6 +156,7 @@ Traceback (most recent call last):
     log.error(e.msg)
 AttributeError: 'ProjectError' object has no attribute 'msg'
 `
+
 In that case, try the same command again.
 
 
