@@ -49,6 +49,18 @@ $ CCH_ENV_LOCAL="_johns_laptop" doi_network="true" docker-compose up cch_db cch_
 Known Bugs:
 Not all parameterizations work. In particular, most version numbers in custom env files are ignored in favor of the default values. This is detailed further [on Slack](https://usgs-cida.slack.com/archives/cch/p1476487434000753).
 
+#### Building Everything
+==========
+Clone the docker-rserve repo and build it as described in the first paragraph of the RServe section below.
+After, change to the coastal-hazards/Docker directory and run:
+
+`
+doi_network="true" docker-compose up
+`
+
+If you are not on the doi network, do not specify that variable. If you need parameterized environments, add the appropriate `CCH_ENV_LOCAL` value as described in the "Parameterized Environment Variables" section.
+
+
 #### Geoserver
 =========
 
@@ -125,3 +137,23 @@ Example:
 ```
 CCH_ENV_LOCAL="_johns_laptop" doi_network="true" docker-compose up --build --force-recreate cch_db cch_rserve cch_n52_wps cch_pycsw
 ```
+
+The postgres and PyCSW containers may fail to start the first time you try to `docker-compose up` them, logging messages like:
+`
+docker_cch_db_1 exited with code 255
+docker_cch_pycsw_1 exited with code 1
+`
+
+In that case, try running the same command again. You may get an error like this:
+`
+ERROR: for cch_db  oci runtime error: container with id exists: 5ca07708b997ab70562ae32f79d4925b0bf7e35c7997a00ded90cf416685e038
+Traceback (most recent call last):
+  File "/usr/bin/docker-compose", line 9, in <module>
+    load_entry_point('docker-compose==1.7.1', 'console_scripts', 'docker-compose')()
+  File "/usr/lib/python2.7/site-packages/compose/cli/main.py", line 63, in main
+    log.error(e.msg)
+AttributeError: 'ProjectError' object has no attribute 'msg'
+`
+In that case, try the same command again.
+
+
