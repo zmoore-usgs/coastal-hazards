@@ -61,6 +61,20 @@ doi_network="true" docker-compose up
 If you are not on the doi network, do not specify that variable. If you need parameterized environments, add the appropriate `CCH_ENV_LOCAL` value as described in the "Parameterized Environment Variables" section.
 
 
+#### Running The Portal and GeoServer locally with all other services in containers
+================
+
+Run a command like the following to stand up the relevant containers:
+
+`
+CCH_ENV_LOCAL="_local" doi_network="true" docker-compose up cch_db cch_rserve cch_n52_wps cch_pycsw
+`
+
+Manually set up you tomcat instances locally for the Portal and GeoServer. Use the dev tier's context.xml's or the Dockerized context.xml's as a starting point.
+
+Modify the context.xml's for those tomcat instances. Most references to services should use either `localhost` or your docker machine vm's IP. Ports for containerized services are defined in `coastal-hazards/Docker/docker-compose.yml`.
+
+
 #### Geoserver
 =========
 
@@ -130,6 +144,9 @@ The DOI SSL issue also applies to this container, so if you are on the DOI netwo
 #### Troubleshooting
 =====================
 
+
+##### Stale Container Contents
+
 Not seeing the changes you expect? Try building without a cache by using `--build` and/or `--force-recreate`.
 
 Example:
@@ -137,6 +154,8 @@ Example:
 ```
 CCH_ENV_LOCAL="_johns_laptop" doi_network="true" docker-compose up --build --force-recreate cch_db cch_rserve cch_n52_wps cch_pycsw
 ```
+
+##### DB-related Startup Errors
 
 The postgres and PyCSW containers may fail to start the first time you try to `docker-compose up` them, logging messages like:
 
@@ -159,4 +178,5 @@ AttributeError: 'ProjectError' object has no attribute 'msg'
 
 In that case, try the same command again.
 
-
+##### 52N WPS Difficulties
+If the 52N WPS is giving you a hard time, you can safely use the dev tier instead.
