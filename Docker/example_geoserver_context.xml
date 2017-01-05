@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+<!-- 
+This example assumes:
+ 
+GeoServer is being run inside a local tomcat 7 instance at /opt/tomcat7
+The directory '/opt/tomcat7/data' exists
+-->
+
+    <!-- Default set of monitored resources -->
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+	
+    <!-- Uncomment this to disable session persistence across Tomcat restarts -->
+
+    <Manager pathname="" />
+
+    <!-- Uncomment this to enable Comet connection tacking (provides events
+         on session expiration as well as webapp lifecycle) -->
+    <!--
+    <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" />
+    -->
+
+
+
+<!-- this must match the variable of the same name in the portal context.xml -->
+<Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token" type="java.lang.String" value="SOME_SHARED_SECRET_TOKEN_RALPH" override="false" />
+<Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.unzip.base" type="java.lang.String" value="/opt/tomcat7/data/" override="false" />	
+</Context>
+
+<!-- 
+    vim: tw=99 expandtab tabstop=4 softtabstop=4 showmatch nocompatible shiftwidth=4 ai 
+-->
+

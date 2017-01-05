@@ -6,12 +6,13 @@ Contents:
 - Docker Compose
 - Docker Machine
 - Building on the DOI network
+- Parameterized Environment Variables
 - Geoserver
 - RServe
 - 52N WPS
 - Postgres/PostGIS
 - PyCSW
-
+- Troubleshooting
 
 #### Docker
 ======
@@ -36,6 +37,43 @@ If you are building these containers on a machine on the DOI network, there is a
 `$ doi_network="true" docker-compose build [container name]`
 
 With this modification, the containers that need it will include pulling the SSL root certificate from DOI and install it into openssl as a valid certificate.
+
+#### Parameterized Environment Variables
+===============================
+Several of the containers accept parameterized environment files. By default, `docker-compose` will use `compose.env`. To customize the parameters, first create a copy of `compose.env`. Make sure the copy's file name starts with`compose` and ends with `.env`. An example valid custom env file name is `compose_johns_laptop.env`. To take advantage of your custom env file, prepend each of your `docker-compose` commands with an assignment to the `CCH_ENV_LOCAL` variable. Use the middle portion of your custom env file name as the value. For example:
+
+```
+$ CCH_ENV_LOCAL="_johns_laptop" doi_network="true" docker-compose up cch_db cch_rserve cch_n52_wps cch_pycsw
+```
+
+Known Bugs:
+Not all parameterizations work. In particular, most version numbers in custom env files are ignored in favor of the default values. This is detailed further [on Slack](https://usgs-cida.slack.com/archives/cch/p1476487434000753).
+
+#### Building Everything
+==========
+Clone the docker-rserve repo and build it as described in the first paragraph of the RServe section below.
+After, change to the coastal-hazards/Docker directory and run:
+
+`
+doi_network="true" docker-compose up
+`
+
+If you are not on the doi network, do not specify that variable. If you need parameterized environments, add the appropriate `CCH_ENV_LOCAL` value as described in the "Parameterized Environment Variables" section.
+
+
+#### Running The Portal and GeoServer locally with all other services in containers
+================
+
+Run a command like the following to stand up the relevant containers:
+
+`
+CCH_ENV_LOCAL="_local" doi_network="true" docker-compose up cch_db cch_rserve cch_n52_wps cch_pycsw
+`
+
+Manually set up you tomcat instances locally for the Portal and GeoServer. Use the dev tier's context.xml's or the Dockerized context.xml's as a starting point.
+
+Modify the context.xml's for those tomcat instances. Most references to services should use either `localhost` or your docker machine vm's IP. Ports for containerized services are defined in `coastal-hazards/Docker/docker-compose.yml`.
+
 
 #### Geoserver
 =========
@@ -78,9 +116,67 @@ Once the server is up and running, you can access the server by pointing your we
 #### Postgres/PostGIS
 ================
 
-TODO
+
+This container is standalone and does not depend on any other containers to run. You can run the container by issuing:
+
+`docker-compose up cch_db`
+
+The DOI SSL issue also applies to this container, so if you are on the DOI network, issue:
+
+`doi_network="true" docker-compose build cch_db`
+
+You will then be able to connect to the database via the ports and credentials described in `docker-compose.yml` and `postgres/Dockerfile`
 
 #### PyCSW
 =====
 
-TODO
+PyCSW requires a database. Accordingly, this container requires the postgres (`cch_db`) container.
+
+You can run the container and its dependent db container by issuing:
+
+`docker-compose up cch_pycsw`
+
+The DOI SSL issue also applies to this container, so if you are on the DOI network, issue:
+
+`doi_network="true" docker-compose build cch_pycsw`
+
+
+#### Troubleshooting
+=====================
+
+
+##### Stale Container Contents
+
+Not seeing the changes you expect? Try building without a cache by using `--build` and/or `--force-recreate`.
+
+Example:
+
+```
+CCH_ENV_LOCAL="_johns_laptop" doi_network="true" docker-compose up --build --force-recreate cch_db cch_rserve cch_n52_wps cch_pycsw
+```
+
+##### DB-related Startup Errors
+
+The postgres and PyCSW containers may fail to start the first time you try to `docker-compose up` them, logging messages like:
+
+`
+docker_cch_db_1 exited with code 255
+docker_cch_pycsw_1 exited with code 1
+`
+
+In that case, try running the same command again. You may get an error like this:
+
+`
+ERROR: for cch_db  oci runtime error: container with id exists: 5ca07708b997ab70562ae32f79d4925b0bf7e35c7997a00ded90cf416685e038
+Traceback (most recent call last):
+  File "/usr/bin/docker-compose", line 9, in <module>
+    load_entry_point('docker-compose==1.7.1', 'console_scripts', 'docker-compose')()
+  File "/usr/lib/python2.7/site-packages/compose/cli/main.py", line 63, in main
+    log.error(e.msg)
+AttributeError: 'ProjectError' object has no attribute 'msg'
+`
+
+In that case, try the same command again.
+
+##### 52N WPS Difficulties
+If the 52N WPS is giving you a hard time, you can safely use the dev tier instead.
