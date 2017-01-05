@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- The contents of this file will be loaded for each web application -->
+<Context>
+
+    <!-- Default set of monitored resources -->
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+
+    <!-- disable session persistence across Tomcat restarts -->
+    <Manager pathname="" />
+
+    <!-- Uncomment this to enable Comet connection tacking (provides events
+         on session expiration as well as webapp lifecycle) -->
+    <!--
+    <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" />
+    -->
+
+<!-- Portal connection-->
+<Resource   name="jdbc/coastalhazards" auth="Container"
+type="javax.sql.DataSource"
+driverClassName="org.postgresql.Driver"
+url="jdbc:postgresql://localhost:5432/public"
+username="postgres"
+password="postgres"
+maxActive="200"
+maxIdle="60"
+maxWait="60"
+validationQuery="select version()"
+removeAbandoned="true"
+removeAbandonedTimeout="60"
+logAbandoned="true"
+description="{usedBy: ['coastalhazards']}"
+/>
+
+
+<!-- Coastal Hazards -->
+<Environment name="development" type="java.lang.String" value="true" override="false" />
+<Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token" type="java.lang.String" value="SOME_SECRET_SHARED_TOKEN_RALPH" override="false" />
+
+<Environment name="cida.auth.service.endpoint" override="true" type="java.lang.String" value="https://cida-eros-authdev.er.usgs.gov:8443/auth-webservice/" />
+<Environment name="coastal-hazards.base.url" type="java.lang.String" value="https://localhost:8543/coastal-hazards-portal" override="false" />
+<Environment name="coastal-hazards.base.secure.url" type="java.lang.String" value="https://localhost:8543/coastal-hazards-portal" override="false" />
+
+<Environment name="coastal-hazards.public.url" type="java.lang.String" value="https://localhost:8543/coastal-hazards-portal" override="false" />
+<Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="https://coastalmap.marine.usgs.gov/cmgp" override="false" />
+<Environment name="coastal-hazards.cidags.endpoint" type="java.lang.String" value="https://cida.usgs.gov/DSASweb/geoserver" override="false" />
+<Environment name="coastal-hazards.stpetearcserver.endpoint" type="java.lang.String" value="http://olga.er.usgs.gov/stpgis" override="false" />
+<Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="https://coastalmap.marine.usgs.gov/cmgp" override="false" />
+<Environment name="coastal-hazards.geocoding.endpoint" type="java.lang.String" value="https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find" override="false" />
+<Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="http://cidasddvascch.cr.usgs.gov:8080/wps" override="false" />
+<Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="http://localhost:8000/wsgi/pycsw" override="false" />
+<Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="http://localhost:8000/wsgi/pycsw" override="false" />
+<Environment name="coastal-hazards.csw.external.endpoint" type="java.lang.String" value="http://localhost:8180/coastal-hazards-portal/csw/" override="false" />
+
+<Environment name="coastal-hazards.go.usa.gov.login" type="java.lang.String" value="USGS%20Coastal%20Hazards" override="false" />
+<Environment name="coastal-hazards.go.usa.gov.apikey" type="java.lang.String" value="SOME_GREAT_API_KEY_ANGELA" override="false" />
+<Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="https://go.usa.gov/api/" override="false" />
+
+<Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="15728640" override="false" />
+<Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="qqfile" override="false" />
+<Environment name="coastal-hazards.files.directory.base" type="java.lang.String" value="/opt/tomcat/instance/cch/data/coastal-hazards" override="false" />
+<Environment name="coastal-hazards.files.directory.work" type="java.lang.String" value="/work" override="false" />
+<Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="/upload" override="false" />
+<Environment name="coastal-hazards.files.directory.download" type="java.lang.String" value="/opt/tomcat/instance/cch/data/coastal-hazards/download" override="false" />
+
+<Environment name="coastal-hazards.geoserver.datadir" type="java.lang.String" value="/opt/tomcat/instance/cch-geoserver/data" override="false" />
+<Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="https://localhost:8643/geoserver" override="false" />
+<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="admin" override="false" />
+<Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="geoserver" override="false" />
+<Environment name="coastal-hazards.geoserver.layer.age.maximum" type="java.lang.Integer" value="604800000"/>
+<Environment name="coastal-hazards.geoserver.workspaces.permanent" type="java.lang.String" value="published"/>
+<Environment name="coastal-hazards.workspace.published" type="java.lang.String" value="published"/>
+
+<Environment name="coastal-hazards.portal.geoserver.endpoint" type="java.lang.String" value="http://localhost:8280/geoserver" override="false" />
+<Environment name="coastal-hazards.portal.geoserver.external.endpoint" type="java.lang.String" value="https://localhost:8543/coastal-hazards-portal/geoserver" override="false" />
+<Environment name="coastal-hazards.portal.geoserver.cache.name" type="java.lang.String" value="cchGeoserverCache" />
+
+<Environment name="gov.usgs.cida.n52.wps.config.location" type="java.lang.String" value="/opt/tomcat/instance/cch/data/coastal-hazards/n52/wps_config.xml" override="false" />
+
+<Environment name="cida.auth.client.null.roles" override="false" type="java.lang.String" value="CCH_ADMIN" />
+<!-- /Coastal Hazards -->
+
+</Context>
