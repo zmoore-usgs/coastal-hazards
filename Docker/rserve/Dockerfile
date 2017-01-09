@@ -40,6 +40,6 @@ RUN apt-get update && \
 	libcurl4-openssl-dev=7.38.0-4+deb8u4 \
 	libxml2-dev
  
-RUN install.r devtools && R -e 'library(devtools); install_github("USGS-R/hazarditems");'
+RUN install.r devtools RCurl && R -e 'library(devtools); install_github("USGS-R/hazarditems");'
 
 USER rserve
