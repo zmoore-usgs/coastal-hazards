@@ -11,6 +11,7 @@ import gov.usgs.cida.coastalhazards.model.util.Status.StatusName;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +25,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 /**
  *
@@ -36,6 +45,9 @@ public class HealthResource {
 	private static final String geoserverEndpoint;
 	private static final String geoserverUser;
 	private static final String geoserverPass;
+        private static final String pycswEndpoint;
+        private static final String pycswVersion;
+        private static final String pycswVersionDefault = "2.0.2";
 	private static final DynamicReadOnlyProperties props;
 	
 	static {
@@ -43,6 +55,8 @@ public class HealthResource {
 		geoserverEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
 		geoserverUser = props.getProperty("coastal-hazards.geoserver.username");
 		geoserverPass = props.getProperty("coastal-hazards.geoserver.password");
+                pycswVersion = props.getProperty("coastal-hazards.csw.version");
+                pycswEndpoint = props.getProperty("coastal-hazards.csw.external.endpoint");  // includes the / csw/
 	}
 
 	@GET
@@ -130,7 +144,57 @@ public class HealthResource {
 			componentCheckMap.put("Geoserver", false);
 			overallHealth = false;
 		}
-		
+                
+                try { // health check add for pycsw Jira cchs-306
+                        boolean hasCswGetCapabilities = false;
+                        Map<String, Boolean> pyCswStatus = new HashMap<>();
+                        String cswVersion = pycswVersion;
+                        
+                        if ( (null == pycswVersion) || (pycswVersion.isEmpty()) ){
+                            cswVersion = pycswVersionDefault;
+                        }
+                        
+			String endpointTest = pycswEndpoint + "?service=CSW&request=GetCapabilities&version=" + cswVersion;
+                        HttpGet httpGet = new HttpGet(endpointTest);
+                        HttpClient httpclient = new DefaultHttpClient();
+                        
+                        // Create a custom response handler
+                        ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+
+                            @Override
+                            public String handleResponse(
+                                final HttpResponse response) throws ClientProtocolException, IOException {
+                                int status = response.getStatusLine().getStatusCode();
+                                if (status >= 200 && status < 300) {
+                                HttpEntity entity = response.getEntity();
+                                    return entity != null ? EntityUtils.toString(entity) : null;
+                                } else {
+                                throw new ClientProtocolException("Unexpected response status: " + status);
+                                }
+                            }
+                        }; // close anonymous inner class
+                    
+                        String responseBody = httpclient.execute(httpGet, responseHandler);
+                        
+                        if (responseBody.contains("Exception")){
+                            //we assume getCapabilities is not functioning correctly
+                            LOG.info("Pycsw getCapabilities health check has failed.");
+                            hasCswGetCapabilities = false;
+                            pyCswStatus.put("getCapabilities", false);
+                        } else {
+                            // assume getCapabilities for this version is working fine
+                            pyCswStatus.put("getCapabilities", true);
+                        }
+                      			
+			componentCheckMap.put("PyCsw", pyCswStatus);
+			overallHealth = overallHealth && hasCswGetCapabilities;
+                        
+		} catch (Exception e) {
+			LOG.warn("Exception occurred while checking csw health", e);
+			componentCheckMap.put("Pycsw", false);
+			overallHealth = false;
+		}
+                                             
 		try (StatusManager statusMan = new StatusManager()) {
 			// NOTE this does not effect the overall health
 			boolean staleCache = false;
