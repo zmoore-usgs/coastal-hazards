@@ -45,16 +45,17 @@
    <!-- <Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="http://pycsw:8000/pycsw-wsgi" /> --> 
     <!-- csw will fail with this. Auth is set up for localhost only.-->
     <Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="15728640" /> 
-    <Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="qqfile" /> \
+    <Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="qqfile" /> 
     <Environment name="coastal-hazards.files.directory.base" type="java.lang.String" value="/opt/tomcat/instance/default/data/coastal-hazards" /> 
     <Environment name="coastal-hazards.files.directory.work" type="java.lang.String" value="/work" /> 
     <Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="/upload" /> 
     <Environment name="coastal-hazards.files.directory.download" type="java.lang.String" value="/opt/tomcat/instance/default/data/coastal-hazards/download" />
-    <Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/geoserver/" /> <!-- docker example: https://192.168.99.100:8444/geoserver/" -->
+    <Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/geoserver/" /> 
+	<!-- docker example: "https://192.168.99.100:8444/geoserver/" -->
     <Environment name="coastal-hazards.geoserver.datadir" type="java.lang.String" value="/Users/cch/geoserver/data" /> 
     <Environment name="coastal-hazards.workspace.published" type="java.lang.String" value="published" />
 	<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="admin" />
-    <Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="geoPwdHere” />
+    <Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="geoPwdHere" />
     <Environment name="production" type="java.lang.String" value="false" />
     <Environment name="development" type="java.lang.String" value="true" />
 </Context>
