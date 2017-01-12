@@ -282,7 +282,7 @@
 			<dependency>
 				<artifactId>proxy-utils</artifactId>
 				<groupId>gov.usgs.cida</groupId>
-				<version>1.0.12</version>
+				<version>1.0.13</version>
 				<type>jar</type>
 				<exclusions>
 					<exclusion>
