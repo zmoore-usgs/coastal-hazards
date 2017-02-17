@@ -1,4 +1,4 @@
-FROM rserve:latest
+FROM usgs/rserve:0.0.1
 
 MAINTAINER Jordan Walker <jiwalker@usgs.gov>
 
@@ -12,7 +12,7 @@ RUN if [ "${doi_network}" = true ]; then \
 	fi
 
 # Docker image r-base has moved to Debian Testing. Need to add Jessie repos
-# in order to get older versions of lib* packages 
+# in order to get older versions of lib* packages
 RUN echo "deb http://httpredir.debian.org/debian jessie main" >> /etc/apt/sources.list
 RUN echo "deb-src http://httpredir.debian.org/debian jessie main" >> /etc/apt/sources.list
 RUN echo "deb http://httpredir.debian.org/debian jessie-updates main" >> /etc/apt/sources.list
@@ -30,16 +30,20 @@ RUN echo "deb-src http://security.debian.org/ jessie/updates main" >> /etc/apt/s
 #  libcurl3 | 7.38.0-4+deb8u4 | http://security.debian.org jessie/updates/main amd64 Packages
 #      curl | 7.38.0-4+deb8u4 | http://httpredir.debian.org/debian jessie/main Sources
 #      curl | 7.38.0-4+deb8u4 | http://security.debian.org jessie/updates/main Sources
-RUN apt-get update && \
-	apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
+
+# HACK WARNING: apt-get update will sometimes fail from the debian end.
+# Try to get as much updated as possible but don't fail here
+RUN apt-get update; exit 0
+
+RUN	apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
 	git \
 	libssl1.0.0=1.0.1t-1+deb8u5 \
 	libssl-dev \
-	libcurl3=7.38.0-4+deb8u4 \
-	libcurl3-gnutls=7.38.0-4+deb8u4 \
-	libcurl4-openssl-dev=7.38.0-4+deb8u4 \
+	libcurl3=7.38.0-4+deb8u5 \
+	libcurl3-gnutls=7.38.0-4+deb8u5 \
+	libcurl4-openssl-dev=7.38.0-4+deb8u5 \
 	libxml2-dev
- 
+
 RUN install.r devtools RCurl && R -e 'library(devtools); install_github("USGS-R/hazarditems");'
 
 USER rserve
