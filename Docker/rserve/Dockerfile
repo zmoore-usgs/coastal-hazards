@@ -1,4 +1,4 @@
-FROM rserve:latest
+FROM usgs/rserve:0.0.1
 
 MAINTAINER Jordan Walker <jiwalker@usgs.gov>
 
@@ -12,7 +12,7 @@ RUN if [ "${doi_network}" = true ]; then \
 	fi
 
 # Docker image r-base has moved to Debian Testing. Need to add Jessie repos
-# in order to get older versions of lib* packages 
+# in order to get older versions of lib* packages
 RUN echo "deb http://httpredir.debian.org/debian jessie main" >> /etc/apt/sources.list
 RUN echo "deb-src http://httpredir.debian.org/debian jessie main" >> /etc/apt/sources.list
 RUN echo "deb http://httpredir.debian.org/debian jessie-updates main" >> /etc/apt/sources.list
@@ -39,7 +39,7 @@ RUN apt-get update && \
 	libcurl3-gnutls=7.38.0-4+deb8u4 \
 	libcurl4-openssl-dev=7.38.0-4+deb8u4 \
 	libxml2-dev
- 
+
 RUN install.r devtools RCurl && R -e 'library(devtools); install_github("USGS-R/hazarditems");'
 
 USER rserve
