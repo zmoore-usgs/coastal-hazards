@@ -18,12 +18,10 @@ ENV CCH_LIQUIBASE_VERSION "1.1.47"
 
 ENV JAVA_HOME "/usr/lib/jvm/java-7-openjdk-amd64"
 
-RUN echo "${LIQUIBASE_HOME}"
-
 # Set up Liquibase
 RUN mkdir $LIQUIBASE_HOME
 ADD https://github.com/liquibase/liquibase/releases/download/liquibase-parent-3.4.2/liquibase-3.4.2-bin.tar.gz $LIQUIBASE_HOME/liquibase.tar.gz
-ADD https://jdbc.postgresql.org/download/postgresql-9.4-1204.jdbc41.jar $LIQUIBASE_HOME/lib/
+ADD https://jdbc.postgresql.org/download/postgresql-42.0.0.jre7.jar $LIQUIBASE_HOME/lib/
 RUN /bin/tar xzvf $LIQUIBASE_HOME/liquibase.tar.gz -C $LIQUIBASE_HOME && chmod +x $LIQUIBASE_HOME/liquibase
 
 RUN	echo "driver: org.postgresql.Driver" >> $LIQUIBASE_HOME/liquibase.properties && \
@@ -60,7 +58,8 @@ COPY liquibase_load_test_data.sh /liquibase_load_test_data.sh
 # Set executable bit
 RUN chmod +x /docker-entrypoint-initdb.d/postgres_entrypoint.sh && \
 	chmod +x /liquibase_bootstrap.sh && \
-	chmod +x /liquibase_load_test_data.sh
+	chmod +x /liquibase_load_test_data.sh && \
+	chmod 664 $LIQUIBASE_HOME/lib/postgresql-42.0.0.jre7.jar
 
 HEALTHCHECK --interval=15s --timeout=3s \
 	CMD /usr/lib/postgresql/9.5/bin/pg_isready -U ${POSTGRES_USER} || exit 1
