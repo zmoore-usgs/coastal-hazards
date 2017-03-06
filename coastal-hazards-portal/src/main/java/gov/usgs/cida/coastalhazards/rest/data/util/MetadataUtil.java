@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -213,14 +214,14 @@ public class MetadataUtil {
 
 	public static String extractMetadataFromShp(InputStream is) {
 		String metadata = null;
-		ZipInputStream zip = new ZipInputStream(is);
+		ZipInputStream zip = new ZipInputStream(is, Charset.forName("UTF-8"));
 		
 		try {
 			ZipEntry entry = null;
 			while (null != (entry = zip.getNextEntry())) {
 				String name = entry.getName();
 				if (name.endsWith(".xml")) {
-					BufferedReader buf = new BufferedReader(new InputStreamReader(zip));
+					BufferedReader buf = new BufferedReader(new InputStreamReader(zip, Charset.forName("UTF-8")));
 					StringWriter writer = new StringWriter();
 					String line = null;
 					while (null != (line = buf.readLine())) {
