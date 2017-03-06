@@ -235,13 +235,13 @@
 							<%-- ITEM TITLE --%>
 							<div id="form-publish-info-item-title-full" class="row row-title">
 								<div class="form-group">
-									<label for="form-publish-item-title-full"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Title (Full)</label>
+									<label for="form-publish-item-title-full"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Title (Full) / Back of Card Title</label>
 									<textarea class="form-control" rows="2" id="form-publish-item-title-full" disabled="disabled"  maxlength="<%= Full.TITLE_MAX_LENGTH%>"></textarea>
 								</div>
 							</div>
 							<div id="form-publish-info-item-title-medium" class="row row-title">
 								<div class="form-group">
-									<label for="form-publish-item-title-medium"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Title (Medium)</label>
+									<label for="form-publish-item-title-medium"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Title (Medium) / Front of Card Title</label>
 									<textarea class="form-control" rows="2" id="form-publish-item-title-medium" disabled="disabled" maxlength="<%= Medium.TITLE_MAX_LENGTH%>"></textarea>
 								</div>
 							</div>
@@ -249,19 +249,19 @@
 							<%-- ITEM DESCRIPTION --%>
 							<div id="form-publish-info-item-description-full" class="row row-description">
 								<div class="form-group">
-									<label for="form-publish-item-description-full"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Full)</label>
+									<label for="form-publish-item-description-full"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Full) / Back of Card Abstract</label>
 									<textarea class="form-control" rows="4" id="form-publish-item-description-full" disabled="disabled"  maxlength="<%= Full.TEXT_MAX_LENGTH%>"></textarea>
 								</div>
 							</div>
 							<div id="form-publish-info-item-description-medium" class="row row-description">
 								<div class="form-group">
-									<label for="form-publish-item-description-medium"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Medium)</label>
+									<label for="form-publish-item-description-medium"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Medium) / Front of Card Description</label>
 									<textarea class="form-control" rows="2" id="form-publish-item-description-medium" disabled="disabled"  maxlength="<%= Medium.TEXT_MAX_LENGTH%>"></textarea>
 								</div>
 							</div>
 							<div id="form-publish-info-item-description-tiny" class="row row-description">
 								<div class="form-group">
-									<label for="form-publish-item-description-tiny"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Tiny)</label>
+									<label for="form-publish-item-description-tiny"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Tiny) / Legend Title and Tweet Text</label>
 									<textarea class="form-control" rows="2" id="form-publish-item-description-tiny" disabled="disabled"  maxlength="<%= Tiny.MAX_LENGTH%>"></textarea>
 								</div>
 							</div>
