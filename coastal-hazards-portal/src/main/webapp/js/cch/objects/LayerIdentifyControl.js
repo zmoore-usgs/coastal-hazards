@@ -404,7 +404,7 @@ return {
 				$popupHtml.empty().append($tableContainer);
 								
 				if(displayPoints.count() > 1 || CCH.map.getMap().getZoom() < 12){
-					var $noteContainer = $('<small id="zoomNotice">Zoom in further for more precise values.</small>').css('color', 'black');
+					var $noteContainer = $('<small id="zoomNotice">Zoom in further for more refined results.</small>').css('color', 'black');
 					$popupHtml.append($noteContainer);
 				}
 				
@@ -477,7 +477,7 @@ return {
 				var category = sld.bins[Math.ceil(displayPoints[i]) - 1].category;
 				
 				if("AE" === item.attr.toUpperCase()){
-					category +=  units;
+					category += "&nbsp;" + units;
 				}
 				
 				displayCategories.add(category);
