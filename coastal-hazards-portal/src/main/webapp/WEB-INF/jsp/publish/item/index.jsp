@@ -6,6 +6,7 @@
 <%@page import="gov.usgs.cida.coastalhazards.model.summary.Summary"%>
 <%@page import="gov.usgs.cida.coastalhazards.model.summary.Publication"%>
 <%@page import="gov.usgs.cida.coastalhazards.model.summary.Tiny"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.summary.Legend"%>
 <%@page import="gov.usgs.cida.coastalhazards.model.summary.Medium"%>
 <%@page import="gov.usgs.cida.coastalhazards.model.summary.Full"%>
 <%@page import="gov.usgs.cida.coastalhazards.model.Service"%>
@@ -113,6 +114,9 @@
 						title: <%= Medium.TITLE_MAX_LENGTH%>,
 						text: <%= Medium.TEXT_MAX_LENGTH%>
 					},
+                                        legend: {
+                                                title: <%= Legend.TITLE_MAX_LENGTH%>
+                                        },
 					tiny: {
 						text: <%= Tiny.MAX_LENGTH%>
 					}
@@ -245,6 +249,12 @@
 									<textarea class="form-control" rows="2" id="form-publish-item-title-medium" disabled="disabled" maxlength="<%= Medium.TITLE_MAX_LENGTH%>"></textarea>
 								</div>
 							</div>
+                                                        <div id="form-publish-info-item-title-legend" class="row row-title">
+								<div class="form-group">
+									<label for="form-publish-item-title-legend"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Legend Title</label>
+									<textarea class="form-control" rows="1" id="form-publish-item-title-legend" disabled="disabled" maxlength="<%= Legend.TITLE_MAX_LENGTH%>"></textarea>
+								</div>
+							</div>
 
 							<%-- ITEM DESCRIPTION --%>
 							<div id="form-publish-info-item-description-full" class="row row-description">
@@ -261,7 +271,7 @@
 							</div>
 							<div id="form-publish-info-item-description-tiny" class="row row-description">
 								<div class="form-group">
-									<label for="form-publish-item-description-tiny"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Tiny) / Legend Title and Tweet Text</label>
+									<label for="form-publish-item-description-tiny"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Tiny) / Tweet Text</label>
 									<textarea class="form-control" rows="2" id="form-publish-item-description-tiny" disabled="disabled"  maxlength="<%= Tiny.MAX_LENGTH%>"></textarea>
 								</div>
 							</div>
