@@ -447,18 +447,6 @@ CCH.Objects.Widget.Legend = function (args) {
 		}
 		return legendRendererArguments;
 	};
-	/**
-	 * @param {Object} item 
-	 * @returns {String} tiny summary text for the specified item, or '' if 
-	 * the item is improperly structured. Mostly for error-reporting.
-	 */
-	me.getItemTinyText = function(item){
-		var name = '';
-		try{
-			name = item.summary.tiny.text;
-		} catch(e){}//intentionally do nothing
-		return name;
-	};
 	
 	/**
 	 * @param {Object} item 
@@ -516,7 +504,6 @@ CCH.Objects.Widget.Legend = function (args) {
 		try {
 			legendRenderer = me.getLegendRenderer(sld.legendType);
 		} catch(e){
-			//var name = me.getItemTinyText(item);
 			var name = me.getItemLegendTitle(item);
 
 			var msg = "Could not determine legend renderer"; 
@@ -536,7 +523,6 @@ CCH.Objects.Widget.Legend = function (args) {
 				$legendTable = legendRenderer(rendererArguments);
 			} catch (e){
 				LOG.warn(e);
-				//$legendTable = me.createErrorLegendEntry('Could not customize rendering the legend of item "' + me.getItemTinyText() + '".');
 				$legendTable = me.createErrorLegendEntry('Could not customize rendering the legend of item "' + me.getItemLegendTitle() + '".');
 				if (me.onError) {
 					me.onError.call(me, arguments);
