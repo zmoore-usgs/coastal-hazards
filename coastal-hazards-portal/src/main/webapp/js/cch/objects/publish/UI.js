@@ -222,7 +222,7 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.isBlank = function ($ele) {
-		if (!$ele || $ele.length === 0 || !$ele.val()) {
+		if (!$ele || $.trim($ele).length === 0 || !$.trim($ele.val())) {
 			return true;
 		}
 
@@ -340,9 +340,7 @@ CCH.Objects.Publish.UI = function () {
 			
 			if (me.isBlank($titleLegendTextArea)) {
 				errors.push('Legend title not provided');
-			} else if ($titleLegendTextArea.val().length > CCH.CONFIG.limits.summary.legend.title) {
-				errors.push('Legend title was longer than ' + CCH.CONFIG.limits.summary.legend.title + ' characters');
-			}
+			} 
 
 			if (me.isBlank($descriptionFullTextArea)) {
 				errors.push('Full description not provided');
