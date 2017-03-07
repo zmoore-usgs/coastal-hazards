@@ -226,9 +226,9 @@ return {
 					openlayersPopupPaddingWidth = 42,
 					naAttrText = args.naAttrText,
 					bins = args.bins,
-					displayColors = args.color,
+					color = args.color,
 					displayPoints = args.displayPoints,
-					attrAvg = 90,
+					category = args.category,
 					title = args.title,
 					popup = args.popup,
 					units = args.units,
@@ -262,10 +262,10 @@ return {
 					ribbonIndex = parseInt(layerName.split('_').last(), 10);
 				}
 
-				if (naAttrText === attrAvg) {
+				if (displayPoints.count() === 0) {
 					$titleContainer.html(title);
 					// Data unavailable, insert two dashes for color and for value
-					$legendRow.append($titleContainer, $colorContainer.empty().html('--'), $valueContainer.append(attrAvg));
+					$legendRow.append($titleContainer, $colorContainer.empty().html('--'), $valueContainer.append(naAttrText));
 					$table.append($legendRow);
 				} else if ('year' === units) {
 					// Data is historical, create a year/color table here
@@ -325,16 +325,32 @@ return {
 						$valueContainer = $('<td />');
 						$titleContainer.html(title);
 					
-						//Get row color
-						if(!displayColors || !displayColors[i]){
+						if(!color){
 							color = getBinColorForValue(bins, displayPoints[i]);
-						} else {
-							color - displayColors[i];
 						}
+						
 						$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
 						
 						//Build the row
-						$valueContainer.append(displayPoints[i]);
+						if (category) {
+							$valueContainer.append(category);
+							//don't append units
+						} else {
+							if (!$.isNumeric(displayPoints[i])) {
+								// defensive for toFixed
+								$valueContainer.append('');
+							} else if ('%' === units) {
+								$valueContainer.append(displayPoints[i].toFixed(0));
+							} else {
+								if ((displayPoints[i]).isInteger()) {
+									$valueContainer.append(displayPoints[i].toFixed(0));
+								}
+								else {
+									$valueContainer.append(displayPoints[i].toFixed(1));
+								}
+							}
+							$valueContainer.append("&nbsp;" + units);
+						}
 						
 						$legendRow.append($titleContainer, $colorContainer, $valueContainer);
 						
