@@ -216,19 +216,19 @@ return {
 			features = args.features,
 			attr = overrideAttributeName(features, item.attr),
 			displayPoints = new Array(),
-			category,
+			displayColors = new Array(),
+			displayCategories = new Array(),
 			incomingFeatures = args.features,
-			layers = args.layers,
-			color;
+			layers = args.layers;
 		var buildLegend = function (args) {
 				args = args || {};
 				var openlayersPopupPaddingHeight = 42,
 					openlayersPopupPaddingWidth = 42,
 					naAttrText = args.naAttrText,
 					bins = args.bins,
-					color = args.color,
+					displayColors = args.displayColors,
 					displayPoints = args.displayPoints,
-					category = args.category,
+					displayCategories = args.displayCategories,
 					title = args.title,
 					popup = args.popup,
 					units = args.units,
@@ -324,16 +324,19 @@ return {
 						$colorContainer = $('<td />');
 						$valueContainer = $('<td />');
 						$titleContainer.html(title);
+						var color;
 					
-						if(!color){
+						if(!displayColors || !displayColors[i]){
 							color = getBinColorForValue(bins, displayPoints[i]);
+						} else {
+							color = displayColors[i];
 						}
 						
 						$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
 						
 						//Build the row
-						if (category) {
-							$valueContainer.append(category);
+						if (displayCategories && displayCategories[i]) {
+							$valueContainer.append(displayCategories[i]);
 							//don't append units
 						} else {
 							if (!$.isNumeric(displayPoints[i])) {
@@ -466,20 +469,34 @@ return {
 				}
 			}
 		}
+		
+		if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK", "AE"].indexOf(item.attr.toUpperCase()) !== -1) {
+			for(var i = 0; i < displayPoints.count(); i++){
+				displayColors.add(sld.bins[Math.ceil(displayPoints[i]) - 1].color);
+
+				var category = sld.bins[Math.ceil(displayPoints[i]) - 1].category;
+				
+				if("AE" === item.attr.toUpperCase()){
+					category +=  units;
+				}
+				
+				displayCategories.add(category);
+			}	
+		}
 
 		buildLegend({
 			bins: bins,
-			color: color,
 			title: title,
 			features: incomingFeatures,
+			displayColors: displayColors,
 			displayPoints: displayPoints,
+			displayCategories: displayCategories,
 			item: item,
 			popup: popup,
 			units: units,
 			layers: layers,
 			layerId: layerId,
-			naAttrText: this.naAttrText,
-			category: category
+			naAttrText: this.naAttrText
 		});
 	},
 	initialize: function (options) {
