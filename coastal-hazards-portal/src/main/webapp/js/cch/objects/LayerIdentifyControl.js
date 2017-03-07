@@ -223,12 +223,12 @@ return {
 		var buildLegend = function (args) {
 				args = args || {};
 				var openlayersPopupPaddingHeight = 42,
+					openlayersPopupPaddingWidth = 42,
 					naAttrText = args.naAttrText,
 					bins = args.bins,
 					displayColors = args.color,
 					displayPoints = args.displayPoints,
 					attrAvg = 90,
-					category = args.category,
 					title = args.title,
 					popup = args.popup,
 					units = args.units,
@@ -360,6 +360,7 @@ return {
 				$popupHtml.find('#layer-load-id').remove();
 				CCH.map.getMap().getLayerIndex(CCH.map.getMap().getLayersBy('itemid', layerId)[0]);
 				$popupHtml.append($table);
+				
 				var tables = $popupHtml.find('table').toArray().sortBy(function (tbl) {
 					return parseInt($(tbl).attr('data-attr'));
 				});
@@ -383,7 +384,7 @@ return {
 								
 				$popupHtml.empty().append($tableContainer);
 								
-				if(displayPoints.count() > 1){
+				if(displayPoints.count() > 1 || CCH.map.getMap().getZoom() < 12){
 					var $noteContainer = $('<small id="zoomNotice">Zoom in further for more precise values.</small>').css('color', 'black');
 					$popupHtml.append($noteContainer);
 				}
@@ -419,7 +420,7 @@ return {
 					}
 					return Math.round(cHeight);
 				};
-				popup.setSize(new OpenLayers.Size(width(), height() + openlayersPopupPaddingHeight));
+				popup.setSize(new OpenLayers.Size(width() + openlayersPopupPaddingWidth, height() + openlayersPopupPaddingHeight));
 				popup.panIntoView();
 				$(window).on('cch.ui.redimensioned', function () {
 					popup.setSize(new OpenLayers.Size(width(), height()));
