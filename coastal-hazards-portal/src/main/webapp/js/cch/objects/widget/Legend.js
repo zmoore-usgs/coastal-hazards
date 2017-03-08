@@ -251,7 +251,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		var item = args.item;
 		var table = CCH.Objects.Widget.Legend.prototype.templates.rts_legend({
 			id: item.id,
-			title: args.item.summary.full.title,
+			title: args.item.summary.legend.title,
 			baseUrl: CCH.CONFIG.contextPath
 		});
 
@@ -724,7 +724,7 @@ CCH.Objects.Widget.Legend = function (args) {
 					}
 
 					if (!ribboned) {
-						firstLegend.find('caption').empty().append($('<span />').html(me.item.summary.tiny.text));
+						firstLegend.find('caption').empty().append($('<span />').html(me.item.summary.legend.title));
 					} else {
 						firstLegend.find('caption').empty().append(captionSpan);
 					}
@@ -756,7 +756,7 @@ CCH.Objects.Widget.Legend = function (args) {
 					// I have one table left after running unique(). However, I started out with multiple tables. This
 					// means that the title of this table will be the last table to make it through unique(). If that's the 
 					// case, use the title of the parent aggregation for this item
-					legendTables[0].find('caption').html(me.item.summary.full.title);
+					legendTables[0].find('caption').html(me.item.summary.legend.title);
 				} else {
 					// If there's multiple tables, sort them according to index, leaving
 					// titles as is
