@@ -47,11 +47,11 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					color = bins[binIdx].color;
 				}
 			} else if (lb === undefined && ub !== undefined) {
-				if (attrAvg <= ub) {
+				if (attrAvg < ub) {
 					color = bins[binIdx].color;
 				}
 			} else {
-				if (attrAvg >= lb) {
+				if (attrAvg > lb) {
 					color = bins[binIdx].color;
 				}
 			}
@@ -212,24 +212,23 @@ return {
 			units = sld.units,
 			layerId = args.layerId,
 			item = CCH.items.getById({id: layerId}),
-			title = item.summary.medium.title,
+			title = item.summary.legend.title,
 			features = args.features,
 			attr = overrideAttributeName(features, item.attr),
-			attrAvg = 0,
-			category,
+			displayPoints = new Array(),
+			displayColors = new Array(),
+			displayCategories = new Array(),
 			incomingFeatures = args.features,
-			incomingFeatureCount = incomingFeatures.length,
-			layers = args.layers,
-			color;
+			layers = args.layers;
 		var buildLegend = function (args) {
 				args = args || {};
-				var binIdx = 0,
-					openlayersPopupPaddingHeight = 42,
+				var openlayersPopupPaddingHeight = 42,
+					openlayersPopupPaddingWidth = 42,
 					naAttrText = args.naAttrText,
 					bins = args.bins,
-					color = args.color,
-					attrAvg = args.attrAvg,
-					category = args.category,
+					displayColors = args.displayColors,
+					displayPoints = args.displayPoints,
+					displayCategories = args.displayCategories,
 					title = args.title,
 					popup = args.popup,
 					units = args.units,
@@ -238,6 +237,7 @@ return {
 					layer = CCH.map.getMap().getLayersBy('itemid', layerId)[0],
 					layerIndex = CCH.map.getMap().getLayerIndex(layer),
 					$popupHtml = $(popup.contentHTML),
+					$tableContainer = $('<div class="popupTableContainer" />'),
 					$table = $('<table />').attr('data-attr', layerIndex),
 					$titleContainer = $('<td />'),
 					$colorContainer = $('<td />'),
@@ -248,8 +248,6 @@ return {
 					layerName = layers.find(function (l) {
 						return l.itemid === item.id;
 					}).name,
-					attrName = item.attr.toLowerCase(),
-					displayedAttrValue,
 					date,
 					dates = [],
 					dateKey,
@@ -257,8 +255,6 @@ return {
 					bin,
 					yearToColor = {},
 					idx = 0,
-					lb,
-					ub,
 					width,
 					height;
 				
@@ -266,10 +262,10 @@ return {
 					ribbonIndex = parseInt(layerName.split('_').last(), 10);
 				}
 
-				if (naAttrText === attrAvg) {
+				if (displayPoints.count() === 0) {
 					$titleContainer.html(title);
 					// Data unavailable, insert two dashes for color and for value
-					$legendRow.append($titleContainer, $colorContainer.empty().html('--'), $valueContainer.append(attrAvg));
+					$legendRow.append($titleContainer, $colorContainer.empty().html('--'), $valueContainer.append(naAttrText));
 					$table.append($legendRow);
 				} else if ('year' === units) {
 					// Data is historical, create a year/color table here
@@ -320,59 +316,70 @@ return {
 					}
 				
 				} else {
-					if(!color){
-						color = getBinColorForValue(bins, attrAvg);
-					}
+					//Create rows for each point to be displayed in this table
+					for(i = 0; i < displayPoints.count(); i++){
+						//Reset Contents
+						$legendRow = $('<tr>').addClass('legend-row');
+						$titleContainer = $('<td />');
+						$colorContainer = $('<td />');
+						$valueContainer = $('<td />');
+						$titleContainer.html(title);
+						var color;
 					
-					$titleContainer.html(title);
-					
-					// Create the color container for this row
-					$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
-					
-					if (category) {
-						displayedAttrValue = category;
-						//don't append units
-					} else {
-						if (!$.isNumeric(attrAvg)) {
-							// defensive for toFixed
-							displayedAttrValue = '';
-						} else if ('%' === units) {
-							displayedAttrValue = attrAvg.toFixed(0);
+						if(!displayColors || !displayColors[i]){
+							color = getBinColorForValue(bins, displayPoints[i]);
 						} else {
-							if ((attrAvg).isInteger()) {
-								displayedAttrValue = attrAvg.toFixed(0);
-							}
-							else {
-								displayedAttrValue = attrAvg.toFixed(1);
-							}
+							color = displayColors[i];
 						}
-						displayedAttrValue += "&nbsp;" + units;
-					}
-					$valueContainer.append(displayedAttrValue);
+						
+						$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
+						
+						//Build the row
+						if (displayCategories && displayCategories[i]) {
+							$valueContainer.append(displayCategories[i]);
+							//don't append units
+						} else {
+							if (!$.isNumeric(displayPoints[i])) {
+								// defensive for toFixed
+								$valueContainer.append('');
+							} else if ('%' === units) {
+								$valueContainer.append(displayPoints[i].toFixed(0));
+							} else {
+								if ((displayPoints[i]).isInteger()) {
+									$valueContainer.append(displayPoints[i].toFixed(0));
+								}
+								else {
+									$valueContainer.append(displayPoints[i].toFixed(1));
+								}
+							}
+							$valueContainer.append("&nbsp;" + units);
+						}
+						
+						$legendRow.append($titleContainer, $colorContainer, $valueContainer);
+						
+						//Handle Ribbon Data
+						if (ribbonIndex !== -1) {
+							// If this is part of a ribboned series, I'm going
+							//  to have to sort these rows based on the ribbon
+							// index
+							$legendRow.attr('id', 'legend-row-' + ribbonIndex);
+							var sortedRows;
 
-					$legendRow.append($titleContainer, $colorContainer, $valueContainer);
-
-					if (ribbonIndex !== -1) {
-						// If this is part of a ribboned series, I'm going
-						//  to have to sort these rows based on the ribbon
-						// index
-						$legendRow.attr('id', 'legend-row-' + ribbonIndex);
-						var sortedRows;
-
-						$table.append($legendRow);
-						sortedRows = $table.find('tbody > tr').toArray().sortBy(function (row) {
-							return parseInt($(row).attr('id').split('-').last(), 10);
-						});
-						$table.empty().append(sortedRows);
-					} else {
-						$table.append($legendRow);
+							$table.append($legendRow);
+							sortedRows = $table.find('tbody > tr').toArray().sortBy(function (row) {
+								return parseInt($(row).attr('id').split('-').last(), 10);
+							});
+							$table.empty().append(sortedRows);
+						} else {
+							$table.append($legendRow);
+						}
 					}
 				}
-
 
 				$popupHtml.find('#layer-load-id').remove();
 				CCH.map.getMap().getLayerIndex(CCH.map.getMap().getLayersBy('itemid', layerId)[0]);
 				$popupHtml.append($table);
+				
 				var tables = $popupHtml.find('table').toArray().sortBy(function (tbl) {
 					return parseInt($(tbl).attr('data-attr'));
 				});
@@ -385,19 +392,28 @@ return {
 								$('<td />').html('Layer'),
 								$('<td />').html('Color'),
 								$('<td />').html('Value')
-								)));
+								)).css('color', 'white'));
 						}
 					} else {
 						$tbl.find('thead').remove();
 					}
 				});
-				$popupHtml.empty().append(tables);
+				
+				$tableContainer.append(tables);
+								
+				$popupHtml.empty().append($tableContainer);
+								
+				if(displayPoints.count() > 1 || CCH.map.getMap().getZoom() < 12){
+					var $noteContainer = $('<small id="zoomNotice">Zoom in further for more refined results.</small>').css('color', 'black');
+					$popupHtml.append($noteContainer);
+				}
+				
 				popup.setContentHTML($popupHtml.clone().wrap('<div/>').parent().html());
 				width = function () {
 					var cWidth = 0,
 						maxWidth = Math.round($('#map').width() / 2);
 
-					$('#feature-identification-popup div.col-md-12 table').each(function (ind, table) {
+					$('#feature-identification-popup div.col-md-12 > .popupTableContainer > table').each(function (ind, table) {
 						cWidth = $(table).width() > cWidth ? $(table).width() : cWidth;
 					});
 
@@ -410,15 +426,20 @@ return {
 				height = function () {
 					var cHeight = 0,
 						maxHeight = Math.round($('#map').height() / 2);
-					$('#feature-identification-popup div.col-md-12 > table tr').each(function (ind, item) {
+					$('#feature-identification-popup div.col-md-12 > .popupTableContainer > table tr').each(function (ind, item) {
 						cHeight += $(item).height();
 					});
+					
+					$('#zoomNotice').each(function(ind, item) {
+						cHeight += $(item).height();
+					});
+					
 					if (cHeight > maxHeight) {
 						cHeight = maxHeight;
 					}
 					return Math.round(cHeight);
 				};
-				popup.setSize(new OpenLayers.Size(width(), height() + openlayersPopupPaddingHeight));
+				popup.setSize(new OpenLayers.Size(width() + openlayersPopupPaddingWidth, height() + openlayersPopupPaddingHeight));
 				popup.panIntoView();
 				$(window).on('cch.ui.redimensioned', function () {
 					popup.setSize(new OpenLayers.Size(width(), height()));
@@ -432,48 +453,50 @@ return {
 		if (item.type.toLowerCase() === 'vulnerability' ||
 			item.type.toLowerCase() === 'storms' ||
 			item.type.toLowerCase() === 'historical') {
-			// Add up the count for each feature
-			incomingFeatures.each(function (f) {
-				var pFl = parseFloat(f[attr]);
-				if (isMissing(pFl)) {
-					incomingFeatureCount--;
-				} else {
-					attrAvg += pFl;
-				}
-			});
-
 			
-			
-
-			if (incomingFeatureCount === 0) {
-				attrAvg = this.naAttrText;
-			} else {
-				// Average them out
-				attrAvg /= incomingFeatureCount;
-				if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK", "AE"].indexOf(item.attr.toUpperCase()) !== -1) {
-					attrAvg = Math.ceil(attrAvg);
-					color = sld.bins[attrAvg - 1].color;
-					category = sld.bins[attrAvg - 1].category;
-					if("AE" === item.attr.toUpperCase()){
-						category +=  units;
+			//Get the first 3 values to display
+			for(var i = 0; i < incomingFeatures.length; i++){
+				var pFl = parseFloat(incomingFeatures[i][attr]);
+				
+				//Don't display the point if it is missing the display column
+				if(!isMissing(pFl)){
+					displayPoints.add(pFl);
+					
+					//If we have added a 3rd value stop trying to add more
+					if(displayPoints.length === 3){
+						break;
 					}
 				}
 			}
 		}
+		
+		if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK", "AE"].indexOf(item.attr.toUpperCase()) !== -1) {
+			for(var i = 0; i < displayPoints.count(); i++){
+				displayColors.add(sld.bins[Math.ceil(displayPoints[i]) - 1].color);
+
+				var category = sld.bins[Math.ceil(displayPoints[i]) - 1].category;
+				
+				if("AE" === item.attr.toUpperCase()){
+					category += "&nbsp;" + units;
+				}
+				
+				displayCategories.add(category);
+			}	
+		}
 
 		buildLegend({
 			bins: bins,
-			color: color,
 			title: title,
 			features: incomingFeatures,
-			attrAvg: attrAvg,
+			displayColors: displayColors,
+			displayPoints: displayPoints,
+			displayCategories: displayCategories,
 			item: item,
 			popup: popup,
 			units: units,
 			layers: layers,
 			layerId: layerId,
-			naAttrText: this.naAttrText,
-			category: category
+			naAttrText: this.naAttrText
 		});
 	},
 	initialize: function (options) {
