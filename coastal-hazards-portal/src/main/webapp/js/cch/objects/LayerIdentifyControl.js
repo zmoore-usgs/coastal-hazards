@@ -212,7 +212,7 @@ return {
 			units = sld.units,
 			layerId = args.layerId,
 			item = CCH.items.getById({id: layerId}),
-			title = item.summary.medium.title,
+			title = item.summary.legend.title,
 			features = args.features,
 			attr = overrideAttributeName(features, item.attr),
 			displayPoints = new Array(),
