@@ -111,7 +111,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			$theadUOM = $('<td />'),
 			bins = sld.bins,
 			uom = sld.units || '',
-			title = (args.item && args.item.summary && args.item.summary && args.item.summary.medium) ? args.item.summary.medium.title : sld.title || ''
+			title = (args.item && args.item.summary && args.item.summary && args.item.summary.legend) ? args.item.summary.legend.title : sld.title || ''
 			;
 		
 		var sortByDescendingLowerBound = function(a,b){return b.lowerBound - a.lowerBound;};
@@ -162,7 +162,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			$rangeTd,
 			bins = sld.bins,
 			uom = sld.units || '',
-			title = (args.item && args.item.summary && args.item.summary && args.item.summary.medium) ? args.item.summary.medium.title : sld.title || '',
+			title = (args.item && args.item.summary && args.item.summary && args.item.summary.legend) ? args.item.summary.legend.title : sld.title || '',
 			upperBound,
 			lowerBound,
 			category,
@@ -447,15 +447,16 @@ CCH.Objects.Widget.Legend = function (args) {
 		}
 		return legendRendererArguments;
 	};
+	
 	/**
 	 * @param {Object} item 
-	 * @returns {String} tiny summary text for the specified item, or '' if 
+	 * @returns {String} legend title for the specified item, or '' if 
 	 * the item is improperly structured. Mostly for error-reporting.
 	 */
-	me.getItemTinyText = function(item){
+	me.getLegendTitle = function(item){
 		var name = '';
 		try{
-			name = item.summary.tiny.text;
+			name = item.summary.legend.title;
 		} catch(e){}//intentionally do nothing
 		return name;
 	};
@@ -503,7 +504,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		try {
 			legendRenderer = me.getLegendRenderer(sld.legendType);
 		} catch(e){
-			var name = me.getItemTinyText(item);
+			var name = me.getItemLegendTitle(item);
 
 			var msg = "Could not determine legend renderer"; 
 			if(name){
@@ -522,7 +523,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				$legendTable = legendRenderer(rendererArguments);
 			} catch (e){
 				LOG.warn(e);
-				$legendTable = me.createErrorLegendEntry('Could not customize rendering the legend of item "' + me.getItemTinyText() + '".');
+				$legendTable = me.createErrorLegendEntry('Could not customize rendering the legend of item "' + me.getItemLegendTitle() + '".');
 				if (me.onError) {
 					me.onError.call(me, arguments);
 				}

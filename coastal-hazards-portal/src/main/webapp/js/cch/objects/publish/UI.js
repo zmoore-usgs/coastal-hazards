@@ -17,6 +17,7 @@ CCH.Objects.Publish.UI = function () {
 		$itemIdInput = $form.find('#form-publish-item-id'),
 		$titleFullTextArea = $form.find('#form-publish-item-title-full'),
 		$titleMediumTextArea = $form.find('#form-publish-item-title-medium'),
+		$titleLegendTextArea = $form.find('#form-publish-item-title-legend'),
 		$descriptionFullTextArea = $form.find('#form-publish-item-description-full'),
 		$descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
 		$descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
@@ -110,7 +111,7 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.clearForm = function () {
-		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
+		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $descriptionTinyTextArea,
 			$typeSb, $attributeSelect, $attributeSelectHelper,
 			$srcWfsServiceInput, $srcWfsServiceParamInput,
@@ -124,7 +125,7 @@ CCH.Objects.Publish.UI = function () {
 					$item.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 				});
 
-		[$itemIdInput, $titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
+		[$itemIdInput, $titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $typeSb, 
 			$itemEnabledField, $attributeSelect, $attributeSelectHelper,
 			$cswServiceInput, $cswServiceInputButton, $srcWfsServiceInput,
@@ -157,7 +158,7 @@ CCH.Objects.Publish.UI = function () {
 		
 		$itemType.val('data');
 		
-		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
+		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $bboxNorth,
 			$typeSb, $attributeSelect, $attributeRetrieveDataButton, $isFeaturedCB, $ribbonableCb,
 			$popFromLayerInput, $popFromLayerButton,
@@ -188,7 +189,7 @@ CCH.Objects.Publish.UI = function () {
 
 	me.enableNewAggregationForm = function () {
 		$itemType.val('aggregation');
-		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
+		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $typeSb,
 			$attributeSelect,
 			$srcWfsServiceInput, $srcWfsServiceParamInput,
@@ -221,7 +222,7 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.isBlank = function ($ele) {
-		if (!$ele || $ele.length === 0 || !$ele.val()) {
+		if (!$ele || $.trim($ele).length === 0 || !$.trim($ele.val())) {
 			return true;
 		}
 
@@ -336,6 +337,10 @@ CCH.Objects.Publish.UI = function () {
 			} else if ($titleMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.title) {
 				errors.push('Medium title was longer than ' + CCH.CONFIG.limits.summary.medium.title + ' characters');
 			}
+			
+			if (me.isBlank($titleLegendTextArea)) {
+				errors.push('Legend title not provided');
+			} 
 
 			if (me.isBlank($descriptionFullTextArea)) {
 				errors.push('Full description not provided');
@@ -415,6 +420,9 @@ CCH.Objects.Publish.UI = function () {
 		summary.version = 'manual';
 		summary.tiny = {
 			text: $descriptionTinyTextArea.val().trim()
+		};
+		summary.legend = {
+			title: $titleLegendTextArea.val().trim()
 		};
 		summary.medium = {
 			title: $titleMediumTextArea.val().trim(),
@@ -740,7 +748,7 @@ CCH.Objects.Publish.UI = function () {
 		$panetTitle.append('Welcome, ', username, '.');
 	};
 
-	me.updateSelectAttribtue = function (responseObject) {
+	me.updateSelectAttribute = function (responseObject) {
 		var featureTypes = responseObject.featureTypes,
 				$option,
 				ftName,
@@ -859,6 +867,7 @@ CCH.Objects.Publish.UI = function () {
 				summary,
 				titleFull,
 				titleMedium,
+				titleLegend,
 				descriptionFull,
 				descriptionMedium,
 				descriptionTiny,
@@ -875,6 +884,7 @@ CCH.Objects.Publish.UI = function () {
 			summary = item.summary;
 			titleFull = summary.full.title;
 			titleMedium = summary.medium.title;
+			titleLegend = summary.legend.title;
 			descriptionFull = summary.full.text;
 			descriptionMedium = summary.medium.text;
 			descriptionTiny = summary.tiny.text;
@@ -1033,7 +1043,7 @@ CCH.Objects.Publish.UI = function () {
 			[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
 					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
 					$proxyWmsCheckButton, $isFeaturedCB,
-					$titleFullTextArea, $titleMediumTextArea, $ribbonableCb,
+					$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $ribbonableCb,
 					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
 					$buttonSave, $buttonDelete, $ribbonableCb, $metadataSummaryField]
 						.concat($bboxes)
@@ -1046,6 +1056,7 @@ CCH.Objects.Publish.UI = function () {
 			$name.val(item.name);
 			$titleFullTextArea.val(titleFull);
 			$titleMediumTextArea.val(titleMedium);
+			$titleLegendTextArea.val(titleLegend);
 			$descriptionFullTextArea.val(descriptionFull);
 			$descriptionMediumTextArea.val(descriptionMedium);
 			$descriptionTinyTextArea.val(descriptionTiny);
@@ -1100,7 +1111,7 @@ CCH.Objects.Publish.UI = function () {
 			callbacks: {
 				success: [
 					function (featureDescription) {
-						me.updateSelectAttribtue(featureDescription);
+						me.updateSelectAttribute(featureDescription);
 					}
 				],
 				error: [
@@ -1380,6 +1391,8 @@ CCH.Objects.Publish.UI = function () {
 
 						$titleMediumTextArea.val(response.medium.title || '');
 						$descriptionMediumTextArea.val(response.medium.text || '');
+						
+						$titleLegendTextArea.val(response.legend.title || '');
 
 						$descriptionTinyTextArea.val(response.tiny.text || '');
 
