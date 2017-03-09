@@ -12,11 +12,11 @@ $(document).ready(function(){
 	$("#upload-btn").click(function(e){
 		var $result = $('#result');
 		$result.empty();
-		$result.append('working...');
+		$result.append('Working...');
 		e.preventDefault();
 		var formData = new FormData($('#upload-form')[0]);
 		$.ajax({
-			url: CCH.baseUrl + "/data/layer/raster",
+			url: CCH.baseUrl + "/data/layer/",
 			type: 'POST',
 			data: formData,
 			contentType: false,

@@ -92,11 +92,7 @@
 		<h1>Vector Data Upload</h1>
 		<form id="upload-form" enctype="multipart/form-data">
 			<div>
-				<label for="metadata">Metadata XML</label>
-				<input type="file" name="metadata"/>
-			</div>
-			<div>
-				<label for="file">Zipped GeoTIFF</label>
+				<label for="metadata">Zipped Shape File</label>
 				<input type="file" name="file"/>
 			</div>
 			<button type="button" id="upload-btn">Submit</button>
