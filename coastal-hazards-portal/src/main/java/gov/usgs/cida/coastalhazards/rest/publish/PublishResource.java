@@ -66,6 +66,14 @@ public class PublishResource {
     public Response createRasterItem(@Context HttpServletRequest req) throws URISyntaxException {
        return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/raster.jsp", new HashMap<>(0))).build();
     }
+	
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/layer/vector")
+    public Response createVectorItem(@Context HttpServletRequest req) throws URISyntaxException {
+       return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/vector.jsp", new HashMap<>(0))).build();
+    }
     
     @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @GET

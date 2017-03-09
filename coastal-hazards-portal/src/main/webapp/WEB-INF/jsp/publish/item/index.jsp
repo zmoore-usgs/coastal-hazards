@@ -167,6 +167,9 @@
 							</button>
 							<ul id="publish-list-edit-metadata-existing" class="dropdown-menu" role="menu"></ul>
 						</div>
+						<div id="publish-button-create-vector-layer-grp" class="btn-group">
+							<a href="<%=baseUrl%>/publish/layer/vector" class="btn btn-lg btn-success">Create Vector Layer</a>
+						</div>
 						<div id="publish-button-create-raster-layer-grp" class="btn-group">
 							<a href="<%=baseUrl%>/publish/layer/raster" class="btn btn-lg btn-success">Create Raster Layer</a>
 						</div>
