@@ -151,44 +151,8 @@ public class LayerResource {
 	public Response createVectorLayerForm(@Context HttpServletRequest req, @FormDataParam("file") InputStream postBody) {
 		Response response = null;
 		
-		String newId = IdGenerator.generate();
+		response = createVectorLayer(req, postBody);
 		
-		List<Service> added = null;
-		try {
-			byte[] inmemory = IOUtils.toByteArray(postBody);
-			try (ByteArrayInputStream bais = new ByteArrayInputStream(inmemory)) {
-				String metadataId = MetadataUtil.doCSWInsertFromString(MetadataUtil.extractMetadataFromShp(bais));
-				bais.reset();
-				added = GeoserverUtil.addVectorLayer(bais, newId);
-
-				added.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
-			} finally {
-				inmemory = null; // just in case
-			}
-		} catch (IOException | ParserConfigurationException | SAXException e) {
-			log.error("Problem creating services from input", e);
-		} 
-		if (added != null && !added.isEmpty()) {
-			WFSService wfs = (WFSService)Service.ogcHelper(Service.ServiceType.proxy_wfs, added);
-			Bbox bbox = null;
-			try {
-				bbox = WFSIntrospector.getBbox(wfs);
-			} catch (IOException ex) {
-				log.debug("Error determining bounding box", ex);
-			}
-			
-			Layer layer = new Layer();
-			layer.setId(newId);
-			layer.setServices(added);
-			layer.setBbox(bbox);
-			
-			try (LayerManager manager = new LayerManager()) {
-				manager.save(layer);
-			}
-			response = Response.created(layerURI(layer)).build();
-		} else {
-			response = Response.serverError().entity("Unable to create layer").build();
-		}
 		return response;
 	}
 	
