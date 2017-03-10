@@ -53,6 +53,14 @@ CCH.Objects.Publish.UI = function () {
 		$alertModalTitle = $alertModal.find('.modal-title'),
 		$alertModalBody = $alertModal.find('.modal-body'),
 		$alertModalFooter = $alertModal.find('.modal-footer'),
+		$vectorModal = $('#vector-modal'),
+		$vectorModalTitle = $vectorModal.find('.modal-title'),
+		$vectorModalBody = $vectorModal.find('.modal-body'),
+		$vectorModalFooter = $vectorModal.find('.modal-footer'),		
+		$rasterModal = $('#raster-modal'),
+		$rasterModalTitle = $rasterModal.find('.modal-title'),
+		$rasterModalBody = $rasterModal.find('.modal-body'),
+		$rasterModalFooter = $rasterModal.find('.modal-footer'),
 		$metadataDropdownGroup = $('#publish-button-edit-metadata-existing-grp'),
 		$metadataDropdownList = $('#publish-list-edit-metadata-existing'),
 		$metadataSummaryField = $('#form-publish-info-item-summary-version'),
@@ -64,6 +72,8 @@ CCH.Objects.Publish.UI = function () {
 		$buttonDelete = $('#publish-button-delete'),
 		$buttonLogout = $('#publish-button-logout'),
 		$buttonViewAll = $('#publish-button-view-all'),
+		$buttonCreateVectorLayer = $('#publish-button-create-vector-layer'),
+		$buttonCreateRasterLayer = $('#publish-button-create-raster-layer'),
 		$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
 		$wfsHelpLink = $form.find('.form-publish-item-service-source-wfs-import-button-service-help-link'),
 		$wmsHelpLink = $form.find('.form-publish-item-service-source-wms-import-button-service-help-link'),
@@ -1773,6 +1783,14 @@ CCH.Objects.Publish.UI = function () {
 		if (id !== '') {
 			me.deleteItem(id);
 		}
+	});
+	
+	$buttonCreateVectorLayer.on(CCH.CONFIG.strings.click, function() {
+		$vectorModal.modal(CCH.CONFIG.strings.show);
+	});
+	
+	$buttonCreateRasterLayer.on(CCH.CONFIG.strings.click, function() {
+		$rasterModal.modal(CCH.CONFIG.strings.show);
 	});
 
 	$wfsHelpLink.on(CCH.CONFIG.strings.click, function (evt) {
