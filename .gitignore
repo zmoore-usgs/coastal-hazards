@@ -41,3 +41,4 @@ dependency-reduced-pom.xml
 
 **/.DS_Store
 
+Docker/compose*.env

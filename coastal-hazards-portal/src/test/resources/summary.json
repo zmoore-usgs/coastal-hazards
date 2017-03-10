@@ -3,6 +3,9 @@
 	"tiny": {
 		"text": "Mean water levels (setup + surge) CAT1 hurricane"
 	},
+        "legend": {
+                "title": "Mean water levels (setup + surge)"
+        },
 	"medium": {
 		"title": "Mean water levels during a category 1 hurricane",
 		"text": "These data represent the storm-induced mean water levels at the shoreline for generalized category 1 hurricane conditions. Values were computed by summing modeled storm surge (NOAA SLOSH) and parameterized wave setup."
@@ -14,16 +17,16 @@
 			"data": [],
 			"publications": [{
 					"title": "National Assessment of Hurricane-Induced Coastal Erosion Hazards: Southeast Atlantic",
-					"link": "http://pubs.usgs.gov/of/2013/1130/"
+					"link": "https://pubs.usgs.gov/of/2013/1130/"
 				}, {
 					"title": "National Assessment of Hurricane-Induced Coastal Erosion Hazards: Mid-Atlantic Coast",
-					"link": "http://pubs.usgs.gov/of/2013/1131"
+					"link": "https://pubs.usgs.gov/of/2013/1131"
 				}, {
 					"title": "National Assessment of Hurricane-Induced Coastal Erosion Hazards: Gulf of Mexico",
-					"link": "http://pubs.usgs.gov/of/2012/1084/"
+					"link": "https://pubs.usgs.gov/of/2012/1084/"
 				}, {
 					"title": "National Assessment of Hurricane-Induced Coastal Erosion Hazards: Northeast Atlantic Coast",
-					"link": "http://pubs.usgs.gov/of/2014/1243/"
+					"link": "https://pubs.usgs.gov/of/2014/1243/"
 				}],
 			"resources": [{
 					"title": "National Assessment of Hurricane-Induced Coastal Erosion Hazards",

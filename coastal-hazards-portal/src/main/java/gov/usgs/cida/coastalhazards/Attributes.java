@@ -102,6 +102,12 @@ public class Attributes {
 	public static final String NHC_TRACK_PT_120WLBL = "NHC_TRACK_PT_120WLBL";
 	public static final String NHC_TRACK_PT_72CAT = "NHC_TRACK_PT_72CAT";
 	public static final String NHC_TRACK_PT_120CAT = "NHC_TRACK_PT_120CAT";
+        
+        //raster attr
+        public static final String GRAY_INDEX = "GRAY_INDEX";
+        public static final String AE = "AE";  //adjusted elevation
+        public static final String PAE = "PAE";  //adjusted elevation probability
+        public static final String CR = "CR";  //coastal response
 
 	static {
 		Field[] fields = Attributes.class.getFields();
@@ -123,7 +129,16 @@ public class Attributes {
 	public static Set<String> getAllAttrs() {
 		return set;
 	}
-
+        
+	public static Set<String> getRasterAttrs() {
+		Set<String> raster = new HashSet<>();
+		raster.add(GRAY_INDEX);
+		raster.add(AE);
+		raster.add(PAE);
+		raster.add(CR);
+		return raster;
+	}
+        
 	public static Set<String> getStormTrackAttrs() {
 		Set<String> tracks = new HashSet<>();
 		tracks.add(NHC_TRACK_POLY);

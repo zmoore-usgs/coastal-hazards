@@ -41,15 +41,24 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
+import org.xml.sax.SAXException; 
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import static gov.usgs.cida.coastalhazards.rest.data.ItemResource.PUBLIC_URL;
+import java.util.ArrayList;
+import javax.servlet.annotation.MultipartConfig;
+import javax.ws.rs.ServerErrorException;
+import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.JAXBException;
+import org.geotools.referencing.CRS;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.opengis.referencing.FactoryException;
 
 /**
  * Works with ArcGIS and Geoserver services for service like importing layers
  *
  * @author isuftin
  */
+@MultipartConfig
 @Path(DataURI.LAYER_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class LayerResource {
@@ -59,6 +68,8 @@ public class LayerResource {
 	private static final String geoserverEndpoint;
 	private static final String geoserverUser;
 	private static final String geoserverPass;
+        private static final String RASTER_METADATA_FORM_FIELD_NAME = "metadata";
+        private static final String RASTER_FILE_FORM_FIELD_NAME = "data";
 	private static final DynamicReadOnlyProperties props;
 
 	static {
@@ -88,7 +99,7 @@ public class LayerResource {
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
 	@Produces(MediaType.TEXT_PLAIN)
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-	public Response createLayer(@Context HttpServletRequest req, InputStream postBody) {
+	public Response createVectorLayer(@Context HttpServletRequest req, InputStream postBody) {
 		Response response = null;
 		
 		String newId = IdGenerator.generate();
@@ -99,7 +110,7 @@ public class LayerResource {
 			try (ByteArrayInputStream bais = new ByteArrayInputStream(inmemory)) {
 				String metadataId = MetadataUtil.doCSWInsertFromString(MetadataUtil.extractMetadataFromShp(bais));
 				bais.reset();
-				added = GeoserverUtil.addLayer(bais, newId);
+				added = GeoserverUtil.addVectorLayer(bais, newId);
 
 				added.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
 			} finally {
@@ -132,6 +143,92 @@ public class LayerResource {
 		return response;
 	}
 	
+	@POST
+	@Path("/")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.TEXT_PLAIN)
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	public Response createVectorLayerForm(@Context HttpServletRequest req, @FormDataParam("file") InputStream postBody) {
+		Response response = null;
+		
+		response = createVectorLayer(req, postBody);
+		
+		return response;
+	}
+	
+    @POST
+	@Path("/raster")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.TEXT_PLAIN)
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	public Response createRasterLayer(
+                @Context HttpServletRequest req, 
+                @FormDataParam("metadata") String metadata, 
+                @FormDataParam("file") InputStream zipFileStream,
+                @FormDataParam("file") FormDataContentDisposition fileDisposition
+        ) {
+                      List<Service> services = new ArrayList<>();
+            
+            try{
+                log.info("Raster layer upload - about to parseRequest");
+                String newId = IdGenerator.generate();
+                
+                String metadataId;
+                if (metadata == null || metadata.isEmpty()) {
+                    throw new ServerErrorException("Metadata file is missing or empty.", Status.INTERNAL_SERVER_ERROR);
+                }
+
+                try {
+                    log.info("Raster layer create - about to doCSWInsertFromString");
+                    metadataId = MetadataUtil.doCSWInsertFromString(metadata);
+                    } catch (IOException | ParserConfigurationException | SAXException ex) {
+                        throw new ServerErrorException("Error inserting metadata to the CSW server.", Status.INTERNAL_SERVER_ERROR, ex);
+                    }
+                log.info("Raster layer create - about to makeCSWServiceForUrl with metadataId: " + metadataId);
+                services.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
+
+                Bbox bbox = MetadataUtil.getBoundingBoxFromFgdcMetadata(metadata);
+                log.info("Starting CRS Identifier Lookup");
+                long startTime = System.nanoTime();
+                String EPSGcode = CRS.lookupIdentifier(MetadataUtil.getCrsFromFgdcMetadata(metadata), true);
+                long endTime = System.nanoTime();
+                long duration = (endTime - startTime)/1000000;  //divide by 1000000 to get milliseconds
+                log.info("Finished CRS Identifier Lookup. Took " + duration + "ms.");
+                
+               if (bbox == null || EPSGcode == null) {
+                    throw new ServerErrorException("Unable to identify bbox or epsg code from metadata.", Status.INTERNAL_SERVER_ERROR);
+                }
+                
+                log.info("Raster layer create - about to addRasterLayer to geoserver with an id of: " + newId); 
+                log.info("Raster layer create - about to addRasterLayer to geoserver with a  bbox: " + bbox.getBbox());
+                log.info("Raster layer create - about to addRasterLayer to geoserver with an EPSG of: " + EPSGcode);
+                
+                Service rasterService = GeoserverUtil.addRasterLayer(geoserverEndpoint, zipFileStream, newId, bbox, EPSGcode);
+                if(null == rasterService) {
+                        throw new ServerErrorException("Unable to create a store and/or layer in GeoServer.", Status.INTERNAL_SERVER_ERROR);
+                } else {
+                        services.add(rasterService);
+                }
+                
+                if (!services.isEmpty()) {
+			Layer layer = new Layer();
+			layer.setId(newId); 
+			layer.setServices(services);
+			layer.setBbox(bbox);
+			
+			try (LayerManager manager = new LayerManager()) {
+				manager.save(layer);
+			}
+			return Response.created(layerURI(layer)).build();
+		} else {
+			throw new ServerErrorException("Unable to create layer", Status.INTERNAL_SERVER_ERROR);
+		}
+                
+            } catch (JAXBException | FactoryException | IOException ex) {
+                throw new ServerErrorException("Error parsing upload request", Status.INTERNAL_SERVER_ERROR, ex);
+            }
+        }
+             
 	@DELETE
 	@Path("/{layer}")
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})

@@ -26,14 +26,14 @@ public class SLDGenerator {
 	protected static final String style = "cch";
 	protected static final int STROKE_WIDTH_DEFAULT = 3;
 	protected static final float STROKE_OPACITY_DEFAULT = 1;
-
+        static final LegendType LEGEND_TYPE_DEFAULT = LegendType.DISCRETE;
 	protected final Item item;
 	protected final Integer ribbon;
 	protected final SLDConfig config;
 	
 	protected static final EnumMap<Item.Type,Map<String, SLDConfig>> generatorMap;
 	static {
-		EnumMap<Item.Type,Map<String, SLDConfig>> gmap = new EnumMap<>(Item.Type.class);
+		EnumMap<Item.Type,Map<String, SLDConfig>> gmap = new EnumMap<>(Item.Type.class); 
 		
 		Map<String, SLDConfig> stormsMap = new HashMap<>();
 		sideEffectMapPut(stormsMap, Pcoi.pcoi);
@@ -45,12 +45,15 @@ public class SLDGenerator {
 		
 		Map<String, SLDConfig> vulnerability = new HashMap<>();
 		sideEffectMapPut(vulnerability, BayesianProbablityCVI.bayes);
-        sideEffectMapPut(vulnerability, BayesianSLRCVI.rslr);
-        sideEffectMapPut(vulnerability, BayesianWaveHeightCVI.mwh);
-        sideEffectMapPut(vulnerability, BayesianTidalRangeCVI.tr);
-        sideEffectMapPut(vulnerability, BayesianErateCVI.erate);
-		sideEffectMapPut(vulnerability, OldSchoolComponentCVI.componentOldSchool);
-        sideEffectMapPut(vulnerability, OldSchoolOverallCVI.overallOldSchool);
+                sideEffectMapPut(vulnerability, BayesianSLRCVI.rslr);
+                sideEffectMapPut(vulnerability, BayesianWaveHeightCVI.mwh);
+                sideEffectMapPut(vulnerability, BayesianTidalRangeCVI.tr);
+                sideEffectMapPut(vulnerability, BayesianErateCVI.erate);
+                sideEffectMapPut(vulnerability, OldSchoolComponentCVI.componentOldSchool);
+                sideEffectMapPut(vulnerability, RasterAE.rasterConfig); //raster ae -adjusted elevation
+                sideEffectMapPut(vulnerability, RasterPAE.rasterConfig); //raster pae -probability
+                sideEffectMapPut(vulnerability, RasterCR.rasterConfig); //raster cr - coastal response
+                sideEffectMapPut(vulnerability, OldSchoolOverallCVI.overallOldSchool);
 		gmap.put(Item.Type.vulnerability, vulnerability);
 		
 		Map<String, SLDConfig> historical = new HashMap<>();
@@ -133,6 +136,7 @@ public class SLDGenerator {
 		sldInfo.put("units", this.config.getUnits());
 		sldInfo.put("style", this.config.getStyle());
 		sldInfo.put("bins", this.config.getBins());
+                sldInfo.put("legendType", this.config.getLegendType());
 		String toJson = GsonUtil.getDefault().toJson(sldInfo, HashMap.class);
 		return Response.ok(toJson).build();
 	}

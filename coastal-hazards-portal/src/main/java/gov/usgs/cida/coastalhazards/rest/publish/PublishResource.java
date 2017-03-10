@@ -3,8 +3,6 @@ package gov.usgs.cida.coastalhazards.rest.publish;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
-import gov.usgs.cida.utilities.properties.JNDISingleton;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -34,14 +32,6 @@ import org.xml.sax.SAXException;
 @Path("/")
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class PublishResource {
-    
-    private static final String cswExternalEndpoint;
-    private static final DynamicReadOnlyProperties props;
-
-	static {
-        props = JNDISingleton.getInstance();
-        cswExternalEndpoint = props.getProperty("coastal-hazards.csw.endpoint");
-    }
 	
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@GET
@@ -67,6 +57,22 @@ public class PublishResource {
     @Path("/item/")
     public Response viewBlankItem(@Context HttpServletRequest req) throws URISyntaxException {
        return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", new HashMap<>(0))).build();
+    }
+    
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/layer/raster")
+    public Response createRasterItem(@Context HttpServletRequest req) throws URISyntaxException {
+       return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/raster.jsp", new HashMap<>(0))).build();
+    }
+	
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/layer/vector")
+    public Response createVectorItem(@Context HttpServletRequest req) throws URISyntaxException {
+       return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/vector.jsp", new HashMap<>(0))).build();
     }
     
     @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})

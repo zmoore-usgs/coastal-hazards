@@ -1,0 +1,61 @@
+<Context>
+	<WatchedResource>WEB-INF/web.xml</WatchedResource>
+	<Manager pathname="" />
+
+	<Resource   name="jdbc/coastalhazards" auth="Container"
+	            type="javax.sql.DataSource"
+	            driverClassName="org.postgresql.Driver"
+	            url="jdbc:postgresql://cidasddvascchpg.cr.usgs.gov:5432/cchportal"
+	            username="cchportal"
+	            password="pwd here”
+	            maxActive="200"
+	            maxIdle="60"
+	            maxWait="60"
+	            validationQuery="select version()"
+	            removeAbandoned="true"
+	            removeAbandonedTimeout="60"
+	            logAbandoned="true"
+	            description="coastalhazards"
+                />
+	<Environment name="cida.auth.client.null.roles" override="false" type="java.lang.String" value="CCH_ADMIN" /> <!-- TODO: Remove before checking in. Should not be in dev, qa, prod-->
+    <Environment name="cida.auth.service.endpoint" override="true" type="java.lang.String" value="https://cida-eros-authdev.er.usgs.gov:8443/auth-webservice/" />
+    <Environment name="coastal-hazards.public.url" type="java.lang.String" value="http://localhost:8080/coastal-hazards-portal" />
+    <Environment name="coastal-hazards.base.url" type="java.lang.String" value="http://localhost:8080/coastal-hazards-portal" />
+    <Environment name="coastal-hazards.base.secure.url" type="java.lang.String" value="https://localhost:8443/coastal-hazards-portal" override="false" />
+    <Environment name="coastal-hazards.go.usa.gov.login" type="java.lang.String" value="smlarson@usgs.gov" /> <!-- replace with your name -->
+    <Environment name="coastal-hazards.go.usa.gov.apikey" type="java.lang.String" value=“yourApiKeyhere” />
+    <Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="http://go.usa.gov/api/" />
+    <Environment name="coastal-hazards.stpetearcserver.endpoint" type="java.lang.String" value="http://olga.er.usgs.gov/stpgis" />
+    <Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="http://coastalmap.marine.usgs.gov/cmgp" />
+    <Environment name="coastal-hazards.cidags.endpoint" type="java.lang.String" value="http://cida.usgs.gov/DSASweb/geoserver" />
+	<Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token" type="java.lang.String" value="suzanne" /> <!-- value matches the tomcat xml -->
+   <!-- <Environment name="coastal-hazards.portal.geoserver.endpoint" type="java.lang.String" value="http://192.168.99.100:8081/geoserver/" /> -->
+	<Environment name="coastal-hazards.portal.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/geoserver/" />
+<Environment name="coastal-hazards.portal.geoserver.external.endpoint" type="java.lang.String" value="https://localhost:8443/coastal-hazards-portal/geoserver/" override="false" />
+<!-- wps_config.xml is not needed if only deploying the portal and geoserver instances -->
+<!-- <Environment name="gov.usgs.cida.n52.wps.config.location" type="java.lang.String" value="/opt/tomcat/instance/default/data/coastal-hazards/n52/wps_config.xml" override="false" /> -->
+	<Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="http://cidasddvascch.cr.usgs.gov:8080/wps" override="false" />
+  <!-- <Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="http://192.168.99.100:8082/wps" /> -->  
+  <!--  <Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="http://192.168.99.100:8000/csw/" /> -->
+  <Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="http://cidasddvascch.cr.usgs.gov/wsgi/pycsw" override="false" />
+<!--	<Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="http://192.168.99.100:8000/pycsw-wsgi" /> -->
+<!--	<Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="http://127.0.0.1/wsgi/pycsw" override="false" /> not certain if this is correct as not deployed locally-->
+    <Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="https://cida-test.er.usgs.gov/dev/coastalchangehazardsportal/csw/" override="false" />
+	<Environment name="coastal-hazards.csw.external.endpoint" type="java.lang.String" value="https://cida-test.er.usgs.gov/dev/coastalchangehazardsportal/csw/" override="false" />
+   <!-- <Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="http://pycsw:8000/pycsw-wsgi" /> --> 
+    <!-- csw will fail with this. Auth is set up for localhost only.-->
+    <Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="15728640" /> 
+    <Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="qqfile" /> 
+    <Environment name="coastal-hazards.files.directory.base" type="java.lang.String" value="/opt/tomcat/instance/default/data/coastal-hazards" /> 
+    <Environment name="coastal-hazards.files.directory.work" type="java.lang.String" value="/work" /> 
+    <Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="/upload" /> 
+    <Environment name="coastal-hazards.files.directory.download" type="java.lang.String" value="/opt/tomcat/instance/default/data/coastal-hazards/download" />
+    <Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/geoserver/" /> 
+	<!-- docker example: "https://192.168.99.100:8444/geoserver/" -->
+    <Environment name="coastal-hazards.geoserver.datadir" type="java.lang.String" value="/Users/cch/geoserver/data" /> 
+    <Environment name="coastal-hazards.workspace.published" type="java.lang.String" value="published" />
+	<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="admin" />
+    <Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="geoPwdHere" />
+    <Environment name="production" type="java.lang.String" value="false" />
+    <Environment name="development" type="java.lang.String" value="true" />
+</Context>

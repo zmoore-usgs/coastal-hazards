@@ -26,6 +26,7 @@ public class Summary implements Serializable {
 	private transient int id;
 	private String version;
 	private Tiny tiny;
+        private Legend legend;
 	private Medium medium;
 	private Full full;
 	private String keywords;
@@ -57,6 +58,15 @@ public class Summary implements Serializable {
 
 	public void setTiny(Tiny tiny) {
 		this.tiny = tiny;
+	}
+        
+        @Embedded
+	public Legend getLegend() {
+		return legend;
+	}
+
+	public void setLegend(Legend legend) {
+		this.legend = legend;
 	}
 
 	@Embedded
@@ -92,6 +102,7 @@ public class Summary implements Serializable {
 		}
 		summary.setVersion(from.getVersion());
 		summary.setTiny(from.getTiny());
+                summary.setLegend(from.getLegend());
 		summary.setMedium(from.getMedium());
 		Full toFull = new Full();
 		if (to != null) {

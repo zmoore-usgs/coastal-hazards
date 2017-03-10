@@ -14,7 +14,7 @@ not exist. The effect is the same. -->
 <!--
 coastal-hazards.public.url: Used for mapping service calls requested by 
 application services -->
-<Environment name="coastal-hazards.public.url" type="java.lang.String" value="http://marine.usgs.gov/coastalchangehazardsportal" />
+<Environment name="coastal-hazards.public.url" type="java.lang.String" value="https://marine.usgs.gov/coastalchangehazardsportal" />
 
 <!-- 
 coastal-hazards.base.url: This is only necessary on public facing URLs. The 
@@ -35,7 +35,7 @@ can be obtained by creating a user account with go.usa.gov -->
 <!--
 coastal-hazards.go.usa.gov.endpoint: The go.usa.gov endpoint used for creating 
 minified urls -->
-<Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="http://go.usa.gov/api/" />
+<Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="https://go.usa.gov/api/" />
 			
 <!--
 coastal-hazards.portal.geoserver.endpoint: Specifies where the back-end proxy server 
@@ -54,17 +54,17 @@ server should send connections to for St Petersburg’s ArcGIS server -->
 <!-- 
 coastal-hazards.marine.endpoint: Specifies where the back-end proxy server 
 should send connections to for St Petersburg’s server -->
-<Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="http://coastalmap.marine.usgs.gov/cmgp" />
+<Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="https://coastalmap.marine.usgs.gov/cmgp" />
 
 <!--
 coastal-hazards.cidags.endpoint: Specifies where the back-end proxy server 
 should send connections to for DSASWeb geoserver connections -->
-<Environment name="coastal-hazards.cidags.endpoint" type="java.lang.String" value="http://cida.usgs.gov/DSASweb/geoserver" />
+<Environment name="coastal-hazards.cidags.endpoint" type="java.lang.String" value="https://cida.usgs.gov/DSASweb/geoserver" />
 
 <!-- 
 coastal-hazards.csw.endpoint: Specifies where the back-end proxy server should 
 send connections to for Coastal Hazards’ CSW Server -->
-<Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="http://cida.usgs.gov/qa/coastalhazards/csw" />
+<Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="https://cida.usgs.gov/qa/coastalhazards/csw" />
 
 
 <!-- 
@@ -73,4 +73,4 @@ coastal-hazards.csw.endpoint: Used for local csw transactions.-->
 
 <!--
 coastal-hazards.geocoding.endpoint: Endpoint used to make geospatial searches. -->
-<Environment name="coastal-hazards.geocoding.endpoint" type="java.lang.String" value="http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find" />
+<Environment name="coastal-hazards.geocoding.endpoint" type="java.lang.String" value="https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find" />

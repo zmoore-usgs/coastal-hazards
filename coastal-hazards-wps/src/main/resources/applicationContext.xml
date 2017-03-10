@@ -6,6 +6,7 @@
 	<bean id="ribboning" class="gov.usgs.cida.coastalhazards.wps.RibboningProcess" />
 	<bean id="nearestPointOnLine" class="gov.usgs.cida.coastalhazards.wps.NearestPointOnLineProcess" />
 	<bean id="plainTextPPIO" class="gov.usgs.cida.coastalhazards.wps.ppio.PlainTextPPIO" />
+        <bean id="fetchAndUnzip" class="gov.usgs.cida.coastalhazards.wps.FetchAndUnzipProcess"/> 
 	
 	<bean id="generateTransects" class="gov.usgs.cida.coastalhazards.wps.CreateTransectsAndIntersectionsProcess">
 		<constructor-arg index="0" ref="importProcess"/>
@@ -43,5 +44,5 @@
 	<bean id="sweeper" class="gov.usgs.cida.coastalhazards.util.GeoserverSweeperStartupListener">
 		<constructor-arg index="0" ref="catalog"/>
 	</bean>
-    
+            
 </beans>

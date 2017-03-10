@@ -4,7 +4,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
-    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+        logicalFilePath="liquibaseChangeSet">
 	<include file="change1.xml" relativeToChangelogFile="true"/>
 	<include file="change2.xml" relativeToChangelogFile="true"/>
 	<include file="change3.xml" relativeToChangelogFile="true"/>
@@ -36,4 +37,7 @@
 	<include file="80fixAggregationPkey.xml" relativeToChangelogFile="true" />
 	<include file="90addFeaturedColumnToItem.xml" relativeToChangelogFile="true" />
 	<include file="95removeTextLimit.xml" relativeToChangelogFile="true" />
+	<include file="100removeTextLimitService.xml" relativeToChangelogFile="true" />
+        <include file="addSummaryLegendTitle.xml" relativeToChangelogFile="true" />
+        <include file="updateLegendTitleWithMediumTitle.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

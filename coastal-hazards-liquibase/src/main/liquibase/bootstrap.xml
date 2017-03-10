@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd" logicalFilePath="liquibaseChangeSet/bootstrap.xml">
     <changeSet author="jiwalker" id="bootstrap_database" context="bootstrap">
         <loadData tableName="bbox" file="bootstrap/bbox.csv" encoding="UTF-8" quotchar="&quot;" separator=",">
             <column header="id" name="id" type="NUMERIC"/>
@@ -33,13 +33,18 @@
             <column header="show_children" name="show_children" type="BOOLEAN" />
             <column header="enabled" name="enabled" type="BOOLEAN" />
         </loadData>
+        <loadData encoding="UTF-8" file="bootstrap/aggregation_children.csv" quotchar="&quot;" separator="," tableName="aggregation_children">
+            <column header="aggregation_id" name="aggregation_id" type="STRING"/>
+            <column header="item_id" name="item_id" type="STRING"/>
+            <column header="list_index" name="list_index" type="NUMERIC"/>
+        </loadData>
         <rollback>
             <comment>There is no rollback, remove the data</comment>
         </rollback>
     </changeSet>
     <changeSet author="jiwalker" id="start_sequence_after_bootstrap" context="bootstrap">
         <dropSequence sequenceName="hibernate_sequence" />
-        <createSequence sequenceName="hibernate_sequence" startValue="2" />
+        <createSequence sequenceName="hibernate_sequence" startValue="100" />
         <rollback>
             <comment>Again, no rollback, running this on non-empty database will have real issues</comment>
         </rollback>

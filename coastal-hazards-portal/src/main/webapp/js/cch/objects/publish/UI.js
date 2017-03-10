@@ -17,6 +17,7 @@ CCH.Objects.Publish.UI = function () {
 		$itemIdInput = $form.find('#form-publish-item-id'),
 		$titleFullTextArea = $form.find('#form-publish-item-title-full'),
 		$titleMediumTextArea = $form.find('#form-publish-item-title-medium'),
+		$titleLegendTextArea = $form.find('#form-publish-item-title-legend'),
 		$descriptionFullTextArea = $form.find('#form-publish-item-description-full'),
 		$descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
 		$descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
@@ -27,9 +28,11 @@ CCH.Objects.Publish.UI = function () {
 		$bboxes = $('.bbox'),
 		$typeSb = $form.find('#form-publish-item-type'),
 		$attributeSelect = $form.find('#form-publish-item-attribute'),
+		$attributeSelectHelper = $form.find('#form-publish-item-attribute-helper'),
 		$attributeRetrieveDataButton = $form.find('#form-publish-item-attribute-button'),
 		$keywordGroup = $form.find('.form-group-keyword'),
 		$cswServiceInput = $form.find('#form-publish-item-service-csw'),
+		$cswServiceInputButton = $form.find('#form-publish-item-service-csw-button-fetch'),
 		$isFeaturedCB = $form.find('#checkbox-featured'),
 		$srcWfsServiceInput = $form.find('#form-publish-item-service-source-wfs'),
 		$srcWfsServiceParamInput = $form.find('#form-publish-item-service-source-wfs-serviceparam'),
@@ -71,6 +74,8 @@ CCH.Objects.Publish.UI = function () {
 		$proxyWfsCheckButton = $form.find('#form-publish-item-service-proxy-wfs-import-button-check'),
 		$proxyWmsCheckButton = $form.find('#form-publish-item-service-proxy-wms-import-button-check'),
 		$getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button'),
+		$popFromLayerInput = $form.find('#form-publish-item-service-layer'),
+		$popFromLayerButton = $form.find('#form-publish-item-service-layer-button-pop'),
 		$emphasisItemSpan = $form.find('.emphasis-item'),
 		$emphasisAggregationSpan = $form.find('.emphasis-aggregation'),
 		$isActiveStormRow = $form.find('#form-publish-info-item-active-storm'),
@@ -106,9 +111,9 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.clearForm = function () {
-		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
+		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $descriptionTinyTextArea,
-			$typeSb, $attributeSelect,
+			$typeSb, $attributeSelect, $attributeSelectHelper,
 			$srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $proxyWmsServiceParamInput,
@@ -120,10 +125,10 @@ CCH.Objects.Publish.UI = function () {
 					$item.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 				});
 
-		[$itemIdInput, $titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
+		[$itemIdInput, $titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $typeSb, 
-			$itemEnabledField, $attributeSelect,
-			$cswServiceInput, $srcWfsServiceInput,
+			$itemEnabledField, $attributeSelect, $attributeSelectHelper,
+			$cswServiceInput, $cswServiceInputButton, $srcWfsServiceInput,
 			$srcWfsServiceParamInput, $srcWmsServiceInput, $srcWmsServiceParamInput,
 			$proxyWfsServiceInput, $proxyWfsServiceParamInput, $proxyWmsServiceInput,
 			$proxyWmsServiceParamInput, $metadataSummaryField, $itemType, $name]
@@ -153,13 +158,14 @@ CCH.Objects.Publish.UI = function () {
 		
 		$itemType.val('data');
 		
-		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
+		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $bboxNorth,
-			$typeSb, $attributeSelect,
-			$srcWfsServiceInput, $srcWfsServiceParamInput,
+			$typeSb, $attributeSelect, $attributeRetrieveDataButton, $isFeaturedCB, $ribbonableCb,
+			$popFromLayerInput, $popFromLayerButton,
+			$cswServiceInput, $cswServiceInputButton, $srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
-			$proxyWmsServiceParamInput, $ribbonableCb, $name, $wfsServerHelpButton,
+			$proxyWmsServiceParamInput,  $name, $wfsServerHelpButton,
 			$wfsSourceCopyButton, $sourceWfsCheckButton,
 			$sourceWmsCheckButton, $wmsServerHelpButton, $proxyWfsCheckButton,
 			$proxyWmsCheckButton, $buttonSave, $buttonDelete,
@@ -170,8 +176,6 @@ CCH.Objects.Publish.UI = function () {
 					$item.removeAttr(CCH.CONFIG.strings.disabled);
 				});
 		
-		$proxyWfsServiceInput.val(gsBaseUrl + 'wfs');
-		$proxyWmsServiceInput.val(gsBaseUrl + 'wms');
 		$showChildrenCb.prop(CCH.CONFIG.strings.checked, false);
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
 		$isFeaturedCB.prop(CCH.CONFIG.strings.checked, false);
@@ -185,7 +189,7 @@ CCH.Objects.Publish.UI = function () {
 
 	me.enableNewAggregationForm = function () {
 		$itemType.val('aggregation');
-		[$titleFullTextArea, $titleMediumTextArea, $descriptionFullTextArea,
+		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $typeSb,
 			$attributeSelect,
 			$srcWfsServiceInput, $srcWfsServiceParamInput,
@@ -218,7 +222,7 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.isBlank = function ($ele) {
-		if (!$ele || $ele.length === 0 || !$ele.val()) {
+		if (!$ele || $.trim($ele).length === 0 || !$.trim($ele.val())) {
 			return true;
 		}
 
@@ -263,51 +267,33 @@ CCH.Objects.Publish.UI = function () {
 				}
 				
 
-				if (me.isBlank($srcWfsServiceInput)) {
-					errors.push('Source WFS Endpoint not provided');
-				} else if ($srcWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+				if ($srcWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('WFS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
-				
-				if (me.isBlank($srcWfsServiceParamInput)) {
-					errors.push('Source WFS parameter not provided');
-				} else if ($srcWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+				if ($srcWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
 					errors.push('WFS Source parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
-				if (me.isBlank($srcWmsServiceInput)) {
-					errors.push('Source WMS Endpoint not provided');
-				} else if ($srcWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+				if ($srcWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('WMS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
-				
-				if (me.isBlank($srcWmsServiceParamInput)) {
-					errors.push('Source WMS Endpoint not provided');
-				} else if ($srcWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+				if ($srcWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
 					errors.push('WMS Source parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
-				if (me.isBlank($proxyWfsServiceInput)) {
-					errors.push('Proxy WFS endpoint not provided');
-				} else if ($proxyWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+				if ($proxyWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('WFS Proxy endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
 				
-				if (me.isBlank($proxyWfsServiceParamInput)) {
-					errors.push('Proxy WFS parameter not provided');
-				} else if ($proxyWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+				if ($proxyWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
 					errors.push('WFS Proxy parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
-				if (me.isBlank($proxyWmsServiceInput)) {
-					errors.push('Proxy WMS endpoint not provided');
-				} else if ($proxyWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+				if ($proxyWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('WMS Proxy endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
 				
-				if (me.isBlank($proxyWmsServiceParamInput)) {
-					errors.push('Proxy WMS parameter not provided');
-				} else if ($proxyWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+				if ($proxyWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
 					errors.push('WMS Proxy parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
 				}
 
@@ -351,6 +337,10 @@ CCH.Objects.Publish.UI = function () {
 			} else if ($titleMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.title) {
 				errors.push('Medium title was longer than ' + CCH.CONFIG.limits.summary.medium.title + ' characters');
 			}
+			
+			if (me.isBlank($titleLegendTextArea)) {
+				errors.push('Legend title not provided');
+			} 
 
 			if (me.isBlank($descriptionFullTextArea)) {
 				errors.push('Full description not provided');
@@ -430,6 +420,9 @@ CCH.Objects.Publish.UI = function () {
 		summary.version = 'manual';
 		summary.tiny = {
 			text: $descriptionTinyTextArea.val().trim()
+		};
+		summary.legend = {
+			title: $titleLegendTextArea.val().trim()
 		};
 		summary.medium = {
 			title: $titleMediumTextArea.val().trim(),
@@ -668,9 +661,11 @@ CCH.Objects.Publish.UI = function () {
 		me.enableNewItemForm();
 
 		$cswInput.val(cswUrl);
-
+	};
+	
+	me.populateKeywordsAndBbox = function () {
 		me.getCSWInfo({
-			url: cswUrl,
+			url: $cswServiceInput.val(),
 			callbacks: {
 				success: [me.updateFormWithNewCSWInfo],
 				error: [
@@ -753,14 +748,18 @@ CCH.Objects.Publish.UI = function () {
 		$panetTitle.append('Welcome, ', username, '.');
 	};
 
-	me.updateSelectAttribtue = function (responseObject) {
+	me.updateSelectAttribute = function (responseObject) {
 		var featureTypes = responseObject.featureTypes,
 				$option,
 				ftName,
 				ftNameLower;
 
-		$attributeSelect.empty();
-
+		$attributeSelectHelper.empty();
+		var emptyOption = $('<option>')
+				.attr('value', '')
+				.html('');
+		$attributeSelectHelper.append(emptyOption);
+		
 		if (featureTypes) {
 			featureTypes = featureTypes[0];
 			featureTypes.properties.each(function (ft) {
@@ -770,13 +769,19 @@ CCH.Objects.Publish.UI = function () {
 					$option = $('<option>')
 							.attr('value', ft.name)
 							.html(ft.name);
-					$attributeSelect.append($option);
+					$attributeSelectHelper.append($option);
 				}
 			});
 		}
-		$attributeSelect.removeAttr(CCH.CONFIG.strings.disabled);
+		$attributeSelectHelper.removeAttr(CCH.CONFIG.strings.disabled);
 		$attributeRetrieveDataButton.removeAttr(CCH.CONFIG.strings.disabled);
 	};
+	
+	me.updateSelectChange = function () {
+		if ($attributeSelectHelper.val() !== '') {
+			$attributeSelect.val($attributeSelectHelper.val());
+		}
+	}
 
 	me.metadataPublishCallback = function (mdObject, status) {
 		if (status === 'success') {
@@ -836,7 +841,7 @@ CCH.Objects.Publish.UI = function () {
 				$(evt.target).closest('.well').remove();
 			});
 			$rowObject.find('select').val(type);
-			$rowObject.find('select').on('change', me.resourceTypeChanged);
+			$rowObject.find('select').on(CCH.CONFIG.strings.change, me.resourceTypeChanged);
 
 		}
 		return $rowObject;
@@ -862,6 +867,7 @@ CCH.Objects.Publish.UI = function () {
 				summary,
 				titleFull,
 				titleMedium,
+				titleLegend,
 				descriptionFull,
 				descriptionMedium,
 				descriptionTiny,
@@ -878,6 +884,7 @@ CCH.Objects.Publish.UI = function () {
 			summary = item.summary;
 			titleFull = summary.full.title;
 			titleMedium = summary.medium.title;
+			titleLegend = summary.legend.title;
 			descriptionFull = summary.full.text;
 			descriptionMedium = summary.medium.text;
 			descriptionTiny = summary.tiny.text;
@@ -929,6 +936,7 @@ CCH.Objects.Publish.UI = function () {
 					$bboxes.removeAttr(CCH.CONFIG.strings.disabled);
 				}
 			} else {
+				me.enableNewItemForm();
 				$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 				$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
 
@@ -948,38 +956,9 @@ CCH.Objects.Publish.UI = function () {
 					services[service.type].endpoint = service.endpoint;
 					services[service.type].serviceParameter = service.serviceParameter;
 				});
-
+				
+				$attributeSelect.val(item.attr);
 				if (item.services.length > 0) {
-					// Fill out attribute selectbox by making a call to the WFS
-					if (services.proxy_wfs) {
-						CCH.ows.describeFeatureType({
-							layerName: services.proxy_wfs.serviceParameter,
-							sourceServer: CCH.CONFIG.strings.cidaGeoserver,
-							callbacks: {
-								success: [function (responseObject) {
-										me.updateSelectAttribtue(responseObject);
-										$attributeSelect
-												.val(item.attr)
-												.removeAttr(CCH.CONFIG.strings.disabled);
-									}],
-								error: [
-									function (data) {
-										var errorText = data.firstChild.textContent.trim();
-										if (errorText.indexOf('not find') !== -1) {
-											$srcWfsServiceInput.empty();
-											$srcWfsServiceParamInput.empty();
-											$srcWmsServiceInput.empty();
-											$srcWmsServiceParamInput.empty();
-											$alertModalTitle.html('Proxy Layer Could Not Be Found');
-											$alertModalBody.html('The proxy layer could not be found on our server.' +
-													' You may want to try re-importing it');
-											$alertModal.modal(CCH.CONFIG.strings.show);
-										}
-									}
-								]
-							}
-						});
-					}
 
 					// Fill out services panel
 					if (services.csw) {
@@ -1026,23 +1005,6 @@ CCH.Objects.Publish.UI = function () {
 								.removeAttr(CCH.CONFIG.strings.disabled);
 					}
 				}
-
-				[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
-					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
-					$proxyWmsCheckButton,
-					$titleFullTextArea, $titleMediumTextArea, $ribbonableCb,
-					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
-					$buttonSave, $buttonDelete]
-						.concat($bboxes)
-						.concat($keywordGroup.find('input'))
-						.concat($keywordGroup.find('button'))
-						.each(function ($item) {
-					$item.removeAttr(CCH.CONFIG.strings.disabled);
-				});
-				
-				
-				$metadataDropdownGroup.removeClass(CCH.CONFIG.strings.hidden);
-				$uploaderDummy.empty().removeClass(CCH.CONFIG.strings.hidden);
 				
 				me.createUploader({
 					callbacks: {
@@ -1081,7 +1043,7 @@ CCH.Objects.Publish.UI = function () {
 			[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
 					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
 					$proxyWmsCheckButton, $isFeaturedCB,
-					$titleFullTextArea, $titleMediumTextArea, $ribbonableCb,
+					$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $ribbonableCb,
 					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
 					$buttonSave, $buttonDelete, $ribbonableCb, $metadataSummaryField]
 						.concat($bboxes)
@@ -1094,6 +1056,7 @@ CCH.Objects.Publish.UI = function () {
 			$name.val(item.name);
 			$titleFullTextArea.val(titleFull);
 			$titleMediumTextArea.val(titleMedium);
+			$titleLegendTextArea.val(titleLegend);
 			$descriptionFullTextArea.val(descriptionFull);
 			$descriptionMediumTextArea.val(descriptionMedium);
 			$descriptionTinyTextArea.val(descriptionTiny);
@@ -1148,7 +1111,7 @@ CCH.Objects.Publish.UI = function () {
 			callbacks: {
 				success: [
 					function (featureDescription) {
-						me.updateSelectAttribtue(featureDescription);
+						me.updateSelectAttribute(featureDescription);
 					}
 				],
 				error: [
@@ -1369,6 +1332,50 @@ CCH.Objects.Publish.UI = function () {
 			});
 		}
 	};
+	
+	me.loadLayerInfo = function (layerid) {
+		if (layerid) {
+			var layerurl = CCH.CONFIG.contextPath + '/data/layer/' + layerid;
+			$.ajax({
+				url: layerurl,
+				success: function (data) {
+					for (var i=0; i < data.services.length; i++) {
+						var service = data.services[i];
+						var serviceEndpoint = (service.hasOwnProperty("endpoint")) ? service.endpoint : "";
+						var serviceParameter = (service.hasOwnProperty("serviceParameter")) ? service.serviceParameter : "";
+						if (service.type === "csw") {
+							$cswServiceInput.val(serviceEndpoint);
+						} else if (service.type === "source_wfs") {
+							$srcWfsServiceInput.val(serviceEndpoint);
+							$srcWfsServiceParamInput.val(serviceParameter);
+						} else if (service.type === "source_wms") {
+							$srcWmsServiceInput.val(serviceEndpoint);
+							$srcWmsServiceParamInput.val(serviceParameter);
+						} else if (service.type === "proxy_wfs") {
+							$proxyWfsServiceInput.val(serviceEndpoint);
+							$proxyWfsServiceParamInput.val(serviceParameter);
+						} else if (service.type === "proxy_wms") {
+							$proxyWmsServiceInput.val(serviceEndpoint);
+							$proxyWmsServiceParamInput.val(serviceParameter);
+						}
+					}
+				},
+				error: function (err) {
+					$alertModal.modal(CCH.CONFIG.strings.hide);
+					$alertModalTitle.html('Unable To Load layer');
+					$alertModalBody.html(err.statusText + ' <br /><br />Correct id and try again or contact system administrator');
+					$alertModal.modal(CCH.CONFIG.strings.show);
+				}
+			});
+		} else {
+			(function () {
+				$alertModal.modal(CCH.CONFIG.strings.hide);
+				$alertModalTitle.html('Layer id required');
+				$alertModalBody.html('input layer id and try again');
+				$alertModal.modal(CCH.CONFIG.strings.show);
+			})();
+		}
+	};
 
 	me.getDataForAttribute = function () {
 		var attribute = $attributeSelect.val();
@@ -1384,6 +1391,8 @@ CCH.Objects.Publish.UI = function () {
 
 						$titleMediumTextArea.val(response.medium.title || '');
 						$descriptionMediumTextArea.val(response.medium.text || '');
+						
+						$titleLegendTextArea.val(response.legend.title || '');
 
 						$descriptionTinyTextArea.val(response.tiny.text || '');
 
@@ -1492,7 +1501,7 @@ CCH.Objects.Publish.UI = function () {
 							callbacks: {
 								success: [
 									function (featureDescription) {
-										me.updateSelectAttribtue(featureDescription);
+										me.updateSelectAttribute(featureDescription);
 									}
 								],
 								error: [
@@ -1623,16 +1632,15 @@ CCH.Objects.Publish.UI = function () {
 	$('#publish-button-create-item-option').on(CCH.CONFIG.strings.click, function () {
 		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
 		me.clearForm();
-		$uploaderDummy.removeClass(CCH.CONFIG.strings.hidden);
-		$metadataDropdownGroup.removeClass(CCH.CONFIG.strings.hidden);
+		me.enableNewItemForm();
 
 		var mdgClickHandler = function (evt) {
 			$(evt.target).off(CCH.CONFIG.strings.click, mdgClickHandler);
-			me.initNewItemForm();
 		};
 
 		$metadataDropdownGroup.find('a').on(CCH.CONFIG.strings.click, mdgClickHandler);
 
+		
 		me.createUploader({
 			callbacks: {
 				success: [
@@ -1646,7 +1654,6 @@ CCH.Objects.Publish.UI = function () {
 											if (status === 'success') {
 												$itemType.val('data');
 												$('#form-publish-item-service-csw').val(mdObject.metadata);
-												me.initNewItemForm();
 											}
 										}
 									],
@@ -1780,6 +1787,14 @@ CCH.Objects.Publish.UI = function () {
 
 	$attributeRetrieveDataButton.on(CCH.CONFIG.strings.click, function () {
 		me.getDataForAttribute();
+	});
+	
+	$attributeSelectHelper.on(CCH.CONFIG.strings.change, me.updateSelectChange);
+
+	$cswServiceInputButton.on(CCH.CONFIG.strings.click, me.populateKeywordsAndBbox);
+
+	$popFromLayerButton.on(CCH.CONFIG.strings.click, function() {
+		me.loadLayerInfo($popFromLayerInput.val());
 	});
 
 	$sourceWfsCheckButton.on(CCH.CONFIG.strings.click, function () {
@@ -2081,7 +2096,7 @@ CCH.Objects.Publish.UI = function () {
 				callbacks: {
 					success: [
 						function (featureDescription) {
-							me.updateSelectAttribtue(featureDescription);
+							me.updateSelectAttribute(featureDescription);
 						}
 					],
 					error: [
