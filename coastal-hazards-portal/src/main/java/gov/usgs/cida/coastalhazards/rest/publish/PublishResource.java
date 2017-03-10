@@ -62,22 +62,6 @@ public class PublishResource {
     @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @GET
     @Produces(MediaType.TEXT_HTML)
-    @Path("/layer/raster")
-    public Response createRasterItem(@Context HttpServletRequest req) throws URISyntaxException {
-       return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/raster.jsp", new HashMap<>(0))).build();
-    }
-	
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-    @GET
-    @Produces(MediaType.TEXT_HTML)
-    @Path("/layer/vector")
-    public Response createVectorItem(@Context HttpServletRequest req) throws URISyntaxException {
-       return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/vector.jsp", new HashMap<>(0))).build();
-    }
-    
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-    @GET
-    @Produces(MediaType.TEXT_HTML)
     @Path("/item/{token}")
     public Response viewItemById(@Context HttpServletRequest req, @PathParam("token") String token) throws URISyntaxException {
         Map<String, String> map = new HashMap<>(1);
