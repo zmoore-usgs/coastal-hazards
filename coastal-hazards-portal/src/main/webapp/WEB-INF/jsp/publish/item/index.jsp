@@ -564,6 +564,8 @@
 						</form>
 						<br/>
 						<p id="vector-modal-result"></p>
+						<br/>
+						<p>Warning: Populating services while editing an item will overwrite the services of that item.</p>
 					</div>
 					<div class="modal-footer">
 						<button id="vector-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Services From Layer</button>
@@ -595,6 +597,8 @@
 						</form>
 						<br/>
 						<p id="raster-modal-result"></p>
+						<br/>
+						<p>Warning: Populating services while editing an item will overwrite the services of that item.</p>
 					</div>
 					<div class="modal-footer">
 						<button id="raster-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Services From Layer</button>
