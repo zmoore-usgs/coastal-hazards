@@ -160,20 +160,12 @@
 								<li><a id="publish-button-create-template-option" href="#">Template</a></li>
 							</ul>
 						</div>
-
-						<div id="publish-button-edit-metadata-existing-grp" class="btn-group hidden">
-							<button type="button" id="publish-button-edit-metadata-existing" class="btn btn-lg btn-success dropdown-toggle" data-toggle="dropdown">
-								Select Metadata <span class="caret"></span>
-							</button>
-							<ul id="publish-list-edit-metadata-existing" class="dropdown-menu" role="menu"></ul>
-						</div>
 						<button type="button" id="publish-button-create-vector-layer" class="btn btn-lg btn-success">
 							Create Vector Layer
 						</button>	
 						<button type="button" id="publish-button-create-raster-layer" class="btn btn-lg btn-success">
 							Create Raster Layer
-						</button>		
-						<div id="qq-uploader-dummy"></div>
+						</button>
 						<button type="button" id="publish-button-save" class="btn btn-lg btn-success" disabled="disabled">
 							Save
 						</button>
@@ -568,13 +560,14 @@
 								<input type="file" name="file"/>
 							</div>
 							<br/>
-							<button type="button" id="vector-modal-submit-btn">Submit</button>
+							<button type="button" id="vector-modal-submit-btn">Create Layer</button>
 						</form>
+						<br/>
 						<p id="vector-modal-result"></p>
 					</div>
 					<div class="modal-footer">
-						<button id="vector-modal-populate-button" type="button" class="btn btn-default" disabled="disabled">Populate Current Item From Layer</button>
-						<button id="vector-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						<button id="vector-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Current Item From Layer</button>
+						<button id="vector-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 					</div>
 				</div>
 			</div>
@@ -598,13 +591,14 @@
 								<input type="file" name="file"/>
 							</div>
 							<br/>
-							<button type="button" id="raster-modal-submit-btn">Upload</button>
+							<button type="button" id="raster-modal-submit-btn">Create Layer</button>
 						</form>
+						<br/>
 						<p id="raster-modal-result"></p>
 					</div>
 					<div class="modal-footer">
-						<button id="raster-modal-populate-button" type="button" class="btn btn-default" disabled="disabled">Populate Current Item From Layer</button>
-						<button id="raster-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						<button id="raster-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Current Item From Layer</button>
+						<button id="raster-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 					</div>
 				</div>
 			</div>
