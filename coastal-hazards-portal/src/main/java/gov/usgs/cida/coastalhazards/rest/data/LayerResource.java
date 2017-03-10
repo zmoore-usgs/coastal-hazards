@@ -143,7 +143,20 @@ public class LayerResource {
 		return response;
 	}
 	
-        @POST
+	@POST
+	@Path("/")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.TEXT_PLAIN)
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	public Response createVectorLayerForm(@Context HttpServletRequest req, @FormDataParam("file") InputStream postBody) {
+		Response response = null;
+		
+		response = createVectorLayer(req, postBody);
+		
+		return response;
+	}
+	
+    @POST
 	@Path("/raster")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.TEXT_PLAIN)

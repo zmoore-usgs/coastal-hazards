@@ -1501,7 +1501,7 @@ CCH.Objects.Publish.UI = function () {
 							callbacks: {
 								success: [
 									function (featureDescription) {
-										me.updateSelectAttribtue(featureDescription);
+										me.updateSelectAttribute(featureDescription);
 									}
 								],
 								error: [
@@ -2096,7 +2096,7 @@ CCH.Objects.Publish.UI = function () {
 				callbacks: {
 					success: [
 						function (featureDescription) {
-							me.updateSelectAttribtue(featureDescription);
+							me.updateSelectAttribute(featureDescription);
 						}
 					],
 					error: [
