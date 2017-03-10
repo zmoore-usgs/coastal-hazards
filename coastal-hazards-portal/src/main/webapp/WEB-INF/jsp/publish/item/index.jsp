@@ -566,7 +566,7 @@
 						<p id="vector-modal-result"></p>
 					</div>
 					<div class="modal-footer">
-						<button id="vector-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Current Item From Layer</button>
+						<button id="vector-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Services From Layer</button>
 						<button id="vector-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 					</div>
 				</div>
@@ -597,7 +597,7 @@
 						<p id="raster-modal-result"></p>
 					</div>
 					<div class="modal-footer">
-						<button id="raster-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Current Item From Layer</button>
+						<button id="raster-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Services From Layer</button>
 						<button id="raster-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 					</div>
 				</div>
