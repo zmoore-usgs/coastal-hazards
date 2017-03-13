@@ -53,10 +53,13 @@ CCH.Objects.Publish.UI = function () {
 		$alertModalTitle = $alertModal.find('.modal-title'),
 		$alertModalBody = $alertModal.find('.modal-body'),
 		$alertModalFooter = $alertModal.find('.modal-footer'),
-		$metadataDropdownGroup = $('#publish-button-edit-metadata-existing-grp'),
-		$metadataDropdownList = $('#publish-list-edit-metadata-existing'),
+		$vectorModal = $('#vector-modal'),
+		$vectorModalSubmitButton = $('#vector-modal-submit-btn'),
+		$vectorModalPopButton = $('#vector-modal-populate-button'),
+		$rasterModal = $('#raster-modal'),
+		$rasterModalPopButton = $('#raster-modal-populate-button'),
+		$rasterModalSubmitButton = $('#raster-modal-submit-btn'),
 		$metadataSummaryField = $('#form-publish-info-item-summary-version'),
-		$uploaderDummy = $('#qq-uploader-dummy'),
 		$itemEnabledField = $('#form-publish-info-item-enabled'),
 		$itemImage = $form.find('#form-publish-info-item-image'),
 		$imageGenButton = $form.find('#form-publish-info-item-image-gen'),
@@ -64,6 +67,8 @@ CCH.Objects.Publish.UI = function () {
 		$buttonDelete = $('#publish-button-delete'),
 		$buttonLogout = $('#publish-button-logout'),
 		$buttonViewAll = $('#publish-button-view-all'),
+		$buttonCreateVectorLayer = $('#publish-button-create-vector-layer'),
+		$buttonCreateRasterLayer = $('#publish-button-create-raster-layer'),
 		$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
 		$wfsHelpLink = $form.find('.form-publish-item-service-source-wfs-import-button-service-help-link'),
 		$wmsHelpLink = $form.find('.form-publish-item-service-source-wms-import-button-service-help-link'),
@@ -80,7 +85,10 @@ CCH.Objects.Publish.UI = function () {
 		$emphasisAggregationSpan = $form.find('.emphasis-aggregation'),
 		$isActiveStormRow = $form.find('#form-publish-info-item-active-storm'),
 		$isActiveStormChecbox = $form.find('#checkbox-isactive'),
-		$resourceSortableContainers = $('.resource-list-container-sortable');
+		$resourceSortableContainers = $('.resource-list-container-sortable'),
+		$newVectorLayerId = null,
+		$newRasterLayerId = null,
+		$editingEnabled = false;
 
 	me.templates = {};
 
@@ -141,10 +149,11 @@ CCH.Objects.Publish.UI = function () {
 		[$ribbonableCb, $showChildrenCb, $isActiveStormChecbox, $isFeaturedCB].each(function ($i) {
 			$i.prop(CCH.CONFIG.strings.checked, false);
 		});
-		
+		$editingEnabled = false;
+		$vectorModalPopButton.prop("disabled", true);
+		$rasterModalPopButton.prop("disabled", true);
 		$('.form-group-keyword').not(':first').remove();
 		$('.form-group-keyword button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
-		$metadataDropdownGroup.addClass(CCH.CONFIG.strings.hidden);
 		$publicationsPanel.find('.resource-list-container-sortable').empty();
 		$itemImage.attr('src', '');
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
@@ -175,12 +184,18 @@ CCH.Objects.Publish.UI = function () {
 				.each(function ($item) {
 					$item.removeAttr(CCH.CONFIG.strings.disabled);
 				});
+		$editingEnabled = true;
 		
+		if($newVectorLayerId !== null){
+			$vectorModalPopButton.prop("disabled", false);
+		}
+		
+		if($newRasterLayerId !== null){
+			$rasterModalPopButton.prop("disabled", false);
+		}
 		$showChildrenCb.prop(CCH.CONFIG.strings.checked, false);
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
 		$isFeaturedCB.prop(CCH.CONFIG.strings.checked, false);
-		$uploaderDummy.removeClass(CCH.CONFIG.strings.hidden);
-		$metadataDropdownGroup.removeClass(CCH.CONFIG.strings.hidden);
 		$emphasisItemSpan.addClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$itemEnabledField.val('false');
@@ -205,7 +220,15 @@ CCH.Objects.Publish.UI = function () {
 				.each(function ($item) {
 					$item.removeAttr(CCH.CONFIG.strings.disabled);
 				});
+		$editingEnabled = true;
 		
+		if($newVectorLayerId !== null){
+			$vectorModalPopButton.prop("disabled", false);
+		}
+		
+		if($newRasterLayerId !== null){
+			$rasterModalPopButton.prop("disabled", false);
+		}
 		$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
 		$itemEnabledField.val('false');
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
@@ -508,64 +531,6 @@ CCH.Objects.Publish.UI = function () {
 		return item;
 	};
 
-	me.initUploader = function (args) {
-		args = args || {};
-		var button = args.button,
-			callbacks = args.callbacks || {
-				success: [],
-				error: []
-			},
-			qqUploader;
-
-		qqUploader = new qq.FineUploader({
-			element: button,
-			autoUpload: true,
-			paramsInBody: false,
-			forceMultipart: false,
-			request: {
-				endpoint: CCH.CONFIG.contextPath + '/data/metadata/'
-			},
-			validation: {
-				allowedExtensions: ['xml'],
-				sizeLimit: 15728640
-			},
-			callbacks: {
-				onComplete: function (id, fileName, responseJSON) {
-					if (responseJSON.success) {
-						callbacks.success.each(function (cb) {
-							cb({
-								token: responseJSON.fid,
-								id: id,
-								fileName: fileName,
-								responseJSON: responseJSON
-							});
-						});
-					} else {
-						callbacks.error.each(function (cb) {
-							cb({
-								token: responseJSON.fid,
-								id: id,
-								fileName: fileName,
-								responseJSON: responseJSON
-							});
-						});
-					}
-				}
-			}
-		});
-		$('#qq-uploader-dummy').css('display', 'inline-block');
-		$('.qq-upload-button').find('> div').html('Upload Metadata');
-		$(button).click();
-		return qqUploader;
-	};
-
-	me.createUploader = function (args) {
-		me.initUploader({
-			button: document.getElementById('qq-uploader-dummy'),
-			callbacks: args.callbacks
-		});
-	};
-
 	me.bindKeywordGroup = function ($grp) {
 		$grp.find('button')
 			.on(CCH.CONFIG.strings.click, function () {
@@ -612,13 +577,6 @@ CCH.Objects.Publish.UI = function () {
 
 	me.updateFormWithNewCSWInfo = function (responseObject, textStatus) {
 		if (textStatus === 'success') {
-			
-			CCH.ows.requestCSWRecords({
-				maxRecords: 100000,
-				callbacks: {
-					success: [me.updateMetadataDropdown]
-				}
-			});
 			
 			var cswNodes = responseObject.children,
 					tag;
@@ -781,7 +739,7 @@ CCH.Objects.Publish.UI = function () {
 		if ($attributeSelectHelper.val() !== '') {
 			$attributeSelect.val($attributeSelectHelper.val());
 		}
-	}
+	};
 
 	me.metadataPublishCallback = function (mdObject, status) {
 		if (status === 'success') {
@@ -928,10 +886,6 @@ CCH.Objects.Publish.UI = function () {
 						.prop(CCH.CONFIG.strings.checked, item.showChildren)
 						.removeAttr(CCH.CONFIG.strings.disabled);
 
-				$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
-				
-				$metadataDropdownGroup.addClass(CCH.CONFIG.strings.hidden);
-
 				if (CCH.CONFIG.ui.disableBoundingBoxInputForAggregations === false) {
 					$bboxes.removeAttr(CCH.CONFIG.strings.disabled);
 				}
@@ -1005,39 +959,6 @@ CCH.Objects.Publish.UI = function () {
 								.removeAttr(CCH.CONFIG.strings.disabled);
 					}
 				}
-				
-				me.createUploader({
-					callbacks: {
-						success: [
-							function (args) {
-								if (args.responseJSON && args.responseJSON.success === 'true') {
-									me.publishMetadata({
-										token: args.token,
-										callbacks: {
-											success: [me.metadataPublishCallback],
-											error: [
-												function () {
-													$alertModal.modal(CCH.CONFIG.strings.hide);
-													$alertModalTitle.html('Metadata Could Not Be Saved');
-													$alertModalBody.html('Unfortunately your metadata could not be saved.');
-													$alertModal.modal(CCH.CONFIG.strings.show);
-												}
-											]
-										}
-									});
-								}
-							}
-						],
-						error: [
-							function () {
-								$alertModal.modal(CCH.CONFIG.strings.hide);
-								$alertModalTitle.html('Unable to initialize uploading functionality');
-								$alertModalBody.html('Unfortunately you may not be able to upload metadata.');
-								$alertModal.modal(CCH.CONFIG.strings.show);
-							}
-						]
-					}
-				});
 			}
 			
 			[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
@@ -1421,59 +1342,6 @@ CCH.Objects.Publish.UI = function () {
 		});
 	};
 	
-	me.updateMetadataDropdown = function (cswResponse) {
-		
-		$metadataDropdownList.empty();
-		
-		cswResponse.children.each(function (responseChild) {
-			if (responseChild.tag === "csw:SearchResults" || responseChild.tag === "metadata" && responseChild.children) {
-				var id,
-						title,
-						$li,
-						$a;
-
-				if (responseChild.children) {
-					responseChild.children.each(function (recordSummary) {
-						recordSummary.children.each(function (recordAttribute) {
-							if (recordAttribute.tag === "dc:identifier") {
-								id = recordAttribute.text;
-							} else if (recordAttribute.tag === "dc:title") {
-								title = recordAttribute.text;
-							}
-						});
-
-						if (id && title) {
-							$li = $('<li />');
-							$a = $('<a />')
-									.attr({
-										'data-attr': id,
-										'href': '#'
-									})
-									.html(title);
-							$li.append($a);
-							$metadataDropdownList.append($li);
-
-							$a.on(CCH.CONFIG.strings.click, function (evt) {
-								var endpoint = CCH.CONFIG.publicUrl;
-								endpoint += '/csw/?';
-								endpoint += 'service=CSW';
-								endpoint += '&request=GetRecordById';
-								endpoint += '&version=2.0.2';
-								endpoint += '&typeNames=fgdc:metadata';
-								endpoint += '&id=' + $(evt.target).attr('data-attr');
-								endpoint += '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
-								endpoint += '&elementSetName=full';
-								$cswServiceInput.val(endpoint);
-
-							});
-						}
-					});
-				}
-				
-			}
-		});
-	};
-
 	$wfsImportButton.on(CCH.CONFIG.strings.click, function () {
 		var importCall,
 				sourceWfs = $srcWfsServiceInput.val(),
@@ -1633,53 +1501,6 @@ CCH.Objects.Publish.UI = function () {
 		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
 		me.clearForm();
 		me.enableNewItemForm();
-
-		var mdgClickHandler = function (evt) {
-			$(evt.target).off(CCH.CONFIG.strings.click, mdgClickHandler);
-		};
-
-		$metadataDropdownGroup.find('a').on(CCH.CONFIG.strings.click, mdgClickHandler);
-
-		
-		me.createUploader({
-			callbacks: {
-				success: [
-					function (args) {
-						if (args.responseJSON && args.responseJSON.success === 'true') {
-							me.publishMetadata({
-								token: args.token,
-								callbacks: {
-									success: [
-										function (mdObject, status) {
-											if (status === 'success') {
-												$itemType.val('data');
-												$('#form-publish-item-service-csw').val(mdObject.metadata);
-											}
-										}
-									],
-									error: [
-										function () {
-											$alertModal.modal(CCH.CONFIG.strings.hide);
-											$alertModalTitle.html('Metadata Could Not Be Uploaded');
-											$alertModalBody.html('Please try again or contact a system administrator');
-											$alertModal.modal(CCH.CONFIG.strings.show);
-										}
-									]
-								}
-							});
-						}
-					}
-				],
-				error: [
-					function () {
-						$alertModal.modal(CCH.CONFIG.strings.hide);
-						$alertModalTitle.html('Uploader Not Created');
-						$alertModalBody.html('There was a problem creating the uploader. Metadata Uploads may not be possible.');
-						$alertModal.modal(CCH.CONFIG.strings.show);
-					}
-				]
-			}
-		});
 	});
 
 	$proxyWfsServiceInput.on('blur', me.wfsInfoUpdated);
@@ -1773,6 +1594,14 @@ CCH.Objects.Publish.UI = function () {
 		if (id !== '') {
 			me.deleteItem(id);
 		}
+	});
+	
+	$buttonCreateVectorLayer.on(CCH.CONFIG.strings.click, function() {
+		$vectorModal.modal(CCH.CONFIG.strings.show);
+	});
+	
+	$buttonCreateRasterLayer.on(CCH.CONFIG.strings.click, function() {
+		$rasterModal.modal(CCH.CONFIG.strings.show);
 	});
 
 	$wfsHelpLink.on(CCH.CONFIG.strings.click, function (evt) {
@@ -2141,6 +1970,124 @@ CCH.Objects.Publish.UI = function () {
 			}
 		});
 	});
+	
+	var getLayerIdFromUrl = function(layerUrl){
+		return layerUrl.from(layerUrl.lastIndexOf('/') + 1);
+	};
+	
+	$vectorModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
+		var $result = $('#vector-modal-result');
+		var $form = $('#vector-form');
+		var $closeButton = $('#vector-modal-close-button');
+		var $cancelButton = $('#vector-modal-cancel-button');
+		
+		$newVectorLayerId = null;
+		$result.empty();
+		$result.append('Working...');
+		$closeButton.prop("disabled",true);
+		$cancelButton.prop("disabled",true);
+		$vectorModalPopButton.prop("disabled",true);
+		e.preventDefault();
+		var formData = new FormData($form[0]);
+		$.ajax({
+			url: CCH.baseUrl + "/data/layer/",
+			type: 'POST',
+			data: formData,
+			contentType: false,
+			processData: false
+		})
+		.done(function(data, textStatus, jqXHR){
+			$result.empty();
+			
+			var status = jqXHR.status;
+			var layerUrl = jqXHR.getResponseHeader('Location');
+			var layerId = getLayerIdFromUrl(layerUrl);
+			if(201 === status){
+				$newVectorLayerId = layerId;
+				$result.append("Successfully published layer " + layerId + " . Click ");
+				$result.append('<a href="' + layerUrl + '">here</a> to see the layer');
+				
+				if($editingEnabled){
+					$vectorModalPopButton.prop("disabled",false);
+				}
+			} else {
+				$result.append("Received unexpected response: '" + data + "'. Layer might not have been created correctly.");
+				$newVectorLayerId = null;
+			}
+			$closeButton.prop("disabled",false);
+			$cancelButton.prop("disabled",false);
+		})
+		.fail(function(jqXHR, textStatus, errorThrown){
+			$result.empty();
+			$result.append("Error");
+			$closeButton.prop("disabled",false);
+			$cancelButton.prop("disabled",false);
+			$newVectorLayerId = null;
+		});
+	});
+	
+	$rasterModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
+		var $result = $('#raster-modal-result');
+		var $form = $('#raster-form');
+		var $closeButton = $('#raster-modal-close-button');
+		var $cancelButton = $('#raster-modal-cancel-button');
+		
+		$newRasterLayerId = null;
+		$result.empty();
+		$result.append('Working...');
+		$closeButton.prop("disabled",true);
+		$cancelButton.prop("disabled",true);
+		$rasterModalPopButton.prop("disabled",true);
+		e.preventDefault();
+		var formData = new FormData($form[0]);
+		$.ajax({
+			url: CCH.baseUrl + "/data/layer/raster",
+			type: 'POST',
+			data: formData,
+			contentType: false,
+			processData: false
+		})
+		.done(function(data, textStatus, jqXHR){
+			$result.empty();
+			
+			var status = jqXHR.status;
+			var layerUrl = jqXHR.getResponseHeader('Location');
+			var layerId = getLayerIdFromUrl(layerUrl);
+			if(201 === status){
+				$newRasterLayerId = layerId;
+				$result.append("Successfully published layer " + layerId + " . Click ");
+				$result.append('<a href="' + layerUrl + '">here</a> to see the layer');
+				
+				if($editingEnabled)
+				{
+					$rasterModalPopButton.prop("disabled",false);
+				}
+			} else {
+				$result.append("Received unexpected response: '" + data + "'. Layer might not have been created correctly.");
+				$newRasterLayerId = null;
+			}
+			
+			$closeButton.prop("disabled",false);
+			$cancelButton.prop("disabled",false);
+		})
+		.fail(function(jqXHR, textStatus, errorThrown){
+			$result.empty();
+			$result.append("Error");
+			$newRasterLayerId = null;
+			$closeButton.prop("disabled",false);
+			$cancelButton.prop("disabled",false);
+		});
+	});	
+	
+	$vectorModalPopButton.on(CCH.CONFIG.strings.click, function(){
+		$popFromLayerInput.val($newVectorLayerId);
+		me.loadLayerInfo($popFromLayerInput.val());
+	});
+	
+	$rasterModalPopButton.on(CCH.CONFIG.strings.click, function(){
+		$popFromLayerInput.val($newRasterLayerId);
+		me.loadLayerInfo($popFromLayerInput.val());
+	});
 
 	me.clearForm();
 
@@ -2150,21 +2097,6 @@ CCH.Objects.Publish.UI = function () {
 			$isActiveStormRow.removeClass('hidden');
 		} else {
 			$isActiveStormRow.addClass('hidden');
-		}
-	});
-
-	CCH.ows.requestCSWRecords({
-		maxRecords: 100000,
-		callbacks: {
-			success: [me.updateMetadataDropdown],
-			error: [
-				function (response) {
-					$alertModal.modal(CCH.CONFIG.strings.hide);
-					$alertModalTitle.html('CSW Record Could Not Be Attained');
-					$alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
-					$alertModal.modal(CCH.CONFIG.strings.show);
-				}
-			]
 		}
 	});
 
