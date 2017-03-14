@@ -160,20 +160,12 @@
 								<li><a id="publish-button-create-template-option" href="#">Template</a></li>
 							</ul>
 						</div>
-
-						<div id="publish-button-edit-metadata-existing-grp" class="btn-group hidden">
-							<button type="button" id="publish-button-edit-metadata-existing" class="btn btn-lg btn-success dropdown-toggle" data-toggle="dropdown">
-								Select Metadata <span class="caret"></span>
-							</button>
-							<ul id="publish-list-edit-metadata-existing" class="dropdown-menu" role="menu"></ul>
-						</div>
-						<div id="publish-button-create-vector-layer-grp" class="btn-group">
-							<a href="<%=baseUrl%>/publish/layer/vector" class="btn btn-lg btn-success">Create Vector Layer</a>
-						</div>
-						<div id="publish-button-create-raster-layer-grp" class="btn-group">
-							<a href="<%=baseUrl%>/publish/layer/raster" class="btn btn-lg btn-success">Create Raster Layer</a>
-						</div>
-						<div id="qq-uploader-dummy"></div>
+						<button type="button" id="publish-button-create-vector-layer" class="btn btn-lg btn-success">
+							Create Vector Layer
+						</button>	
+						<button type="button" id="publish-button-create-raster-layer" class="btn btn-lg btn-success">
+							Create Raster Layer
+						</button>
 						<button type="button" id="publish-button-save" class="btn btn-lg btn-success" disabled="disabled">
 							Save
 						</button>
@@ -550,6 +542,67 @@
 					<div class="modal-body"></div>
 					<div class="modal-footer">
 						<button id="alert-modal-close-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="vector-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" id="vector-modal-close-button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Upload Vector Data</h4>
+					</div>
+					<div class="modal-body">
+						<form id="vector-form" enctype="multipart/form-data">
+							<div>
+								<label for="file">Zipped Shape File</label>
+								<input type="file" name="file"/>
+							</div>
+							<br/>
+							<button type="button" id="vector-modal-submit-btn">Create Layer</button>
+						</form>
+						<br/>
+						<p id="vector-modal-result"></p>
+						<br/>
+						<p>Warning: Populating services while editing an item will overwrite the services of that item.</p>
+					</div>
+					<div class="modal-footer">
+						<button id="vector-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Services From Layer</button>
+						<button id="vector-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="raster-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" id="raster-modal-close-button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Upload Raster Data</h4>
+					</div>
+					<div class="modal-body">
+						<form id="raster-form" enctype="multipart/form-data">
+							<div>
+								<label for="metadata">Metadata XML</label>
+								<input type="file" name="metadata"/>
+							</div>
+							<br/>
+							<div>
+								<label for="file">Zipped GeoTIFF</label>
+								<input type="file" name="file"/>
+							</div>
+							<br/>
+							<button type="button" id="raster-modal-submit-btn">Create Layer</button>
+						</form>
+						<br/>
+						<p id="raster-modal-result"></p>
+						<br/>
+						<p>Warning: Populating services while editing an item will overwrite the services of that item.</p>
+					</div>
+					<div class="modal-footer">
+						<button id="raster-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Services From Layer</button>
+						<button id="raster-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 					</div>
 				</div>
 			</div>
