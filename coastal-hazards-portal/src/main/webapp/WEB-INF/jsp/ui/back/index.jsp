@@ -209,18 +209,16 @@
                                 <h4 id="modal-label-download">Download this Dataset</h4>
                             </div>
                             <div class="modal-body">
-                                <div class="row">
-                                    <div class="well well-small">
-                                        <div id="modal-download-url-disp-div">
-											<p id="modal-download-url-href-p">Download Link: 
-												<a id="modal-download-url-href" href="" target="_blank" title="modal-download-url-href">Loading...</a>
-											</p>
-											<p id="modal-download-url-disp" title="modal-download-url-p">Loading...</p>
-											<small id="modal-download-valid-desc">The above URL will automatically open in a new page in 5 seconds. If the new page does not open click above to proceed.</small>
-											<small id="modal-download-invalid-desc"></small>
-                                        </div>
-                                    </div>
-                                </div>
+								<div class="well well-small">
+									<div id="modal-download-url-disp-div">
+										<p id="modal-download-url-href-p">Download Link: 
+											<a id="modal-download-url-href" href="" target="_blank" title="modal-download-url-href">Loading...</a>
+										</p>
+										<p id="modal-download-url-disp" title="modal-download-url-p">Loading...</p>
+										<small id="modal-download-valid-desc">The above URL will automatically open in a new page in 5 seconds. If the new page does not open click above to proceed.</small>
+										<small id="modal-download-invalid-desc"></small>
+									</div>
+								</div>
                             </div>
                             <div class="modal-footer">
                                 <a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
