@@ -26,10 +26,11 @@ public class Summary implements Serializable {
 	private transient int id;
 	private String version;
 	private Tiny tiny;
-        private Legend legend;
+	private Legend legend;
 	private Medium medium;
 	private Full full;
 	private String keywords;
+	private Download download;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -60,13 +61,22 @@ public class Summary implements Serializable {
 		this.tiny = tiny;
 	}
         
-        @Embedded
+	@Embedded
 	public Legend getLegend() {
 		return legend;
 	}
 
 	public void setLegend(Legend legend) {
 		this.legend = legend;
+	}
+	
+	@Embedded
+	public Download getDownload() {
+		return download;
+	}
+	
+	public void setDownload(Download download) {
+		this.download = download;
 	}
 
 	@Embedded
@@ -102,8 +112,9 @@ public class Summary implements Serializable {
 		}
 		summary.setVersion(from.getVersion());
 		summary.setTiny(from.getTiny());
-                summary.setLegend(from.getLegend());
+        summary.setLegend(from.getLegend());
 		summary.setMedium(from.getMedium());
+		summary.setDownload(from.getDownload());
 		Full toFull = new Full();
 		if (to != null) {
 			toFull = to.getFull();

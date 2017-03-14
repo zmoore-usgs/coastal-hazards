@@ -3,9 +3,12 @@
 	"tiny": {
 		"text": "Mean water levels (setup + surge) CAT1 hurricane"
 	},
-        "legend": {
-                "title": "Mean water levels (setup + surge)"
-        },
+	"download": {
+			"link": "My download link goes here"
+	},
+	"legend": {
+			"title": "Mean water levels (setup + surge)"
+	},
 	"medium": {
 		"title": "Mean water levels during a category 1 hurricane",
 		"text": "These data represent the storm-induced mean water levels at the shoreline for generalized category 1 hurricane conditions. Values were computed by summing modeled storm surge (NOAA SLOSH) and parameterized wave setup."
