@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd" logicalFilePath="liquibaseChangeSet/updateDownloadLinkWithPublishData.xml">
+    <changeSet author="zmoore" id="updateDownloadLinkWithPublishData">
+        <sql> UPDATE summary SET download_link = link FROM full_publications WHERE full_publications.full_id = summary.full_id AND full_publications.type = 'data' </sql>
+    </changeSet>
+</databaseChangeLog>
