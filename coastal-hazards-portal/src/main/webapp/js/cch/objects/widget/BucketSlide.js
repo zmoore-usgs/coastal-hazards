@@ -369,19 +369,21 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				item: item,
 				visibility: args.visibility
 			});
-			me.cards.push($card);
-			me.append($card);
-			me.redrawArrows();
-		
+			
 			if(!item.summary.download || !item.summary.download.link || item.summary.download.link.length === 0){
-				var $card = $('#application-slide-bucket-container-card-' + item.id),
-				$downloadButton = $card.find('.application-slide-bucket-container-card-button-download');
+				var $downloadButton = $card.find('.application-slide-bucket-container-card-button-download');
 		
 				$downloadButton.attr({
 					'disabled' : 'disabled',
 					'title' : 'Downloads for this item are not possible'
 				});
 			}
+			
+			me.cards.push($card);
+			me.append($card);
+			me.redrawArrows();
+		
+			
 		}
 
 		return $card;
