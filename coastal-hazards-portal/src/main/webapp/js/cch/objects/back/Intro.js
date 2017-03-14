@@ -38,7 +38,7 @@ CCH.intro = (function () {
 				},
 				{
 					element: '#download-link-button',
-					intro: 'Download the current item to your computer in shapefile format (.shp) for use in geospatial applications.',
+					intro: 'Open the source page for this data set where you have the option to donwload it.',
 					position: 'right',
 					name: 'button-download'
 				},

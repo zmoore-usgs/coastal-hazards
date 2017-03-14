@@ -363,7 +363,12 @@ CCH.Objects.Publish.UI = function () {
 			
 			if (me.isBlank($titleLegendTextArea)) {
 				errors.push('Legend title not provided');
-			} 
+			}
+			
+			if(!me.isBlank($downloadLinkTextArea) && !CCH.Util.Util.isValidUrl($downloadLinkTextArea.val()))
+			{
+				errors.push('Provided download link is not a valid URL.');
+			}
 
 			if (me.isBlank($descriptionFullTextArea)) {
 				errors.push('Full description not provided');
@@ -2013,7 +2018,7 @@ CCH.Objects.Publish.UI = function () {
 			if(201 === status){
 				$newVectorLayerId = layerId;
 				$result.append("Successfully published layer " + layerId + " . Click ");
-				$result.append('<a href="' + layerUrl + '">here</a> to see the layer');
+				$result.append('<a href="' + layerUrl + '" target="_blank">here</a> to see the layer');
 				
 				if($editingEnabled){
 					$vectorModalPopButton.prop("disabled",false);
@@ -2064,7 +2069,7 @@ CCH.Objects.Publish.UI = function () {
 			if(201 === status){
 				$newRasterLayerId = layerId;
 				$result.append("Successfully published layer " + layerId + " . Click ");
-				$result.append('<a href="' + layerUrl + '">here</a> to see the layer');
+				$result.append('<a href="' + layerUrl + '" target="_blank">here</a> to see the layer');
 				
 				if($editingEnabled)
 				{

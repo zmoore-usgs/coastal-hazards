@@ -199,6 +199,35 @@
                         </div>
                     </div>
                 </div>
+									
+				<%-- Download Modal Window --%>	
+                <div id="modal-download-view" class="modal fade" tabindex ="-1" role="dialog" aria-labelledby="modal-label-download" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button class="close" aria-hidden="true" data-dismiss="modal" type="button"><i class="fa fa-times"></i></button>
+                                <h4 id="modal-label-download">Download this Dataset</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="well well-small">
+                                        <div id="modal-download-url-disp-div">
+											<p id="modal-download-url-href-p">Download Link: 
+												<a id="modal-download-url-href" href="" target="_blank" title="modal-download-url-href">Loading...</a>
+											</p>
+											<p id="modal-download-url-disp" title="modal-download-url-p">Loading...</p>
+											<small id="modal-download-valid-desc">The above URL will automatically open in a new page in 5 seconds. If the new page does not open click above to proceed.</small>
+											<small id="modal-download-invalid-desc"></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <%-- Services Modal Window --%>	
                 <div id="modal-services-view" class="modal fade" tabindex ="-1" role="dialog" aria-labelledby="modal-label-services" aria-hidden="true">
@@ -297,6 +326,17 @@
 								'endpoint': '<%=externalCSWEndpoint%>'
 							}
 						}
+					},
+					strings: {
+						cidaGeoserver: 'cida-geoserver',
+						disabled: 'disabled',
+						hide: 'hide',
+						show: 'show',
+						hidden: 'hidden',
+						enabled: 'enabled',
+						checked: 'checked',
+						click: 'click',
+						change: 'change'
 					}
 				}
 			};
