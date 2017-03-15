@@ -112,7 +112,7 @@ public class Summary implements Serializable {
 		}
 		summary.setVersion(from.getVersion());
 		summary.setTiny(from.getTiny());
-        summary.setLegend(from.getLegend());
+		summary.setLegend(from.getLegend());
 		summary.setMedium(from.getMedium());
 		summary.setDownload(from.getDownload());
 		Full toFull = new Full();
