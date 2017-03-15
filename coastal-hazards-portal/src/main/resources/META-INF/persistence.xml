@@ -19,7 +19,8 @@
 		<class>gov.usgs.cida.coastalhazards.model.util.Status</class>
 		<class>gov.usgs.cida.coastalhazards.model.summary.Summary</class>
 		<class>gov.usgs.cida.coastalhazards.model.summary.Tiny</class>
-                <class>gov.usgs.cida.coastalhazards.model.summary.Legend</class>
+		<class>gov.usgs.cida.coastalhazards.model.summary.Legend</class>
+		<class>gov.usgs.cida.coastalhazards.model.summary.Download</class>
 		<class>gov.usgs.cida.coastalhazards.model.summary.Medium</class>
 		<class>gov.usgs.cida.coastalhazards.model.summary.Full</class>
 		<class>gov.usgs.cida.coastalhazards.model.summary.Publication</class>

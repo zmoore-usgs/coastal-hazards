@@ -292,7 +292,7 @@
 					<img src="<%=baseUrl%>/images/info/download.png" alt="download Icon"/>
 
 					<p>
-						Click the download icon to download a zipped (.zip) shapefile (.shp) of the item or aggregation of interest.
+						Click the download icon to open a page where you can download the source dataset.
 					</p>
 
 					<h2>More Info</h2>
@@ -376,7 +376,7 @@
 					<h3>Download Dataset</h3>
 
 					<p>
-						Download this item to your computer.
+						Open a page where you can download the source dataset.
 					</p>
 
 					<h3>Share This Info</h3>

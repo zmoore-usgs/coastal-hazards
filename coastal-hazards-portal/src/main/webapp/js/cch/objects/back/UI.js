@@ -37,6 +37,13 @@ CCH.Objects.Back.UI = function (args) {
 		me.$computeAnalysisButton = $('#analysis-link-button');
 		me.$metadataButton = $('#metadata-link-button');
 		me.serviceTemplate = null; // Lazy loaded
+		
+		//Disable downloading if no link provided
+		if(!me.item.summary.download || !me.item.summary.download.link || me.item.summary.download.link.length === 0){
+			me.$downloadDataButton.prop("disabled", true);
+		}
+		
+		//Click Handlers
 		me.$infoButton.on('click', function () {
 			window.location.href = CCH.CONFIG.contextPath + '/info/#acContentArea';
 			ga('send', 'event', {
@@ -56,39 +63,32 @@ CCH.Objects.Back.UI = function (args) {
 		});
 
 		me.$downloadDataButton.on('click', function () {
-			var cacheError = function () {
-				alertify.error(CCH.CONFIG.data.messages.cacheInterrogationError);
-				ga('send', 'exception', {
-					'exDescription': 'DownloadRequestFailed',
-					'exFatal': false
-				});
-			};
-
-			var cacheHit = function (resp, content, jqXHR) {
-				var status = jqXHR.status;
-
-				if (status === 200) {
-					window.location.href = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.download.endpoint + CCH.CONFIG.itemId;
-				} else if (status === 202) {
-					alertify.log(CCH.CONFIG.data.messages.cachePriming);
-				} else {
-					// I don't expect any other codes, so default to an error message
-					alertify.error(CCH.CONFIG.data.messages.cacheInterrogationError);
+			if(me.item.summary.download && me.item.summary.download.link){
+				var $downloadModal = $('#modal-download-view');
+				var $downloadURL = $('#modal-download-url-href');
+				var $downloadURLHrefP = $('#modal-download-url-href-p').hide();
+				var $downloadDisp = $('#modal-download-url-disp').hide();
+				var $downloadValidDesc = $('#modal-download-valid-desc').hide();
+				var $downloadInvalidDesc = $('#modal-download-invalid-desc').hide();
+				
+				$downloadModal.modal(CCH.CONFIG.strings.show);
+				
+				if(CCH.Util.Util.isValidUrl(me.item.summary.download.link))
+				{
+					$downloadURLHrefP.show();
+					$downloadValidDesc.show();
+					
+					$downloadURL.html(me.item.summary.download.link);
+					$downloadURL.prop("href", me.item.summary.download.link);
+					setTimeout(function() {window.open(me.item.summary.download.link, '_blank');}, 5000);
 				}
-				ga('send', 'event', {
-					'eventCategory': 'infopage',
-					'eventAction': 'downloadRequestSucceeded',
-					'eventLabel': 'info page event'
-				});
-			};
-
-			var checkCache = CCH.Util.Util.interrogateDownloadCache(CCH.CONFIG.itemId);
-			checkCache.done(cacheHit).fail(cacheError);
-			ga('send', 'event', {
-				'eventCategory': 'infopage',
-				'eventAction': 'downloadButtonClicked',
-				'eventLabel': 'info page event'
-			});
+				else
+				{
+					$downloadDisp.show();
+					$downloadDisp.text(me.item.summary.download.link);
+					$downloadInvalidDesc.show();
+				}
+			}
 		});
 
 		me.$addToBucketButton.on('click', function (evt) {

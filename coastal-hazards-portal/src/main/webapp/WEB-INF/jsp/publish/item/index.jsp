@@ -241,7 +241,7 @@
 									<textarea class="form-control" rows="2" id="form-publish-item-title-medium" disabled="disabled" maxlength="<%= Medium.TITLE_MAX_LENGTH%>"></textarea>
 								</div>
 							</div>
-                                                        <div id="form-publish-info-item-title-legend" class="row row-title">
+							<div id="form-publish-info-item-title-legend" class="row row-title">
 								<div class="form-group">
 									<label for="form-publish-item-title-legend"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Legend Title</label>
 									<textarea class="form-control" rows="1" id="form-publish-item-title-legend" disabled="disabled"></textarea>
@@ -265,6 +265,12 @@
 								<div class="form-group">
 									<label for="form-publish-item-description-tiny"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Tiny) / Tweet Text</label>
 									<textarea class="form-control" rows="2" id="form-publish-item-description-tiny" disabled="disabled"  maxlength="<%= Tiny.MAX_LENGTH%>"></textarea>
+								</div>
+							</div>
+							<div id="form-publish-info-item-download-link" class="row row-description">
+								<div class="form-group">
+									<label for="form-publish-item-download-link"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Download Link (Leave Blank to Disable Downloads)</label>
+									<textarea class="form-control" rows="1" id="form-publish-item-download-link" disabled="disabled"></textarea>
 								</div>
 							</div>
 

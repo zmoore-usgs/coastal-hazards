@@ -21,6 +21,7 @@ CCH.Objects.Publish.UI = function () {
 		$descriptionFullTextArea = $form.find('#form-publish-item-description-full'),
 		$descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
 		$descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
+		$downloadLinkTextArea = $form.find('#form-publish-item-download-link'),
 		$bboxNorth = $form.find('#form-publish-item-bbox-input-north'),
 		$bboxWest = $form.find('#form-publish-item-bbox-input-west'),
 		$bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
@@ -121,7 +122,7 @@ CCH.Objects.Publish.UI = function () {
 	me.clearForm = function () {
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $descriptionTinyTextArea,
-			$typeSb, $attributeSelect, $attributeSelectHelper,
+			$downloadLinkTextArea, $typeSb, $attributeSelect, $attributeSelectHelper,
 			$srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $proxyWmsServiceParamInput,
@@ -134,7 +135,7 @@ CCH.Objects.Publish.UI = function () {
 				});
 
 		[$itemIdInput, $titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
-			$descriptionMediumTextArea, $descriptionTinyTextArea, $typeSb, 
+			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $typeSb, 
 			$itemEnabledField, $attributeSelect, $attributeSelectHelper,
 			$cswServiceInput, $cswServiceInputButton, $srcWfsServiceInput,
 			$srcWfsServiceParamInput, $srcWmsServiceInput, $srcWmsServiceParamInput,
@@ -168,7 +169,7 @@ CCH.Objects.Publish.UI = function () {
 		$itemType.val('data');
 		
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
-			$descriptionMediumTextArea, $descriptionTinyTextArea, $bboxNorth,
+			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $bboxNorth,
 			$typeSb, $attributeSelect, $attributeRetrieveDataButton, $isFeaturedCB, $ribbonableCb,
 			$popFromLayerInput, $popFromLayerButton,
 			$cswServiceInput, $cswServiceInputButton, $srcWfsServiceInput, $srcWfsServiceParamInput,
@@ -205,7 +206,7 @@ CCH.Objects.Publish.UI = function () {
 	me.enableNewAggregationForm = function () {
 		$itemType.val('aggregation');
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
-			$descriptionMediumTextArea, $descriptionTinyTextArea, $typeSb,
+			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $typeSb,
 			$attributeSelect,
 			$srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
@@ -229,7 +230,6 @@ CCH.Objects.Publish.UI = function () {
 		if($newRasterLayerId !== null){
 			$rasterModalPopButton.prop("disabled", false);
 		}
-		$uploaderDummy.empty().addClass(CCH.CONFIG.strings.hidden);
 		$itemEnabledField.val('false');
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
@@ -363,7 +363,12 @@ CCH.Objects.Publish.UI = function () {
 			
 			if (me.isBlank($titleLegendTextArea)) {
 				errors.push('Legend title not provided');
-			} 
+			}
+			
+			if(!me.isBlank($downloadLinkTextArea) && !CCH.Util.Util.isValidUrl($downloadLinkTextArea.val()))
+			{
+				errors.push('Provided download link is not a valid URL.');
+			}
 
 			if (me.isBlank($descriptionFullTextArea)) {
 				errors.push('Full description not provided');
@@ -443,6 +448,9 @@ CCH.Objects.Publish.UI = function () {
 		summary.version = 'manual';
 		summary.tiny = {
 			text: $descriptionTinyTextArea.val().trim()
+		};
+		summary.download = {
+			link: $downloadLinkTextArea.val().trim()
 		};
 		summary.legend = {
 			title: $titleLegendTextArea.val().trim()
@@ -829,6 +837,7 @@ CCH.Objects.Publish.UI = function () {
 				descriptionFull,
 				descriptionMedium,
 				descriptionTiny,
+				downloadLink,
 				keywords = [],
 				services = {},
 				type,
@@ -842,7 +851,8 @@ CCH.Objects.Publish.UI = function () {
 			summary = item.summary;
 			titleFull = summary.full.title;
 			titleMedium = summary.medium.title;
-			titleLegend = summary.legend.title;
+			titleLegend = summary.legend ? summary.legend.title : "";
+			downloadLink = summary.download ? summary.download.link : "";
 			descriptionFull = summary.full.text;
 			descriptionMedium = summary.medium.text;
 			descriptionTiny = summary.tiny.text;
@@ -963,7 +973,7 @@ CCH.Objects.Publish.UI = function () {
 			
 			[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
 					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
-					$proxyWmsCheckButton, $isFeaturedCB,
+					$proxyWmsCheckButton, $isFeaturedCB, $downloadLinkTextArea,
 					$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $ribbonableCb,
 					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
 					$buttonSave, $buttonDelete, $ribbonableCb, $metadataSummaryField]
@@ -981,6 +991,7 @@ CCH.Objects.Publish.UI = function () {
 			$descriptionFullTextArea.val(descriptionFull);
 			$descriptionMediumTextArea.val(descriptionMedium);
 			$descriptionTinyTextArea.val(descriptionTiny);
+			$downloadLinkTextArea.val(downloadLink);
 			$metadataSummaryField.val(summary.version || 'unknown');
 			
 			// Add keywords
@@ -1313,9 +1324,11 @@ CCH.Objects.Publish.UI = function () {
 						$titleMediumTextArea.val(response.medium.title || '');
 						$descriptionMediumTextArea.val(response.medium.text || '');
 						
-						$titleLegendTextArea.val(response.legend.title || '');
+						$titleLegendTextArea.val((response.legend && response.legend.title) || '');
 
 						$descriptionTinyTextArea.val(response.tiny.text || '');
+						
+						$downloadLinkTextArea.val((response.download && response.download.link) || '');
 
 						$('.resource-list-container-sortable').empty();
 						$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
@@ -2005,7 +2018,7 @@ CCH.Objects.Publish.UI = function () {
 			if(201 === status){
 				$newVectorLayerId = layerId;
 				$result.append("Successfully published layer " + layerId + " . Click ");
-				$result.append('<a href="' + layerUrl + '">here</a> to see the layer');
+				$result.append('<a href="' + layerUrl + '" target="_blank">here</a> to see the layer');
 				
 				if($editingEnabled){
 					$vectorModalPopButton.prop("disabled",false);
@@ -2056,7 +2069,7 @@ CCH.Objects.Publish.UI = function () {
 			if(201 === status){
 				$newRasterLayerId = layerId;
 				$result.append("Successfully published layer " + layerId + " . Click ");
-				$result.append('<a href="' + layerUrl + '">here</a> to see the layer');
+				$result.append('<a href="' + layerUrl + '" target="_blank">here</a> to see the layer');
 				
 				if($editingEnabled)
 				{

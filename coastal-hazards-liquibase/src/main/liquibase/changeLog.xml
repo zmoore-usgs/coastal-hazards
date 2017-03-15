@@ -38,6 +38,8 @@
 	<include file="90addFeaturedColumnToItem.xml" relativeToChangelogFile="true" />
 	<include file="95removeTextLimit.xml" relativeToChangelogFile="true" />
 	<include file="100removeTextLimitService.xml" relativeToChangelogFile="true" />
-        <include file="addSummaryLegendTitle.xml" relativeToChangelogFile="true" />
-        <include file="updateLegendTitleWithMediumTitle.xml" relativeToChangelogFile="true" />
+	<include file="addSummaryLegendTitle.xml" relativeToChangelogFile="true" />
+	<include file="updateLegendTitleWithMediumTitle.xml" relativeToChangelogFile="true" />
+	<include file="addSummaryDownloadLink.xml" relativeToChangelogFile="true" />
+	<include file="updateDownloadLinkWithPublishData.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

@@ -369,22 +369,21 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				item: item,
 				visibility: args.visibility
 			});
-			me.cards.push($card);
-			me.append($card);
-			me.redrawArrows();
 			
-			// Perform a request to stage the item for download just in case
-			CCH.Util.Util.interrogateDownloadCache(item.id).fail(function () {
-				// If there was an error, disable the download button
-				var $card = $('#application-slide-bucket-container-card-' + this[0]),
-					$downloadButton = $card.find('.application-slide-bucket-container-card-button-download');
-					
+			if(!item.summary.download || !item.summary.download.link || item.summary.download.link.length === 0){
+				var $downloadButton = $card.find('.application-slide-bucket-container-card-button-download');
+		
 				$downloadButton.attr({
 					'disabled' : 'disabled',
 					'title' : 'Downloads for this item are not possible'
 				});
-				
-			});
+			}
+			
+			me.cards.push($card);
+			me.append($card);
+			me.redrawArrows();
+		
+			
 		}
 
 		return $card;
@@ -629,7 +628,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				});
 				me.reorderLayers();
 			});
-
+		
 		$downloadButton
 			.on('click', function () {
 				ga('send', 'event', {
@@ -637,35 +636,33 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 					'eventAction': 'downloadBucketItemClicked',
 					'eventLabel': 'bucket buttons'
 				});
-				// Check that the download is ready. It may be staging currently.
-				CCH.Util.Util.interrogateDownloadCache(id)
-					.done(function (resp, content, jqXHR) {
+				
+				if(item.summary.download && item.summary.download.link){
+					var $downloadModal = $('#modal-download-view');
+					var $downloadURL = $('#modal-download-url-href');
+					var $downloadURLHrefP = $('#modal-download-url-href-p').hide();
+					var $downloadDisp = $('#modal-download-url-disp').hide();
+					var $downloadValidDesc = $('#modal-download-valid-desc').hide();
+					var $downloadInvalidDesc = $('#modal-download-invalid-desc').hide();
 
-						ga('send', 'event', {
-							'eventCategory': 'data',
-							'eventAction': 'downloadItemRequestSuccess',
-							'eventLabel': 'data',
-							'eventValue': jqXHR.status
-						});
+					$downloadModal.modal("show");
 
-						switch (jqXHR.status) {
-						case 200: // Download is ready to go
-							window.location.href = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.download.endpoint + id;
-							break;
-						case 202: // Download is being staged
-							alertify.log("Your download is being prepared. Please try again in a moment.");
-						}
-					})
-					.fail(function (resp, content, jqXHR) {
-						ga('send', 'exception', {
-							'eventCategory': 'data',
-							'eventAction': 'downloadItemRequestError',
-							'exFatal' : false
-						});
+					if(CCH.Util.Util.isValidUrl(item.summary.download.link))
+					{
+						$downloadURLHrefP.show();
+						$downloadValidDesc.show();
 
-						alertify.error("Downloading this item is not supported");
-						CCH.LOG.warn("An error occurred while trying to download item " + id + " " + jqXHR.responseText);
-					});
+						$downloadURL.html(item.summary.download.link);
+						$downloadURL.prop("href", item.summary.download.link);
+						setTimeout(function() {window.open(item.summary.download.link, '_blank');}, 5000);
+					}
+					else
+					{
+						$downloadDisp.show();
+						$downloadDisp.text(item.summary.download.link);
+						$downloadInvalidDesc.show();
+					}
+				}
 			});
 
 		$viewButton
