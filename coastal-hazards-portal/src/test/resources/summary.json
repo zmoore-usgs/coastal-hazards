@@ -4,10 +4,10 @@
 		"text": "Mean water levels (setup + surge) CAT1 hurricane"
 	},
 	"download": {
-			"link": "My download link goes here"
+		"link": "My download link goes here"
 	},
 	"legend": {
-			"title": "Mean water levels (setup + surge)"
+		"title": "Mean water levels (setup + surge)"
 	},
 	"medium": {
 		"title": "Mean water levels during a category 1 hurricane",
