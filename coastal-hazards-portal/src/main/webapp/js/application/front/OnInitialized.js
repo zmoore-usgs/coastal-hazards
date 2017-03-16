@@ -188,10 +188,16 @@ CCH.CONFIG = CCH.CONFIG || {};
 		
 		loadUberItem({
 			subtree: true,
-			zoomToUberBbox: true,
+			zoomToUberBbox: false,
 			overridePreviousBounds: true
 		});
 		
+		//Zoom to default extent
+		CCH.map.zoomToBoundingBox({
+			bbox: CCH.map.initialExtent,
+			fromProjection: CCH.CONFIG.map.modelProjection,
+			attemptClosest: true
+		});
 	},
 	loadDefault = function () {
 		CCH.ui.addItemsToBucketOnLoad(CCH.session.getSession().items);
@@ -219,8 +225,15 @@ CCH.CONFIG = CCH.CONFIG || {};
 		
 		loadUberItem({
 			subtree: true,
-			zoomToUberBbox: true,
+			zoomToUberBbox: false,
 			overridePreviousBounds: doNotUsePreviousBounds
+		});
+		
+		//Zoom to default extent
+		CCH.map.zoomToBoundingBox({
+			bbox: CCH.map.initialExtent,
+			fromProjection: CCH.CONFIG.map.modelProjection,
+			attemptClosest: true
 		});
 	};
 

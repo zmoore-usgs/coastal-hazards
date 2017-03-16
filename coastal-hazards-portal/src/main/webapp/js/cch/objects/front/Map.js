@@ -10,8 +10,8 @@ CCH.Objects.Front.Map = function (args) {
 	"use strict";
 	var me = (this === window) ? {} : this;
 
-	// Continental United States
-	me.initialExtent = [-14819398.304233, -92644.611414691, -6718296.2995848, 9632591.3700111];
+	// Atalntic Ocean offset from Continental United States
+	me.initialExtent = [-14895920.199975, -1296711.7291727, -2675779.6156684, 8399172.4333957];
 	me.mapDivId = args.mapDiv;
 	me.$MAP_DIV = $('#' + me.mapDivId);
 	me.bboxFadeoutDuration = 2000;
