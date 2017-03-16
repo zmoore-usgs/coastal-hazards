@@ -392,7 +392,7 @@ return {
 								$('<td />').html('Layer'),
 								$('<td />').html('Color'),
 								$('<td />').html('Value')
-								)).css('color', 'white'));
+								)));
 						}
 					} else {
 						$tbl.find('thead').remove();
