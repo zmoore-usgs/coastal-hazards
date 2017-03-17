@@ -433,6 +433,11 @@
 											<button id="form-publish-item-attribute-button" class="btn btn-default" type="button" disabled="disabled">Populate Resources</button>
 										</div>
 									</div>
+									<div class="input-group">
+										<div class="input-group-btn">
+											<button id="form-publish-item-title-button" class="btn btn-default" type="button" disabled="disabled">Populate Text Fields</button>
+										</div>
+									</div>
 								</div>
 							</div>
 
@@ -548,6 +553,23 @@
 					<div class="modal-body"></div>
 					<div class="modal-footer">
 						<button id="alert-modal-close-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="title-modal" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Warning</h4>
+					</div>
+					<div class="modal-body">
+						<p>This will overwrite any data currently in the title, description, and link fields for this item.</p>
+					</div>
+					<div class="modal-footer">
+						<button id="title-modal-continue-button" type="button" class="btn btn-default" data-dismiss="modal">Continue</button>
+						<button id="title-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 					</div>
 				</div>
 			</div>

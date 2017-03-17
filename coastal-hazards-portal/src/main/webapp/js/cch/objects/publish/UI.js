@@ -31,6 +31,7 @@ CCH.Objects.Publish.UI = function () {
 		$attributeSelect = $form.find('#form-publish-item-attribute'),
 		$attributeSelectHelper = $form.find('#form-publish-item-attribute-helper'),
 		$attributeRetrieveDataButton = $form.find('#form-publish-item-attribute-button'),
+		$attributeRetrieveTitlesButton = $form.find('#form-publish-item-title-button'),
 		$keywordGroup = $form.find('.form-group-keyword'),
 		$cswServiceInput = $form.find('#form-publish-item-service-csw'),
 		$cswServiceInputButton = $form.find('#form-publish-item-service-csw-button-fetch'),
@@ -60,6 +61,8 @@ CCH.Objects.Publish.UI = function () {
 		$rasterModal = $('#raster-modal'),
 		$rasterModalPopButton = $('#raster-modal-populate-button'),
 		$rasterModalSubmitButton = $('#raster-modal-submit-btn'),
+		$titleModal = $('#title-modal'),
+		$titleModalContinueButton = $('#title-modal-continue-button'),
 		$metadataSummaryField = $('#form-publish-info-item-summary-version'),
 		$itemEnabledField = $('#form-publish-info-item-enabled'),
 		$itemImage = $form.find('#form-publish-info-item-image'),
@@ -170,8 +173,8 @@ CCH.Objects.Publish.UI = function () {
 		
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $bboxNorth,
-			$typeSb, $attributeSelect, $attributeRetrieveDataButton, $isFeaturedCB, $ribbonableCb,
-			$popFromLayerInput, $popFromLayerButton,
+			$typeSb, $attributeSelect, $attributeRetrieveDataButton, $attributeRetrieveTitlesButton,
+			$isFeaturedCB, $ribbonableCb, $popFromLayerInput, $popFromLayerButton,
 			$cswServiceInput, $cswServiceInputButton, $srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
@@ -741,6 +744,7 @@ CCH.Objects.Publish.UI = function () {
 		}
 		$attributeSelectHelper.removeAttr(CCH.CONFIG.strings.disabled);
 		$attributeRetrieveDataButton.removeAttr(CCH.CONFIG.strings.disabled);
+		$attributeRetrieveTitlesButton.removeAttr(CCH.CONFIG.strings.disabled);
 	};
 	
 	me.updateSelectChange = function () {
@@ -1308,8 +1312,8 @@ CCH.Objects.Publish.UI = function () {
 			})();
 		}
 	};
-
-	me.getDataForAttribute = function () {
+	
+	me.getTitlesForAttribute = function () {
 		var attribute = $attributeSelect.val();
 
 		CCH.ows.requestSummaryByAttribute({
@@ -1329,7 +1333,29 @@ CCH.Objects.Publish.UI = function () {
 						$descriptionTinyTextArea.val(response.tiny.text || '');
 						
 						$downloadLinkTextArea.val((response.download && response.download.link) || '');
+					}
+				],
+				error: [
+					function (err) {
+						$alertModal.modal(CCH.CONFIG.strings.hide);
+						$alertModalTitle.html('Unable To Load Attribute Information');
+						$alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
+						$alertModal.modal(CCH.CONFIG.strings.show);
+					}
+				]
+			}
+		});
+	};
 
+	me.getDataForAttribute = function () {
+		var attribute = $attributeSelect.val();
+
+		CCH.ows.requestSummaryByAttribute({
+			url: $('#form-publish-item-service-csw').val(),
+			attribute: attribute,
+			callbacks: {
+				success: [
+					function (response) {
 						$('.resource-list-container-sortable').empty();
 						$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 						Object.keys(response.full.publications, function (type) {
@@ -1629,6 +1655,14 @@ CCH.Objects.Publish.UI = function () {
 
 	$attributeRetrieveDataButton.on(CCH.CONFIG.strings.click, function () {
 		me.getDataForAttribute();
+	});
+	
+	$attributeRetrieveTitlesButton.on(CCH.CONFIG.strings.click, function () {
+		$titleModal.modal(CCH.CONFIG.strings.show);
+	});
+	
+	$titleModalContinueButton.on(CCH.CONFIG.strings.click, function() {
+		me.getTitlesForAttribute();
 	});
 	
 	$attributeSelectHelper.on(CCH.CONFIG.strings.change, me.updateSelectChange);
