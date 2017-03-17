@@ -435,7 +435,7 @@
 									</div>
 									<div class="input-group">
 										<div class="input-group-btn">
-											<button id="form-publish-item-title-button" class="btn btn-default" type="button" disabled="disabled">Populate Text Fields</button>
+											<button id="form-publish-item-title-button" class="btn btn-default" type="button" disabled="disabled">Populate Titles/Description Fields</button>
 										</div>
 									</div>
 								</div>
@@ -565,7 +565,7 @@
 						<h4 class="modal-title">Warning</h4>
 					</div>
 					<div class="modal-body">
-						<p>This will overwrite any data currently in the title, description, and link fields for this item.</p>
+						<p>This will overwrite any data currently in the title, description, and download link fields for this item.</p>
 					</div>
 					<div class="modal-footer">
 						<button id="title-modal-continue-button" type="button" class="btn btn-default" data-dismiss="modal">Continue</button>
