@@ -97,7 +97,7 @@ CCH.Objects.Widget.Legend = function (args) {
 	 * )
 	 * @returns {jQuery} a legend table element
 	 */
-        me.generateGenericContinuousLegendTable = function (args) {
+	me.generateGenericContinuousLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
 			binLabeler = args.binLabeler,
@@ -113,12 +113,10 @@ CCH.Objects.Widget.Legend = function (args) {
 			uom = sld.units || '',
 			title = (args.item && args.item.summary && args.item.summary && args.item.summary.legend) ? args.item.summary.legend.title : sld.title || ''
 			;
-		
-		var sortByDescendingLowerBound = function(a,b){return b.lowerBound - a.lowerBound;};
 		//assume that the gradient is evenly-spaced
 		var numberOfNonTerminalBins = bins.length - 2;
 		var gradientIncrement = 100 / (1 + numberOfNonTerminalBins);
-		var binsForTemplate = bins.sort(sortByDescendingLowerBound).map(function(bin, index, bins){
+		var binsForTemplate = bins.sort(args.sorter).map(function(bin, index, bins){
 			var percent = index * gradientIncrement;
 			return {
 				'color': bin.color,
@@ -301,40 +299,6 @@ CCH.Objects.Widget.Legend = function (args) {
 		});
 	};
 
-	me.generateHistoricalLegendTable = function (args) {
-		args = args || {};
-		var sld = args.sld,
-				item = args.item,
-				attr = item.attr,
-				index = args.index || null,
-				$legendTable,
-				$legendTableTBody,
-				$yearRows;
-
-		$legendTable = me.generateGenericDiscreteLegendTable({
-			sld: sld,
-			item : item
-		});
-
-		$legendTable.attr({
-			'legend-attribute': attr,
-			'legend-index': index,
-			'legend-item-id': item.id
-		});
-
-		// If the table is a date table, I want to sort it by year in descending order
-		if ('year' === sld.units) {
-			$legendTableTBody = $legendTable.find('tbody');
-			$yearRows = $legendTableTBody.find('tr').toArray();
-			$yearRows = $yearRows.sortBy(function (r) {
-				return parseInt($(r).find('td:nth-child(2)').html(), 10);
-			}).reverse();
-			$legendTableTBody.empty().append($yearRows);
-		}
-
-		return $legendTable;
-	};
-
 	me.generateStormLegendTables = function (args) {
 		args = args || {};
 		var item = args.item,
@@ -428,6 +392,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		if(CCH.Objects.Widget.LegendTypes.CONTINUOUS === sld.legendType){
 			//if it is continuous then you need a bin labeler
 			var binLabeler = null;
+			var sorter = null;
 			if("CR" === item.attr){
 				//customize the bin label
 				var indexToText = {
@@ -438,11 +403,27 @@ CCH.Objects.Widget.Legend = function (args) {
 				binLabeler = function(bin, index, bins){
 					return indexToText[index];
 				};
+				sorter =  function(a,b){return b.lowerBound - a.lowerBound;};
+			} else if("Date_".localeCompare(item.attr) === 0){
+				binLabeler = function(bin, index, bins){
+					if(index === 0){
+						return bin.years;
+					} else if(index === bins.length - 1){
+						return bin.years;
+					} else if((index - 1) < bins.length/2 && (index + 1) > bins.length/2) {
+						return "&nbsp;";
+					}else {
+						return "";
+					}
+				};
+				sorter = function(a,b){return b.years - a.years;};
 			}
+			
 			if(null === binLabeler){
-				throw 'Could not find a bin labeler for the item "' + me.getItemTinyText(item) + '", and the following continuous legend sld:\n\n' + JSON.stringify(sld);
+				throw 'Could not find a bin labeler and sorter for the item "' + me.getItemTinyText(item) + '", and the following continuous legend sld:\n\n' + JSON.stringify(sld);
 			} else {
 				legendRendererArguments.binLabeler = binLabeler;
+				legendRendererArguments.sorter = sorter;
 			}
 		}
 		return legendRendererArguments;
@@ -492,6 +473,81 @@ CCH.Objects.Widget.Legend = function (args) {
 		}
 		return legendRenderer;
 	};
+	
+	me.generateHistoricalLegendTable = function (args) {
+		args = args || {};
+		var sld = args.sld,
+				item = args.item,
+				attr = item.attr,
+				index = args.index || null,
+				$legendTable,
+				$legendTableTBody,
+				$yearRows;
+		
+		var legendRenderer = null;
+		try {
+			legendRenderer = me.getLegendRenderer(sld.legendType);
+		} catch(e){
+			var name = me.getItemLegendTitle(item);
+
+			var msg = "Could not determine legend renderer"; 
+			if(name){
+				msg+= " for item '" + name + "'.";
+			}
+			$legendTable = me.createErrorLegendEntry(msg);
+			LOG.warn(msg + "\ngot legend type '" + sld.legendType + "'.");
+			if (me.onError) {
+				me.onError.call(me, arguments);
+			}
+		}
+
+		if(legendRenderer){
+			try {
+				var rendererArguments = me.customizeLegendRendererArguments(sld, item);
+				$legendTable = legendRenderer(rendererArguments);
+			} catch (e){
+				LOG.warn(e);
+				$legendTable = me.createErrorLegendEntry('Could not customize rendering the legend of item "' + me.getItemLegendTitle() + '".');
+				if (me.onError) {
+					me.onError.call(me, arguments);
+				}
+				//do not re-throw. We want other potentially successful legend rendering to get a chance
+			}
+		}
+		
+		$legendTable.attr({
+			'legend-attribute': attr,
+			'legend-index': index,
+			'legend-item-id': item.id
+		});
+		return $legendTable;
+		
+		/*
+		$legendTable = me.generateGenericDiscreteLegendTable({
+			sld: sld,
+			item : item
+		});
+
+		$legendTable.attr({
+			'legend-attribute': attr,
+			'legend-index': index,
+			'legend-item-id': item.id
+		});
+
+		// If the table is a date table, I want to sort it by year in descending order
+		if ('year' === sld.units) {
+			$legendTableTBody = $legendTable.find('tbody');
+			$yearRows = $legendTableTBody.find('tr').toArray();
+			$yearRows = $yearRows.sortBy(function (r) {
+				return parseInt($(r).find('td:nth-child(2)').html(), 10);
+			}).reverse();
+			$legendTableTBody.empty().append($yearRows);
+		}
+
+		return $legendTable;
+		*/
+	};
+	
 	me.generateVulnerabilityLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
