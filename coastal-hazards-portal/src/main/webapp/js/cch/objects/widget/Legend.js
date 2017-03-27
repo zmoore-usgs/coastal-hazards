@@ -411,8 +411,12 @@ CCH.Objects.Widget.Legend = function (args) {
 					} else if(index === bins.length - 1){
 						return bin.years;
 					} else if((index - 1) < bins.length/2 && (index + 1) > bins.length/2) {
+						return bin.years;
+					} else if((index - 1) < bins.length/4 && (index + 1) > bins.length/4) {
 						return "&nbsp;";
-					}else {
+					} else if((index - 1) < 3*bins.length/4 && (index + 1) > 3*bins.length/) {
+						return "&nbsp;";
+					} else {
 						return "";
 					}
 				};
