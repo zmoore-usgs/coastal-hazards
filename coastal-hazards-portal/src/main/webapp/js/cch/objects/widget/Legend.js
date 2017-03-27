@@ -525,31 +525,6 @@ CCH.Objects.Widget.Legend = function (args) {
 			'legend-item-id': item.id
 		});
 		return $legendTable;
-		
-		/*
-		$legendTable = me.generateGenericDiscreteLegendTable({
-			sld: sld,
-			item : item
-		});
-
-		$legendTable.attr({
-			'legend-attribute': attr,
-			'legend-index': index,
-			'legend-item-id': item.id
-		});
-
-		// If the table is a date table, I want to sort it by year in descending order
-		if ('year' === sld.units) {
-			$legendTableTBody = $legendTable.find('tbody');
-			$yearRows = $legendTableTBody.find('tr').toArray();
-			$yearRows = $yearRows.sortBy(function (r) {
-				return parseInt($(r).find('td:nth-child(2)').html(), 10);
-			}).reverse();
-			$legendTableTBody.empty().append($yearRows);
-		}
-
-		return $legendTable;
-		*/
 	};
 	
 	me.generateVulnerabilityLegendTable = function (args) {
