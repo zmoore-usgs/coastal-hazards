@@ -39,7 +39,7 @@ public final class Shorelines {
 		private SLDConfig wrapped;
 
 		public ShorelineConfig(String jspPath, String units, String style, int strokeWidth, String[] attrs) {
-			super(jspPath, units, style, strokeWidth, attrs, null, null, null);
+			super(jspPath, units, style, strokeWidth, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, null, null, null, LegendType.CONTINUOUS);
 			wrapped = null;
 		}
 
@@ -70,7 +70,7 @@ public final class Shorelines {
 					i++;
 				}
 
-				wrapped = new SLDConfig(jspPath, units, style, strokeWidth, attrs, tmpThresholds, tmpColors, tmpBins);
+				wrapped = new SLDConfig(jspPath, units, style, strokeWidth, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, tmpThresholds, tmpColors, tmpBins, LegendType.CONTINUOUS);
 			}
 		}
 
