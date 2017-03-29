@@ -391,12 +391,6 @@ CCH.Objects.Publish.UI = function () {
 				errors.push('Tiny description was longer than ' + CCH.CONFIG.limits.summary.tiny.text + ' characters');
 			}
 
-			if (me.isBlank($name)) {
-				errors.push('Name was not provided');
-			} else if ($name.val().length > CCH.CONFIG.limits.item.name) {
-				errors.push('Item name was longer than ' + CCH.CONFIG.limits.item.name + ' characters');
-			}
-
 			if (me.isBlank($typeSb)) {
 				errors.push('Item type not provided');
 			} else if ($typeSb.val().length > CCH.CONFIG.limits.item.attribute) {
