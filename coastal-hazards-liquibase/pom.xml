@@ -132,18 +132,18 @@
 						<executions>
 							<execution>
 								<phase>process-resources</phase>
-								<configuration>
-									<changeLogFile>src/main/liquibase/bootstrap.xml</changeLogFile>
-									<schemas>public</schemas>
-									<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
-									<outputDefaultSchema>true</outputDefaultSchema>
-									<contexts>bootstrap</contexts>
-								</configuration>
 								<goals>
 									<goal>update</goal>
 								</goals>
 							</execution>
 						</executions>
+						<configuration>
+							<changeLogFile>src/main/liquibase/bootstrap.xml</changeLogFile>
+							<schemas>public</schemas>
+							<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+							<outputDefaultSchema>true</outputDefaultSchema>
+							<contexts>bootstrap</contexts>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>

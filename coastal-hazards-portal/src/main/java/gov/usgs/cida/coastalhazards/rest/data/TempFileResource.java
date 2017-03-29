@@ -73,6 +73,8 @@ public class TempFileResource {
                     while ((len = stream.read(buffer)) > 0) {  // determine the correct amount of the buffer for the prod server memory capacity
                         output.write(buffer, 0, len);
                     }
+                } catch(IOException e) {
+                	LOG.error("Issue streaming output", e);
                 } finally {
                     // found this that output is not closed here http://stackoverflow.com/questions/39572872/closing-jax-rs-streamingoutputs-outputstream
                     // going to close file stream though
