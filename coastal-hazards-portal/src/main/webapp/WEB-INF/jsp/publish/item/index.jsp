@@ -246,7 +246,7 @@
                                 </div>
                             </div>
                         </div>
-                                        
+
                         <div class="flexSection">
                             <div class="flexLeft">
                                 <%-- Services --%>
@@ -347,60 +347,54 @@
                                     </div>
                                 </div>
 
-                                <%-- TITLES/DESCRIPTIONS --%>
-                                <div id="titles-panel" class="panel panel-default">
+                                <%-- RESOURCES --%>
+                                <div id="Resources-panel" class="panel panel-default">
                                     <div class="panel-heading sideBySide">
-                                        <h3 class="panel-title">Titles/Descriptions</h3>
+                                        <h3 class="panel-title">Resources</h3>
                                         <div class="input-group">
                                             <div class="input-group-btn">
-                                                <button id="form-publish-item-title-button" class="btn btn-default" type="button" disabled="disabled">Populate Fields</button>
+                                                <button id="form-publish-item-attribute-button" class="btn btn-default" type="button" disabled="disabled">Populate Resources</button>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="panel-body">
-                                        <%-- ITEM TITLE --%>
-                                        <div id="form-publish-info-item-title-full" class="row row-title">
-                                            <div class="form-group">
-                                                <label for="form-publish-item-title-full"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Title (Full) / Back of Card Title</label>
-                                                <textarea class="form-control" rows="2" id="form-publish-item-title-full" disabled="disabled"  maxlength="<%= Full.TITLE_MAX_LENGTH%>"></textarea>
+
+                                        <%-- Data --%>
+                                        <div id="data-panel" class="resource-panel panel panel-default">
+                                            <div class="panel-heading">
+                                                <button id="form-publish-info-item-panel-data-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled">Add</button>
+                                                <h3 class="panel-title">Data</h3>
                                             </div>
-                                        </div>
-                                        <div id="form-publish-info-item-title-medium" class="row row-title">
-                                            <div class="form-group">
-                                                <label for="form-publish-item-title-medium"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Title (Medium) / Front of Card Title</label>
-                                                <textarea class="form-control" rows="2" id="form-publish-item-title-medium" disabled="disabled" maxlength="<%= Medium.TITLE_MAX_LENGTH%>"></textarea>
-                                            </div>
-                                        </div>
-                                        <div id="form-publish-info-item-title-legend" class="row row-title">
-                                            <div class="form-group">
-                                                <label for="form-publish-item-title-legend"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Legend Title</label>
-                                                <textarea class="form-control" rows="1" id="form-publish-item-title-legend" disabled="disabled"></textarea>
+                                            <div class="panel-body">
+                                                <ul id="sortable-data" class="resource-list-container-sortable">
+                                                    <%-- Added programatically --%>
+                                                </ul>
                                             </div>
                                         </div>
 
-                                        <%-- ITEM DESCRIPTION --%>
-                                        <div id="form-publish-info-item-description-full" class="row row-description">
-                                            <div class="form-group">
-                                                <label for="form-publish-item-description-full"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Full) / Back of Card Abstract</label>
-                                                <textarea class="form-control" rows="4" id="form-publish-item-description-full" disabled="disabled"  maxlength="<%= Full.TEXT_MAX_LENGTH%>"></textarea>
+                                        <%-- Publications --%>
+                                        <div id="publications-panel" class="resource-panel panel panel-default">
+                                            <div class="panel-heading">
+                                                <button id="form-publish-info-item-panel-publications-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled">Add</button>
+                                                <h3 class="panel-title">Publications</h3>
+                                            </div>
+                                            <div class="panel-body">
+                                                <ul id="sortable-publications" class="resource-list-container-sortable">
+                                                    <%-- Added programatically --%>
+                                                </ul>
                                             </div>
                                         </div>
-                                        <div id="form-publish-info-item-description-medium" class="row row-description">
-                                            <div class="form-group">
-                                                <label for="form-publish-item-description-medium"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Medium) / Front of Card Description</label>
-                                                <textarea class="form-control" rows="2" id="form-publish-item-description-medium" disabled="disabled"  maxlength="<%= Medium.TEXT_MAX_LENGTH%>"></textarea>
+
+                                        <%-- Resource --%>
+                                        <div id="resources-panel" class="resource-panel panel panel-default">
+                                            <div class="panel-heading">
+                                                <button id="form-publish-info-item-panel-resources-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled" >Add</button>
+                                                <h3 class="panel-title">Resource</h3>
                                             </div>
-                                        </div>
-                                        <div id="form-publish-info-item-description-tiny" class="row row-description">
-                                            <div class="form-group">
-                                                <label for="form-publish-item-description-tiny"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Tiny) / Tweet Text</label>
-                                                <textarea class="form-control" rows="2" id="form-publish-item-description-tiny" disabled="disabled"  maxlength="<%= Tiny.MAX_LENGTH%>"></textarea>
-                                            </div>
-                                        </div>
-                                        <div id="form-publish-info-item-download-link" class="row row-description">
-                                            <div class="form-group">
-                                                <label for="form-publish-item-download-link"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Download Link (Leave Blank to Disable Downloads)</label>
-                                                <textarea class="form-control" rows="1" id="form-publish-item-download-link" disabled="disabled"></textarea>
+                                            <div class="panel-body">
+                                                <ul id="sortable-resources" class="resource-list-container-sortable">
+                                                    <%-- Added programatically --%>
+                                                </ul>
                                             </div>
                                         </div>
 
@@ -461,54 +455,60 @@
                                     </div>
                                 </div><!--attribute-->
 
-                                <%-- RESOURCES --%>
-                                <div id="Resources-panel" class="panel panel-default">
+                                <%-- TITLES/DESCRIPTIONS --%>
+                                <div id="titles-panel" class="panel panel-default">
                                     <div class="panel-heading sideBySide">
-                                        <h3 class="panel-title">Resources</h3>
+                                        <h3 class="panel-title">Titles/Descriptions</h3>
                                         <div class="input-group">
                                             <div class="input-group-btn">
-                                                <button id="form-publish-item-attribute-button" class="btn btn-default" type="button" disabled="disabled">Populate Resources</button>
+                                                <button id="form-publish-item-title-button" class="btn btn-default" type="button" disabled="disabled">Populate Fields</button>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="panel-body">
-
-                                        <%-- Data --%>
-                                        <div id="data-panel" class="resource-panel panel panel-default">
-                                            <div class="panel-heading">
-                                                <button id="form-publish-info-item-panel-data-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled">Add</button>
-                                                <h3 class="panel-title">Data</h3>
+                                        <%-- ITEM TITLE --%>
+                                        <div id="form-publish-info-item-title-full" class="row row-title">
+                                            <div class="form-group">
+                                                <label for="form-publish-item-title-full"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Title (Full) / Back of Card Title</label>
+                                                <textarea class="form-control" rows="2" id="form-publish-item-title-full" disabled="disabled"  maxlength="<%= Full.TITLE_MAX_LENGTH%>"></textarea>
                                             </div>
-                                            <div class="panel-body">
-                                                <ul id="sortable-data" class="resource-list-container-sortable">
-                                                    <%-- Added programatically --%>
-                                                </ul>
+                                        </div>
+                                        <div id="form-publish-info-item-title-medium" class="row row-title">
+                                            <div class="form-group">
+                                                <label for="form-publish-item-title-medium"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Title (Medium) / Front of Card Title</label>
+                                                <textarea class="form-control" rows="2" id="form-publish-item-title-medium" disabled="disabled" maxlength="<%= Medium.TITLE_MAX_LENGTH%>"></textarea>
+                                            </div>
+                                        </div>
+                                        <div id="form-publish-info-item-title-legend" class="row row-title">
+                                            <div class="form-group">
+                                                <label for="form-publish-item-title-legend"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Legend Title</label>
+                                                <textarea class="form-control" rows="1" id="form-publish-item-title-legend" disabled="disabled"></textarea>
                                             </div>
                                         </div>
 
-                                        <%-- Publications --%>
-                                        <div id="publications-panel" class="resource-panel panel panel-default">
-                                            <div class="panel-heading">
-                                                <button id="form-publish-info-item-panel-publications-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled">Add</button>
-                                                <h3 class="panel-title">Publications</h3>
-                                            </div>
-                                            <div class="panel-body">
-                                                <ul id="sortable-publications" class="resource-list-container-sortable">
-                                                    <%-- Added programatically --%>
-                                                </ul>
+                                        <%-- ITEM DESCRIPTION --%>
+                                        <div id="form-publish-info-item-description-full" class="row row-description">
+                                            <div class="form-group">
+                                                <label for="form-publish-item-description-full"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Full) / Back of Card Abstract</label>
+                                                <textarea class="form-control" rows="4" id="form-publish-item-description-full" disabled="disabled"  maxlength="<%= Full.TEXT_MAX_LENGTH%>"></textarea>
                                             </div>
                                         </div>
-
-                                        <%-- Resource --%>
-                                        <div id="resources-panel" class="resource-panel panel panel-default">
-                                            <div class="panel-heading">
-                                                <button id="form-publish-info-item-panel-resources-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled" >Add</button>
-                                                <h3 class="panel-title">Resource</h3>
+                                        <div id="form-publish-info-item-description-medium" class="row row-description">
+                                            <div class="form-group">
+                                                <label for="form-publish-item-description-medium"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Medium) / Front of Card Description</label>
+                                                <textarea class="form-control" rows="2" id="form-publish-item-description-medium" disabled="disabled"  maxlength="<%= Medium.TEXT_MAX_LENGTH%>"></textarea>
                                             </div>
-                                            <div class="panel-body">
-                                                <ul id="sortable-resources" class="resource-list-container-sortable">
-                                                    <%-- Added programatically --%>
-                                                </ul>
+                                        </div>
+                                        <div id="form-publish-info-item-description-tiny" class="row row-description">
+                                            <div class="form-group">
+                                                <label for="form-publish-item-description-tiny"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Tiny) / Tweet Text</label>
+                                                <textarea class="form-control" rows="2" id="form-publish-item-description-tiny" disabled="disabled"  maxlength="<%= Tiny.MAX_LENGTH%>"></textarea>
+                                            </div>
+                                        </div>
+                                        <div id="form-publish-info-item-download-link" class="row row-description">
+                                            <div class="form-group">
+                                                <label for="form-publish-item-download-link"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Download Link (Leave Blank to Disable Downloads)</label>
+                                                <textarea class="form-control" rows="1" id="form-publish-item-download-link" disabled="disabled"></textarea>
                                             </div>
                                         </div>
 
