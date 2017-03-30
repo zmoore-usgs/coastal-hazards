@@ -67,8 +67,7 @@ public class DataDomainUtility {
         return yearDomain;
     }
     
-	public static SortedSet<String> getOnlyVisibleDomainValues(Item rootItem, DataDomainManager manager){
-		ItemManager items = new ItemManager();
+	public static SortedSet<String> getOnlyVisibleDomainValues(Item rootItem, DataDomainManager domainManager, ItemManager itemManager){
 		List<String> childItems = rootItem.getDisplayedChildren();
 		SortedSet<String> domainValues = new TreeSet();
 				
@@ -78,12 +77,12 @@ public class DataDomainUtility {
 				
 		//Loop through the remaining children with the created variables
 		for(int i = 0; i < childItems.size(); i++){
-			Item child = items.load(childItems.get(i));
+			Item child = itemManager.load(childItems.get(i));
 			
 			if(child.getItemType() == Item.ItemType.aggregation){
-				domainValues.addAll(getOnlyVisibleDomainValues(child, manager));
+				domainValues.addAll(getOnlyVisibleDomainValues(child, domainManager, itemManager));
 			} else {
-				DataDomain domain = manager.getDomainForItem(child);
+				DataDomain domain = domainManager.getDomainForItem(child);
 				SortedSet<String> values = domain.getDomainValues();
 				domainValues.addAll(values);
 			}
