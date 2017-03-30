@@ -46,6 +46,8 @@ public class SLDResource {
 					response = generator.generateSLD();
 				}
 			}
+		} catch(Exception e){
+			response = Response.status(500).build();
 		}
 
 		return response;

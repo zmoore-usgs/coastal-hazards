@@ -136,7 +136,7 @@ public class SLDGenerator {
 		sldInfo.put("units", this.config.getUnits());
 		sldInfo.put("style", this.config.getStyle());
 		sldInfo.put("bins", this.config.getBins());
-                sldInfo.put("legendType", this.config.getLegendType());
+		sldInfo.put("legendType", this.config.getLegendType());
 		String toJson = GsonUtil.getDefault().toJson(sldInfo, HashMap.class);
 		return Response.ok(toJson).build();
 	}
