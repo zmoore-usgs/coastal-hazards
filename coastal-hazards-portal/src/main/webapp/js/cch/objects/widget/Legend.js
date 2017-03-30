@@ -230,7 +230,6 @@ CCH.Objects.Widget.Legend = function (args) {
 				index = args.index || null,
 				sld = args.sld;
 
-
 		$legendTable = me.generateGenericDiscreteLegendTable({
 			sld: sld,
 			item : item
@@ -292,7 +291,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			childItemIdArray = [item.id];
 		}
 
-		me.createLegendsFromItems({
+		me.createContinuousLegendFromItems({
 			items: childItemIdArray,
 			tableAddedCallback: null,
 			generateLegendTable: me.generateHistoricalLegendTable
@@ -410,11 +409,11 @@ CCH.Objects.Widget.Legend = function (args) {
 						return bin.years;
 					} else if(index === bins.length - 1){
 						return bin.years;
-					} else if((index - 1) < bins.length/2 && (index + 1) > bins.length/2) {
+					} else if((index - 1) < Math.floor(bins.length/2) && (index + 1) > Math.floor(bins.length/2)) {
 						return bin.years;
-					} else if((index - 1) < bins.length/4 && (index + 1) > bins.length/4) {
+					} else if((index - 1) < Math.floor(bins.length/4) && (index + 1) > Math.floor(bins.length/4)) {
 						return "&nbsp;";
-					} else if((index - 1) < 3*bins.length/4 && (index + 1) > 3*bins.length/4) {
+					} else if((index - 1) < Math.floor(3*bins.length/4) && (index + 1) > Math.floor(3*bins.length/4)) {
 						return "&nbsp;";
 					} else {
 						return "";
@@ -489,6 +488,14 @@ CCH.Objects.Widget.Legend = function (args) {
 				$yearRows;
 		
 		var legendRenderer = null;
+
+		if(item.itemType == "aggregation"){
+			var children = item.getChildren();
+
+			if(children.length > 1){
+				item.attr = children[1].attr;
+			}
+		}
 		try {
 			legendRenderer = me.getLegendRenderer(sld.legendType);
 		} catch(e){
@@ -572,6 +579,104 @@ CCH.Objects.Widget.Legend = function (args) {
 			'legend-item-id': item.id
 		});
 		return $legendTable;
+	};
+	
+	me.createContinuousLegendFromItems = function(args) {
+		args = args || {};
+		var items = args.items,
+				xhrRequest,
+				legendTables = [],
+				generateLegendTable = args.generateLegendTable,
+				tableAddedCallback = args.tableAddedCallback;
+		
+		var aggergateBins = [];
+		
+		items.each(function (childId, index, allItems) {
+			if (!me.destroyed) {
+				xhrRequest = CCH.Util.Util.getSLD({
+					contextPath: CCH.CONFIG.contextPath,
+					itemId: childId,
+					context: {
+						index: index,
+						aggergateBins: aggergateBins,
+						allItems: allItems,
+						legendTables: legendTables,
+						itemId: childId,
+						tableAddedCallback: tableAddedCallback,
+						generateLegendTable: generateLegendTable
+					},
+					callbacks: {
+						success: [
+							function (sld) {
+								var $legendTable = -1,
+									index = this.index,
+									aggergateBins = this.aggergateBins,
+									allItems = this.allItems,
+									itemId = this.itemId,
+									legendTables = this.legendTables,
+									total = allItems.length,
+									item = null,
+									tableAddedCallback = this.tableAddedCallback || me.tableAdded;
+							
+								if(sld.bins && sld.bins.length > 0){
+									aggergateBins = aggergateBins.concat(sld.bins);
+								}
+								
+								if(index === total-1){
+									try {
+										item = CCH.items.getById({id: itemId});
+										sld.bins = aggergateBins;
+										$legendTable = this.generateLegendTable.call(me, {
+											sld: sld,
+											item: item,
+											index: index
+										});
+
+										// If the procedure didn't create anything for whatever reason, 
+										// set the variable to -1
+										if (!$legendTable) {
+											$legendTable = -1;
+										}
+									} catch (ex) {
+										// Something went wrong but I don't want to error out, so just 
+										// warn, keep the variable at -1 and move on
+										LOG.warn(ex);
+									}
+
+									// Whatever we have at this point, add it to the array
+									legendTables.push($legendTable);
+
+									// And call the table added callback to possibly complete the legend
+									tableAddedCallback.call(me, {
+										legendTables: this.legendTables,
+										total: 1,
+										item: CCH.items.getById({id: itemId}),
+										sld: sld
+									});
+								}
+								
+							}
+						],
+						error: [
+							function () {
+								if (!me.destroyed) {
+									LOG.warn("Could not retrieve SLD. Legend will not be created for this item");
+									this.legendTables.push(-1);
+									me.tableAdded({
+										legendTables: this.legendTables,
+										total: this.allItems.length
+									});
+									if (me.onError) {
+										me.onError.call(me, arguments);
+									}
+								}
+							}
+						]
+					}
+				});
+				me.ajaxRequests.push(xhrRequest);
+			}
+		});		
 	};
 
 	me.createLegendsFromItems = function (args) {
@@ -759,7 +864,7 @@ CCH.Objects.Widget.Legend = function (args) {
 					}
 
 					if (!ribboned) {
-						firstLegend.find('caption').empty().append($('<span />').html(me.item.summary.legend.title));
+						firstLegend.find('caption').empty().append($('<span />').html(me.item.summary.legend ? me.item.summary.legend.title : ""));
 					} else {
 						firstLegend.find('caption').empty().append(captionSpan);
 					}
@@ -791,7 +896,7 @@ CCH.Objects.Widget.Legend = function (args) {
 					// I have one table left after running unique(). However, I started out with multiple tables. This
 					// means that the title of this table will be the last table to make it through unique(). If that's the 
 					// case, use the title of the parent aggregation for this item
-					legendTables[0].find('caption').html(me.item.summary.legend.title);
+					legendTables[0].find('caption').html(me.item.summary.legend ? me.item.summary.legend.title : "");
 				} else {
 					// If there's multiple tables, sort them according to index, leaving
 					// titles as is
