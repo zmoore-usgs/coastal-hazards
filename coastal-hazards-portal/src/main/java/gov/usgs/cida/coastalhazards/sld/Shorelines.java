@@ -46,14 +46,14 @@ public final class Shorelines {
 		}
 
 		public void finalize(Item item) {
-			try (DataDomainManager manager = new DataDomainManager()) {
+			try (DataDomainManager manager = new DataDomainManager(); ItemManager items = new ItemManager()) {
 				DataDomain domain = manager.getDomainForItem(item);
 				SortedSet<String> domainValues = domain.getDomainValues();
 				
 				//If this is an aggregation we need to only keep points from visible children
 				if(item.getItemType() == Item.ItemType.aggregation){
 					domainValues.clear();
-					domainValues = DataDomainUtility.getOnlyVisibleDomainValues(item, manager);
+					domainValues = DataDomainUtility.getOnlyVisibleDomainValues(item, manager, items);
 				}
 				
 				Integer minimum = Integer.parseInt(domainValues.first());
