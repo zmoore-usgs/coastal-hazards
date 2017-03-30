@@ -46,9 +46,8 @@ public final class Shorelines {
 		}
 
 		public void finalize(Item item) {
-			try (DataDomainManager manager = new DataDomainManager()) {
+			try (DataDomainManager manager = new DataDomainManager(); ItemManager items = new ItemManager()) {
 				DataDomain domain = manager.getDomainForItem(item);
-				ItemManager items = new ItemManager();
 				SortedSet<String> domainValues = domain.getDomainValues();
 				
 				//If this is an aggregation we need to only keep points from visible children
@@ -56,9 +55,6 @@ public final class Shorelines {
 					domainValues.clear();
 					domainValues = DataDomainUtility.getOnlyVisibleDomainValues(item, manager, items);
 				}
-                                
-				manager.close();
-				items.close();
 				
 				Integer minimum = Integer.parseInt(domainValues.first());
 				Integer maximum = Integer.parseInt(domainValues.last());
