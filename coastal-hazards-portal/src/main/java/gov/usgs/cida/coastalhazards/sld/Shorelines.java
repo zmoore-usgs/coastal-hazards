@@ -1,6 +1,7 @@
 package gov.usgs.cida.coastalhazards.sld;
 
 import static gov.usgs.cida.coastalhazards.Attributes.*;
+import gov.usgs.cida.coastalhazards.domain.DataDomainUtility;
 import gov.usgs.cida.coastalhazards.jpa.DataDomainManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
@@ -52,19 +53,7 @@ public final class Shorelines {
 				//If this is an aggregation we need to only keep points from visible children
 				if(item.getItemType() == Item.ItemType.aggregation){
 					domainValues.clear();
-					
-					if(item.getDisplayedChildren().size() > 0){
-						//Fetch domain values for only visible children
-						for(int i = 0; i < item.getDisplayedChildren().size(); i++)
-						{
-							try(ItemManager items = new ItemManager())
-							{
-								Item child = items.load(item.getDisplayedChildren().get(i));
-								domain = manager.getDomainForItem(child);
-								domainValues.addAll(domain.getDomainValues());
-							}
-						}
-					}
+					domainValues = DataDomainUtility.getOnlyVisibleDomainValues(item, manager);
 				}
 				
 				Integer minimum = Integer.parseInt(domainValues.first());
