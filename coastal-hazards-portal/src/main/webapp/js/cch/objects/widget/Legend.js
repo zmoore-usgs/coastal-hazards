@@ -403,7 +403,7 @@ CCH.Objects.Widget.Legend = function (args) {
 					return indexToText[index];
 				};
 				sorter =  function(a,b){return b.lowerBound - a.lowerBound;};
-			} else if("Date_".localeCompare(item.attr) === 0){
+			} else if("historical".localeCompare(item.type) === 0){
 				binLabeler = function(bin, index, bins){
 					if(index === 0){
 						return bin.years;
@@ -489,13 +489,6 @@ CCH.Objects.Widget.Legend = function (args) {
 		
 		var legendRenderer = null;
 
-		if(item.itemType == "aggregation"){
-			var children = item.getChildren();
-
-			if(children.length > 1){
-				item.attr = children[1].attr;
-			}
-		}
 		try {
 			legendRenderer = me.getLegendRenderer(sld.legendType);
 		} catch(e){
