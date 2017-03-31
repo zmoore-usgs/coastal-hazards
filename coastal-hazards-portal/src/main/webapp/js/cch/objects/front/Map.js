@@ -315,7 +315,7 @@ CCH.Objects.Front.Map = function (args) {
 			}
 			me.map.zoomToExtent(layerBounds, attemptClosest);
 			if(zoomLevel) { //zoomToExtent always seems to consistently be 1 zoom level too far
-				me.map.zoomTo(zoomLevel);
+				setTimeout(function() { me.map.zoomTo(zoomLevel)}, 100);
 			}
 		},
 		zoomToActiveLayers: function () {
