@@ -22,6 +22,7 @@ CCH.Objects.Session = function (args) {
 		baselayer: '',
 		scale: 55467893.20,
 		bbox: [-138.48502349853044, 7.986650381678925, -55.86783599853124, 56.56752394039768],
+		zoomLevel: 3,
 		center: [-95.76961135864461, 37.0182344690233],
 		// NOTE: I'm moving towards smaller variable names here to save space in 
 		// cookies. (This is not so much an issue for browser storage). This naming
@@ -127,6 +128,8 @@ CCH.Objects.Session = function (args) {
 		callbacks.success.unshift(function (json) {
 			CCH.LOG.debug("Session.js::write: " + json.sid);
 		});
+		
+		console.log(CCH.map.getMap().getExtent())
 
 		return $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint, {
 			type: 'POST',

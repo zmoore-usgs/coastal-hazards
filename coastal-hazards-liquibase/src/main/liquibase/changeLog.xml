@@ -42,4 +42,5 @@
 	<include file="updateLegendTitleWithMediumTitle.xml" relativeToChangelogFile="true" />
 	<include file="addSummaryDownloadLink.xml" relativeToChangelogFile="true" />
 	<include file="updateDownloadLinkWithPublishData.xml" relativeToChangelogFile="true" />
+	<include file="addSessionZoomLevel.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
