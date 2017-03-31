@@ -292,6 +292,7 @@ CCH.Objects.Item = function (args) {
 				layers = args.layers || [],
 				bboxObject = args.bboxObject || {},
 				stringifiedBbox = me.bbox.toString(),
+				selectedItem = args.selectedItem,
 				childReturnObj;
 
 
@@ -301,6 +302,10 @@ CCH.Objects.Item = function (args) {
 
 			if (aggregationName === '') {
 				aggregationName = me.id + '_';
+			}
+			
+			if(selectedItem === undefined){
+			    selectedItem = me.id;
 			}
 
 			// This aggregation should have children, so for each 
@@ -313,7 +318,8 @@ CCH.Objects.Item = function (args) {
 						layers: layers,
 						aggregationName: aggregationName,
 						bboxObject: bboxObject,
-						visible: visible
+						visible: visible,
+						selectedItem: selectedItem
 					});
 					layers.concat(childReturnObj.layers);
 					bboxObject = childReturnObj.bboxObject;
@@ -359,7 +365,8 @@ CCH.Objects.Item = function (args) {
 				ribbon: index,
 				visible: visible,
 				aggregationName: aggregationName,
-				name: layerName
+				name: layerName,
+				selectedItem: selectedItem
 			});
 			layers.push(layer);
 		}

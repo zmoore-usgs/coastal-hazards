@@ -42,6 +42,7 @@ CCH.Objects.Front.Map = function (args) {
 			ribbonIndex = args.ribbon || 0,
 			name = args.name,
 			visible = args.visible === false ? false : true,
+			selectedItem = args.selectedItem,
 			layer;
 
 		layer = me.map.getLayersByName(name)[0];
@@ -54,9 +55,13 @@ CCH.Objects.Front.Map = function (args) {
 
 		layer.name = name;
 		
+		layer.mergeNewParams({
+		    'SLD': layer.params.SLD + '?selectedItem=' + selectedItem 
+		});
+		
 		if (ribbonIndex !== 0 && layer.params.SLD && layer.params.SLD.indexOf('ribbon') === -1) {
 			layer.mergeNewParams({
-				'SLD': layer.params.SLD + '?ribbon=' + ribbonIndex,
+				'SLD': layer.params.SLD + '&ribbon=' + ribbonIndex,
 				'buffer': (ribbonIndex - 1) * 6
 			});
 		}

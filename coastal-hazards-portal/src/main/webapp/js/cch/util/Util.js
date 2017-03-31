@@ -50,7 +50,7 @@ CCH.Util.Util = {
 		args.callbacks.success = args.callbacks.success || [];
 		args.callbacks.error = args.callbacks.error || [];
 		return $.ajax({
-			url: args.contextPath + '/data/sld/' + args.itemId,
+			url: args.contextPath + '/data/sld/' + args.itemId + '?selectedItem=' + args.selectedId,
 			context: args.context || arguments.callee.caller,
 			headers: {
 				'Accept': "application/json; charset=utf-8",
