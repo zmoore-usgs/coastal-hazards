@@ -91,6 +91,7 @@ CCH.CONFIG = CCH.CONFIG || {};
 				'cch.ui.resized' : function () {
 					CCH.map.zoomToBoundingBox({
 						'bbox': session.bbox,
+						'zoomLevel' : session.zoomLevel,
 						'fromProjection': CCH.CONFIG.map.modelProjection
 					});
 				},
