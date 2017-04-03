@@ -55,11 +55,13 @@ CCH.Objects.Front.Map = function (args) {
 
 		layer.name = name;
 		
-		var layerSLDBase = layer.params.SLD.substr(0,layer.params.SLD.indexOf('?'));
-		
-		layer.mergeNewParams({
-		    'SLD': (layerSLDBase ? layerSLDBase : layer.params.SLD) + (selectedItem ? '?selectedItem=' + selectedItem : "")
-		});
+		if(layer.params.SLD){
+		    var layerSLDBase = layer.params.SLD.substr(0,layer.params.SLD.indexOf('?'));
+		    
+		    layer.mergeNewParams({
+			'SLD': (layerSLDBase ? layerSLDBase : layer.params.SLD) + (selectedItem ? '?selectedItem=' + selectedItem : "")
+		    });
+		}
 		
 		if (ribbonIndex !== 0 && layer.params.SLD && layer.params.SLD.indexOf('ribbon') === -1) {
 			layer.mergeNewParams({
