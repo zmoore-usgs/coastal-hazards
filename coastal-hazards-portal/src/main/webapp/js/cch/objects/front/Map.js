@@ -307,12 +307,16 @@ CCH.Objects.Front.Map = function (args) {
 			var bbox = args.bbox,
 				fromProjection = args.fromProjection || me.displayProjection,
 				layerBounds = OpenLayers.Bounds.fromArray(bbox),
-				attemptClosest = args.attemptCloses || false;
+				zoomLevel = args.zoomLevel,
+				attemptClosest = args.attemptClosest || false;
 
 			if (fromProjection) {
 				layerBounds.transform(new OpenLayers.Projection(fromProjection), me.displayProjection);
 			}
 			me.map.zoomToExtent(layerBounds, attemptClosest);
+			if(zoomLevel) { //zoomToExtent always seems to consistently be 1 zoom level too far
+				setTimeout(function() { me.map.zoomTo(zoomLevel)}, 100);
+			}
 		},
 		zoomToActiveLayers: function () {
 			var activeLayers = me.getLayersBy('type', 'cch'),
@@ -349,6 +353,7 @@ CCH.Objects.Front.Map = function (args) {
 			];
 			session.scale = map.getScale();
 			session.bbox = map.getExtent().transform(CCH.map.getMap().displayProjection, CCH.CONFIG.map.modelProjection).toArray();
+			session.zoomLevel = map.getZoom();
 			return session;
 		},
 		/**
