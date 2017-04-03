@@ -42,9 +42,11 @@ CCH.Objects.Front.Map = function (args) {
 			ribbonIndex = args.ribbon || 0,
 			name = args.name,
 			visible = args.visible === false ? false : true,
-			selectedItem = args.selectedItem,
+			selectedItem = args.selectedItem ? args.selectedItem : item,
 			layer;
-		
+
+		layer = me.map.getLayersByName(name)[0];
+
 		if (!layer) {
 			if (item && 'function' === typeof item.getWmsLayer) {
 				layer = item.getWmsLayer(args);
@@ -53,8 +55,10 @@ CCH.Objects.Front.Map = function (args) {
 
 		layer.name = name;
 		
+		var layerSLDBase = layer.params.SLD.substr(0,layer.params.SLD.indexOf('?'));
+		
 		layer.mergeNewParams({
-		    'SLD': layer.params.SLD + '?selectedItem=' + selectedItem 
+		    'SLD': (layerSLDBase ? layerSLDBase : layer.params.SLD) + '?selectedItem=' + selectedItem 
 		});
 		
 		if (ribbonIndex !== 0 && layer.params.SLD && layer.params.SLD.indexOf('ribbon') === -1) {
@@ -73,11 +77,6 @@ CCH.Objects.Front.Map = function (args) {
 		});
 		
 		me.legendControl.maximizeControl();
-		
-		if(item.itemType == "data"){
-		    me.map.removeLayer(me.map.getLayersByName(name)[0]);
-		    me.map.addLayer(layer);
-		}
 		
 		return layer;
 	};
