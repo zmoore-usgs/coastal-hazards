@@ -72,7 +72,7 @@ public class SLDGenerator {
 		}
 	}
 	
-	public static SLDGenerator getGenerator(Item item, Integer ribbon) {
+	public static SLDGenerator getGenerator(Item item, Item selectedItem, Integer ribbon) {
 		SLDGenerator generator = null;
         
         Item.Type itemDotType = item.getType();
@@ -84,14 +84,14 @@ public class SLDGenerator {
             SLDConfig conf = typeLookup.get(StringUtils.upperCase(itemAttribute));
 
             if (null != conf) {
-                generator = new SLDGenerator(item, ribbon, conf);
+                generator = new SLDGenerator(item, selectedItem, ribbon, conf);
             }
         } else if (itemType == Item.ItemType.aggregation || itemType == Item.ItemType.template) {
             SortedSet<String> aggAttributes = ItemUtil.gatherAttributes(item);
             Map<String, SLDConfig> typeLookup = generatorMap.get(itemDotType);
             // TODO enforce all attributes map to same SLD type
             SLDConfig conf = typeLookup.get(StringUtils.upperCase(aggAttributes.first()));
-            generator = new SLDGenerator(item, ribbon, conf);
+            generator = new SLDGenerator(item, selectedItem, ribbon, conf);
         } else {
             throw new BadRequestException();
         }
@@ -114,12 +114,12 @@ public class SLDGenerator {
 	 * @param ribbon
 	 * @param config 
 	 */
-	protected SLDGenerator(Item item, Integer ribbon, SLDConfig config) {
+	protected SLDGenerator(Item item, Item selectedItem, Integer ribbon, SLDConfig config) {
 		this.item = item;
 		this.ribbon = ribbon;
         if (config instanceof ShorelineConfig) {
             ShorelineConfig slc = (ShorelineConfig)config;
-            slc.finalize(item);
+            slc.finalize(selectedItem);
             this.config = slc;
         } else {
             this.config = config;
