@@ -12,7 +12,6 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
  */
 public class HttpClientSingleton {
 
-	private static final Logger LOG = LoggerFactory.getLogger(HttpClientSingleton.class);
 	private static HttpClient httpclient = new  DefaultHttpClient(new PoolingClientConnectionManager());
 
 	private HttpClientSingleton() {
