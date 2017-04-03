@@ -72,7 +72,7 @@ public class SLDResource {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON + ";qs=0")
-	public Response getSLDInfo(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedId") String selectedId) {
+	public Response getSLDInfo(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedItem") String selectedId) {
 		Response response;
 
 		try (ItemManager manager = new ItemManager()) {

@@ -44,31 +44,33 @@ CCH.Util.Util = {
 	 * Creates a legend for display on back of card
 	 */
 	getSLD: function (args) {
-		"use strict";
-		args = args || {};
-		args.callbacks = args.callbacks || {};
-		args.callbacks.success = args.callbacks.success || [];
-		args.callbacks.error = args.callbacks.error || [];
-		return $.ajax({
-			url: args.contextPath + '/data/sld/' + args.itemId + '?selectedItem=' + args.selectedId,
-			context: args.context || arguments.callee.caller,
-			headers: {
-				'Accept': "application/json; charset=utf-8",
-				'Content-Type': "application/json; charset=utf-8"
-			},
-			dataType: 'json',
-			success: function (data, status, jqXHR) {
-				args.callbacks.success.each(function (cb) {
-					cb.apply(args.context, [data, status, jqXHR]);
-				});
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				args.callbacks.error.each(function (cb) {
-					cb.apply(args.context, [jqXHR, textStatus, errorThrown]);
-				});
-			}
-		});
+	    "use strict";
+	    args = args || {};
+	    args.callbacks = args.callbacks || {};
+	    args.callbacks.success = args.callbacks.success || [];
+	    args.callbacks.error = args.callbacks.error || [];
+	    var sldUrl = args.sldUrl ? args.sldUrl : args.contextPath + '/data/sld/' + args.itemId + (args.selectedId ? ('?selectedItem=' + args.selectedId) : "");
+	    return $.ajax({
+		    url: sldUrl,
+		    context: args.context || arguments.callee.caller,
+		    headers: {
+			    'Accept': "application/json; charset=utf-8",
+			    'Content-Type': "application/json; charset=utf-8"
+		    },
+		    dataType: 'json',
+		    success: function (data, status, jqXHR) {
+			    args.callbacks.success.each(function (cb) {
+				    cb.apply(args.context, [data, status, jqXHR]);
+			    });
+		    },
+		    error: function (jqXHR, textStatus, errorThrown) {
+			    args.callbacks.error.each(function (cb) {
+				    cb.apply(args.context, [jqXHR, textStatus, errorThrown]);
+			    });
+		    }
+	    });
 	},
+	
 	getMinifiedEndpoint: function (args) {
 		"use strict";
 		var location = args.location || window.location.href;
