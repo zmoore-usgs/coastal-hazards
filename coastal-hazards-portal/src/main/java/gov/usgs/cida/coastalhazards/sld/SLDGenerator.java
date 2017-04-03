@@ -119,7 +119,7 @@ public class SLDGenerator {
 		this.ribbon = ribbon;
         if (config instanceof ShorelineConfig) {
             ShorelineConfig slc = (ShorelineConfig)config;
-            slc.finalize(item, selectedItem);
+            slc.finalize(selectedItem);
             this.config = slc;
         } else {
             this.config = config;

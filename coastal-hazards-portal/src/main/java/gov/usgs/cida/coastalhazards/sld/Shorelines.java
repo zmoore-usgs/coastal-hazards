@@ -45,12 +45,8 @@ public final class Shorelines {
 			wrapped = null;
 		}
 
-		public void finalize(Item item, Item selectedItem) {
+		public void finalize(Item item) {
 			try (DataDomainManager manager = new DataDomainManager(); ItemManager items = new ItemManager()) {
-				//We want to build the colors and scale from the
-				//selected aggreation so set this as our item for finalization
-				item = selectedItem;
-				
 				DataDomain domain = manager.getDomainForItem(item);
 				SortedSet<String> domainValues = domain.getDomainValues();
 				
