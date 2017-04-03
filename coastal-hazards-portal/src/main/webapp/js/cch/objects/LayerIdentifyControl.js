@@ -164,7 +164,7 @@ return {
 			for (layerName in featuresByName) {
 				if (featuresByName.hasOwnProperty(layerName)) {
 					layerName = trimLayerName(layerName);
-					layerObject = CCH.map.getMap().getLayersBy('itemid', layerName);
+					var layerObject = CCH.map.getMap().getLayersBy('itemid', layerName);
 					
 					CCH.map.getMap().getLayersBy('itemid', layerName).forEach(function(layer){
 					    if(layer.visibility){
