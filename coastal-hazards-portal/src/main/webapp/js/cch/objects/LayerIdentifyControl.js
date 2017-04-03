@@ -164,7 +164,16 @@ return {
 			for (layerName in featuresByName) {
 				if (featuresByName.hasOwnProperty(layerName)) {
 					layerName = trimLayerName(layerName);
-					layerId = CCH.map.getMap().getLayersBy('itemid', layerName)[0].params.SLD.split('/').last();
+					layerObject = CCH.map.getMap().getLayersBy('itemid', layerName);
+					
+					CCH.map.getMap().getLayersBy('itemid', layerName).forEach(function(layer){
+					    if(layer.visibility){
+						layerObject = layer;
+					    }
+					});
+					
+					layerId = layerObject.params.SLD.split('/').last();
+					layerId = layerId.substr(0, layerId.indexOf('?')).length > 0 ? layerId.substr(0, layerId.indexOf('?')) : layerId;
 					if (featuresByName.hasOwnProperty(layerName)) {
 						features = featuresByName[layerName];
 						featureCount = features.length;
@@ -172,7 +181,7 @@ return {
 							CCH.Util.Util.getSLD({
 								itemId: layerId,
 								contextPath: CCH.CONFIG.contextPath,
-								sldUrl: CCH.map.getMap().getLayersBy('itemid', layerName)[0].params.SLD,
+								sldUrl: layerObject.params.SLD,
 								context: {
 									features: features,
 									layerId: layerName,
