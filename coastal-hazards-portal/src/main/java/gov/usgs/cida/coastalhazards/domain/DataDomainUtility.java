@@ -1,12 +1,17 @@
 package gov.usgs.cida.coastalhazards.domain;
 
+import gov.usgs.cida.coastalhazards.jpa.DataDomainManager;
+import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.util.DataDomain;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -62,4 +67,27 @@ public class DataDomainUtility {
         return yearDomain;
     }
     
+	public static SortedSet<String> getOnlyVisibleDomainValues(Item rootItem, DataDomainManager domainManager, ItemManager itemManager){
+		List<String> childItems = rootItem.getDisplayedChildren();
+		SortedSet<String> domainValues = new TreeSet();
+				
+		if(childItems.isEmpty()){
+			return domainValues;
+		} 		
+				
+		//Loop through the remaining children with the created variables
+		for(int i = 0; i < childItems.size(); i++){
+			Item child = itemManager.load(childItems.get(i));
+			
+			if(child.getItemType() == Item.ItemType.aggregation){
+				domainValues.addAll(getOnlyVisibleDomainValues(child, domainManager, itemManager));
+			} else {
+				DataDomain domain = domainManager.getDomainForItem(child);
+				SortedSet<String> values = domain.getDomainValues();
+				domainValues.addAll(values);
+			}
+		}
+		
+		return domainValues;
+	}
 }

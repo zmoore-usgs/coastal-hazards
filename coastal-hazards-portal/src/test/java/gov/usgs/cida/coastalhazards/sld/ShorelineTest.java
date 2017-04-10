@@ -49,7 +49,7 @@ public class ShorelineTest {
         summary.setTiny(tiny);
         item.setSummary(summary);
         
-        SLDGenerator shoreline = new SLDGenerator(item, null, Shorelines.shorelines);
+        SLDGenerator shoreline = new SLDGenerator(item, item, null, Shorelines.shorelines);
         Response response = shoreline.generateSLDInfo();
         String json = (String)response.getEntity();
         Map<String, Object> sldInfo = new Gson().fromJson(json, HashMap.class);
@@ -80,10 +80,53 @@ public class ShorelineTest {
         summary.setTiny(tiny);
         item.setSummary(summary);
         
-        SLDGenerator shoreline = new SLDGenerator(item, null, Shorelines.shorelines);
+        SLDGenerator shoreline = new SLDGenerator(item, item, null, Shorelines.shorelines);
 
         Response response = shoreline.generateSLD();
         Viewable sld = (Viewable)response.getEntity();
+    }
+    
+    /**
+     * Test of generateSLDInfo method, of class Shoreline with an overriding
+     * selected item.
+     */
+    @Test
+    public void testGenerateSLDInfoSelected() {
+        Item item = new Item();
+        Item selectedItem = new Item();
+        item.setAttr("Date_");
+        item.setId("abcd");
+        item.setType(Item.Type.historical);
+        selectedItem.setAttr("Date_");
+        selectedItem.setId("efg");
+        selectedItem.setType(Item.Type.historical);
+	selectedItem.setItemType(Item.ItemType.aggregation);
+	
+        List<Service> services = new LinkedList<>();
+        Service wmsService = new Service();
+        wmsService.setEndpoint("http://test");
+        wmsService.setServiceParameter("0");
+        wmsService.setType(ServiceType.source_wms);
+        services.add(wmsService);
+        item.setServices(services);
+	selectedItem.setServices(services);
+        Summary summary = new Summary();
+        Tiny tiny = new Tiny();
+        tiny.setText("Shoreline");
+        summary.setTiny(tiny);
+        item.setSummary(summary);
+	selectedItem.setSummary(summary);
+        
+        SLDGenerator shoreline = new SLDGenerator(item, selectedItem, null, Shorelines.shorelines);
+        Response response = shoreline.generateSLDInfo();
+        String json = (String)response.getEntity();
+        Map<String, Object> sldInfo = new Gson().fromJson(json, HashMap.class);
+        List<Object> bins = (List)sldInfo.get("bins");
+        Map<String,Object> bin = (Map)bins.get(0);
+        Double year0 = ((List<Double>)bin.get("years")).get(0);
+        String color = (String)bin.get("color");
+        assertEquals(year0, 0.0f, 0.01f);
+        assertEquals(color, "#ff0000");
     }
 
 }

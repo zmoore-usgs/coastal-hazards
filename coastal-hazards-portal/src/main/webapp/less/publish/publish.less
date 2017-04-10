@@ -20,16 +20,123 @@
 	}
 }
 
-.panel-body {
-	.row {
-		&:not(:first-child) {
-			margin-top: 10px;
-		}
-		&:not(:last-child) {
-			margin-bottom: 10px;
-		}
-	}
+.container{
+    padding-top:15px;
 }
+
+.panel{
+    margin-bottom:15px;
+}
+
+.form-inline .input-group{
+    width:100%;
+    
+    button{
+        margin-bottom:10px;
+    }
+}
+
+.sideBySide{
+    display:flex;
+    flex-direction: row;
+    
+    .input-group{
+        width:auto;
+    }
+    
+    .input-group-btn,
+    .panel-title{
+        flex:1;
+    }
+    
+    .panel-title{
+        line-height:34px;
+    }
+    
+    .input-group-btn{
+        text-align:right;
+        
+        button{
+            margin-bottom:0;
+        }
+    }
+    
+    .input-group-btn:last-child > .btn{
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+}
+
+#item-id-panel{
+    margin-top:15px;
+}
+
+#checkboxes{
+    flex:1;
+    
+    .checkbox input[type="checkbox"]{
+        margin-left:0;
+    }
+}
+
+#imageGenerator{
+    flex:1;
+    
+    .row{
+        margin:0;
+    }
+    
+    img{
+        margin-bottom:10px;
+    }
+}
+
+#bbox-table{
+   margin:0 auto; 
+}
+
+#form-publish-info-item-bbox{
+    margin-left:0;
+    margin-right:0;
+}
+
+#form-publish-info-item-service-layer .form-group{
+    padding:0;
+}
+
+#form-publish-info-item-keywords{
+    margin-left:0;
+    margin-right:0;
+    .input-group-btn{
+        width:30px;
+    }
+    
+    h3{
+        font-size:16px;
+    }
+}
+
+.form-inline .form-group{
+    width:100%;
+    padding:0 15px;
+    margin:0;
+}
+
+.form-inline .form-group label:first-child{
+    margin-top:0px;
+}
+
+
+.form-inline .form-control{
+     width:100%;
+     margin-bottom:10px;
+}
+
+
+.form-inline .input-group .input-group-btn{
+    width:60px;
+}
+
 
 .row {
 	&-type {
@@ -51,7 +158,7 @@
 		.row-form-combo;
 	}
 	&-id .form-control {
-		width: auto;
+		width: 100%;
 	}
 	&-name .form-control {
 		width: auto;
@@ -188,4 +295,28 @@ form-publish-info-item-panel-children .panel-body {
 	&-aggregation {
 		.emphasis-block;
 	}
+}
+
+@media screen and (min-width:768px){
+    
+    .flexSection{
+        display:flex;
+        flex-direction:row;
+        flex-wrap: wrap;
+        
+        #item-id-panel,
+        .flexLeft{
+            margin-right:15px;
+            flex:1;
+        }
+        
+        #features-panel{
+            margin-top:15px;
+            flex:1;
+        }
+        
+        .flexRight{
+            flex:1;
+        }
+    }
 }

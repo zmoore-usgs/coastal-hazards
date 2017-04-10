@@ -164,7 +164,16 @@ return {
 			for (layerName in featuresByName) {
 				if (featuresByName.hasOwnProperty(layerName)) {
 					layerName = trimLayerName(layerName);
-					layerId = CCH.map.getMap().getLayersBy('itemid', layerName)[0].params.SLD.split('/').last();
+					var layerObject = CCH.map.getMap().getLayersBy('itemid', layerName);
+					
+					CCH.map.getMap().getLayersBy('itemid', layerName).forEach(function(layer){
+					    if(layer.visibility){
+						layerObject = layer;
+					    }
+					});
+					
+					layerId = layerObject.params.SLD.split('/').last();
+					layerId = layerId.substr(0, layerId.indexOf('?')).length > 0 ? layerId.substr(0, layerId.indexOf('?')) : layerId;
 					if (featuresByName.hasOwnProperty(layerName)) {
 						features = featuresByName[layerName];
 						featureCount = features.length;
@@ -172,7 +181,7 @@ return {
 							CCH.Util.Util.getSLD({
 								itemId: layerId,
 								contextPath: CCH.CONFIG.contextPath,
-								sldUrl: CCH.map.getMap().getLayersBy('itemid', layerName)[0].params.SLD,
+								sldUrl: layerObject.params.SLD,
 								context: {
 									features: features,
 									layerId: layerName,
@@ -212,7 +221,7 @@ return {
 			units = sld.units,
 			layerId = args.layerId,
 			item = CCH.items.getById({id: layerId}),
-			title = item.summary.legend.title,
+			title = item.summary.legend ? item.summary.legend.title : "",
 			features = args.features,
 			attr = overrideAttributeName(features, item.attr),
 			displayPoints = new Array(),
@@ -316,6 +325,13 @@ return {
 					}
 				
 				} else {
+					//Limit ribbon data to only creating a row for the first features
+					if(ribbonIndex >= 0 && displayPoints.count() > 0){
+						var point = displayPoints[0];
+						displayPoints = new Array();
+						displayPoints.add(point);
+					}
+					
 					//Create rows for each point to be displayed in this table
 					for(i = 0; i < displayPoints.count(); i++){
 						//Reset Contents
@@ -404,7 +420,7 @@ return {
 				$popupHtml.empty().append($tableContainer);
 								
 				if(displayPoints.count() > 1 || CCH.map.getMap().getZoom() < 12){
-					var $noteContainer = $('<small id="zoomNotice">Zoom in further for more refined results.</small>').css('color', 'black');
+					var $noteContainer = $('<small id="zoomNotice">Zoom in further for more accurate results.</small>').css('color', 'black');
 					$popupHtml.append($noteContainer);
 				}
 				
