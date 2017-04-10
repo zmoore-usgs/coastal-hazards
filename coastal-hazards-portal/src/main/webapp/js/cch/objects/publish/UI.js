@@ -63,6 +63,8 @@ CCH.Objects.Publish.UI = function () {
 		$rasterModalSubmitButton = $('#raster-modal-submit-btn'),
 		$titleModal = $('#title-modal'),
 		$titleModalContinueButton = $('#title-modal-continue-button'),
+                $resourceModal = $('#resource-modal'),
+		$resourceModalContinueButton = $('#resource-modal-continue-button'),
 		$metadataSummaryField = $('#form-publish-info-item-summary-version'),
 		$itemEnabledField = $('#form-publish-info-item-enabled'),
 		$itemImage = $form.find('#form-publish-info-item-image'),
@@ -1647,16 +1649,20 @@ CCH.Objects.Publish.UI = function () {
 		$srcWmsServiceInput.val($srcWfsServiceInput.val().replace('WFSServer', 'WMSServer'));
 	});
 
-	$attributeRetrieveDataButton.on(CCH.CONFIG.strings.click, function () {
-		me.getDataForAttribute();
-	});
-	
 	$attributeRetrieveTitlesButton.on(CCH.CONFIG.strings.click, function () {
 		$titleModal.modal(CCH.CONFIG.strings.show);
 	});
 	
 	$titleModalContinueButton.on(CCH.CONFIG.strings.click, function() {
 		me.getTitlesForAttribute();
+	});
+        
+        $attributeRetrieveDataButton.on(CCH.CONFIG.strings.click, function () {
+		$resourceModal.modal(CCH.CONFIG.strings.show);
+	});
+        
+        $resourceModalContinueButton.on(CCH.CONFIG.strings.click, function() {
+		me.getDataForAttribute();
 	});
 	
 	$attributeSelectHelper.on(CCH.CONFIG.strings.change, me.updateSelectChange);

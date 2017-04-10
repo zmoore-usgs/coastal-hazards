@@ -521,7 +521,7 @@
                                     <div class="panel-heading sideBySide">
                                         <h3 class="panel-title">Metadata</h3>
                                         <span class="input-group-btn">
-                                            <button id="form-publish-item-service-csw-button-fetch" class="btn btn-default" type="button" disabled="disabled">Fetch Metadata</button>
+                                            <button id="form-publish-item-service-csw-button-fetch" class="btn btn-default" type="button" disabled="disabled">Populate Fields</button>
                                         </span>
                                     </div>
                                     <div class="panel-body">                            
@@ -622,6 +622,23 @@
                     <div class="modal-footer">
                         <button id="title-modal-continue-button" type="button" class="btn btn-default" data-dismiss="modal">Continue</button>
                         <button id="title-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="resource-modal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Warning</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>This will overwrite any data currently in the Resources section for this item.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="resource-modal-continue-button" type="button" class="btn btn-default" data-dismiss="modal">Continue</button>
+                        <button id="resource-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     </div>
                 </div>
             </div>
