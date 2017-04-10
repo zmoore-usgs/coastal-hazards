@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.util;
 
 import com.vividsolutions.jts.geom.MultiLineString;
-import gov.usgs.cida.coastalhazards.wps.CreateTransectsAndIntersectionsProcessTest;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import java.io.IOException;
 import java.net.URL;
@@ -26,7 +25,7 @@ public class CRSUtilsTest {
     @Test
     @Ignore
     public void testGetLinesFromFeatureCollection() throws IOException {
-        URL baselineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
+        URL baselineShapefile = CRSUtilsTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_baseline.shp");
         FeatureCollection<SimpleFeatureType, SimpleFeature> baselinefc =
                 FeatureCollectionFromShp.getFeatureCollectionFromShp(baselineShapefile);

@@ -47,11 +47,15 @@
 package gov.usgs.cida.coastalhazards.util;
 
 import gov.usgs.cida.coastalhazards.exceptions.LayerAlreadyExistsException;
+
+import java.io.IOException;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.wps.gs.ImportProcess;
+import gov.usgs.cida.coastalhazards.wps.CchImportProcess;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.process.ProcessException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -61,9 +65,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class LayerImportUtil {
     
     private Catalog catalog;
-    private ImportProcess importProcess;
+    private CchImportProcess importProcess;
     
-    public LayerImportUtil(Catalog catalog, ImportProcess importProcess) {
+    public LayerImportUtil(Catalog catalog, CchImportProcess importProcess) {
         this.catalog = catalog;
         this.importProcess = importProcess;
     }
@@ -84,13 +88,15 @@ public class LayerImportUtil {
      * @param nativeCrs
      * @param policy
      * @return 
+     * @throws IOException 
+     * @throws ProcessException 
      */
     public String importLayer(SimpleFeatureCollection collection,
             String workspace,
             String store,
             String layerName,
             CoordinateReferenceSystem nativeCrs,
-            ProjectionPolicy policy) {
+            ProjectionPolicy policy) throws ProcessException, IOException {
         checkIfLayerExists(workspace, layerName);
         return importProcess.execute(collection, null, workspace, store, layerName, nativeCrs, policy, null);
     }

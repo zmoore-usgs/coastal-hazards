@@ -1,0 +1,22 @@
+<dataStore>
+  <id>DataStoreInfoImpl-43c91fb2:15b49725600:-7ff8</id>
+  <name>proxied</name>
+  <type>Directory of spatial files (shapefiles)</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-43c91fb2:15b49725600:-7ffe</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="charset">ISO-8859-1</entry>
+    <entry key="filetype">shapefile</entry>
+    <entry key="create spatial index">true</entry>
+    <entry key="memory mapped buffer">false</entry>
+    <entry key="timezone">America/Chicago</entry>
+    <entry key="enable spatial index">true</entry>
+    <entry key="namespace">gov.usgs.cida.gdp.proxied</entry>
+    <entry key="cache and reuse memory maps">false</entry>
+    <entry key="url">file:workspaces/proxied/</entry>
+    <entry key="fstype">shape</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

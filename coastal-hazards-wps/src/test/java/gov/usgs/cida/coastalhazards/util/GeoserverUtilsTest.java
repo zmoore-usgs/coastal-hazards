@@ -14,7 +14,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wps.WPSTestSupport;
-import org.geoserver.wps.gs.ImportProcess;
+import gov.usgs.cida.coastalhazards.wps.CchImportProcess;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.process.ProcessException;
@@ -78,7 +78,7 @@ public class GeoserverUtilsTest extends WPSTestSupport {
 		String layer = importer.importLayer(mixedCaseFeatureCollection, WORKSPACE_NAME, STORE_NAME, LAYER_NAME, mixedCaseFeatureCollection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
 		layer = layer.split(":")[1];
 		
-		ImportProcess importProc = new MisbehavingImportProcess(catalog);
+		CchImportProcess importProc = new MisbehavingImportProcess(catalog);
 		GeoserverUtils instance = new GeoserverUtils(catalog);
 		WorkspaceInfo workspaceInfo = instance.getWorkspaceByName(WORKSPACE_NAME);
 		DataStoreInfo datastoreInfo = instance.getDataStoreByName(WORKSPACE_NAME, STORE_NAME);
@@ -97,7 +97,7 @@ public class GeoserverUtilsTest extends WPSTestSupport {
 		}
 	}
 
-	private class MisbehavingImportProcess extends ImportProcess {
+	private class MisbehavingImportProcess extends CchImportProcess {
 
 		public MisbehavingImportProcess(Catalog catalog) {
 			super(catalog);

@@ -28,7 +28,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.wps.WPSException;
-import org.geoserver.wps.gs.ImportProcess;
+import gov.usgs.cida.coastalhazards.wps.CchImportProcess;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
@@ -61,7 +61,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * 
  */
 @DescribeProcess(title = "Import to Catalog", description = "Imports a feature collection into the catalog")
-public class AutoImportProcess  extends ImportProcess{
+public class AutoImportProcess  extends CchImportProcess{
 
     static final Logger LOGGER = Logging.getLogger(AutoImportProcess.class);
 

@@ -14,7 +14,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.wps.gs.ImportProcess;
+import gov.usgs.cida.coastalhazards.wps.CchImportProcess;
 import org.geotools.data.DataAccess;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -135,8 +135,9 @@ public class GeoserverUtils {
 	 * sits
 	 * @param importProc Import process used to replace the layer
 	 * @return Location of new layer in format: "workspaceName:layerName"
+	 * @throws IOException 
 	 */
-	public String replaceLayer(FeatureCollection<SimpleFeatureType, SimpleFeature> collection, String layer, DataStoreInfo dataStore, WorkspaceInfo workspace, ImportProcess importProc) {
+	public String replaceLayer(FeatureCollection<SimpleFeatureType, SimpleFeature> collection, String layer, DataStoreInfo dataStore, WorkspaceInfo workspace, CchImportProcess importProc) throws IOException {
 		// TODO- Once files are back in original location, try to re-import them into the catalog to get as close as
 		// possible to this function not having consequence on fail
 		String result = null;

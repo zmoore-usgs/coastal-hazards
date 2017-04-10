@@ -52,7 +52,7 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.wps.gs.ImportProcess;
+import gov.usgs.cida.coastalhazards.wps.CchImportProcess;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
@@ -65,7 +65,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class DummyImportProcess extends ImportProcess {
+public class DummyImportProcess extends CchImportProcess {
 
     private File shpfile;
 

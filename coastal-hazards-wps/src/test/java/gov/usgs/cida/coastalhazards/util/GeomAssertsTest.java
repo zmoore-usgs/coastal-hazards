@@ -3,7 +3,6 @@ package gov.usgs.cida.coastalhazards.util;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
-import gov.usgs.cida.coastalhazards.wps.CreateTransectsAndIntersectionsProcessTest;
 import gov.usgs.cida.coastalhazards.exceptions.PoorlyDefinedBaselineException;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import java.io.IOException;
@@ -25,9 +24,9 @@ public class GeomAssertsTest {
      */
     @Test
     public void testAssertBaselinesDoNotCrossShorelines_doesntcross() throws IOException {
-        URL baselineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
+        URL baselineShapefile = GeomAssertsTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_baseline.shp");
-        URL shorelineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
+        URL shorelineShapefile = GeomAssertsTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_shorelines.shp");
         FeatureCollection<SimpleFeatureType, SimpleFeature> baselinefc =
                 FeatureCollectionFromShp.getFeatureCollectionFromShp(baselineShapefile);
@@ -41,9 +40,9 @@ public class GeomAssertsTest {
     
     @Test(expected=PoorlyDefinedBaselineException.class)
     public void testAssertBaselinesDoNotCrossShorelines_doescross() throws IOException {
-        URL baselineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
+        URL baselineShapefile = GeomAssertsTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_cross.shp");
-        URL shorelineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
+        URL shorelineShapefile = GeomAssertsTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_shorelines.shp");
         FeatureCollection<SimpleFeatureType, SimpleFeature> baselinefc =
                 FeatureCollectionFromShp.getFeatureCollectionFromShp(baselineShapefile);
