@@ -59,7 +59,7 @@ CCH.Objects.Front.Map = function (args) {
 		    var layerSLDBase = layer.params.SLD.substr(0,layer.params.SLD.indexOf('?'));
 		    
 		    layer.mergeNewParams({
-			'SLD': (layerSLDBase ? layerSLDBase : layer.params.SLD) + (selectedItem ? '?selectedItem=' + selectedItem : "")
+			'SLD': (layerSLDBase ? layerSLDBase : layer.params.SLD) + (selectedItem ? '?selectedItem=' + selectedItem : "?")
 		    });
 		}
 		
