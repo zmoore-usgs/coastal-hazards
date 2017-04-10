@@ -27,10 +27,18 @@
 			<useProjectArtifact>true</useProjectArtifact>
 			<unpack>false</unpack>
 			<scope>runtime</scope>
-			<excludes> <!-- excluding anything that should be in geoserver war -->
-				<exclude>javax.activation:activation</exclude>
-				<exclude>javax.activation:activation</exclude>
-			</excludes>
+			<includes> <!-- only include things that are not provided by tomcat/geoserver -->
+				<include>gov.usgs.cida.coastalhazards:coastal-hazards-commons</include>
+				<include>gov.usgs.cida.coastalhazards:coastal-hazards-wps</include>
+				<include>gov.usgs.cida:dynamicProperties</include>
+				<include>com.google.code.gson:gson</include>
+				<include>org.apache.httpcomponents:httpcore</include>
+				<include>org.apache.httpcomponents:httpclient</include>
+				<include>joda-time:joda-time</include>
+				<include>log4j:log4j</include>
+				<include>org.slf4j:slf4j-api</include>
+				<include>xerces:xercesImpl</include>
+			</includes>
 		</dependencySet>
 	</dependencySets>
 </assembly>
