@@ -52,7 +52,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>geoserver</finalName>
+		<finalName>geoserver-cch-config</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
