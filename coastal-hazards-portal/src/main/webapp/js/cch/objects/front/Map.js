@@ -42,6 +42,7 @@ CCH.Objects.Front.Map = function (args) {
 			ribbonIndex = args.ribbon || 0,
 			name = args.name,
 			visible = args.visible === false ? false : true,
+			selectedItem = args.selectedItem,
 			layer;
 
 		layer = me.map.getLayersByName(name)[0];
@@ -54,9 +55,17 @@ CCH.Objects.Front.Map = function (args) {
 
 		layer.name = name;
 		
+		if(layer.params.SLD){
+		    var layerSLDBase = layer.params.SLD.substr(0,layer.params.SLD.indexOf('?'));
+		    
+		    layer.mergeNewParams({
+			'SLD': (layerSLDBase ? layerSLDBase : layer.params.SLD) + (selectedItem ? '?selectedItem=' + selectedItem : "?")
+		    });
+		}
+		
 		if (ribbonIndex !== 0 && layer.params.SLD && layer.params.SLD.indexOf('ribbon') === -1) {
 			layer.mergeNewParams({
-				'SLD': layer.params.SLD + '?ribbon=' + ribbonIndex,
+				'SLD': layer.params.SLD + '&ribbon=' + ribbonIndex,
 				'buffer': (ribbonIndex - 1) * 6
 			});
 		}
@@ -307,12 +316,16 @@ CCH.Objects.Front.Map = function (args) {
 			var bbox = args.bbox,
 				fromProjection = args.fromProjection || me.displayProjection,
 				layerBounds = OpenLayers.Bounds.fromArray(bbox),
-				attemptClosest = args.attemptCloses || false;
+				zoomLevel = args.zoomLevel,
+				attemptClosest = args.attemptClosest || false;
 
 			if (fromProjection) {
 				layerBounds.transform(new OpenLayers.Projection(fromProjection), me.displayProjection);
 			}
 			me.map.zoomToExtent(layerBounds, attemptClosest);
+			if(zoomLevel) { //zoomToExtent always seems to consistently be 1 zoom level too far
+				setTimeout(function() { me.map.zoomTo(zoomLevel)}, 100);
+			}
 		},
 		zoomToActiveLayers: function () {
 			var activeLayers = me.getLayersBy('type', 'cch'),
@@ -349,6 +362,7 @@ CCH.Objects.Front.Map = function (args) {
 			];
 			session.scale = map.getScale();
 			session.bbox = map.getExtent().transform(CCH.map.getMap().displayProjection, CCH.CONFIG.map.modelProjection).toArray();
+			session.zoomLevel = map.getZoom();
 			return session;
 		},
 		/**

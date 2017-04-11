@@ -764,6 +764,10 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				});
 			});
 
+		var shareTitle;
+		if(itemSummary.tiny) {
+			shareTitle = itemSummary.tiny.text
+		}
 		$shareButton
 			.on('click', function () {
 				ga('send', 'event', {
@@ -773,7 +777,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				});
 				$(window).trigger('slide.bucket.button.click.share', {
 					'type': 'item',
-					'id': id
+					'id': id,
+					'shareTitle' : shareTitle
 				});
 			});
 

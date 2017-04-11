@@ -144,7 +144,7 @@ CCH.Objects.Front.UI = function (args) {
 		me.previouslySmall = isSmall;
 	};
 
-	me.displayShareModal = function (url) {
+	me.displayShareModal = function (url, shareTitle) {
 		var callback = function (data) {
 			var url = data.tinyUrl || data.responseJSON.full_url,
 				shareInput = $('#' + me.SHARE_INPUT_ID);
@@ -165,7 +165,7 @@ CCH.Objects.Front.UI = function (args) {
 					hashtags: 'USGS_CCH',
 					lang: 'en',
 					size: 'large',
-					text: 'Check out my CCH View!',
+					text: shareTitle || 'Check out my CCH View!',
 					count: 'none'
 				}
 			);
@@ -195,6 +195,7 @@ CCH.Objects.Front.UI = function (args) {
 		args = args || {};
 
 		var shareType = args.type,
+			shareTitle = args.shareTitle,
 			shareId = args.id;
 
 		if (shareType === 'session') {
@@ -229,7 +230,7 @@ CCH.Objects.Front.UI = function (args) {
 				}
 			});
 		} else if (shareType === 'item') {
-			me.displayShareModal(CCH.CONFIG.publicUrl + '/ui/item/' + shareId);
+			me.displayShareModal(CCH.CONFIG.publicUrl + '/ui/item/' + shareId, shareTitle);
 		}
 	};
 

@@ -40,6 +40,7 @@ public class Session implements Serializable, Cacheable {
 	private String baselayer;
 	private double scale;
 	private Bbox bbox;
+	private Integer zoomLevel;
 	private Center center;
 	private List<SessionItem> items;
     private Date lastModified;
@@ -107,6 +108,15 @@ public class Session implements Serializable, Cacheable {
 
 	public void setBbox(Bbox bbox) {
 		this.bbox = bbox;
+	}
+	
+	@Column(name = "zoom_level")
+	public Integer getZoomLevel() {
+		return zoomLevel;
+	}
+
+	public void setZoomLevel(Integer zoomLevel) {
+		this.zoomLevel = zoomLevel;
 	}
 
     @OneToOne(cascade = CascadeType.ALL)

@@ -1,7 +1,9 @@
 package gov.usgs.cida.coastalhazards.sld;
 
 import static gov.usgs.cida.coastalhazards.Attributes.*;
+import gov.usgs.cida.coastalhazards.domain.DataDomainUtility;
 import gov.usgs.cida.coastalhazards.jpa.DataDomainManager;
+import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
 import gov.usgs.cida.utilities.colors.AttributeRange;
@@ -44,9 +46,16 @@ public final class Shorelines {
 		}
 
 		public void finalize(Item item) {
-			try (DataDomainManager manager = new DataDomainManager()) {
+			try (DataDomainManager manager = new DataDomainManager(); ItemManager items = new ItemManager()) {
 				DataDomain domain = manager.getDomainForItem(item);
 				SortedSet<String> domainValues = domain.getDomainValues();
+				
+				//If this is an aggregation we need to only keep points from visible children
+				if(item.getItemType() == Item.ItemType.aggregation){
+					domainValues.clear();
+					domainValues = DataDomainUtility.getOnlyVisibleDomainValues(item, manager, items);
+				}
+				
 				Integer minimum = Integer.parseInt(domainValues.first());
 				Integer maximum = Integer.parseInt(domainValues.last());
 				AttributeRange range = new AttributeRange(minimum, maximum);
@@ -57,7 +66,7 @@ public final class Shorelines {
 				List<Map<String, Object>> tmpBins = new ArrayList<>();
 
 				int i = 0;
-				for (String year : domain.getDomainValues()) {
+				for (String year : domainValues) {
 					Integer intYear = Integer.parseInt(year);
 					Color color = colorMap.valueToColor(intYear);
 					String hex = ColorUtility.toHexLowercase(color);
