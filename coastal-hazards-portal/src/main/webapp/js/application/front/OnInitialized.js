@@ -17,8 +17,7 @@ CCH.CONFIG = CCH.CONFIG || {};
 			overridePreviousBounds = args.overridePreviousBounds,
 			search = CCH.Util.Search().submitItemSearch({
 				item: 'uber',
-				subtree: args.subtree,
-				timestamp: new Date().getTime()
+				subtree: args.subtree
 			}),
 				searchSuccessHandler = function (data) {
 					$(window).on('cch.item.loaded', function (evt, obj) {

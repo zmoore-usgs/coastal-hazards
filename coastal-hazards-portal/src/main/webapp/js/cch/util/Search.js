@@ -102,8 +102,7 @@ CCH.Util.Search = function (args) {
 			},
 		scope = args.scope || this,
 			data = {
-				subtree: subtree,
-				timestamp: new Date().getTime()
+				subtree: subtree
 			},
 		url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.item.endpoint,
 			displayNotification = args.displayNotification === false ? false : true;
