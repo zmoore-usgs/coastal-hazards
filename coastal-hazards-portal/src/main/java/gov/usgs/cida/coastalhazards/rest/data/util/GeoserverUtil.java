@@ -123,6 +123,7 @@ public class GeoserverUtil {
 	}
 
 	private static String importUsingWPS(String workspaceName, String storeName, String layerName, InputStream shapefile) throws IOException {
+		log.debug("Sending WPS to import {} into {}/{}", layerName, workspaceName, storeName);
 		String layerCreated = "";
 		String srsName = "EPSG:4326";
 		String projectionPolicy = GSResourceEncoder.ProjectionPolicy.REPROJECT_TO_DECLARED.toString();
@@ -147,7 +148,7 @@ public class GeoserverUtil {
 					+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
 					+ "xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 "
 					+ "http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd\">"
-					+ "<ows:Identifier>gs:Import</ows:Identifier>"
+					+ "<ows:Identifier>gs:CchImport</ows:Identifier>"
 					+ "<wps:DataInputs>"
 					+ "<wps:Input>"
 					+ "<ows:Identifier>features</ows:Identifier>"
@@ -223,8 +224,7 @@ public class GeoserverUtil {
 
 			return EntityUtils.toString(response.getEntity());
 
-		}
-		finally {
+		} finally {
 			IOUtils.closeQuietly(wpsRequestInputStream);
 			FileUtils.deleteQuietly(wpsRequestFile);
 		}

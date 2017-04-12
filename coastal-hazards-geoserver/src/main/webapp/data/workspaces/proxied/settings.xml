@@ -1,8 +1,8 @@
 <settings>
-  <id>SettingsInfoImpl--a30f787:148d22a095e:-7ffe</id>
+  <id>SettingsInfoImpl-43c91fb2:15b49725600:-7ffc</id>
   <workspace>
-    <id>WorkspaceInfoImpl-e13955e:148d1d118f6:-161a</id>
-    <name>proxydatumbias</name>
+    <id>WorkspaceInfoImpl-43c91fb2:15b49725600:-7ffe</id>
+    <name>proxied</name>
   </workspace>
   <contact>
     <id>contact</id>
@@ -11,7 +11,7 @@
     <addressType>Work</addressType>
     <contactEmail>isuftin@usgs.gov</contactEmail>
     <contactOrganization>CIDA</contactOrganization>
-    <contactPerson>Phethala Thongsavanh</contactPerson>
+    <contactPerson>Ivan Suftin</contactPerson>
     <contactPosition>Softare Engineer</contactPosition>
   </contact>
   <charset>UTF-8</charset>

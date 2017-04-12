@@ -150,7 +150,7 @@ CCH.Util.OWS = function () {
 				param,
 				wpsFormat = new OpenLayers.Format.WPSExecute(),
 				doc = wpsFormat.write({
-					identifier: "gs:Import",
+					identifier: "gs:CchImport",
 					dataInputs: [{
 							identifier: "features",
 							reference: {
