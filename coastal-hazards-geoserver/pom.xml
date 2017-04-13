@@ -8,6 +8,7 @@
     </parent>
 
 	<artifactId>coastal-hazards-geoserver</artifactId>
+	<packaging>war</packaging>
 	
 	<name>Coastal Hazards Geoserver</name>
 
