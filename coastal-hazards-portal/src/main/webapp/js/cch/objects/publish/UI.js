@@ -742,15 +742,33 @@ CCH.Objects.Publish.UI = function () {
 	me.updateSelectChange = function () {
 		if ($attributeSelectHelper.val() !== '') {
 			$attributeSelect.val($attributeSelectHelper.val());
+			me.unlockTitlesResourcesMetadata();
 		}
 	};
         
-        me.itemTypeCheck = function(){
-            [$titlesPanel.find('button, textarea'), $resourcesPanel.find('button'), $metaDataPanel.find('button, input')]
-                .each(function ($item) {
-                    $item.removeAttr(CCH.CONFIG.strings.disabled);
+	//Unlocks item type and features panel
+	me.unlockItemTypeFeatures = function () {
+	    [$typeSb, $featuresPanel.find('button, input')]
+		.each(function ($item) {
+		    $item.removeAttr(CCH.CONFIG.strings.disabled);
 		});
-        };
+	};
+
+	//Unlocks Titles, Resources, and Metadata Panels
+	me.unlockTitlesResourcesMetadata = function () {
+	    [$titlesPanel.find('button, textarea'), $resourcesPanel.find('button'), $metaDataPanel.find('button, input')]
+		.each(function ($item) {
+		    $item.removeAttr(CCH.CONFIG.strings.disabled);
+		});
+	};
+	
+	//Locks Titles, Resources, and Metadata Panels
+ 	me.lockTitlesResourcesMetadata = function () {
+	    [$titlesPanel.find('button, textarea'), $resourcesPanel.find('button'), $metaDataPanel.find('button, input')]
+                .each(function ($item) {
+                    $item.prop("disabled", true);
+                });
+	};
 
 	me.metadataPublishCallback = function (mdObject, status) {
 		if (status === 'success') {
@@ -1674,9 +1692,7 @@ CCH.Objects.Publish.UI = function () {
 
 	$popFromLayerButton.on(CCH.CONFIG.strings.click, function() {
 		me.loadLayerInfo($popFromLayerInput.val());
-                $typeSb.removeAttr(CCH.CONFIG.strings.disabled);
-                $attributeSelect.removeAttr(CCH.CONFIG.strings.disabled);
-                $featuresPanel.find('button, input').removeAttr(CCH.CONFIG.strings.disabled);
+                me.unlockItemTypeFeatures();
 	});
 
 	$sourceWfsCheckButton.on(CCH.CONFIG.strings.click, function () {
@@ -1989,6 +2005,7 @@ CCH.Objects.Publish.UI = function () {
 				}
 			});
 		}
+		$attributeSelect.removeAttr(CCH.CONFIG.strings.disabled);
 	});
 
 	$proxyWmsCheckButton.on(CCH.CONFIG.strings.click, function () {
@@ -2135,11 +2152,13 @@ CCH.Objects.Publish.UI = function () {
 	$vectorModalPopButton.on(CCH.CONFIG.strings.click, function(){
 		$popFromLayerInput.val($newVectorLayerId);
 		me.loadLayerInfo($popFromLayerInput.val());
+		me.unlockItemTypeFeatures();
 	});
 	
 	$rasterModalPopButton.on(CCH.CONFIG.strings.click, function(){
 		$popFromLayerInput.val($newRasterLayerId);
 		me.loadLayerInfo($popFromLayerInput.val());
+		me.unlockItemTypeFeatures();
 	});
 
 	me.clearForm();
@@ -2155,11 +2174,13 @@ CCH.Objects.Publish.UI = function () {
 	});
         
         //Checks to see if Attributes has a val and unlocks titles, Resources, and metdata for create new items
-        $attributeSelect.keyup(function(){
-            if($attributeSelect.val().length >= 3){
-                me.itemTypeCheck();
-            }
-        });
+	$attributeSelect.on('input', function () {
+	    if ($attributeSelect.val().length >= 3) {
+		me.unlockTitlesResourcesMetadata();
+	    } else {
+		me.lockTitlesResourcesMetadata();
+	    }
+	});
 
 	me.loadTemplates = function () {
 		["publication_row", "item_list"].each(function (templateName) {
