@@ -19,5 +19,13 @@
   <onlineResource>http://geoserver.org</onlineResource>
   <verbose>false</verbose>
   <verboseExceptions>false</verboseExceptions>
+  <metadata>
+    <map>
+      <entry>
+        <string>quietOnNotFound</string>
+        <boolean>true</boolean>
+      </entry>
+    </map>
+  </metadata>
   <localWorkspaceIncludesPrefix>false</localWorkspaceIncludesPrefix>
 </settings>
