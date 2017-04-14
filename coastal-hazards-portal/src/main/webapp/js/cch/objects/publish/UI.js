@@ -748,7 +748,7 @@ CCH.Objects.Publish.UI = function () {
         
 	//Unlocks item type and features panel
 	me.unlockItemTypeFeatures = function () {
-	    [$typeSb, $featuresPanel.find('button, input')]
+	    [$typeSb, $attributeSelect,$featuresPanel.find('button, input')]
 		.each(function ($item) {
 		    $item.removeAttr(CCH.CONFIG.strings.disabled);
 		});
@@ -1052,6 +1052,8 @@ CCH.Objects.Publish.UI = function () {
 		} else {
 			CCH.LOG.warn('UI.js::addItemToForm: function was called with no item');
 		}
+		me.unlockItemTypeFeatures();
+		me.unlockTitlesResourcesMetadata();
 	};
 
 	me.wfsInfoUpdated = function () {
@@ -2005,7 +2007,6 @@ CCH.Objects.Publish.UI = function () {
 				}
 			});
 		}
-		$attributeSelect.removeAttr(CCH.CONFIG.strings.disabled);
 	});
 
 	$proxyWmsCheckButton.on(CCH.CONFIG.strings.click, function () {
