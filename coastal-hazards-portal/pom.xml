@@ -17,7 +17,6 @@
 		<version.handlebars>3.0.0-1</version.handlebars>
 		<version.jstree>3.1.1</version.jstree>
 		<version.introjs>1.0.0</version.introjs>
-		<gt.version>16.2</gt.version>
 	</properties>
 
 	<dependencies>
