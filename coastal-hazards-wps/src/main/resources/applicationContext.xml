@@ -4,12 +4,6 @@
 	<bean id="base64ShapeZipPPIO" class="gov.usgs.cida.coastalhazards.wps.ppio.Base64ShapeZipPPIO" depends-on="wpsResourceManager">
 		<constructor-arg ref="wpsResourceManager"/>
 	</bean>
-	
-	<bean id="cchImportProcess" class="gov.usgs.cida.coastalhazards.wps.CchImportProcess">
-		<constructor-arg index="0" ref="catalog"/>
-		<constructor-arg index="1" ref="dataDirectory" />
-	</bean>
-	
 	<bean id="ribboning" class="gov.usgs.cida.coastalhazards.wps.RibboningProcess" />
 	<bean id="fetchAndUnzip" class="gov.usgs.cida.coastalhazards.wps.FetchAndUnzipProcess" />
 </beans>
