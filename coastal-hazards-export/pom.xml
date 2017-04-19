@@ -13,8 +13,6 @@
   
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <gs.version>2.3.2</gs.version>
-        <gt.version>10.1</gt.version>
     </properties>
     <dependencies>
         <dependency>

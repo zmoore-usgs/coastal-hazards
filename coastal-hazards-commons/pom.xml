@@ -19,7 +19,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver.extension</groupId>
-			<artifactId>wps-core</artifactId>
+			<artifactId>gs-wps-core</artifactId>
 			<version>${gs.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>

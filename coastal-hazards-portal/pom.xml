@@ -17,7 +17,6 @@
 		<version.handlebars>3.0.0-1</version.handlebars>
 		<version.jstree>3.1.1</version.jstree>
 		<version.introjs>1.0.0</version.introjs>
-		<gt.version>10.1</gt.version>
 	</properties>
 
 	<dependencies>
@@ -183,13 +182,12 @@
 		<dependency>
 			<groupId>it.geosolutions</groupId>
 			<artifactId>geoserver-manager</artifactId>
-			<version>1.5.2</version>
-                        <exclusions>
-                                <exclusion>
-                                        <groupId>org.slf4j</groupId>
-                                        <artifactId>jcl-over-slf4j</artifactId>
-                                </exclusion>
-                        </exclusions>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>jcl-over-slf4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
@@ -279,8 +277,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.3</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<goal>process-resources</goal>
 				</configuration>
 			</plugin>

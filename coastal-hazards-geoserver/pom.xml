@@ -18,7 +18,8 @@
 				<groupId>org.geoserver</groupId>
 				<artifactId>geoserver</artifactId>
 				<version>${gs.version}</version>
-				<type>war</type>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.geotools</groupId>
@@ -37,13 +38,14 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.geoserver</groupId>
-			<artifactId>geoserver</artifactId>
+			<groupId>org.geoserver.web</groupId>
+			<artifactId>gs-web-app</artifactId>
+			<version>${gs.version}</version>
 			<type>war</type>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver.extension</groupId>
-			<artifactId>web-wps</artifactId>
+			<artifactId>gs-web-wps</artifactId>
 			<version>${gs.version}</version>
 		</dependency>
 		<dependency>
@@ -72,8 +74,8 @@
 				<configuration>
 					<overlays>
 						<overlay>
-							<groupId>org.geoserver</groupId>
-							<artifactId>geoserver</artifactId>
+							<groupId>org.geoserver.web</groupId>
+							<artifactId>gs-web-app</artifactId>
 						</overlay>
 					</overlays>
 					<warSourceExcludes>WEB-INF/web.xml</warSourceExcludes>
