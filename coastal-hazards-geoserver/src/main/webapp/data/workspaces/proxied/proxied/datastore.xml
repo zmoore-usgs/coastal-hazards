@@ -1,10 +1,10 @@
 <dataStore>
-  <id>DataStoreInfoImpl-43c91fb2:15b49725600:-7ff8</id>
+  <id>DataStoreInfoImpl--78c7e970:1444c4344b0:-7fe3</id>
   <name>proxied</name>
   <type>Directory of spatial files (shapefiles)</type>
   <enabled>true</enabled>
   <workspace>
-    <id>WorkspaceInfoImpl-43c91fb2:15b49725600:-7ffe</id>
+    <id>WorkspaceInfoImpl--78c7e970:1444c4344b0:-7fe5</id>
   </workspace>
   <connectionParameters>
     <entry key="charset">ISO-8859-1</entry>
