@@ -1552,36 +1552,7 @@ CCH.Objects.Publish.UI = function () {
 				$a;
 
 		if (srcWfsVal !== '') {
-			if (srcWfsVal.indexOf(CCH.CONFIG.data.sources['dsas-geoserver'].endpoint) !== -1) {
-				CCH.ows.getWFSCapabilities({
-					'server': 'dsas-geoserver',
-					'namespace': 'published',
-					'callbacks': {
-						success: [function (args) {
-								args.wfsCapabilities.featureTypeList.featureTypes.each(function (layer) {
-									$li = $('<li />');
-									$a = $('<a />').attr({
-										'data-attr': layer.prefix + ':' + layer.title,
-										'href': '#',
-										'onclick': 'return false;'
-									}).on(CCH.CONFIG.strings.click, function (evt) {
-										$srcWfsServiceInput.val(CCH.CONFIG.data.sources['dsas-geoserver'].endpoint + '/ows');
-										$srcWfsServiceParamInput.val($(evt.target).attr('data-attr'));
-									}).html(layer.prefix + ':' + layer.title);
-									$li.append($a);
-									$contentList.append($li);
-								});
-								me.createHelpPopover($contentList, $srcWfsServiceParamInput);
-							}],
-						error: [function () {
-								me.displayModal({
-									title: 'Could not contact ' + srcWfsVal,
-									body: 'There was a problem retrieving data.'
-								});
-							}]
-					}
-				});
-			} else if (srcWfsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1) {
+			if (srcWfsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1) {
 				var serverName = 'stpete-arcserver',
 						server = CCH.CONFIG.data.sources[serverName],
 						serverData = CCH.CONFIG.data.sources[serverName],
@@ -1694,34 +1665,7 @@ CCH.Objects.Publish.UI = function () {
 				$a;
 
 		if (srcWmsVal !== '') {
-			if (srcWmsVal.indexOf(CCH.CONFIG.data.sources['dsas-geoserver'].endpoint) !== -1) {
-				CCH.ows.getWMSCapabilities({
-					'server': 'dsas-geoserver',
-					'namespace': 'published',
-					'callbacks': {
-						success: [function () {
-								CCH.ows.servers['dsas-geoserver'].data.wms.capabilities.object.capability.layers.each(function (layer) {
-									$li = $('<li />');
-									$a = $('<a />').attr({
-										'href': '#',
-										'onclick': 'return false;'
-									}).on(CCH.CONFIG.strings.click, function () {
-										$srcWmsServiceParamInput.val(layer.prefix + ':' + layer.title);
-									}).html(layer.prefix + ':' + layer.title);
-									$li.append($a);
-									$contentList.append($li);
-								});
-								me.createHelpPopover($contentList, $srcWmsServiceParamInput);
-							}],
-						error: [function () {
-								me.displayModal({
-									title: 'Could not contact ' + srcWmsVal,
-									body: 'There was a problem retrieving data.'
-								});
-							}]
-					}
-				});
-			} else if (srcWmsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1) {
+			if (srcWmsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1) {
 				var serverName = 'stpete-arcserver',
 						serverData = CCH.CONFIG.data.sources[serverName],
 						namespace = srcWmsVal.substring(serverData.endpoint.length);
