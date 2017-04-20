@@ -1992,7 +1992,7 @@ CCH.Objects.Publish.UI = function () {
         
         //Checks to see if Attributes has a val and unlocks titles, Resources, and metdata for create new items
 	$attributeSelect.on('input', function () {
-	    if ($attributeSelect.val().length >= 3) {
+	    if ($attributeSelect.val().length > 0) {
 		me.unlockTitlesResourcesMetadata();
 	    } else {
 		me.lockTitlesResourcesMetadata();
