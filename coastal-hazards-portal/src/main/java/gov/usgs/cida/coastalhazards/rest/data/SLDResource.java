@@ -32,22 +32,23 @@ public class SLDResource {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_XML + ";qs=1")
-	public Response getSLD(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedItem") String selectedId) {
+	public Response getSLD(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedItem") String selectedId, @QueryParam("filterVisible") boolean filterVisible) {
 		Response response = null;
 
 		try (ItemManager manager = new ItemManager()) {
 		    if(selectedId == null || selectedId.length() == 0){
 			selectedId = id;
 		    }
-
+		    
 		    Item item = manager.load(id);
 		    Item selectedItem = manager.load(selectedId);
 
 		    if (item == null) {
 			    response = Response.status(Response.Status.NOT_FOUND).build();
 		    }
+		    
 		    else {
-			    SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon);
+			    SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon, filterVisible);
 			    if (generator != null) {
 				    response = generator.generateSLD();
 			    }
@@ -72,14 +73,14 @@ public class SLDResource {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON + ";qs=0")
-	public Response getSLDInfo(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedItem") String selectedId) {
+	public Response getSLDInfo(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedItem") String selectedId, @QueryParam("filterVisible") boolean filterVisible) {
 		Response response;
 
 		try (ItemManager manager = new ItemManager()) {
 		    if(selectedId == null || selectedId.length() == 0){
 			selectedId = id;
 		    }
-		    
+		    		    
 		    Item item = manager.load(id);
 		    Item selectedItem = manager.load(selectedId);
 		    
@@ -87,7 +88,7 @@ public class SLDResource {
 			    response = Response.status(Response.Status.NOT_FOUND).build();
 		    }
 		    else {
-			    SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon);
+			    SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon, filterVisible);
 			    if (generator == null) {
 				    response = Response.status(Response.Status.NOT_FOUND).build();
 			    }
