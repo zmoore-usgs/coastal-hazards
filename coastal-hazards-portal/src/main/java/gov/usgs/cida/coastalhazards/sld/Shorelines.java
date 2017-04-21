@@ -51,10 +51,10 @@ public final class Shorelines {
 				SortedSet<String> domainValues = domain.getDomainValues();
 				
 				//If this is an aggregation we need to only keep points from visible children
-				if(item.getItemType() == Item.ItemType.aggregation){
+				/*if(item.getItemType() == Item.ItemType.aggregation){
 					domainValues.clear();
 					domainValues = DataDomainUtility.getOnlyVisibleDomainValues(item, manager, items);
-				}
+				}*/
 				
 				Integer minimum = Integer.parseInt(domainValues.first());
 				Integer maximum = Integer.parseInt(domainValues.last());
