@@ -6,6 +6,7 @@ import gov.usgs.cida.coastalhazards.jpa.DataDomainManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
+import gov.usgs.cida.utilities.PerformanceProfiler;
 import gov.usgs.cida.utilities.colors.AttributeRange;
 import gov.usgs.cida.utilities.colors.ColorUtility;
 import gov.usgs.cida.utilities.colors.RainbowColorMap;
@@ -55,7 +56,9 @@ public final class Shorelines {
 				//If this is an aggregation we need to only keep points from visible children
 				if(item.getItemType() == Item.ItemType.aggregation && filterVisible){
 					domainValues.clear();
+					PerformanceProfiler.startTimer("Shorelines.finalize_getOnlyVisibleDomainValues - " + item.getId());
 					domainValues = DataDomainUtility.getOnlyVisibleDomainValues(item, manager, items);
+					PerformanceProfiler.stopTrace("Shorelines.finalize_getOnlyVisibleDomainValues - " + item.getId());
 				}
 				
 				Integer minimum = Integer.parseInt(domainValues.first());

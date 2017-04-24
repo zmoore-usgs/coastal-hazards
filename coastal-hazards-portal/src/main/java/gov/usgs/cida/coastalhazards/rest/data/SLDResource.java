@@ -3,6 +3,7 @@ package gov.usgs.cida.coastalhazards.rest.data;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.sld.SLDGenerator;
+import gov.usgs.cida.utilities.PerformanceProfiler;
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -33,6 +34,7 @@ public class SLDResource {
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_XML + ";qs=1")
 	public Response getSLD(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedItem") String selectedId, @QueryParam("filterVisible") boolean filterVisible) {
+		PerformanceProfiler.startTimer("SLDResource.getSLD - " + id);
 		Response response = null;
 
 		try (ItemManager manager = new ItemManager()) {
@@ -56,7 +58,7 @@ public class SLDResource {
 		} catch(Exception e){
 		    response = Response.status(500).build();
 		}
-
+		PerformanceProfiler.stopTrace("SLDResource.getSLD - " + id);
 		return response;
 	}
 
@@ -74,30 +76,33 @@ public class SLDResource {
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON + ";qs=0")
 	public Response getSLDInfo(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedItem") String selectedId, @QueryParam("filterVisible") boolean filterVisible) {
-		Response response;
+	    PerformanceProfiler.startTimer("SLDResource.getSLDInfo - " + id);
+	    Response response;
 
-		try (ItemManager manager = new ItemManager()) {
-		    if(selectedId == null || selectedId.length() == 0){
-			selectedId = id;
-		    }
-		    		    
-		    Item item = manager.load(id);
-		    Item selectedItem = manager.load(selectedId);
-		    
-		    if (item == null) {
-			    response = Response.status(Response.Status.NOT_FOUND).build();
-		    }
-		    else {
-			    SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon, filterVisible);
-			    if (generator == null) {
-				    response = Response.status(Response.Status.NOT_FOUND).build();
-			    }
-			    else {
-				    response = generator.generateSLDInfo();
-			    }
-		    }
+	    try (ItemManager manager = new ItemManager()) {
+		if(selectedId == null || selectedId.length() == 0){
+		    selectedId = id;
 		}
 
-		return response;
+		Item item = manager.load(id);
+		Item selectedItem = manager.load(selectedId);
+
+		if (item == null) {
+			response = Response.status(Response.Status.NOT_FOUND).build();
+		}
+		else {
+			SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon, filterVisible);
+			if (generator == null) {
+				response = Response.status(Response.Status.NOT_FOUND).build();
+			}
+			else {
+				response = generator.generateSLDInfo();
+			}
+		}
+	    } catch(Exception e){
+		    response = Response.status(500).build();
+	    }
+	    PerformanceProfiler.stopTrace("SLDResource.getSLDInfo - " + id);
+	    return response;
 	}
 }

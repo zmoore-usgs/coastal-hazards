@@ -20,6 +20,26 @@
 		</timeBasedFileNamingAndTriggeringPolicy>
 
 	</appender>
+	
+	<appender name="perf-profile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${catalina.base}/logs/performance-profile.log</File>
+		<encoder>
+			<pattern>%m%n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${catalina.base}/logs/performance-profile.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<timeBasedFileNamingAndTriggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+			<maxFileSize>100MB</maxFileSize>
+		</timeBasedFileNamingAndTriggeringPolicy>
+	</appender>
+
+	<logger name="performance-profile" level="TRACE">
+		<appender-ref ref="perf-profile"/>
+	</logger>
+	
 	<root level="DEBUG">
 		<appender-ref ref="stdout"/>
 		<appender-ref ref="file"/>
