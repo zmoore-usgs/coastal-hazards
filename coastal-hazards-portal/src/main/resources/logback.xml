@@ -36,7 +36,7 @@
 		</timeBasedFileNamingAndTriggeringPolicy>
 	</appender>
 
-	<logger name="performance-profile" level="TRACE">
+	<logger name="performance-profile" level="DEBUG">
 		<appender-ref ref="perf-profile"/>
 	</logger>
 	

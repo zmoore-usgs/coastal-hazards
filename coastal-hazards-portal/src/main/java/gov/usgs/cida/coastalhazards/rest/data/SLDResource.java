@@ -50,15 +50,19 @@ public class SLDResource {
 		    }
 		    
 		    else {
-			    SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon, filterVisible);
-			    if (generator != null) {
-				    response = generator.generateSLD();
-			    }
+			PerformanceProfiler.startTimer("SLDResource.getSLD_getGenerator - " + id);
+			SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon, filterVisible);
+			PerformanceProfiler.stopDebug("SLDResource.getSLD_getGenerator - " + id);
+			if (generator != null) {
+			    PerformanceProfiler.startTimer("SLDResource.getSLD_generateSLD - " + id);
+			    response = generator.generateSLD();
+			    PerformanceProfiler.stopDebug("SLDResource.getSLD_generateSLD - " + id);
+			}
 		    }
 		} catch(Exception e){
 		    response = Response.status(500).build();
 		}
-		PerformanceProfiler.stopTrace("SLDResource.getSLD - " + id);
+		PerformanceProfiler.stopDebug("SLDResource.getSLD - " + id);
 		return response;
 	}
 
@@ -91,18 +95,22 @@ public class SLDResource {
 			response = Response.status(Response.Status.NOT_FOUND).build();
 		}
 		else {
+			PerformanceProfiler.startTimer("SLDResource.getSLDInfo_getGenerator - " + id);
 			SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon, filterVisible);
+			PerformanceProfiler.stopDebug("SLDResource.getSLDInfo_getGenerator - " + id);
 			if (generator == null) {
-				response = Response.status(Response.Status.NOT_FOUND).build();
+			    response = Response.status(Response.Status.NOT_FOUND).build();
 			}
 			else {
-				response = generator.generateSLDInfo();
+			    PerformanceProfiler.startTimer("SLDResource.getSLDInfo_generateSLDInfo - " + id);
+			    response = generator.generateSLDInfo();
+			    PerformanceProfiler.stopDebug("SLDResource.getSLDInfo_generateSLDInfo - " + id);
 			}
 		}
 	    } catch(Exception e){
 		    response = Response.status(500).build();
 	    }
-	    PerformanceProfiler.stopTrace("SLDResource.getSLDInfo - " + id);
+	    PerformanceProfiler.stopDebug("SLDResource.getSLDInfo - " + id);
 	    return response;
 	}
 }

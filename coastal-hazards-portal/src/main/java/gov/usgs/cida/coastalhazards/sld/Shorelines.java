@@ -58,7 +58,7 @@ public final class Shorelines {
 					domainValues.clear();
 					PerformanceProfiler.startTimer("Shorelines.finalize_getOnlyVisibleDomainValues - " + item.getId());
 					domainValues = DataDomainUtility.getOnlyVisibleDomainValues(item, manager, items);
-					PerformanceProfiler.stopTrace("Shorelines.finalize_getOnlyVisibleDomainValues - " + item.getId());
+					PerformanceProfiler.stopDebug("Shorelines.finalize_getOnlyVisibleDomainValues - " + item.getId());
 				}
 				
 				Integer minimum = Integer.parseInt(domainValues.first());
