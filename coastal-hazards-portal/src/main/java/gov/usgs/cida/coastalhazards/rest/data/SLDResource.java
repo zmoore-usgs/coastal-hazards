@@ -42,8 +42,10 @@ public class SLDResource {
 			selectedId = id;
 		    }
 		    
+		    PerformanceProfiler.startTimer("SLDResource.getSLD_ItemManager.load - " + id);
 		    Item item = manager.load(id);
 		    Item selectedItem = manager.load(selectedId);
+		    PerformanceProfiler.stopDebug("SLDResource.getSLD_ItemManager.load - " + id);
 
 		    if (item == null) {
 			    response = Response.status(Response.Status.NOT_FOUND).build();
@@ -87,9 +89,11 @@ public class SLDResource {
 		if(selectedId == null || selectedId.length() == 0){
 		    selectedId = id;
 		}
-
+		
+		PerformanceProfiler.startTimer("SLDResource.getSLD_ItemManager.load - " + id);
 		Item item = manager.load(id);
 		Item selectedItem = manager.load(selectedId);
+		PerformanceProfiler.stopDebug("SLDResource.getSLD_ItemManager.load - " + id);
 
 		if (item == null) {
 			response = Response.status(Response.Status.NOT_FOUND).build();

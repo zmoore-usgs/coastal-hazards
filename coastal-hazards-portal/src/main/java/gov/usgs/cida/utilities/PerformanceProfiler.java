@@ -55,7 +55,7 @@ public class PerformanceProfiler {
 		log.trace(LOG_PATTERN,
 				startTime, 
 				totalTime,
-				id);
+				"FINISHED " + id);
 	}
 
 	/**
@@ -75,6 +75,6 @@ public class PerformanceProfiler {
 		log.debug(LOG_PATTERN,
 				startTime, 
 				totalTime,
-				id);
+				"FINISHED " + id);
 	}
 }

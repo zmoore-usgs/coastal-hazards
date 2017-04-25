@@ -48,11 +48,11 @@ public final class Shorelines {
 
 		public void finalize(Item item, boolean filterVisible) {
 			try (DataDomainManager manager = new DataDomainManager(); ItemManager items = new ItemManager()) {
+				PerformanceProfiler.startTimer("Shorelines.finalize_DataDomainManager.getDomainForItem - " + item.getId());
 				DataDomain domain = manager.getDomainForItem(item);
 				SortedSet<String> domainValues = domain.getDomainValues();
-				
-				System.out.println(filterVisible);
-				
+				PerformanceProfiler.stopDebug("Shorelines.finalize_DataDomainManager.getDomainForItem - " + item.getId());
+								
 				//If this is an aggregation we need to only keep points from visible children
 				if(item.getItemType() == Item.ItemType.aggregation && filterVisible){
 					domainValues.clear();
