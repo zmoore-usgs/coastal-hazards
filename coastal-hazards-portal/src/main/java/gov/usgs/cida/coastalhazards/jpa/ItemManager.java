@@ -165,6 +165,8 @@ public class ItemManager implements AutoCloseable {
 			item.setChildren(replaceList);
 		}
 		em.merge(item);
+		DataDomainManager dm = new DataDomainManager();
+		dm.deleteAll();
 		id = item.getId();
 		return id;
 	}

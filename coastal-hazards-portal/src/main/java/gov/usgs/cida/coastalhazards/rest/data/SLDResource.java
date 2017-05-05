@@ -33,7 +33,7 @@ public class SLDResource {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_XML + ";qs=1")
-	public Response getSLD(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedItem") String selectedId, @QueryParam("filterVisible") boolean filterVisible) {
+	public Response getSLD(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedItem") String selectedId) {
 		PerformanceProfiler.startTimer("SLDResource.getSLD - " + id);
 		Response response = null;
 
@@ -53,7 +53,7 @@ public class SLDResource {
 		    
 		    else {
 			PerformanceProfiler.startTimer("SLDResource.getSLD_getGenerator - " + id);
-			SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon, filterVisible);
+			SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon);
 			PerformanceProfiler.stopDebug("SLDResource.getSLD_getGenerator - " + id);
 			if (generator != null) {
 			    PerformanceProfiler.startTimer("SLDResource.getSLD_generateSLD - " + id);
@@ -81,7 +81,7 @@ public class SLDResource {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON + ";qs=0")
-	public Response getSLDInfo(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedItem") String selectedId, @QueryParam("filterVisible") boolean filterVisible) {
+	public Response getSLDInfo(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedItem") String selectedId) {
 	    PerformanceProfiler.startTimer("SLDResource.getSLDInfo - " + id);
 	    Response response;
 
@@ -100,7 +100,7 @@ public class SLDResource {
 		}
 		else {
 			PerformanceProfiler.startTimer("SLDResource.getSLDInfo_getGenerator - " + id);
-			SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon, filterVisible);
+			SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon);
 			PerformanceProfiler.stopDebug("SLDResource.getSLDInfo_getGenerator - " + id);
 			if (generator == null) {
 			    response = Response.status(Response.Status.NOT_FOUND).build();

@@ -34,7 +34,7 @@ public class RasterTest {
         summary.setTiny(tiny);
         item.setSummary(summary);
         
-        SLDGenerator raster = new SLDGenerator(item, item, null, RasterAE.rasterConfig, false);
+        SLDGenerator raster = new SLDGenerator(item, item, null, RasterAE.rasterConfig);
 
         Response response = raster.generateSLD();
         Viewable sld = (Viewable)response.getEntity();
