@@ -1,9 +1,7 @@
 package gov.usgs.cida.coastalhazards.sld;
 
 import static gov.usgs.cida.coastalhazards.Attributes.*;
-import gov.usgs.cida.coastalhazards.domain.DataDomainUtility;
 import gov.usgs.cida.coastalhazards.jpa.DataDomainManager;
-import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
 import gov.usgs.cida.utilities.PerformanceProfiler;
