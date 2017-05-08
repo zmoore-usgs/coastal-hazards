@@ -153,6 +153,7 @@ public class ItemManager implements AutoCloseable {
 	
 	private synchronized String mergeItem(Item item) {
 		String id;
+		DataDomainManager dm = new DataDomainManager();
 		if (anyCycles(item)) {
 			throw new CycleIntroductionException();
 		}
@@ -166,13 +167,13 @@ public class ItemManager implements AutoCloseable {
 		}
 		em.merge(item);	
 		id = item.getId();	
-		DataDomainManager dm = new DataDomainManager();
 		
 		//Clear the data domains if this item has a domain
 		if(dm.load(id) != null){
 		    dm.deleteAll();
 		}
 		
+		dm.close();
 		return id;
 	}
 
