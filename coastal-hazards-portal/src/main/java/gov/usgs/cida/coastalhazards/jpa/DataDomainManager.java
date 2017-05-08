@@ -101,6 +101,11 @@ public class DataDomainManager implements AutoCloseable {
 	return deleted;
     }
     
+    /**
+     * Delete the data domain with the given ID
+     * @param id The id of the data domain to delete
+     * @return Boolean Representing whether or not the delete executed successfully.
+     */
     public boolean delete(String id) {
 	boolean deleted = false;
 	EntityTransaction transaction = em.getTransaction();
@@ -121,6 +126,11 @@ public class DataDomainManager implements AutoCloseable {
 	return deleted;
     }
     
+    /**
+     * Delete the data domain associated with the given item
+     * @param item The item to delete the associated data domain for
+     * @return Boolean Representing whether or not the delete executed successfully.
+     */
     public boolean deleteDomainForItem(Item item) {
 	if (item == null) {
             throw new IllegalArgumentException("Item must be valid data item");
