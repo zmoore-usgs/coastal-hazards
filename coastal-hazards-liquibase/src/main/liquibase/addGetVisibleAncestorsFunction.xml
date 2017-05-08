@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd" logicalFilePath="liquibaseChangeSet/addGetVisibleAncestorsFunction.xml">
+	<changeSet author="zmoore" id="add_visible_ancestors_function">
+		<createProcedure>
+			CREATE FUNCTION cch_get_visible_ancestors(item_id VARCHAR(10)) RETURNS TABLE (id VARCHAR(10)) AS $BODY$
+				WITH RECURSIVE branch(id, child) AS (
+					SELECT a.item_id, a.child_id
+						FROM displayed_children a
+						WHERE a.child_id=(SELECT item.id FROM item WHERE item.id = $1)
+					UNION ALL
+						SELECT a.item_id, a.child_id
+						FROM displayed_children a, branch b
+						WHERE a.child_id = b.id
+				)
+				SELECT DISTINCT(branch_tbl.child) FROM (SELECT * FROM branch) AS branch_tbl UNION (SELECT item.id as id FROM item WHERE item.id = $1)
+			$BODY$ LANGUAGE sql;
+		</createProcedure>
+		<rollback>DROP FUNCTION cch_get_visible_ancestors(item_id VARCHAR(10));</rollback>
+	</changeSet>
+</databaseChangeLog>
