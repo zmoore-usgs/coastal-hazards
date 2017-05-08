@@ -12,7 +12,7 @@
 						FROM displayed_children a, branch b
 						WHERE a.child_id = b.id
 				)
-				SELECT DISTINCT(branch_tbl.child) FROM (SELECT * FROM branch) AS branch_tbl UNION (SELECT item.id as id FROM item WHERE item.id = $1)
+				SELECT DISTINCT(branch_tbl.id) FROM (SELECT * FROM branch) AS branch_tbl UNION (SELECT item.id as id FROM item WHERE item.id = $1)
 			$BODY$ LANGUAGE sql;
 		</createProcedure>
 		<rollback>DROP FUNCTION cch_get_visible_ancestors(item_id VARCHAR(10));</rollback>
