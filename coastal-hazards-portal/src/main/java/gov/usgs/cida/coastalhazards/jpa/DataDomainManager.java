@@ -26,6 +26,7 @@ public class DataDomainManager implements AutoCloseable {
     
     private static final String HQL_SELECT_BY_ID = "select d from DataDomain d where d.itemId = :id or d.sessionId = :id";
     private static final String HQL_DELETE_ALL= "DELETE FROM DataDomain";
+    private static final String HQL_DELETE_BY_ID = "DELETE from DataDomain where itemId = :id or sessionId = :id";
     private static final Map<String, Lock> locks = Collections.synchronizedMap(new HashMap<String, Lock>());
     
     private EntityManager em;
@@ -98,6 +99,34 @@ public class DataDomainManager implements AutoCloseable {
 	}
 
 	return deleted;
+    }
+    
+    public boolean delete(String id) {
+	boolean deleted = false;
+	EntityTransaction transaction = em.getTransaction();
+	Query deleteQuery = em.createQuery(HQL_DELETE_BY_ID);
+        deleteQuery.setParameter("id", id);
+	
+	try {
+	    transaction.begin();
+	    deleteQuery.executeUpdate();
+	    transaction.commit();
+	    deleted = true;
+	} catch (Exception ex) {
+	    if(transaction.isActive()){
+		transaction.rollback();
+	    }
+	}
+
+	return deleted;
+    }
+    
+    public boolean deleteDomainForItem(Item item) {
+	if (item == null) {
+            throw new IllegalArgumentException("Item must be valid data item");
+        }
+	
+	return(delete(item.getId()));
     }
     
     /**
