@@ -4,6 +4,7 @@ import gov.usgs.cida.coastalhazards.domain.DataDomainUtility;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -149,8 +150,8 @@ public class DataDomainManager implements AutoCloseable {
 	if(deleteDomainForItem(item)){
 	    log.debug("Domain deleted. Regenerating...");
 	    SortedSet<String> domainVals = DataDomainUtility.retrieveDomainFromWFS(item);
-	     SortedSet<String> domainAsYears = DataDomainUtility.getDomainAsYears(domainVals);		
-	     DataDomain domain = new DataDomain();
+	    SortedSet<String> domainAsYears = DataDomainUtility.getDomainAsYears(domainVals);		
+	    DataDomain domain = new DataDomain();
 	    domain.setItemId(item.getId());
 	    domain.setDomainValues(domainAsYears);
 	    save(domain);
@@ -158,6 +159,26 @@ public class DataDomainManager implements AutoCloseable {
 	}
 	
 	return didRegen;	
+    }
+    
+    public List<String> regenerateAllDomains(Item root) {
+	List<String> generatedIds = new ArrayList<>();
+	
+	if(root.getType() == Item.Type.historical){
+	    if(regenerateDomainForItem(root)){
+		generatedIds.add(root.getId());
+	    }
+	}
+	
+	if(root.getChildren() != null && root.getChildren().size() > 0){
+	    for(Item child : root.getChildren()){
+		if(child.getType() == Item.Type.historical){
+		    generatedIds.addAll(regenerateAllDomains(child));
+		}
+	    }
+	}
+	
+	return generatedIds;
     }
     
     /**
