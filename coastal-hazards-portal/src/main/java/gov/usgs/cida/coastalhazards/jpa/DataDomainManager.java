@@ -139,6 +139,27 @@ public class DataDomainManager implements AutoCloseable {
 	return(delete(item.getId()));
     }
     
+    public boolean regenerateDomainForItem(Item item) {
+	boolean didRegen = false;
+	
+	if (item == null) {
+            throw new IllegalArgumentException("Item must be valid data item");
+        }
+	
+	if(deleteDomainForItem(item)){
+	    log.debug("Domain deleted. Regenerating...");
+	    SortedSet<String> domainVals = DataDomainUtility.retrieveDomainFromWFS(item);
+	     SortedSet<String> domainAsYears = DataDomainUtility.getDomainAsYears(domainVals);		
+	     DataDomain domain = new DataDomain();
+	    domain.setItemId(item.getId());
+	    domain.setDomainValues(domainAsYears);
+	    save(domain);
+	    didRegen = true;
+	}
+	
+	return didRegen;	
+    }
+    
     /**
      * Grab the domain of the item data and store it for later
      * TODO if Item has been modified, invalidate DB persisted entity
