@@ -140,6 +140,12 @@ public class DataDomainManager implements AutoCloseable {
 	return(delete(item.getId()));
     }
     
+    /**
+     * Delete the data domain associated with the given item and then rebuild
+     * it from the WFS.
+     * @param item The item to delete the associated data domain for
+     * @return Boolean Representing whether or not the delete executed successfully.
+     */
     public boolean regenerateDomainForItem(Item item) {
 	boolean didRegen = false;
 	
@@ -161,6 +167,12 @@ public class DataDomainManager implements AutoCloseable {
 	return didRegen;	
     }
     
+    /**
+     * Delete the data domain associated with the given item and then rebuild
+     * it from the WFS. Repeat this recursively for all children of the item.
+     * @param item The item to delete the associated data domain for
+     * @return Boolean Representing whether or not the delete executed successfully.
+     */
     public List<String> regenerateAllDomains(Item root) {
 	List<String> generatedIds = new ArrayList<>();
 	
