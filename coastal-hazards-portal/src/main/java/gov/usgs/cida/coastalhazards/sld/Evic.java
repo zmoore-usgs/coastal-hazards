@@ -8,20 +8,17 @@ import java.util.Map;
 
 /**
  *
- * @author Jordan Walker <jiwalker@usgs.gov>
+ * @author Kathryn Schoephoester <kmschoep@usgs.gov>
  */
-public final class Pcoi {
+public final class Evic {
 
 	protected static final String[] attrs = new String[]{
-		PCOL1, PCOL2, PCOL3, PCOL4, PCOL5,
-		POVW1, POVW2, POVW3, POVW4, POVW5,
-		PIND1, PIND2, PIND3, PIND4, PIND5,
-		PCOL, POVW, PIND
+		VIC
 	};
-	protected static final float[] thresholds = new float[]{0.0f, 10.0f, 25.0f, 50.0f, 75.0f, 90.0f};
-	protected static final String[] colors = {"#FFFFFE", "#FFE6E6", "#FFCCCD", "#FF9C95", "#FF574A", "#FF0000"};
+	protected static final float[] thresholds = new float[]{0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f};
+	protected static final String[] colors = {"#2A29E6", "#3F67EB", "#50A7CC", "#07FFE0", "#96FBB7", "#D8F784", "#F3FE09", "#FAAF25", "#F76C12", "#E30B19"};
 
-	protected static final String jspPath = "/SLD/pcoi.jsp";
+	protected static final String jspPath = "/SLD/evic.jsp";
 	protected static final String units = "%";
 	protected static final List<Map<String, Object>> bins;
 

@@ -16,44 +16,42 @@
             <sld:Title>Coastal Change Hazards Style</sld:Title>
             <sld:FeatureTypeStyle>
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
-                <c:forEach var="scale" begin="0" end="${it.scaleCount-2}">
                 <sld:Rule>
-                    <sld:MinScaleDenominator>${it.scales[scale+1]}</sld:MinScaleDenominator>
-                    <sld:MaxScaleDenominator>${it.scales[scale]}</sld:MaxScaleDenominator>
                     <ogc:Filter>
                         <c:if test="${it.binCount-1 > i && i > 0}">
                         <ogc:And>
                         </c:if>
-                            <c:if test="${i > 0}">
-                            <ogc:PropertyIsGreaterThanOrEqualTo>
-                                <ogc:PropertyName>${it.attr}</ogc:PropertyName>
-                                <ogc:Literal>${it.thresholds[i-1]}</ogc:Literal>
-                            </ogc:PropertyIsGreaterThanOrEqualTo>
+                        <c:if test="${i > 0}">
+                            <c:if test="${i-1 = 0}">
+                                <ogc:PropertyIsGreaterThanOrEqualTo>
+                                    <ogc:PropertyName>${it.attr}</ogc:PropertyName>
+                                    <ogc:Literal>${it.thresholds[i-1]}</ogc:Literal>
+                                </ogc:PropertyIsGreaterThanOrEqualTo>
                             </c:if>
+                            <c:if test="${i-1 > 0}">
+                                <ogc:PropertyIsGreaterThan>
+                                    <ogc:PropertyName>${it.attr}</ogc:PropertyName>
+                                    <ogc:Literal>${it.thresholds[i-1]}</ogc:Literal>
+                                </ogc:PropertyIsGreaterThan>
+                            </c:if>
+                        </c:if>
                         <c:if test="${it.binCount-1 > i}">
-                            <ogc:PropertyIsLessThan>
+                            <ogc:PropertyIsLessThanOrEqualTo>
                                 <ogc:PropertyName>${it.attr}</ogc:PropertyName>
                                 <ogc:Literal>${it.thresholds[i]}</ogc:Literal>
-                            </ogc:PropertyIsLessThan>
+                            </ogc:PropertyIsLessThanOrEqualTo>
                             </c:if>
                         <c:if test="${it.binCount-1 > i && i > 0}">
                         </ogc:And>
                         </c:if>
                     </ogc:Filter>
-                    <sld:PointSymbolizer>
-                        <sld:Graphic>
-                            <sld:Mark>
-                                <sld:WellKnownName>circle</sld:WellKnownName>
-                                <sld:Fill>
-                                    <sld:CssParameter name="fill">${it.colors[i]}</sld:CssParameter>
-                                    <sld:CssParameter name="fill-opacity">${it.strokeOpacity}</sld:CssParameter>
-                                </sld:Fill>
-                            </sld:Mark>
-                                <sld:Size>${it.strokeWidth + (scale * (5 * it.strokeWidth / it.scaleCount))}</sld:Size>
-                        </sld:Graphic>
-                    </sld:PointSymbolizer>
+                    <sld:PolygonSymbolizer>
+                        <sld:Fill>
+                            <sld:CssParameter name="fill">${it.colors[i]}</sld:CssParameter>
+                            <sld:CssParameter name="fill-opacity">${it.strokeOpacity}</sld:CssParameter>
+                        </sld:Fill>
+                    </sld:PolygonSymbolizer>
                 </sld:Rule>
-                </c:forEach>
                 </c:forEach>
             </sld:FeatureTypeStyle>
         </sld:UserStyle>
