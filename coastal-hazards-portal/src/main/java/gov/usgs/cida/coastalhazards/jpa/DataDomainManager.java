@@ -4,6 +4,7 @@ import gov.usgs.cida.coastalhazards.domain.DataDomainUtility;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -137,6 +138,59 @@ public class DataDomainManager implements AutoCloseable {
         }
 	
 	return(delete(item.getId()));
+    }
+    
+    /**
+     * Delete the data domain associated with the given item and then rebuild
+     * it from the WFS.
+     * @param item The item to delete the associated data domain for
+     * @return Boolean Representing whether or not the delete executed successfully.
+     */
+    public boolean regenerateDomainForItem(Item item) {
+	boolean didRegen = false;
+	
+	if (item == null) {
+            throw new IllegalArgumentException("Item must be valid data item");
+        }
+	
+	if(deleteDomainForItem(item)){
+	    log.debug("Domain deleted. Regenerating...");
+	    SortedSet<String> domainVals = DataDomainUtility.retrieveDomainFromWFS(item);
+	    SortedSet<String> domainAsYears = DataDomainUtility.getDomainAsYears(domainVals);		
+	    DataDomain domain = new DataDomain();
+	    domain.setItemId(item.getId());
+	    domain.setDomainValues(domainAsYears);
+	    save(domain);
+	    didRegen = true;
+	}
+	
+	return didRegen;	
+    }
+    
+    /**
+     * Delete the data domain associated with the given item and then rebuild
+     * it from the WFS. Repeat this recursively for all children of the item.
+     * @param item The item to delete the associated data domain for
+     * @return Boolean Representing whether or not the delete executed successfully.
+     */
+    public List<String> regenerateAllDomains(Item root) {
+	List<String> generatedIds = new ArrayList<>();
+	
+	if(root.getType() == Item.Type.historical){
+	    if(regenerateDomainForItem(root)){
+		generatedIds.add(root.getId());
+	    }
+	}
+	
+	if(root.getChildren() != null && root.getChildren().size() > 0){
+	    for(Item child : root.getChildren()){
+		if(child.getType() == Item.Type.historical){
+		    generatedIds.addAll(regenerateAllDomains(child));
+		}
+	    }
+	}
+	
+	return generatedIds;
     }
     
     /**

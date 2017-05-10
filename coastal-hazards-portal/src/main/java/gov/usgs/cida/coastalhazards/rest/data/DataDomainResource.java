@@ -6,8 +6,11 @@ import gov.usgs.cida.coastalhazards.jpa.DataDomainManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
+import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
+import java.util.List;
 import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
@@ -16,6 +19,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * This is tied closely to the ItemResource, it should be wiped when an item is updated.
@@ -46,6 +50,24 @@ public class DataDomainResource {
                 String domainJson = serializer.toJson(domain);
                 response = Response.ok(domainJson, MediaType.APPLICATION_JSON_TYPE).lastModified(domain.getLastModified()).build();
             }
+        }
+        return response;
+    }
+    
+    @GET
+    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+    @Path("/regenall")
+    public Response regenerateAllDataDomains() {
+        Response response = null;
+        try (ItemManager itemManager = new ItemManager(); DataDomainManager domainManager = new DataDomainManager()) {
+	    List<Item> rootItems = itemManager.loadRootItems();
+	    
+	    if(rootItems.size() == 1){
+		List<String> generatedIds = domainManager.regenerateAllDomains(rootItems.get(0));
+		response = Response.ok("Domains successfully regenerated for the following items: {" + StringUtils.join(generatedIds, ", ") + "}").build();
+	    } else {
+		throw new NotFoundException("Root Item could not be idenfitied");
+	    }
         }
         return response;
     }
