@@ -15,11 +15,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * This is tied closely to the ItemResource, it should be wiped when an item is updated.
@@ -55,6 +55,7 @@ public class DataDomainResource {
     }
     
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @Path("/regenall")
     public Response regenerateAllDataDomains() {
@@ -64,7 +65,9 @@ public class DataDomainResource {
 	    
 	    if(rootItems.size() == 1){
 		List<String> generatedIds = domainManager.regenerateAllDomains(rootItems.get(0));
-		response = Response.ok("Domains successfully regenerated for the following items: {" + StringUtils.join(generatedIds, ", ") + "}").build();
+		Gson gson = GsonUtil.getDefault();
+		String json = gson.toJson(generatedIds);
+		response = Response.ok(json).build();
 	    } else {
 		throw new NotFoundException("Root Item could not be idenfitied");
 	    }
