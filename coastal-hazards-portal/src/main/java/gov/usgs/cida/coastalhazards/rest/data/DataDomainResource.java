@@ -8,6 +8,7 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -63,15 +64,24 @@ public class DataDomainResource {
         try (ItemManager itemManager = new ItemManager(); DataDomainManager domainManager = new DataDomainManager()) {
 	    List<Item> rootItems = itemManager.loadRootItems();
 	    
-	    if(rootItems.size() == 1){
-		List<String> generatedIds = domainManager.regenerateAllDomains(rootItems.get(0));
+	    if(rootItems.size() > 0){
+		List<String> generatedIds =  new ArrayList<>();
+		
+		for(Item item : rootItems){
+		    if(item.getItemType() == Item.ItemType.uber)
+		    {
+			generatedIds.addAll(domainManager.regenerateAllDomains(item));
+		    }
+		}
 		Gson gson = GsonUtil.getDefault();
 		String json = gson.toJson(generatedIds);
 		response = Response.ok(json).build();
 	    } else {
 		throw new NotFoundException("Root Item could not be idenfitied");
 	    }
-        }
+        } catch (Exception e) {
+	   response =  Response.status(500).build();
+	}
         return response;
     }
 }

@@ -6,6 +6,7 @@ import gov.usgs.cida.coastalhazards.jpa.DataDomainManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.NotFoundException;
@@ -44,14 +45,21 @@ public class DataRestApplication extends ResourceConfig {
 		    LOG.info("Regenerating Data Domains...");
 		    List<Item> rootItems = itemManager.loadRootItems();
 
-		    if(rootItems.size() == 1){
-			List<String> generatedIds = domainManager.regenerateAllDomains(rootItems.get(0));
+		    if(rootItems.size() > 0){
+			List<String> generatedIds =  new ArrayList<>();
+
+			for(Item item : rootItems){
+			    if(item.getItemType() == Item.ItemType.uber)
+			    {
+				generatedIds.addAll(domainManager.regenerateAllDomains(item));
+			    }
+			}
 			LOG.info("Regenerated Data Domains for: {" + StringUtils.join(generatedIds, ", "), "}");
 		    } else {
 			throw new NotFoundException("Root Item could not be idenfitied");
 		    }
 		} catch (Exception e) {
-		    LOG.info("Filed to generate data domains. Error: " + e.getMessage());
+		    LOG.info("Failed to generate data domains. Error: " + e.getMessage());
 		}
 	}
 }
