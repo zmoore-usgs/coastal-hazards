@@ -170,6 +170,11 @@ public class DataDomainManager implements AutoCloseable {
     /**
      * Delete the data domain associated with the given item and then rebuild
      * it from the WFS. Repeat this recursively for all children of the item.
+     * 
+     * NOTE: When this was last used the volume of WFS requests it created caused
+     * it to be blocked by the security filter. This either needs to reduce its
+     * volume of WFS requests, slow the rate of them down significantly, or come
+     * up with another method to do domains for aggregates.
      * @param item The item to delete the associated data domain for
      * @return Boolean Representing whether or not the delete executed successfully.
      */
