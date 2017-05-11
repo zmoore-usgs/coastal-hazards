@@ -6,17 +6,12 @@ import gov.usgs.cida.coastalhazards.jpa.DataDomainManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
-import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -56,37 +51,6 @@ public class DataDomainResource {
                 response = Response.ok(domainJson, MediaType.APPLICATION_JSON_TYPE).lastModified(domain.getLastModified()).build();
             }
         }
-        return response;
-    }
-    
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-    @Path("/regenall")
-    public Response regenerateAllDataDomains() {
-        Response response = null;
-        try (ItemManager itemManager = new ItemManager(); DataDomainManager domainManager = new DataDomainManager()) {
-	    List<Item> rootItems = itemManager.loadRootItems();
-	    
-	    if(rootItems.size() > 0){
-		List<String> generatedIds =  new ArrayList<>();
-		
-		for(Item item : rootItems){
-		    if(item.getItemType() == Item.ItemType.uber)
-		    {
-			generatedIds.addAll(domainManager.regenerateAllDomains(item));
-		    }
-		}
-		Gson gson = GsonUtil.getDefault();
-		String json = gson.toJson(generatedIds);
-		response = Response.ok(json).build();
-	    } else {
-		throw new NotFoundException("Root Item could not be idenfitied");
-	    }
-        } catch (Exception e) {
-	   LOG.debug("Failed to generate all data domains. Error: " + e.getMessage());
-	   response =  Response.status(500).build();
-	}
         return response;
     }
 }
