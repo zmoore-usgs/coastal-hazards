@@ -208,8 +208,8 @@ public class Attributes {
 	}
         
         public static Set<String> getPolygonAttrs() {
-		Set<String> vics = new HashSet<>();
-		vics.add(VIC);
-		return vics;
+		Set<String> polys = new HashSet<>();
+		polys.add(VIC);
+		return polys;
 	}
 }
