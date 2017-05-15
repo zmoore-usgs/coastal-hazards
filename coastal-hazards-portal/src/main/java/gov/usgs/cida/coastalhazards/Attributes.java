@@ -103,6 +103,8 @@ public class Attributes {
 	public static final String NHC_TRACK_PT_72CAT = "NHC_TRACK_PT_72CAT";
 	public static final String NHC_TRACK_PT_120CAT = "NHC_TRACK_PT_120CAT";
         
+        public static final String VIC = "VIC"; //vulnerability index
+        
         //raster attr
         public static final String GRAY_INDEX = "GRAY_INDEX";
         public static final String AE = "AE";  //adjusted elevation
@@ -203,5 +205,11 @@ public class Attributes {
 		ribbonableAttrs.add(MEAN4);
 		ribbonableAttrs.add(MEAN5);
 		return ribbonableAttrs;
+	}
+        
+        public static Set<String> getPolygonAttrs() {
+		Set<String> polys = new HashSet<>();
+		polys.add(VIC);
+		return polys;
 	}
 }
