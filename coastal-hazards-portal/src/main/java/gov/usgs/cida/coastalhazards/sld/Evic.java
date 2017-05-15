@@ -37,7 +37,7 @@ public final class Evic {
 		bins = binsResult;
 	}
 
-	public static final SLDConfig pcoi = new SLDConfig(
+	public static final SLDConfig evic = new SLDConfig(
 			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, attrs, thresholds, colors, bins
 	);
 }
