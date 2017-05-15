@@ -207,7 +207,7 @@ public class Attributes {
 		return ribbonableAttrs;
 	}
         
-        public static Set<String> getVICAttrs() {
+        public static Set<String> getPolygonAttrs() {
 		Set<String> vics = new HashSet<>();
 		vics.add(VIC);
 		return vics;

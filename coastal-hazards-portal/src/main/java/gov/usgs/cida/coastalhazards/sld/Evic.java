@@ -12,9 +12,7 @@ import java.util.Map;
  */
 public final class Evic {
 
-	protected static final String[] attrs = new String[]{
-		VIC
-	};
+	protected static final String[] attrs = new String[]{VIC};
 	protected static final float[] thresholds = new float[]{0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f};
 	protected static final String[] colors = {"#2A29E6", "#3F67EB", "#50A7CC", "#07FFE0", "#96FBB7", "#D8F784", "#F3FE09", "#FAAF25", "#F76C12", "#E30B19"};
 
