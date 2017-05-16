@@ -17,7 +17,7 @@ public final class Evic {
 	protected static final String[] colors = {"#2A29E6", "#3F67EB", "#50A7CC", "#07FFE0", "#96FBB7", "#D8F784", "#F3FE09", "#FAAF25", "#F76C12", "#E30B19"};
 
 	protected static final String jspPath = "/SLD/bins_polygon.jsp";
-	protected static final String units = "%";
+	protected static final String units = "Vulnerability Index";
 	protected static final List<Map<String, Object>> bins;
 
 	static {

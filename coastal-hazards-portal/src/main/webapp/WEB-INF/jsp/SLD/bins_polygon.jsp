@@ -2,7 +2,6 @@
 <%@page contentType="text/xml" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<c:set var="lowerUnbounded" value="${fn:length(it.colors) - fn:length(it.thresholds)}"/>
 <sld:StyledLayerDescriptor
     xmlns="http://www.opengis.net/ogc"
     xmlns:sld="http://www.opengis.net/sld"
@@ -18,34 +17,26 @@
             <sld:Title>Coastal Change Hazards Style</sld:Title>
             <sld:FeatureTypeStyle>
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
-                <sld:Rule>
-                    <ogc:Filter>
-                        <c:if test="${it.binCount-1 > i && (i > 0 || lowerUnbounded < 1)}">
-			<ogc:And>
-			</c:if>
-			<c:if test="${i > 0 || lowerUnbounded < 1}">
-				<ogc:PropertyIsGreaterThanOrEqualTo>
-					<ogc:PropertyName>${it.attr}</ogc:PropertyName>
-					<ogc:Literal>${it.thresholds[i-lowerUnbounded]}</ogc:Literal>
-				</ogc:PropertyIsGreaterThanOrEqualTo>
-			</c:if>
-			<c:if test="${it.binCount-1 > i}">
+		    <sld:Rule>
+			<ogc:Filter>
+			    <ogc:PropertyIsGreaterThanOrEqualTo>
+				    <ogc:PropertyName>${it.attr}</ogc:PropertyName>
+				    <ogc:Literal>${it.thresholds[i]}</ogc:Literal>
+			    </ogc:PropertyIsGreaterThanOrEqualTo>
+			    <c:if test="${it.binCount-1 > i}">
 				<ogc:PropertyIsLessThan>
 					<ogc:PropertyName>${it.attr}</ogc:PropertyName>
-					<ogc:Literal>${it.thresholds[i + 1 - lowerUnbounded]}</ogc:Literal>
+					<ogc:Literal>${it.thresholds[i+1]}</ogc:Literal>
 				</ogc:PropertyIsLessThan>
-			</c:if>
-			<c:if test="${it.binCount-1 > i && (i > 0 || lowerUnbounded < 1)}">
-			</ogc:And>
-			</c:if>
-                    </ogc:Filter>
-                    <sld:PolygonSymbolizer>
-                        <sld:Fill>
-                            <sld:CssParameter name="fill">${it.colors[i]}</sld:CssParameter>
-                            <sld:CssParameter name="fill-opacity">${it.strokeOpacity}</sld:CssParameter>
-                        </sld:Fill>
-                    </sld:PolygonSymbolizer>
-                </sld:Rule>
+			    </c:if>
+			</ogc:Filter>
+			<sld:PolygonSymbolizer>
+			    <sld:Fill>
+				<sld:CssParameter name="fill">${it.colors[i]}</sld:CssParameter>
+				<sld:CssParameter name="fill-opacity">${it.strokeOpacity}</sld:CssParameter>
+			    </sld:Fill>
+			</sld:PolygonSymbolizer>
+		    </sld:Rule>
                 </c:forEach>
             </sld:FeatureTypeStyle>
         </sld:UserStyle>
