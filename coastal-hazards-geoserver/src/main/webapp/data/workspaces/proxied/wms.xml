@@ -1,12 +1,12 @@
 <wms>
-  <id>WMSInfoImpl--a30f787:148d22a095e:-7ffb</id>
+  <id>WMSInfoImpl-43c91fb2:15b49725600:-7ff9</id>
   <workspace>
-    <id>WorkspaceInfoImpl-e13955e:148d1d118f6:-161a</id>
+    <id>WorkspaceInfoImpl--78c7e970:1444c4344b0:-7fe5</id>
   </workspace>
   <enabled>true</enabled>
   <name>WMS</name>
-  <title>GeoServer Web Map Service</title>
-  <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+  <title>CCH Web Map Service</title>
+  <maintainer>https://owi.usgs.gov/</maintainer>
   <abstrct>A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</abstrct>
   <accessConstraints>NONE</accessConstraints>
   <fees>NONE</fees>
@@ -22,25 +22,28 @@
     <string>WFS</string>
     <string>WMS</string>
     <string>GEOSERVER</string>
+    <string>Coastal Change</string>
+    <string>Coastal Hazards</string>
+    <string>CCH</string>
   </keywords>
   <metadataLink/>
   <citeCompliant>false</citeCompliant>
-  <onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
+  <onlineResource>https://marine.usgs.gov/coastalchangehazardsportal/</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
   <metadata>
-    <entry key="svgAntiAlias">true</entry>
     <entry key="svgRenderer">Batik</entry>
+    <entry key="svgAntiAlias">true</entry>
   </metadata>
   <bboxForEachCRS>false</bboxForEachCRS>
   <watermark class="org.geoserver.wms.WatermarkInfoImpl">
     <enabled>false</enabled>
     <position>BOT_RIGHT</position>
-    <transparency>0</transparency>
+    <transparency>100</transparency>
   </watermark>
   <interpolation>Nearest</interpolation>
-  <maxBuffer>25</maxBuffer>
-  <maxRequestMemory>65536</maxRequestMemory>
-  <maxRenderingTime>60</maxRenderingTime>
-  <maxRenderingErrors>1000</maxRenderingErrors>
+  <maxBuffer>0</maxBuffer>
+  <maxRequestMemory>0</maxRequestMemory>
+  <maxRenderingTime>0</maxRenderingTime>
+  <maxRenderingErrors>0</maxRenderingErrors>
 </wms>

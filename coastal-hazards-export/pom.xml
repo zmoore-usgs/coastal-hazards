@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.usgs.cida.coastalhazards</groupId>
         <artifactId>coastal-hazards</artifactId>
-        <version>1.1.54-SNAPSHOT</version>
+        <version>1.1.55-SNAPSHOT</version>
     </parent>
   
     <groupId>gov.usgs.cida.coastalhazards</groupId>
@@ -13,8 +13,6 @@
   
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <gs.version>2.3.2</gs.version>
-        <gt.version>10.1</gt.version>
     </properties>
     <dependencies>
         <dependency>

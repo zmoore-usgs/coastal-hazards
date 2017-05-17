@@ -4,6 +4,7 @@ import gov.usgs.cida.coastalhazards.domain.DataDomainUtility;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,8 @@ public class DataDomainManager implements AutoCloseable {
     private static final Logger log = Logger.getLogger(DataDomainManager.class);
     
     private static final String HQL_SELECT_BY_ID = "select d from DataDomain d where d.itemId = :id or d.sessionId = :id";
+    private static final String HQL_DELETE_ALL= "DELETE FROM DataDomain";
+    private static final String HQL_DELETE_BY_ID = "DELETE from DataDomain where itemId = :id or sessionId = :id";
     private static final Map<String, Lock> locks = Collections.synchronizedMap(new HashMap<String, Lock>());
     
     private EntityManager em;
@@ -73,6 +76,126 @@ public class DataDomainManager implements AutoCloseable {
                 transaction.rollback();
             }
         }
+    }
+    
+    /**
+     * Delete all of the domains and values from the table so that they can be
+     * re-generated based on the new tree layout.
+     * @return Boolean Representing whether or not the delete executed successfully.
+     */
+    public boolean deleteAll() {
+	boolean deleted = false;
+	EntityTransaction transaction = em.getTransaction();
+	Query deleteQuery = em.createQuery(HQL_DELETE_ALL);
+	
+	try {
+	    transaction.begin();
+	    deleteQuery.executeUpdate();
+	    transaction.commit();
+	    deleted = true;
+	} catch (Exception ex) {
+	    if(transaction.isActive()){
+		transaction.rollback();
+	    }
+	}
+
+	return deleted;
+    }
+    
+    /**
+     * Delete the data domain with the given ID
+     * @param id The id of the data domain to delete
+     * @return Boolean Representing whether or not the delete executed successfully.
+     */
+    public boolean delete(String id) {
+	boolean deleted = false;
+	EntityTransaction transaction = em.getTransaction();
+	Query deleteQuery = em.createQuery(HQL_DELETE_BY_ID);
+        deleteQuery.setParameter("id", id);
+	
+	try {
+	    transaction.begin();
+	    deleteQuery.executeUpdate();
+	    transaction.commit();
+	    deleted = true;
+	} catch (Exception ex) {
+	    if(transaction.isActive()){
+		transaction.rollback();
+	    }
+	}
+
+	return deleted;
+    }
+    
+    /**
+     * Delete the data domain associated with the given item
+     * @param item The item to delete the associated data domain for
+     * @return Boolean Representing whether or not the delete executed successfully.
+     */
+    public boolean deleteDomainForItem(Item item) {
+	if (item == null) {
+            throw new IllegalArgumentException("Item must be valid data item");
+        }
+	
+	return(delete(item.getId()));
+    }
+    
+    /**
+     * Delete the data domain associated with the given item and then rebuild
+     * it from the WFS.
+     * @param item The item to delete the associated data domain for
+     * @return Boolean Representing whether or not the delete executed successfully.
+     */
+    public boolean regenerateDomainForItem(Item item) {
+	boolean didRegen = false;
+	
+	if (item == null) {
+            throw new IllegalArgumentException("Item must be valid data item");
+        }
+	
+	if(deleteDomainForItem(item)){
+	    log.debug("Domain deleted. Regenerating...");
+	    SortedSet<String> domainVals = DataDomainUtility.retrieveDomainFromWFS(item);
+	    SortedSet<String> domainAsYears = DataDomainUtility.getDomainAsYears(domainVals);		
+	    DataDomain domain = new DataDomain();
+	    domain.setItemId(item.getId());
+	    domain.setDomainValues(domainAsYears);
+	    save(domain);
+	    didRegen = true;
+	}
+	
+	return didRegen;	
+    }
+    
+    /**
+     * Delete the data domain associated with the given item and then rebuild
+     * it from the WFS. Repeat this recursively for all children of the item.
+     * 
+     * NOTE: When this was last used the volume of WFS requests it created caused
+     * it to be blocked by the security filter. This either needs to reduce its
+     * volume of WFS requests, slow the rate of them down significantly, or come
+     * up with another method to do domains for aggregates.
+     * @param item The item to delete the associated data domain for
+     * @return Boolean Representing whether or not the delete executed successfully.
+     */
+    public List<String> regenerateAllDomains(Item root) {
+	List<String> generatedIds = new ArrayList<>();
+	
+	if(root.getType() == Item.Type.historical){
+	    if(regenerateDomainForItem(root)){
+		generatedIds.add(root.getId());
+	    }
+	}
+	
+	if(root.getChildren() != null && root.getChildren().size() > 0){
+	    for(Item child : root.getChildren()){
+		if(child.getType() == Item.Type.historical){
+		    generatedIds.addAll(regenerateAllDomains(child));
+		}
+	    }
+	}
+	
+	return generatedIds;
     }
     
     /**

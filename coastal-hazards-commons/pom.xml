@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>gov.usgs.cida.coastalhazards</groupId>
 		<artifactId>coastal-hazards</artifactId>
-		<version>1.1.54-SNAPSHOT</version>
+		<version>1.1.55-SNAPSHOT</version>
 	</parent>
 	<artifactId>coastal-hazards-commons</artifactId>
 	<name>Coastal Hazards Commons</name>
@@ -19,7 +19,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver.extension</groupId>
-			<artifactId>wps-core</artifactId>
+			<artifactId>gs-wps-core</artifactId>
 			<version>${gs.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>

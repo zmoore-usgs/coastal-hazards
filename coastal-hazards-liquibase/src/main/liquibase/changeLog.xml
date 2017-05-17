@@ -43,4 +43,5 @@
 	<include file="addSummaryDownloadLink.xml" relativeToChangelogFile="true" />
 	<include file="updateDownloadLinkWithPublishData.xml" relativeToChangelogFile="true" />
 	<include file="addSessionZoomLevel.xml" relativeToChangelogFile="true" />
+	<include file="addGetVisibleAncestorsFunction.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

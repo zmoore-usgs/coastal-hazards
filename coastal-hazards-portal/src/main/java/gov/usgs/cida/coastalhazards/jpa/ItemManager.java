@@ -153,6 +153,8 @@ public class ItemManager implements AutoCloseable {
 	
 	private synchronized String mergeItem(Item item) {
 		String id;
+		DataDomainManager dm = new DataDomainManager();
+		
 		if (anyCycles(item)) {
 			throw new CycleIntroductionException();
 		}
@@ -164,8 +166,20 @@ public class ItemManager implements AutoCloseable {
 			}
 			item.setChildren(replaceList);
 		}
-		em.merge(item);
-		id = item.getId();
+				
+		em.merge(item);	
+		id = item.getId();	
+		
+		//Clear the upstream data domains if this item has a domain
+		if(dm.load(id) != null){
+		    List<Item> domainsToDelete = findVisibleAncestors(item);
+		    
+		    for(Item toDelete : domainsToDelete){
+			dm.regenerateDomainForItem(toDelete);
+		    }
+		}
+		
+		dm.close();
 		return id;
 	}
 
@@ -471,6 +485,21 @@ public class ItemManager implements AutoCloseable {
 		return items;
 	}
 	
+	private List<Item> findVisibleAncestors(Item item) {
+	    List<Item> items = new ArrayList<>();
+	    Query ancestors = em.createNativeQuery("SELECT id FROM cch_get_visible_ancestors(:childId)");
+	    ancestors.setParameter("childId", item.getId());
+	    List<String> resultList = ancestors.getResultList();
+
+	    for (String result : resultList) {
+		    Item ancestor = load(result);
+		    if (ancestor != null) {
+			    items.add(ancestor);
+		    }
+	    }
+	    return items;
+	}
+	
 	private List<Item> updateAncestors(Item item) {
 		List<Item> ancestors = findAncestors(item);
 		try (DownloadService downloadService = new DownloadService()) {
@@ -500,7 +529,7 @@ public class ItemManager implements AutoCloseable {
 		}
 		return bbox;
 	}
-
+	
 	@Override
 	public void close() {
 		JPAHelper.close(em);

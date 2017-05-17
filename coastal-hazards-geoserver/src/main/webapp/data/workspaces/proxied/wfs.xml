@@ -1,12 +1,12 @@
 <wfs>
-  <id>WFSInfoImpl--a30f787:148d22a095e:-7ffc</id>
+  <id>WFSInfoImpl-43c91fb2:15b49725600:-7ffa</id>
   <workspace>
-    <id>WorkspaceInfoImpl-e13955e:148d1d118f6:-161a</id>
+    <id>WorkspaceInfoImpl--78c7e970:1444c4344b0:-7fe5</id>
   </workspace>
   <enabled>true</enabled>
   <name>WFS</name>
-  <title>GeoServer Web Feature Service</title>
-  <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+  <title>CCH Web Map Service</title>
+  <maintainer>https://owi.usgs.gov/</maintainer>
   <abstrct>This is the reference implementation of WFS 1.0.0 and WFS 1.1.0, supports all WFS operations including Transaction.</abstrct>
   <accessConstraints>NONE</accessConstraints>
   <fees>NONE</fees>
@@ -25,13 +25,23 @@
     <string>WFS</string>
     <string>WMS</string>
     <string>GEOSERVER</string>
+    <string>Coastal Change</string>
+    <string>Coastal Hazards</string>
+    <string>CCH</string>
   </keywords>
   <metadataLink/>
   <citeCompliant>false</citeCompliant>
-  <onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
+  <onlineResource>https://marine.usgs.gov/coastalchangehazardsportal/</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
   <gml>
+    <entry>
+      <version>V_11</version>
+      <gml>
+        <srsNameStyle>URN</srsNameStyle>
+        <overrideGMLAttributes>false</overrideGMLAttributes>
+      </gml>
+    </entry>
     <entry>
       <version>V_10</version>
       <gml>
@@ -46,17 +56,10 @@
         <overrideGMLAttributes>false</overrideGMLAttributes>
       </gml>
     </entry>
-    <entry>
-      <version>V_11</version>
-      <gml>
-        <srsNameStyle>URN</srsNameStyle>
-        <overrideGMLAttributes>false</overrideGMLAttributes>
-      </gml>
-    </entry>
   </gml>
   <serviceLevel>COMPLETE</serviceLevel>
   <maxFeatures>1000000</maxFeatures>
-  <featureBounding>false</featureBounding>
+  <featureBounding>true</featureBounding>
   <canonicalSchemaLocation>false</canonicalSchemaLocation>
   <encodeFeatureMember>false</encodeFeatureMember>
   <hitsIgnoreMaxFeatures>false</hitsIgnoreMaxFeatures>

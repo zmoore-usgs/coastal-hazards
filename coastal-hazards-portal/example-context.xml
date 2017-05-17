@@ -53,7 +53,6 @@
     <Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/geoserver/" /> 
 	<!-- docker example: "https://192.168.99.100:8444/geoserver/" -->
     <Environment name="coastal-hazards.geoserver.datadir" type="java.lang.String" value="/Users/cch/geoserver/data" /> 
-    <Environment name="coastal-hazards.workspace.published" type="java.lang.String" value="published" />
 	<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="admin" />
     <Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="geoPwdHere" />
     <Environment name="production" type="java.lang.String" value="false" />

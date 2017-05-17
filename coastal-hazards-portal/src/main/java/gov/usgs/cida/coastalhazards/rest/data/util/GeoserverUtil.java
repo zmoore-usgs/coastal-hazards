@@ -11,6 +11,7 @@ import it.geosolutions.geoserver.rest.decoder.RESTCoverageStore;
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSCoverageEncoder;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -31,7 +33,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +126,7 @@ public class GeoserverUtil {
 	}
 
 	private static String importUsingWPS(String workspaceName, String storeName, String layerName, InputStream shapefile) throws IOException {
+		log.debug("Sending WPS to import {} into {}/{}", layerName, workspaceName, storeName);
 		String layerCreated = "";
 		String srsName = "EPSG:4326";
 		String projectionPolicy = GSResourceEncoder.ProjectionPolicy.REPROJECT_TO_DECLARED.toString();
@@ -197,7 +201,7 @@ public class GeoserverUtil {
 					+ "</wps:Execute>").getBytes());
 			
 			layerCreated = postToWPS(geoserverInternalEndpoint + (geoserverInternalEndpoint.endsWith("/") ? "" : "/") +
-					"wps/WebProcessingService", wpsRequestFile);
+					"wps/WebProcessingService", geoserverUser, geoserverPass, wpsRequestFile);
 		}
 		finally {
 			IOUtils.closeQuietly(wpsRequestOutputStream);
@@ -208,9 +212,10 @@ public class GeoserverUtil {
 		return layerCreated;
 	}
 
-	private static String postToWPS(String url, File wpsRequestFile) throws IOException {
+	private static String postToWPS(String url, String username, String password, File wpsRequestFile) throws IOException {
 		HttpPost post;
-		HttpClient httpClient = new DefaultHttpClient();
+		HttpClient httpClient = HttpClientBuilder.create()
+				  .build();
 
 		post = new HttpPost(url);
 
@@ -219,12 +224,14 @@ public class GeoserverUtil {
 			wpsRequestInputStream = new FileInputStream(wpsRequestFile);
 			AbstractHttpEntity entity = new InputStreamEntity(wpsRequestInputStream, wpsRequestFile.length());
 			post.setEntity(entity);
+
+			String userPass = username + ":" + password;
+			post.addHeader(new BasicHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString(userPass.getBytes())));
 			HttpResponse response = httpClient.execute(post);
 
 			return EntityUtils.toString(response.getEntity());
 
-		}
-		finally {
+		} finally {
 			IOUtils.closeQuietly(wpsRequestInputStream);
 			FileUtils.deleteQuietly(wpsRequestFile);
 		}
@@ -298,7 +305,7 @@ public class GeoserverUtil {
                                             + "</wps:Execute>").getBytes());
                                                        
                             urlString = postToWPS(geoserverInternalEndpoint + (geoserverInternalEndpoint.endsWith("/") ? "" : "/") +
-                                            "wps/WebProcessingService", wpsRequestFile);
+                                            "wps/WebProcessingService", geoserverUser, geoserverPass, wpsRequestFile);
                     }
                     finally {
                             IOUtils.closeQuietly(wpsRequestOutputStream);
@@ -354,7 +361,6 @@ public class GeoserverUtil {
                     // Publish the raster tiff as a layer on Geoserver  
                     GeoServerRESTPublisher publisher = new GeoServerRESTPublisher(geoServerEndpoint, geoserverUser, geoserverPass);
                     //Then use the GeoServerRESTPublisher to create the stores and layers. 
-                     double[] geoBbox = {bbox.makeEnvelope().getMinX(), bbox.makeEnvelope().getMinY(), bbox.makeEnvelope().getMaxX(), bbox.makeEnvelope().getMaxY()};
                     
                     GSCoverageEncoder coverageEncoder = new GSCoverageEncoder();
                         //potential todo: set coverageEncoder description here based on text from the metadata file, or from a service parameter

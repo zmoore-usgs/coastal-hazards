@@ -1,6 +1,8 @@
 <wps>
 	<id>wps</id>
 	<enabled>true</enabled>
+	<name>WPS</name>
+	<title>Prototype GeoServer WPS</title>
 	<versions>
 		<org.geotools.util.Version>
 			<version>1.0.0</version>
@@ -13,4 +15,7 @@
 	<resourceExpirationTimeout>300</resourceExpirationTimeout>
 	<maxSynchronousProcesses>3</maxSynchronousProcesses>
 	<maxAsynchronousProcesses>3</maxAsynchronousProcesses>
+	<maxComplexInputSize>0</maxComplexInputSize>
+	<maxSynchronousExecutionTime>0</maxSynchronousExecutionTime>
+	<maxAsynchronousExecutionTime>0</maxAsynchronousExecutionTime>
 </wps>

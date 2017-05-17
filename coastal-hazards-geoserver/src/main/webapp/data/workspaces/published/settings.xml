@@ -17,5 +17,13 @@
   <numDecimals>8</numDecimals>
   <onlineResource>http://geoserver.org</onlineResource>
   <verbose>false</verbose>
+  <metadata>
+    <map>
+      <entry>
+        <string>quietOnNotFound</string>
+        <boolean>true</boolean>
+      </entry>
+    </map>
+  </metadata>
   <verboseExceptions>true</verboseExceptions>
 </settings>

@@ -5,8 +5,8 @@
   </workspace>
   <enabled>true</enabled>
   <name>WFS</name>
-  <title>GeoServer Web Feature Service</title>
-  <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+  <title>CCH Web Map Service</title>
+  <maintainer>https://owi.usgs.gov/</maintainer>
   <abstrct>This is the reference implementation of WFS 1.0.0 and WFS 1.1.0, supports all WFS operations including Transaction.</abstrct>
   <accessConstraints>NONE</accessConstraints>
   <fees>NONE</fees>
@@ -25,10 +25,13 @@
     <string>WFS</string>
     <string>WMS</string>
     <string>GEOSERVER</string>
+    <string>Coastal Change</string>
+    <string>Coastal Hazards</string>
+    <string>CCH</string>
   </keywords>
   <metadataLink/>
   <citeCompliant>false</citeCompliant>
-  <onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
+  <onlineResource>https://marine.usgs.gov/coastalchangehazardsportal/</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
   <gml>
@@ -59,4 +62,5 @@
   <featureBounding>false</featureBounding>
   <canonicalSchemaLocation>false</canonicalSchemaLocation>
   <encodeFeatureMember>false</encodeFeatureMember>
+  <hitsIgnoreMaxFeatures>false</hitsIgnoreMaxFeatures>
 </wfs>

@@ -1,12 +1,12 @@
 <wcs>
-  <id>WCSInfoImpl--a30f787:148d22a095e:-7ffd</id>
+  <id>WCSInfoImpl-43c91fb2:15b49725600:-7ffb</id>
   <workspace>
-    <id>WorkspaceInfoImpl-e13955e:148d1d118f6:-161a</id>
+    <id>WorkspaceInfoImpl--78c7e970:1444c4344b0:-7fe5</id>
   </workspace>
   <enabled>true</enabled>
   <name>WCS</name>
-  <title>Web Coverage Service</title>
-  <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+  <title>CCH Web Map Service</title>
+  <maintainer>https://owi.usgs.gov/</maintainer>
   <abstrct>This server implements the WCS specification 1.0 and 1.1.1, it&apos;s reference implementation of WCS 1.1.1. All layers published by this service are available on WMS also.
      </abstrct>
   <accessConstraints>NONE</accessConstraints>
@@ -26,6 +26,9 @@
     <string>WCS</string>
     <string>WMS</string>
     <string>GEOSERVER</string>
+    <string>Coastal Change</string>
+    <string>Coastal Hazards</string>
+    <string>CCH</string>
   </keywords>
   <metadataLink>
     <type>undef</type>
@@ -33,13 +36,13 @@
     <metadataType>other</metadataType>
   </metadataLink>
   <citeCompliant>false</citeCompliant>
-  <onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
+  <onlineResource>https://marine.usgs.gov/coastalchangehazardsportal/</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
   <gmlPrefixing>false</gmlPrefixing>
   <latLon>false</latLon>
-  <maxInputMemory>0</maxInputMemory>
-  <maxOutputMemory>0</maxOutputMemory>
+  <maxInputMemory>-1</maxInputMemory>
+  <maxOutputMemory>-1</maxOutputMemory>
   <subsamplingEnabled>true</subsamplingEnabled>
   <overviewPolicy>IGNORE</overviewPolicy>
 </wcs>

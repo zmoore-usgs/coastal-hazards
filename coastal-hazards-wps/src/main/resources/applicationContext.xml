@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
+<beans>	
+	<bean id="base64ShapeZipPPIO" class="gov.usgs.cida.coastalhazards.wps.ppio.Base64ShapeZipPPIO" depends-on="wpsResourceManager">
+		<constructor-arg ref="wpsResourceManager"/>
+	</bean>
 	<bean id="ribboning" class="gov.usgs.cida.coastalhazards.wps.RibboningProcess" />
-	<bean id="plainTextPPIO" class="gov.usgs.cida.coastalhazards.wps.ppio.PlainTextPPIO" />
-        <bean id="fetchAndUnzip" class="gov.usgs.cida.coastalhazards.wps.FetchAndUnzipProcess"/> 
+	<bean id="fetchAndUnzip" class="gov.usgs.cida.coastalhazards.wps.FetchAndUnzipProcess" />
 </beans>

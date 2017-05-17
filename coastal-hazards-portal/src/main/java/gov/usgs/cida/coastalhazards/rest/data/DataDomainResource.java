@@ -16,6 +16,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is tied closely to the ItemResource, it should be wiped when an item is updated.
@@ -27,6 +29,8 @@ import javax.ws.rs.core.Response;
 @Path(DataURI.DOMAIN_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class DataDomainResource {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DataDomainResource.class);	
     
     @GET
     @Path("/item/{id}")

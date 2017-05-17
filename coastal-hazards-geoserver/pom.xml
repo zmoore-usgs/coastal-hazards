@@ -4,18 +4,13 @@
     <parent>
         <groupId>gov.usgs.cida.coastalhazards</groupId>
         <artifactId>coastal-hazards</artifactId>
-        <version>1.1.54-SNAPSHOT</version>
+        <version>1.1.55-SNAPSHOT</version>
     </parent>
 
-    <artifactId>coastal-hazards-geoserver</artifactId>
-    <packaging>war</packaging>
-
-    <name>Coastal Hazards Geoserver</name>
-
-	<properties>
-		<gs.version>2.4.8</gs.version>
-		<gt.version>10.8</gt.version>
-	</properties>
+	<artifactId>coastal-hazards-geoserver</artifactId>
+	<packaging>war</packaging>
+	
+	<name>Coastal Hazards Geoserver</name>
 
 	<dependencyManagement>
 		<dependencies>
@@ -36,56 +31,57 @@
 		</dependencies>
 	</dependencyManagement>
 
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>coastal-hazards-wps</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>coastal-hazards-wps</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geoserver.web</groupId>
+			<artifactId>gs-web-app</artifactId>
+			<version>${gs.version}</version>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>org.geoserver.extension</groupId>
+			<artifactId>gs-web-wps</artifactId>
+			<version>${gs.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
 			<version>2.7.1</version>
 		</dependency>
-        <dependency>
-            <groupId>gov.usgs.cida.geoserver</groupId>
-            <artifactId>geoserver</artifactId>
-            <version>${gs.version}-2</version>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-shapefile</artifactId>
-            <type>jar</type>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-shapefile</artifactId>
+			<type>jar</type>
+		</dependency>
+	</dependencies>
 
-    <build>
-        <finalName>geoserver</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
+	<build>
+		<finalName>geoserver</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
 				<version>2.6</version>
-                <configuration>
-                    <overlays>
-                        <overlay>
-                            <groupId>gov.usgs.cida.geoserver</groupId>
-                            <artifactId>geoserver</artifactId>
-                        </overlay>
-                    </overlays>
-                    <warSourceExcludes>WEB-INF/web.xml</warSourceExcludes>
-                    <packagingExcludes>
-                        src/main/webapp/data/workspaces/upload,
-                        src/main/webapp/data/workspaces/draw
-                    </packagingExcludes>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+				<configuration>
+					<overlays>
+						<overlay>
+							<groupId>org.geoserver.web</groupId>
+							<artifactId>gs-web-app</artifactId>
+						</overlay>
+					</overlays>
+					<warSourceExcludes>WEB-INF/web.xml</warSourceExcludes>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

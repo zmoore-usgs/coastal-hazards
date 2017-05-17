@@ -116,7 +116,7 @@ public class LayerResource {
 			} finally {
 				inmemory = null; // just in case
 			}
-		} catch (IOException | ParserConfigurationException | SAXException e) {
+		} catch (IOException | ParserConfigurationException | SAXException | IllegalArgumentException e) {
 			log.error("Problem creating services from input", e);
 		} 
 		if (added != null && !added.isEmpty()) {

@@ -75,7 +75,6 @@ description="{usedBy: ['coastalhazards']}"
 <Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="geoserver" override="false" />
 <Environment name="coastal-hazards.geoserver.layer.age.maximum" type="java.lang.Integer" value="604800000"/>
 <Environment name="coastal-hazards.geoserver.workspaces.permanent" type="java.lang.String" value="published"/>
-<Environment name="coastal-hazards.workspace.published" type="java.lang.String" value="published"/>
 
 <Environment name="coastal-hazards.portal.geoserver.endpoint" type="java.lang.String" value="http://localhost:8280/geoserver" override="false" />
 <Environment name="coastal-hazards.portal.geoserver.external.endpoint" type="java.lang.String" value="https://localhost:8543/coastal-hazards-portal/geoserver" override="false" />

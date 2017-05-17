@@ -3,6 +3,7 @@ package gov.usgs.cida.coastalhazards.rest.data;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.sld.SLDGenerator;
+import gov.usgs.cida.utilities.PerformanceProfiler;
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -33,29 +34,37 @@ public class SLDResource {
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_XML + ";qs=1")
 	public Response getSLD(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedItem") String selectedId) {
+		PerformanceProfiler.startTimer("SLDResource.getSLD - " + id);
 		Response response = null;
 
 		try (ItemManager manager = new ItemManager()) {
 		    if(selectedId == null || selectedId.length() == 0){
 			selectedId = id;
 		    }
-
+		    
+		    PerformanceProfiler.startTimer("SLDResource.getSLD_ItemManager.load - " + id);
 		    Item item = manager.load(id);
 		    Item selectedItem = manager.load(selectedId);
+		    PerformanceProfiler.stopDebug("SLDResource.getSLD_ItemManager.load - " + id);
 
 		    if (item == null) {
 			    response = Response.status(Response.Status.NOT_FOUND).build();
 		    }
+		    
 		    else {
-			    SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon);
-			    if (generator != null) {
-				    response = generator.generateSLD();
-			    }
+			PerformanceProfiler.startTimer("SLDResource.getSLD_getGenerator - " + id);
+			SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon);
+			PerformanceProfiler.stopDebug("SLDResource.getSLD_getGenerator - " + id);
+			if (generator != null) {
+			    PerformanceProfiler.startTimer("SLDResource.getSLD_generateSLD - " + id);
+			    response = generator.generateSLD();
+			    PerformanceProfiler.stopDebug("SLDResource.getSLD_generateSLD - " + id);
+			}
 		    }
 		} catch(Exception e){
 		    response = Response.status(500).build();
 		}
-
+		PerformanceProfiler.stopDebug("SLDResource.getSLD - " + id);
 		return response;
 	}
 
@@ -73,30 +82,39 @@ public class SLDResource {
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON + ";qs=0")
 	public Response getSLDInfo(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon, @QueryParam("selectedItem") String selectedId) {
-		Response response;
+	    PerformanceProfiler.startTimer("SLDResource.getSLDInfo - " + id);
+	    Response response;
 
-		try (ItemManager manager = new ItemManager()) {
-		    if(selectedId == null || selectedId.length() == 0){
-			selectedId = id;
-		    }
-		    
-		    Item item = manager.load(id);
-		    Item selectedItem = manager.load(selectedId);
-		    
-		    if (item == null) {
-			    response = Response.status(Response.Status.NOT_FOUND).build();
-		    }
-		    else {
-			    SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon);
-			    if (generator == null) {
-				    response = Response.status(Response.Status.NOT_FOUND).build();
-			    }
-			    else {
-				    response = generator.generateSLDInfo();
-			    }
-		    }
+	    try (ItemManager manager = new ItemManager()) {
+		if(selectedId == null || selectedId.length() == 0){
+		    selectedId = id;
 		}
+		
+		PerformanceProfiler.startTimer("SLDResource.getSLD_ItemManager.load - " + id);
+		Item item = manager.load(id);
+		Item selectedItem = manager.load(selectedId);
+		PerformanceProfiler.stopDebug("SLDResource.getSLD_ItemManager.load - " + id);
 
-		return response;
+		if (item == null) {
+			response = Response.status(Response.Status.NOT_FOUND).build();
+		}
+		else {
+			PerformanceProfiler.startTimer("SLDResource.getSLDInfo_getGenerator - " + id);
+			SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon);
+			PerformanceProfiler.stopDebug("SLDResource.getSLDInfo_getGenerator - " + id);
+			if (generator == null) {
+			    response = Response.status(Response.Status.NOT_FOUND).build();
+			}
+			else {
+			    PerformanceProfiler.startTimer("SLDResource.getSLDInfo_generateSLDInfo - " + id);
+			    response = generator.generateSLDInfo();
+			    PerformanceProfiler.stopDebug("SLDResource.getSLDInfo_generateSLDInfo - " + id);
+			}
+		}
+	    } catch(Exception e){
+		    response = Response.status(500).build();
+	    }
+	    PerformanceProfiler.stopDebug("SLDResource.getSLDInfo - " + id);
+	    return response;
 	}
 }

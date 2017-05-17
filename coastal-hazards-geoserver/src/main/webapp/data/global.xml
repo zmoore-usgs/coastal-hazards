@@ -14,6 +14,7 @@
         <onlineResource>http://geoserver.org</onlineResource>
         <verbose>false</verbose>
         <verboseExceptions>false</verboseExceptions>
+        <localWorkspaceIncludesPrefix>false</localWorkspaceIncludesPrefix>
     </settings>
     <jai>
         <allowInterpolation>false</allowInterpolation>
@@ -26,6 +27,7 @@
         <pngAcceleration>true</pngAcceleration>
         <jpegAcceleration>true</jpegAcceleration>
         <allowNativeMosaic>false</allowNativeMosaic>
+        <allowNativeWarp>false</allowNativeWarp>
     </jai>
     <coverageAccess>
         <maxPoolSize>10</maxPoolSize>
