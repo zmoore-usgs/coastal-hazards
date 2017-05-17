@@ -49,7 +49,7 @@ public class ShorelineTest {
         summary.setTiny(tiny);
         item.setSummary(summary);
         
-        SLDGenerator shoreline = new SLDGenerator(item, item, null, Shorelines.shorelines);
+        SLDGenerator shoreline = new SLDGenerator(item, item.getId(), null, Shorelines.shorelines);
         Response response = shoreline.generateSLDInfo();
         String json = (String)response.getEntity();
         Map<String, Object> sldInfo = new Gson().fromJson(json, HashMap.class);
@@ -80,7 +80,7 @@ public class ShorelineTest {
         summary.setTiny(tiny);
         item.setSummary(summary);
         
-        SLDGenerator shoreline = new SLDGenerator(item, item, null, Shorelines.shorelines);
+        SLDGenerator shoreline = new SLDGenerator(item, item.getId(), null, Shorelines.shorelines);
 
         Response response = shoreline.generateSLD();
         Viewable sld = (Viewable)response.getEntity();
@@ -117,7 +117,7 @@ public class ShorelineTest {
         item.setSummary(summary);
 	selectedItem.setSummary(summary);
         
-        SLDGenerator shoreline = new SLDGenerator(item, selectedItem, null, Shorelines.shorelines);
+        SLDGenerator shoreline = new SLDGenerator(item, selectedItem.getId(), null, Shorelines.shorelines);
         Response response = shoreline.generateSLDInfo();
         String json = (String)response.getEntity();
         Map<String, Object> sldInfo = new Gson().fromJson(json, HashMap.class);
