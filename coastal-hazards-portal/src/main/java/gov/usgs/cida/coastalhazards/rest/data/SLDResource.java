@@ -44,7 +44,6 @@ public class SLDResource {
 		    
 		    PerformanceProfiler.startTimer("SLDResource.getSLD_ItemManager.load - " + id);
 		    Item item = manager.load(id);
-		    Item selectedItem = manager.load(selectedId);
 		    PerformanceProfiler.stopDebug("SLDResource.getSLD_ItemManager.load - " + id);
 
 		    if (item == null) {
@@ -53,7 +52,7 @@ public class SLDResource {
 		    
 		    else {
 			PerformanceProfiler.startTimer("SLDResource.getSLD_getGenerator - " + id);
-			SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon);
+			SLDGenerator generator = SLDGenerator.getGenerator(item, selectedId, ribbon);
 			PerformanceProfiler.stopDebug("SLDResource.getSLD_getGenerator - " + id);
 			if (generator != null) {
 			    PerformanceProfiler.startTimer("SLDResource.getSLD_generateSLD - " + id);
@@ -92,7 +91,6 @@ public class SLDResource {
 		
 		PerformanceProfiler.startTimer("SLDResource.getSLD_ItemManager.load - " + id);
 		Item item = manager.load(id);
-		Item selectedItem = manager.load(selectedId);
 		PerformanceProfiler.stopDebug("SLDResource.getSLD_ItemManager.load - " + id);
 
 		if (item == null) {
@@ -100,7 +98,7 @@ public class SLDResource {
 		}
 		else {
 			PerformanceProfiler.startTimer("SLDResource.getSLDInfo_getGenerator - " + id);
-			SLDGenerator generator = SLDGenerator.getGenerator(item, selectedItem, ribbon);
+			SLDGenerator generator = SLDGenerator.getGenerator(item, selectedId, ribbon);
 			PerformanceProfiler.stopDebug("SLDResource.getSLDInfo_getGenerator - " + id);
 			if (generator == null) {
 			    response = Response.status(Response.Status.NOT_FOUND).build();

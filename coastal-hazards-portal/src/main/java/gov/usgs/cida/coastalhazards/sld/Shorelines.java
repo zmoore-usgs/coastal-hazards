@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.sld;
 
 import static gov.usgs.cida.coastalhazards.Attributes.*;
 import gov.usgs.cida.coastalhazards.jpa.DataDomainManager;
+import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
 import gov.usgs.cida.utilities.PerformanceProfiler;
@@ -44,12 +45,19 @@ public final class Shorelines {
 			wrapped = null;
 		}
 
-		public void finalize(Item item) {
-			try (DataDomainManager manager = new DataDomainManager()) {
-				PerformanceProfiler.startTimer("Shorelines.finalize_DataDomainManager.getDomainForItem - " + item.getId());
-				DataDomain domain = manager.getDomainForItem(item);
+		public void finalize(String itemId) {
+			try (DataDomainManager manager = new DataDomainManager(); ItemManager items = new ItemManager()) {
+				PerformanceProfiler.startTimer("Shorelines.finalize_DataDomainManager.getDomainForItem - " + itemId);
+				DataDomain domain = manager.load(itemId);
+				
+				//Only load the item if the domain doesn't already exist for it
+				if(domain == null){
+				    Item item = items.load(itemId);
+				    domain = manager.getDomainForItem(item);
+				}
+				
 				SortedSet<String> domainValues = domain.getDomainValues();
-				PerformanceProfiler.stopDebug("Shorelines.finalize_DataDomainManager.getDomainForItem - " + item.getId());
+				PerformanceProfiler.stopDebug("Shorelines.finalize_DataDomainManager.getDomainForItem - " + itemId);
 								
 				Integer minimum = Integer.parseInt(domainValues.first());
 				Integer maximum = Integer.parseInt(domainValues.last());
