@@ -172,7 +172,7 @@ public class HealthResource {
                         String resp = httpclient.execute(httpGet, responseHandler); 
 			hasCswGetCapabilities = resp != null;
 			
-                        pyCswStatus.put("getCapabilities", hasCswGetCapabilities);
+			pyCswStatus.put("getCapabilities", hasCswGetCapabilities);
 			componentCheckMap.put("PyCsw", pyCswStatus);
 			overallHealth = overallHealth && hasCswGetCapabilities;
                         
