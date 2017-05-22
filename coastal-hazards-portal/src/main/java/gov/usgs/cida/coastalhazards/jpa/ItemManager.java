@@ -153,33 +153,38 @@ public class ItemManager implements AutoCloseable {
 	
 	private synchronized String mergeItem(Item item) {
 		String id;
-		DataDomainManager dm = new DataDomainManager();
 		
-		if (anyCycles(item)) {
+		try(DataDomainManager dm = new DataDomainManager()){
+		    if (anyCycles(item)) {
 			throw new CycleIntroductionException();
-		}
-		List<Item> children = item.getChildren();
-		List<Item> replaceList = new LinkedList<>();
-		if (children != null) {
-			for (Item child : children) {
-				replaceList.add(load(child.getId()));
-			}
-			item.setChildren(replaceList);
-		}
-				
-		em.merge(item);	
-		id = item.getId();	
-		
-		//Clear the upstream data domains if this item has a domain
-		if(dm.load(id) != null){
-		    List<Item> domainsToDelete = findVisibleAncestors(item);
-		    
-		    for(Item toDelete : domainsToDelete){
-			dm.regenerateDomainForItem(toDelete);
 		    }
+		    List<Item> children = item.getChildren();
+		    List<Item> replaceList = new LinkedList<>();
+		    if (children != null) {
+			    for (Item child : children) {
+				    replaceList.add(load(child.getId()));
+			    }
+			    item.setChildren(replaceList);
+		    }
+
+		    em.merge(item);	
+		    id = item.getId();	
+
+		    //Clear the upstream data domains if this item has a domain
+		    if(dm.load(id) != null){
+			List<Item> domainsToDelete = findVisibleAncestors(item);
+
+			for(Item toDelete : domainsToDelete){
+			    dm.regenerateDomainForItem(toDelete);
+			}
+		    }
+
+		    dm.close();
+		} catch (Exception e){
+		    log.error("Failed to save item: " + item.getId() + " | Error: " + e.getMessage());
+		    id = null;
 		}
 		
-		dm.close();
 		return id;
 	}
 
