@@ -178,8 +178,6 @@ public class ItemManager implements AutoCloseable {
 			    dm.regenerateDomainForItem(toDelete);
 			}
 		    }
-
-		    dm.close();
 		} catch (Exception e){
 		    log.error("Failed to save item: " + item.getId() + " | Error: " + e.getMessage());
 		    id = null;
