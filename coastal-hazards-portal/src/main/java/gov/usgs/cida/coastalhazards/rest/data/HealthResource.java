@@ -169,9 +169,10 @@ public class HealthResource {
                             }
                         }; // close anonymous inner class
                     
-                        httpclient.execute(httpGet, responseHandler);                        
-                        pyCswStatus.put("getCapabilities", true);
-                      			
+			String resp = httpclient.execute(httpGet, responseHandler); 
+			hasCswGetCapabilities = resp != null;
+			
+			pyCswStatus.put("getCapabilities", hasCswGetCapabilities);
 			componentCheckMap.put("PyCsw", pyCswStatus);
 			overallHealth = overallHealth && hasCswGetCapabilities;
                         
