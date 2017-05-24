@@ -175,7 +175,7 @@ public class ItemManager implements AutoCloseable {
 			List<Item> domainsToDelete = findVisibleAncestors(item);
 
 			for(Item toDelete : domainsToDelete){
-			    dm.regenerateDomainForItem(toDelete);
+			    dm.deleteDomainForItem(toDelete);
 			}
 		    }
 		} catch (Exception e){
