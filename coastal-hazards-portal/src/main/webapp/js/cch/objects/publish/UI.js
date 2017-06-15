@@ -579,37 +579,39 @@ CCH.Objects.Publish.UI = function () {
 
 	me.updateFormWithNewCSWInfo = function (responseObject, textStatus) {
 		if (textStatus === 'success') {
-			
-			var cswNodes = responseObject.children,
-					tag;
-			cswNodes[0].children.each(function (node) {
-				tag = node.tag;
+		    //Bounding Box Information
+		    var bbox = responseObject["csw:GetRecordByIdResponse"].metadata.idinfo.spdom.bounding;
 
-				if (tag === 'idinfo') {
-					node.children.each(function (childNode) {
-						tag = childNode.tag;
-						switch (tag) {
-						case 'spdom':
-							if (childNode.children) {
-								childNode.children[0].children.each(function (spdom) {
-									var direction = spdom.tag.substring(0, spdom.tag.length - 2);
-									$('#form-publish-item-bbox-input-' + direction).val(spdom.text);
-								});
-							}
-							break;
-						case 'keywords':
-							childNode.children.each(function (kwNode) {
-								var keywords = kwNode.children;
-								keywords.splice(1).each(function (kwObject) {
-									var keyword = kwObject.text;
-									me.addKeywordGroup(keyword);
-								});
-							});
-							break;
-						}
-					});
-				}
-			});
+		    for(var dir in bbox){
+			if(bbox.hasOwnProperty(dir)){
+			    var direction = dir.substring(0, dir.length - 2);
+			    var text = bbox[dir]["#text"];
+			    
+			    if(text == null){
+				text = bbox[dir];
+			    }
+			    $('#form-publish-item-bbox-input-' + direction).val(text);
+			}
+		    }
+
+		    //Keywords
+		    var keywords = responseObject["csw:GetRecordByIdResponse"].metadata.idinfo.keywords;
+
+		    for(var category in keywords){
+			if(Array.isArray(keywords[category])){
+			    for(var sub in keywords[category]){
+				var listKey = category.trim() + "key"
+				keywords[category][sub][listKey].each(function(keyword) {
+				    me.addKeywordGroup(keyword);
+				})
+			    }
+			} else {
+			    var listKey = category.trim() + "key"
+			    keywords[category][listKey].each(function(keyword) {
+				me.addKeywordGroup(keyword);
+			    })
+			}
+		    }
 		}
 	};
 
