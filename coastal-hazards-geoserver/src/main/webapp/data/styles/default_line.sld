@@ -29,7 +29,7 @@
 						<Stroke>
 							<CssParameter name="stroke">#0000FF</CssParameter>
                             <!-- this is needed in order for our CCH Portal click to identify function to return results more frequently --> 
-                            <CssParameter name="stroke-width">5</CssParameter> 
+                            <CssParameter name="stroke-width">65</CssParameter> 
 						</Stroke>
 					</LineSymbolizer>
 				</Rule>
