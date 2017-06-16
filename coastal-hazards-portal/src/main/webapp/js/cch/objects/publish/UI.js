@@ -578,7 +578,41 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.updateFormWithNewCSWInfo = function (responseObject, textStatus) {
-		if (textStatus === 'success') {
+	    if (textStatus === 'success') {
+		if(responseObject.children != null){
+		    //PYCSW 1.x Support -- Remove After Server pycsw Upgrades Complete
+		    var cswNodes = responseObject.children;
+		    var tag;
+		    cswNodes[0].children.each(function (node) {
+			    tag = node.tag;
+
+			    if (tag === 'idinfo') {
+				    node.children.each(function (childNode) {
+					    tag = childNode.tag;
+					    switch (tag) {
+					    case 'spdom':
+						    if (childNode.children) {
+							    childNode.children[0].children.each(function (spdom) {
+								    var direction = spdom.tag.substring(0, spdom.tag.length - 2);
+								    $('#form-publish-item-bbox-input-' + direction).val(spdom.text);
+							    });
+						    }
+						    break;
+					    case 'keywords':
+						    childNode.children.each(function (kwNode) {
+							    var keywords = kwNode.children;
+							    keywords.splice(1).each(function (kwObject) {
+								    var keyword = kwObject.text;
+								    me.addKeywordGroup(keyword);
+							    });
+						    });
+						    break;
+					    }
+				    });
+			    }
+		    });
+		} else {
+		    //PYCSW 2.x Support
 		    //Bounding Box Information
 		    var bbox = responseObject["csw:GetRecordByIdResponse"].metadata.idinfo.spdom.bounding;
 
@@ -586,7 +620,7 @@ CCH.Objects.Publish.UI = function () {
 			if(bbox.hasOwnProperty(dir)){
 			    var direction = dir.substring(0, dir.length - 2);
 			    var text = bbox[dir]["#text"];
-			    
+
 			    if(text == null){
 				text = bbox[dir];
 			    }
@@ -608,6 +642,7 @@ CCH.Objects.Publish.UI = function () {
 			}
 		    }
 		}
+	    }
 	};
 	
 	me.parseJsonKeywords = function (keywords) {
