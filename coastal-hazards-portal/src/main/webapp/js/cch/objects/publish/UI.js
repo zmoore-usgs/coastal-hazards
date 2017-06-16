@@ -598,22 +598,27 @@ CCH.Objects.Publish.UI = function () {
 		    var keywords = responseObject["csw:GetRecordByIdResponse"].metadata.idinfo.keywords;
 
 		    for(var category in keywords){
+			var listKey = category.trim() + "key"
 			if(Array.isArray(keywords[category])){
 			    for(var sub in keywords[category]){
-				var listKey = category.trim() + "key"
-				keywords[category][sub][listKey].each(function(keyword) {
-				    me.addKeywordGroup(keyword);
-				})
+				me.parseJsonKeywords(keywords[category][sub][listKey]);
 			    }
 			} else {
-			    var listKey = category.trim() + "key"
-			    keywords[category][listKey].each(function(keyword) {
-				me.addKeywordGroup(keyword);
-			    })
+			    me.parseJsonKeywords(keywords[category][listKey]);
 			}
 		    }
 		}
 	};
+	
+	me.parseJsonKeywords = function (keywords) {
+	    if(Array.isArray(keywords)){
+		keywords.each(function(keyword) {
+		    me.addKeywordGroup(keyword);
+		})
+	    } else {
+		me.addKeywordGroup(keywords);
+	    }
+	}
 
 	me.initNewItemForm = function () {
 		var $cswInput = $('#form-publish-item-service-csw'),
