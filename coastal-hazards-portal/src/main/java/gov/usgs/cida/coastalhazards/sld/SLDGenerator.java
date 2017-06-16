@@ -41,6 +41,7 @@ public class SLDGenerator {
 		sideEffectMapPut(stormsMap, DuneHeight.duneCrest);
 		sideEffectMapPut(stormsMap, DuneHeight.duneToe);
 		sideEffectMapPut(stormsMap, MeanWaterLevel.mean);
+		sideEffectMapPut(stormsMap, TCx.tcx);
 		gmap.put(Item.Type.storms, stormsMap);
 		
 		Map<String, SLDConfig> vulnerability = new HashMap<>();
