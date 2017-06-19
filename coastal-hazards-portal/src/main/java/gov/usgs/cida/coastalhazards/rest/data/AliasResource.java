@@ -1,13 +1,16 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
+import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.AliasManager;
 import gov.usgs.cida.coastalhazards.model.Alias;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +33,7 @@ import javax.ws.rs.core.Response;
  *
  * @author Zack Moore <zmoore@usgs.gov>
  */
-@Path(DataURI.THUMBNAIL_PATH)
+@Path(DataURI.ALIAS_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class AliasResource {
 
@@ -66,8 +69,20 @@ public class AliasResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response postItem(String content, @Context HttpServletRequest request) {
 		Response response;
+		Alias alias = Alias.fromJSON(content);
 		
+		String aliasId;
 		
+		try (AliasManager aliasManager = new AliasManager()) {
+			aliasId = aliasManager.save(alias);
+		}
+		
+		if (null == aliasId) {
+			throw new BadRequestException();
+		} else {
+			response = Response.ok(GsonUtil.getDefault().toJson(alias, Alias.class), MediaType.APPLICATION_JSON_TYPE).build();
+
+		}
 
 		return response;
 	}

@@ -2,13 +2,7 @@ package gov.usgs.cida.coastalhazards.jpa;
 
 import gov.usgs.cida.coastalhazards.model.Alias;
 import gov.usgs.cida.coastalhazards.model.Item;
-import gov.usgs.cida.coastalhazards.model.Session;
-import java.util.Collections;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.Query;
 import org.apache.log4j.Logger;
 import javax.persistence.EntityManager;
@@ -27,7 +21,6 @@ public class AliasManager implements AutoCloseable {
     private static final String HQL_DELETE_ALL= "DELETE FROM Alias";
     private static final String HQL_DELETE_BY_ID = "DELETE from Alias a where a.id = :id";
     private static final String HQL_DELETE_BY_ITEM_ID = "DELETE from Alias a where a.item_id = :item_id";
-    private static final Map<String, Lock> locks = Collections.synchronizedMap(new HashMap<String, Lock>());
     
     private EntityManager em;
 
@@ -52,17 +45,23 @@ public class AliasManager implements AutoCloseable {
         return alias;
     }
     
-    public void save(Alias alias) {
+    public String save(Alias alias) {
         EntityTransaction transaction = em.getTransaction();
+	String aliasId;
+	
         try {
             transaction.begin();
             em.persist(alias);
             transaction.commit();
+	    aliasId = alias.getId();
         } catch (Exception ex) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
+	    aliasId = null;
         }
+	
+	return aliasId;
     }
     
     /**
