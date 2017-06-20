@@ -39,6 +39,23 @@ import javax.ws.rs.core.Response;
 @Path(DataURI.ALIAS_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class AliasResource {
+    
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAliasList(@PathParam("id") String id) {
+		Response response = null;
+		try (AliasManager manager = new AliasManager()) {
+			List<Alias> aliases = manager.loadAll();
+			Gson gson = GsonUtil.getDefault();
+			
+			if(aliases != null && aliases.size() > 0){
+			    response = Response.ok(gson.toJson(aliases), MediaType.APPLICATION_JSON_TYPE).build();
+			} else {
+			    throw new NotFoundException();
+			}
+		}
+		return response;
+	}
 
 	@GET
 	@Path("/{id}")
@@ -48,7 +65,12 @@ public class AliasResource {
 		try (AliasManager manager = new AliasManager()) {
 			Alias alias = manager.load(id);
 			Gson gson = GsonUtil.getDefault();
-			response = Response.ok(gson.toJson(alias), MediaType.APPLICATION_JSON_TYPE).build();
+			
+			if(alias != null){
+			    response = Response.ok(gson.toJson(alias), MediaType.APPLICATION_JSON_TYPE).build();
+			} else {
+			    throw new NotFoundException();
+			}
 		}
 		return response;
 	}
@@ -161,7 +183,13 @@ public class AliasResource {
 		String aliasId;
 		
 		try (AliasManager aliasManager = new AliasManager()) {
-			aliasId = aliasManager.save(alias);
+			Alias savedAlias = aliasManager.load(alias.getId());
+			
+			if(savedAlias == null){
+			    aliasId = aliasManager.save(alias);
+			} else {
+			    throw new BadRequestException();
+			}
 		}
 		
 		if (null == aliasId) {
@@ -176,7 +204,7 @@ public class AliasResource {
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@PUT
 	@Path("/{id}")
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateAlias(@PathParam("id") String id, String content, @Context HttpServletRequest request) {
 		Response response = null;
@@ -189,8 +217,7 @@ public class AliasResource {
 	
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@PUT
-	@Path("/{id}")
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Path("/{id}/update")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateAlias(@PathParam("id") String id, @QueryParam("itemId") String itemId) {
 	    Response response = null;
@@ -200,8 +227,7 @@ public class AliasResource {
 
 		    if(alias != null){
 			alias.setItemId(itemId);
-			manager.delete(alias.getId());
-			manager.save(alias);
+			manager.update(alias);
 			response = Response.ok(GsonUtil.getDefault().toJson(alias, Alias.class), MediaType.APPLICATION_JSON_TYPE).build();
 		    } else {
 			throw new NotFoundException();

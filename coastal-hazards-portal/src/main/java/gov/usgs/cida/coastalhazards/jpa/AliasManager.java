@@ -16,11 +16,12 @@ public class AliasManager implements AutoCloseable {
 
     private static final Logger log = Logger.getLogger(DataDomainManager.class);
     
+    private static final String HQL_SELECT_ALL = "select a from Alias a";
     private static final String HQL_SELECT_BY_ID = "select a from Alias a where a.id = :id";
-    private static final String HQL_SELECT_BY_ITEM_ID = "select a from Alias a where a.item_id = :item_id";
+    private static final String HQL_SELECT_BY_ITEM_ID = "select a from Alias a where a.itemId = :item_id";
     private static final String HQL_DELETE_ALL= "DELETE FROM Alias";
     private static final String HQL_DELETE_BY_ID = "DELETE from Alias a where a.id = :id";
-    private static final String HQL_DELETE_BY_ITEM_ID = "DELETE from Alias a where a.item_id = :item_id";
+    private static final String HQL_DELETE_BY_ITEM_ID = "DELETE from Alias a where a.itemId = :item_id";
     
     private EntityManager em;
 
@@ -45,6 +46,12 @@ public class AliasManager implements AutoCloseable {
         return alias;
     }
     
+    public List<Alias> loadAll() {
+	Query selectAllQuery = em.createQuery(HQL_SELECT_ALL);
+        List<Alias> resultList = selectAllQuery.getResultList();
+	return(resultList);
+    }
+        
     public String save(Alias alias) {
         EntityTransaction transaction = em.getTransaction();
 	String aliasId;
@@ -53,6 +60,25 @@ public class AliasManager implements AutoCloseable {
             transaction.begin();
             em.persist(alias);
             transaction.commit();
+	    aliasId = alias.getId();
+        } catch (Exception ex) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+	    aliasId = null;
+        }
+	
+	return aliasId;
+    }
+    
+    public String update(Alias alias) {
+	EntityTransaction transaction = em.getTransaction();
+	String aliasId;
+	
+        try {
+            transaction.begin();
+	    em.merge(alias);
+	    transaction.commit();
 	    aliasId = alias.getId();
         } catch (Exception ex) {
             if (transaction.isActive()) {
