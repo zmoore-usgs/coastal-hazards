@@ -39,7 +39,6 @@ import javax.ws.rs.core.Response;
 @Path(DataURI.ALIAS_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class AliasResource {
-    
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAliasList(@PathParam("id") String id) {
@@ -200,6 +199,19 @@ public class AliasResource {
 
 		return response;
 	}
+	
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateAlias(String content, @Context HttpServletRequest request) {
+		Response response = null;
+		Alias newAlias = Alias.fromJSON(content);
+				
+		response = updateAlias(newAlias.getId(), content, request);
+		
+		return response;
+	}
 
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@PUT
@@ -209,31 +221,19 @@ public class AliasResource {
 	public Response updateAlias(@PathParam("id") String id, String content, @Context HttpServletRequest request) {
 		Response response = null;
 		Alias newAlias = Alias.fromJSON(content);
-				
-		response = updateAlias(id, newAlias.getItemId());
+		
+		try (AliasManager manager = new AliasManager()) {
+			Alias alias = manager.load(id);
+
+			if(alias != null){
+			    alias.setItemId(newAlias.getItemId());
+			    manager.update(alias);
+			    response = Response.ok(GsonUtil.getDefault().toJson(alias, Alias.class), MediaType.APPLICATION_JSON_TYPE).build();
+			} else {
+			    throw new NotFoundException();
+			}
+		}
 		
 		return response;
-	}
-	
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-	@PUT
-	@Path("/{id}/update")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateAlias(@PathParam("id") String id, @QueryParam("itemId") String itemId) {
-	    Response response = null;
-	    
-	    try (AliasManager manager = new AliasManager()) {
-		    Alias alias = manager.load(id);
-
-		    if(alias != null){
-			alias.setItemId(itemId);
-			manager.update(alias);
-			response = Response.ok(GsonUtil.getDefault().toJson(alias, Alias.class), MediaType.APPLICATION_JSON_TYPE).build();
-		    } else {
-			throw new NotFoundException();
-		    }
-	    }
-	    
-	    return response;
 	}
 }
