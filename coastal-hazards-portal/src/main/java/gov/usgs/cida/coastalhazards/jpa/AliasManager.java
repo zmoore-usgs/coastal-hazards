@@ -91,8 +91,7 @@ public class AliasManager implements AutoCloseable {
     }
     
     /**
-     * Delete all of the domains and values from the table so that they can be
-     * re-generated based on the new tree layout.
+     * Delete all of the aliases from the alias table
      * @return Boolean Representing whether or not the delete executed successfully.
      */
     public boolean deleteAll() {
@@ -115,8 +114,8 @@ public class AliasManager implements AutoCloseable {
     }
     
     /**
-     * Delete the data domain with the given ID
-     * @param id The id of the data domain to delete
+     * Delete the alias with the given ID
+     * @param id The id of the alias to delete
      * @return Boolean Representing whether or not the delete executed successfully.
      */
     public boolean delete(String id) {
@@ -140,8 +139,8 @@ public class AliasManager implements AutoCloseable {
     }
     
     /**
-     * Delete the data domain associated with the given item
-     * @param item The item to delete the associated data domain for
+     * Delete all of the aliases associated with the given item id
+     * @param item The item to delete the associated aliases for
      * @return Boolean Representing whether or not the delete executed successfully.
      */
     public boolean deleteAliasesForItemId(String itemId) {
@@ -168,6 +167,11 @@ public class AliasManager implements AutoCloseable {
 	return(deleted);
     }
     
+    /**
+     * Delete all of the aliases associated with the given item
+     * @param item The item to delete the associated aliases for
+     * @return Boolean Representing whether or not the delete executed successfully.
+     */
     public boolean deleteAliasesForItem(Item item){
 	if (item == null) {
             throw new IllegalArgumentException("Item must be valid data item");
@@ -177,10 +181,8 @@ public class AliasManager implements AutoCloseable {
     }
         
     /**
-     * Grab the domain of the item data and store it for later
-     * TODO if Item has been modified, invalidate DB persisted entity
-     * @param item Item for which domain to gather
-     * @return DataDomain object making up the domain
+     * Grab all of the aliases associated with the provided item ID
+     * @return The list of related aliases
      */
     public List<Alias> getAliasesForItemId(String itemId) {        
         if (itemId == null) {
@@ -194,6 +196,10 @@ public class AliasManager implements AutoCloseable {
         return resultList;
     }
     
+    /**
+     * Grab all of the aliases associated with the provided item ID
+     * @return The list of related aliases
+     */
     public List<Alias> getAliasesForItem(Item item) {        
         if (item == null) {
             throw new IllegalArgumentException("Item must be valid data item");
