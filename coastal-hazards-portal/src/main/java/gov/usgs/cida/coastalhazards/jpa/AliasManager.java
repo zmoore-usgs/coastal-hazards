@@ -118,7 +118,7 @@ public class AliasManager implements AutoCloseable {
      * @param item The item to delete the associated data domain for
      * @return Boolean Representing whether or not the delete executed successfully.
      */
-    public boolean deleteAliasForItemId(String itemId) {
+    public boolean deleteAliasesForItemId(String itemId) {
 	if (itemId == null) {
             throw new IllegalArgumentException("Item ID must be valid data item ID");
         }
@@ -142,12 +142,12 @@ public class AliasManager implements AutoCloseable {
 	return(deleted);
     }
     
-    public boolean deleteAliasForItem(Item item){
+    public boolean deleteAliasesForItem(Item item){
 	if (item == null) {
             throw new IllegalArgumentException("Item must be valid data item");
         }
 	
-	return(deleteAliasForItemId(item.getId()));
+	return(deleteAliasesForItemId(item.getId()));
     }
         
     /**
@@ -156,9 +156,7 @@ public class AliasManager implements AutoCloseable {
      * @param item Item for which domain to gather
      * @return DataDomain object making up the domain
      */
-    public Alias getAliasForItemId(String itemId) {
-        Alias alias = new Alias();
-        
+    public List<Alias> getAliasesForItemId(String itemId) {        
         if (itemId == null) {
             throw new IllegalArgumentException("Item must be valid data item");
         }
@@ -166,18 +164,15 @@ public class AliasManager implements AutoCloseable {
 	Query selectQuery = em.createQuery(HQL_SELECT_BY_ITEM_ID);
         selectQuery.setParameter("item_id", itemId);
         List<Alias> resultList = selectQuery.getResultList();
-        if (!resultList.isEmpty()) {
-            alias = resultList.get(0);
-        }
         
-        return alias;
+        return resultList;
     }
     
-    public Alias getAliasForItem(Item item) {        
+    public List<Alias> getAliasesForItem(Item item) {        
         if (item == null) {
             throw new IllegalArgumentException("Item must be valid data item");
         }
         
-	return getAliasForItemId(item.getId());
+	return getAliasesForItemId(item.getId());
     }
 }

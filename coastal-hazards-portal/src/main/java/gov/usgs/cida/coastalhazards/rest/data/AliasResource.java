@@ -12,10 +12,12 @@ import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.util.Date;
+import java.util.List;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -41,7 +43,7 @@ public class AliasResource {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAlias(@PathParam("id") String id) {
+	public Response getAliasById(@PathParam("id") String id) {
 		Response response = null;
 		try (AliasManager manager = new AliasManager()) {
 			Alias alias = manager.load(id);
@@ -54,12 +56,12 @@ public class AliasResource {
 	@GET
 	@Path("/item/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAliasForItem(@PathParam("id") String itemId) {
+	public Response getAliasesForItem(@PathParam("id") String itemId) {
 		Response response = null;
 		try (AliasManager manager = new AliasManager()) {
-			Alias alias = manager.getAliasForItemId(itemId);
+			List<Alias> aliasList = manager.getAliasesForItemId(itemId);
 			Gson gson = GsonUtil.getDefault();
-			response = Response.ok(gson.toJson(alias), MediaType.APPLICATION_JSON_TYPE).build();
+			response = Response.ok(gson.toJson(aliasList, List.class), MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;
 	}
@@ -119,10 +121,40 @@ public class AliasResource {
 	}
 	
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@DELETE
+	@Path("/{id}")
+	public Response deleteAlias(@Context HttpServletRequest request, @PathParam("id") String id) {
+		Response response = null;
+		try (AliasManager aliasManager = new AliasManager()) {
+			if (aliasManager.delete(id)) {
+				response = Response.ok().build();
+			} else {
+				throw new Error();
+			}
+		}
+		return response;
+	}
+	
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@DELETE
+	@Path("/item/{id}")
+	public Response deleteAliasesForItem(@Context HttpServletRequest request, @PathParam("id") String itemId) {
+		Response response = null;
+		try (AliasManager aliasManager = new AliasManager()) {			
+			if (aliasManager.deleteAliasesForItemId(itemId)) {
+				response = Response.ok().build();
+			} else {
+				throw new Error();
+			}
+		}
+		return response;
+	}
+	
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response postItem(String content, @Context HttpServletRequest request) {
+	public Response postAlias(String content, @Context HttpServletRequest request) {
 		Response response;
 		Alias alias = Alias.fromJSON(content);
 		
@@ -136,7 +168,6 @@ public class AliasResource {
 			throw new BadRequestException();
 		} else {
 			response = Response.ok(GsonUtil.getDefault().toJson(alias, Alias.class), MediaType.APPLICATION_JSON_TYPE).build();
-
 		}
 
 		return response;
@@ -149,12 +180,34 @@ public class AliasResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateAlias(@PathParam("id") String id, String content, @Context HttpServletRequest request) {
 		Response response = null;
-		try (AliasManager manager = new AliasManager()) {
-			Alias alias = manager.load(id);
-			Gson gson = GsonUtil.getDefault();
-			response = Response.ok(gson.toJson(alias), MediaType.APPLICATION_JSON_TYPE).build();
-		}
+		Alias newAlias = Alias.fromJSON(content);
+				
+		response = updateAlias(id, newAlias.getItemId());
 		
 		return response;
+	}
+	
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@PUT
+	@Path("/{id}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateAlias(@PathParam("id") String id, @QueryParam("itemId") String itemId) {
+	    Response response = null;
+	    
+	    try (AliasManager manager = new AliasManager()) {
+		    Alias alias = manager.load(id);
+
+		    if(alias != null){
+			alias.setItemId(itemId);
+			manager.delete(alias.getId());
+			manager.save(alias);
+			response = Response.ok(GsonUtil.getDefault().toJson(alias, Alias.class), MediaType.APPLICATION_JSON_TYPE).build();
+		    } else {
+			throw new NotFoundException();
+		    }
+	    }
+	    
+	    return response;
 	}
 }
