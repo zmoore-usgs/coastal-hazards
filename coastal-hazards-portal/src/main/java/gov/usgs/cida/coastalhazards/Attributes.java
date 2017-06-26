@@ -104,6 +104,10 @@ public class Attributes {
 	public static final String NHC_TRACK_PT_120CAT = "NHC_TRACK_PT_120CAT";
         
         public static final String VIC = "VIC"; //vulnerability index
+	
+	public static final String TCT = "TCT";
+	public static final String TC2 = "TC2";
+	public static final String TC5 = "TC5";
         
         //raster attr
         public static final String GRAY_INDEX = "GRAY_INDEX";
