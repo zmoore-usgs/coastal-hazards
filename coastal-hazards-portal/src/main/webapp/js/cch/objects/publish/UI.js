@@ -54,6 +54,10 @@ CCH.Objects.Publish.UI = function () {
 		$alertModalTitle = $alertModal.find('.modal-title'),
 		$alertModalBody = $alertModal.find('.modal-body'),
 		$alertModalFooter = $alertModal.find('.modal-footer'),
+		$aliasModal = $('#alias-modal'),
+		$aliasModalSubmitButton = $('#alias-modal-submit-btn'),
+		$aliasModalPopButton = $('#alias-modal-populate-button'),
+		$aliasModalAddButton = $('#form-publish-alias-modal-button-add'),
 		$vectorModal = $('#vector-modal'),
 		$vectorModalSubmitButton = $('#vector-modal-submit-btn'),
 		$vectorModalPopButton = $('#vector-modal-populate-button'),
@@ -62,7 +66,7 @@ CCH.Objects.Publish.UI = function () {
 		$rasterModalSubmitButton = $('#raster-modal-submit-btn'),
 		$titleModal = $('#title-modal'),
 		$titleModalContinueButton = $('#title-modal-continue-button'),
-                $resourceModal = $('#resource-modal'),
+		$resourceModal = $('#resource-modal'),
 		$resourceModalContinueButton = $('#resource-modal-continue-button'),
 		$metadataSummaryField = $('#form-publish-info-item-summary-version'),
 		$itemEnabledField = $('#form-publish-info-item-enabled'),
@@ -72,6 +76,7 @@ CCH.Objects.Publish.UI = function () {
 		$buttonDelete = $('#publish-button-delete'),
 		$buttonLogout = $('#publish-button-logout'),
 		$buttonViewAll = $('#publish-button-view-all'),
+		$buttonManageAliases = $('#publish-button-manage-aliases'),
 		$buttonCreateVectorLayer = $('#publish-button-create-vector-layer'),
 		$buttonCreateRasterLayer = $('#publish-button-create-raster-layer'),
 		$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
@@ -91,16 +96,17 @@ CCH.Objects.Publish.UI = function () {
 		$isActiveStormRow = $form.find('#form-publish-info-item-active-storm'),
 		$isActiveStormChecbox = $form.find('#checkbox-isactive'),
 		$resourceSortableContainers = $('.resource-list-container-sortable'),
-                $servicePanel = $('#services-panel'),
-                $itemAttributePanel = $('#item-type-panel'),
-                $featuresPanel = $('#features-panel'),
-                $titlesPanel = $('#titles-panel'),
-                $resourcesPanel = $('#Resources-panel'),
-                $metaDataPanel = $('#metadata-panel'),
+		$servicePanel = $('#services-panel'),
+		$itemAttributePanel = $('#item-type-panel'),
+		$featuresPanel = $('#features-panel'),
+		$titlesPanel = $('#titles-panel'),
+		$resourcesPanel = $('#Resources-panel'),
+		$metaDataPanel = $('#metadata-panel'),
 		$newVectorLayerId = null,
 		$newRasterLayerId = null,
 		$editingEnabled = false;
 
+	me.templateNames = ["publication_row", "item_list", "alias_row"];
 	me.templates = {};
 
 	me.createHelpPopover = function ($content, $element) {
@@ -161,6 +167,7 @@ CCH.Objects.Publish.UI = function () {
 			$i.prop(CCH.CONFIG.strings.checked, false);
 		});
 		$editingEnabled = false;
+		$aliasModalPopButton.prop("disabled", true);
 		$vectorModalPopButton.prop("disabled", true);
 		$rasterModalPopButton.prop("disabled", true);
 		$('.form-group-keyword').not(':first').remove();
@@ -186,6 +193,7 @@ CCH.Objects.Publish.UI = function () {
                 
 		
 		$editingEnabled = true;
+		$aliasModalPopButton.prop("disabled", false);
 		
 		if($newVectorLayerId !== null){
 			$vectorModalPopButton.prop("disabled", false);
@@ -222,6 +230,7 @@ CCH.Objects.Publish.UI = function () {
 					$item.removeAttr(CCH.CONFIG.strings.disabled);
 				});
 		$editingEnabled = true;
+		$aliasModalPopButton.prop("disabled", false);
 		
 		if($newVectorLayerId !== null){
 			$vectorModalPopButton.prop("disabled", false);
@@ -830,6 +839,23 @@ CCH.Objects.Publish.UI = function () {
 				}
 			});
 		}
+	};
+	
+	me.createAliasRow = function() {
+		var aliasRowHtml = CCH.ui.templates.alias_row({
+			aliasName: "",
+			aliasItem: "",
+		});
+		var $rowObject = $(aliasRowHtml);
+		var $panel = $('#aliases-panel');
+		var $panelBodyListContainer = $panel.find('.panel-body > ul');
+		$panelBodyListContainer.prepend($rowObject);
+		
+		$rowObject.find('.aliasrow-closebutton').on(CCH.CONFIG.strings.click, function (evt) {
+			$(evt.target).closest('.well').remove();
+		});
+		
+		return $rowObject;
 	};
 
 	me.createPublicationRow = function (link, title, type, prepend) {
@@ -1487,6 +1513,10 @@ CCH.Objects.Publish.UI = function () {
 	$buttonLogout.on(CCH.CONFIG.strings.click, function () {
 		CCH.Auth.logout();
 	});
+	
+	$aliasModalAddButton.on(CCH.CONFIG.strings.click, function() {
+		me.createAliasRow();
+	});
 
 	$buttonSave.on(CCH.CONFIG.strings.click, function () {
 		var errors = me.validateForm.call(this),
@@ -1566,6 +1596,10 @@ CCH.Objects.Publish.UI = function () {
 		if (id !== '') {
 			me.deleteItem(id);
 		}
+	});
+	
+	$buttonManageAliases.on(CCH.CONFIG.strings.click, function() {
+		$aliasModal.modal(CCH.CONFIG.strings.show);
 	});
 	
 	$buttonCreateVectorLayer.on(CCH.CONFIG.strings.click, function() {
@@ -1904,6 +1938,10 @@ CCH.Objects.Publish.UI = function () {
 		return layerUrl.from(layerUrl.lastIndexOf('/') + 1);
 	};
 	
+	$aliasModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
+		
+	});
+	
 	$vectorModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
 		var $result = $('#vector-modal-result');
 		var $form = $('#vector-form');
@@ -2008,6 +2046,10 @@ CCH.Objects.Publish.UI = function () {
 		});
 	});	
 	
+	$aliasModalPopButton.on(CCH.CONFIG.strings.click, function(){
+		
+	});
+	
 	$vectorModalPopButton.on(CCH.CONFIG.strings.click, function(){
 		$popFromLayerInput.val($newVectorLayerId);
 		me.loadLayerInfo($popFromLayerInput.val());
@@ -2042,7 +2084,7 @@ CCH.Objects.Publish.UI = function () {
 	});
 
 	me.loadTemplates = function () {
-		["publication_row", "item_list"].each(function (templateName) {
+		me.templateNames.each(function (templateName) {
 			$.ajax({
 				url: CCH.CONFIG.contextPath + '/resource/template/handlebars/publish/' + templateName + '.html',
 				context: {

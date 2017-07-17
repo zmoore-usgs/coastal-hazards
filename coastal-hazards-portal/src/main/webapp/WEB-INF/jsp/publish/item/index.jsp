@@ -166,6 +166,9 @@
                         <button type="button" id="publish-button-create-raster-layer" class="btn btn-lg btn-success">
                             Create Raster Layer
                         </button>
+						<button type="button" id="publish-button-manage-aliases" class="btn btn-lg btn-success">
+                            Manage Aliases
+                        </button>	
                         <button type="button" id="publish-button-save" class="btn btn-lg btn-success" disabled="disabled">
                             Save
                         </button>
@@ -574,7 +577,6 @@
                                                 </span>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -700,6 +702,34 @@
                     <div class="modal-footer">
                         <button id="raster-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Services From Layer</button>
                         <button id="raster-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+		<div id="alias-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="alias-modal-close-button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Manage Aliases</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="list-group">
+							<div id="aliases-panel" class="resource-panel panel panel-default">
+								<div class="panel-heading">
+									<button id="form-publish-alias-modal-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" >Add</button>
+									<h3 class="panel-title">Aliases</h3>
+								</div>
+								<div class="panel-body">
+									<ul id="sortable-aliases" class="resource-list-container-sortable">
+										<%-- Added programatically --%>
+									</ul>
+								</div>
+							</div>
+						</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="alias-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
