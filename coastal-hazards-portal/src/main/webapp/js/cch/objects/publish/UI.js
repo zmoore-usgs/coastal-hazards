@@ -55,9 +55,10 @@ CCH.Objects.Publish.UI = function () {
 		$alertModalBody = $alertModal.find('.modal-body'),
 		$alertModalFooter = $alertModal.find('.modal-footer'),
 		$aliasModal = $('#alias-modal'),
+		$itemAliasList = $('#sortable-aliases'),
 		$aliasModalSubmitButton = $('#alias-modal-submit-btn'),
 		$aliasModalPopButton = $('#alias-modal-populate-button'),
-		$aliasModalAddButton = $('#form-publish-alias-modal-button-add'),
+		$aliasAddButton = $('#form-publish-alias-button-add'),
 		$vectorModal = $('#vector-modal'),
 		$vectorModalSubmitButton = $('#vector-modal-submit-btn'),
 		$vectorModalPopButton = $('#vector-modal-populate-button'),
@@ -108,7 +109,7 @@ CCH.Objects.Publish.UI = function () {
 
 	me.templateNames = ["publication_row", "item_list", "alias_row"];
 	me.templates = {};
-
+	
 	me.createHelpPopover = function ($content, $element) {
 		$element.popover('destroy');
 		$element.popover({
@@ -139,7 +140,7 @@ CCH.Objects.Publish.UI = function () {
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $descriptionTinyTextArea,
 			$downloadLinkTextArea, $typeSb, $attributeSelect, $attributeSelectHelper,
-			$srcWfsServiceInput, $srcWfsServiceParamInput,
+			$srcWfsServiceInput, $srcWfsServiceParamInput, $aliasAddButton,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $proxyWmsServiceParamInput,
 			$ribbonableCb, $showChildrenCb, $itemType, $name,
@@ -173,6 +174,7 @@ CCH.Objects.Publish.UI = function () {
 		$('.form-group-keyword').not(':first').remove();
 		$('.form-group-keyword button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
 		$publicationsPanel.find('.resource-list-container-sortable').empty();
+		$itemAliasList.empty();
 		$itemImage.attr('src', '');
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
@@ -182,17 +184,14 @@ CCH.Objects.Publish.UI = function () {
 
 	me.enableNewItemForm = function () {
 		var gsBaseUrl = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources[CCH.CONFIG.strings.cidaGeoserver].proxy + 'proxied/';
-		
+				
 		$itemType.val('data');
-                
                 [$servicePanel.find('input, button'), $buttonSave, $buttonDelete]
                         .each(function ($item) {
                             $item.removeAttr(CCH.CONFIG.strings.disabled);
 			});
-                
-                
-		
 		$editingEnabled = true;
+		$aliasAddButton.prop(CCH.CONFIG.strings.disabled, false);
 		$aliasModalPopButton.prop("disabled", false);
 		
 		if($newVectorLayerId !== null){
@@ -215,7 +214,7 @@ CCH.Objects.Publish.UI = function () {
 		$itemType.val('aggregation');
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $typeSb,
-			$attributeSelect,
+			$attributeSelect, $aliasAddButton,
 			$srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
@@ -297,7 +296,6 @@ CCH.Objects.Publish.UI = function () {
 				} else if ($cswServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('CSW endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
-				
 
 				if ($srcWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('WFS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
@@ -357,7 +355,30 @@ CCH.Objects.Publish.UI = function () {
 				// TODO- What  goes into an agregation type? Anything?
 				// TODO- What validation goes into a template type? Anything?
 			}
-
+			
+			//Validate alias names
+			uniqueNames = [];
+			$('.alias-panel .panel-body ul > li div.well').each(function (idx, panel) {
+				var $panel = $(panel),
+				name = $panel.find('>div:nth-child(2) input').val().trim();
+				var invalidChars = name.match("(?!([\\w|-])).");
+				
+				if(invalidChars != null && invalidChars.count() > 0){
+					errors.push("Alias name: " + name + " contains invalid characters.");
+					
+					for(var i = 0; i < invalidChars.count(); i++){
+						name = name.replace(invalidChars[i], "");
+					}
+				}
+				
+				if(uniqueNames.indexOf(name) < 0){
+					uniqueNames.push(name);
+				} else {
+					error.push("Duplicate alias detected with name: " + name);
+				}
+				
+			});
+			
 			if (me.isBlank($titleFullTextArea)) {
 				errors.push('Full title not provided');
 			} else if ($titleFullTextArea.val().length > CCH.CONFIG.limits.summary.full.title) {
@@ -484,7 +505,7 @@ CCH.Objects.Publish.UI = function () {
 				type: pubType
 			});
 		});
-
+		
 		$('.form-group-keyword').not(':first').find('input').each(function (ind, input) {
 			keywordsArray.push($(input).val().trim());
 		});
@@ -844,12 +865,16 @@ CCH.Objects.Publish.UI = function () {
 	me.createAliasRow = function() {
 		var aliasRowHtml = CCH.ui.templates.alias_row({
 			aliasName: "",
-			aliasItem: "",
+			aliasItem: $itemIdInput.val()
 		});
 		var $rowObject = $(aliasRowHtml);
 		var $panel = $('#aliases-panel');
 		var $panelBodyListContainer = $panel.find('.panel-body > ul');
 		$panelBodyListContainer.prepend($rowObject);
+		
+		$rowObject.find('.panel-item-name').on("blur", function(evt) {
+			evt.target.value = evt.target.value.trim();
+		});
 		
 		$rowObject.find('.aliasrow-closebutton').on(CCH.CONFIG.strings.click, function (evt) {
 			$(evt.target).closest('.well').remove();
@@ -1060,7 +1085,7 @@ CCH.Objects.Publish.UI = function () {
 			}
 			
 			[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
-					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
+					$wmsServerHelpButton, $aliasAddButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
 					$proxyWmsCheckButton, $isFeaturedCB, $downloadLinkTextArea,
 					$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $ribbonableCb,
 					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
@@ -1514,7 +1539,7 @@ CCH.Objects.Publish.UI = function () {
 		CCH.Auth.logout();
 	});
 	
-	$aliasModalAddButton.on(CCH.CONFIG.strings.click, function() {
+	$aliasAddButton.on(CCH.CONFIG.strings.click, function() {
 		me.createAliasRow();
 	});
 
@@ -1526,6 +1551,28 @@ CCH.Objects.Publish.UI = function () {
 		
 		var performSave = function () {
 			item = me.buildItemFromForm();
+			
+			//Save Aliases
+			$('.alias-panel .panel-body ul > li div.well').each(function (idx, panel) {
+				var $panel = $(panel),
+				name = $panel.find('>div:nth-child(2) input').val().trim();
+				var invalidChars = name.match("(?!([\\w|-])).");
+
+				if(invalidChars != null){
+					for(var i = 0; i < invalidChars.count(); i++){
+						name = name.replace(invalidChars[i], "");
+					}
+				}
+
+				var alias = {
+					name: name,
+					itemId: ""
+				};
+
+				console.log("Saving " + alias.name + " with ID " + alias.id);
+			});
+						
+			//Save Item
 			me.saveItem({
 				item: item,
 				callbacks: {

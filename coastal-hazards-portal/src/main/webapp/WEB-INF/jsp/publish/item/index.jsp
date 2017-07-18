@@ -188,70 +188,32 @@
                         <input type="hidden" id="form-publish-info-item-enabled" />
 
                         <%-- 2 column layout --%>
-
-                        <div class="flexSection">
-                            <%-- ITEM ID --%>
-                            <div id="item-id-panel" class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Item ID</h3>
-                                </div>
-                                <div class="panel-body">
-                                    <div id="form-publish-info-item-id" class="row row-id">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="form-publish-item-id" placeholder="Item ID" disabled="disabled" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <%-- FEATURES AND IMAGES --%>
-                            <div id="features-panel" class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Features/Image</h3>
-                                </div>
-                                <div class="panel-body sideBySide">
-                                    <div id="checkboxes">
-                                        <%-- Featured Item --%>
-                                        <div class="row row-id">
-                                            <div class="form-group">
-                                                <div class="checkbox">
-                                                    <input id="checkbox-featured" type="checkbox" disabled="disabled">
-                                                    <label for="checkbox-featured">Is Featured?</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <%-- Ribbonable --%>
-                                        <div class="row row-ribbonable">
-                                            <div class="form-group">
-                                                <div class="checkbox">
-                                                    <input id="form-publish-item-ribbonable" type="checkbox" disabled="disabled">
-                                                    <label for="form-publish-item-ribbonable">Ribbonable?</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <%-- Show Children --%>
-                                        <div class="row row-showchildren">
-                                            <div class="form-group">
-                                                <div class="checkbox">
-                                                    <input id="form-publish-item-showchildren" type="checkbox" disabled="disabled" checked="checked">
-                                                    <label for="form-publish-item-showchildren">Show Children?</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="imageGenerator">
-                                        <%-- ITEM IMAGE --%>
-                                        <div class="row row-id">
-                                            <img alt="Item Thumbnail" id="form-publish-info-item-image" src="" /> 
-                                        </div>
-                                        <button  id="form-publish-info-item-image-gen" class="btn btn-default" type="button" disabled="disabled">Generate</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="flexSection">
                             <div class="flexLeft">
+								<%-- ITEM ID & Alias --%>
+								<div id="item-id-panel" class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Item ID/Aliases</h3>
+									</div>
+									<div class="panel-body">
+										<div id="form-publish-info-item-id" class="row row-id">
+											<div class="form-group">
+												<input type="text" class="form-control" id="form-publish-item-id" placeholder="Item ID" disabled="disabled" />
+												<div id="aliases-panel" class="alias-panel panel panel-default">
+													<div class="panel-heading">
+														<button id="form-publish-alias-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled">Add</button>
+														<h3 class="panel-title">Aliases</h3>
+													</div>
+													<div class="panel-body">
+														<ul id="sortable-aliases" class="resource-list-container-sortable">
+															<%-- Added programatically --%>
+														</ul>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
                                 <%-- Services --%>
                                 <div id="services-panel" class="panel panel-default">
                                     <div class="panel-heading">
@@ -408,6 +370,51 @@
                             </div>
 
                             <div class="flexRight">
+								<%-- FEATURES AND IMAGES --%>
+								<div id="features-panel" class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Features/Image</h3>
+									</div>
+									<div class="panel-body sideBySide">
+										<div id="checkboxes">
+											<%-- Featured Item --%>
+											<div class="row row-id">
+												<div class="form-group">
+													<div class="checkbox">
+														<input id="checkbox-featured" type="checkbox" disabled="disabled">
+														<label for="checkbox-featured">Is Featured?</label>
+													</div>
+												</div>
+											</div>
+											<%-- Ribbonable --%>
+											<div class="row row-ribbonable">
+												<div class="form-group">
+													<div class="checkbox">
+														<input id="form-publish-item-ribbonable" type="checkbox" disabled="disabled">
+														<label for="form-publish-item-ribbonable">Ribbonable?</label>
+													</div>
+												</div>
+											</div>
+											<%-- Show Children --%>
+											<div class="row row-showchildren">
+												<div class="form-group">
+													<div class="checkbox">
+														<input id="form-publish-item-showchildren" type="checkbox" disabled="disabled" checked="checked">
+														<label for="form-publish-item-showchildren">Show Children?</label>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div id="imageGenerator">
+											<%-- ITEM IMAGE --%>
+											<div class="row row-id">
+												<img alt="Item Thumbnail" id="form-publish-info-item-image" src="" /> 
+											</div>
+											<button  id="form-publish-info-item-image-gen" class="btn btn-default" type="button" disabled="disabled">Generate</button>
+										</div>
+									</div>
+								</div>
+								
                                 <%-- ITEM TYPE/ATTRIBUTE --%>
                                 <div id="item-type-panel" class="panel panel-default">
                                     <div class="panel-heading sideBySide">
