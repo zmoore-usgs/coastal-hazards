@@ -107,6 +107,10 @@ CCH.Objects.Publish.UI = function () {
 		$newRasterLayerId = null,
 		$editingEnabled = false;
 
+	const ALIAS_NAME_REGEX = "(?!([A-Z|a-z|0-9|-])).";
+	
+	me.allAliasList = [];
+	
 	me.templateNames = ["publication_row", "item_list", "alias_row"];
 	me.templates = {};
 	
@@ -357,26 +361,24 @@ CCH.Objects.Publish.UI = function () {
 			}
 			
 			//Validate alias names
-			uniqueNames = [];
+			var uniqueNames = [];
 			$('.alias-panel .panel-body ul > li div.well').each(function (idx, panel) {
 				var $panel = $(panel),
 				name = $panel.find('>div:nth-child(2) input').val().trim();
-				var invalidChars = name.match("(?!([\\w|-])).");
+				var invalidChars = name.match(ALIAS_NAME_REGEX);
 				
 				if(invalidChars != null && invalidChars.count() > 0){
 					errors.push("Alias name: " + name + " contains invalid characters.");
-					
-					for(var i = 0; i < invalidChars.count(); i++){
-						name = name.replace(invalidChars[i], "");
-					}
+					var replace = new RegExp(ALIAS_NAME_REGEX, 'g');
+					name = name.replace(replace, '');
 				}
 				
 				if(uniqueNames.indexOf(name) < 0){
 					uniqueNames.push(name);
 				} else {
-					error.push("Duplicate alias detected with name: " + name);
+					var errorMessage = "Duplicate aliases detected after removing invalid characters. Name: " + name;
+					errors.push(errorMessage);
 				}
-				
 			});
 			
 			if (me.isBlank($titleFullTextArea)) {
@@ -862,10 +864,10 @@ CCH.Objects.Publish.UI = function () {
 		}
 	};
 	
-	me.createAliasRow = function() {
+	me.createAliasRow = function(id) {
 		var aliasRowHtml = CCH.ui.templates.alias_row({
-			aliasName: "",
-			aliasItem: $itemIdInput.val()
+			id: id != null ? id : "",
+			item_id: $itemIdInput.val()
 		});
 		var $rowObject = $(aliasRowHtml);
 		var $panel = $('#aliases-panel');
@@ -984,6 +986,20 @@ CCH.Objects.Publish.UI = function () {
 
 			// Item ID
 			$itemIdInput.val(id);
+			
+			//Aliases
+			$.ajax({
+				url: CCH.CONFIG.contextPath + '/data/alias/item/' + id,
+				method: "GET",
+				success: function(data){
+					data.each(function(alias) {
+						me.createAliasRow(alias.id);
+					});
+				},
+				error: function() {
+					
+				}
+			});
 
 			$imageGenButton.removeAttr(CCH.CONFIG.strings.disabled);
 
@@ -1206,6 +1222,35 @@ CCH.Objects.Publish.UI = function () {
 			}
 		});
 	};
+	
+	me.saveAlias = function (args) {
+		args = args || {};
+
+		var alias = args.alias,
+			callbacks = args.callbacks || {
+				success: [],
+				error: []
+			},
+			method = "POST",
+			url = CCH.CONFIG.contextPath + '/data/alias/';
+
+		$.ajax({
+			url: url,
+			method: method,
+			data: JSON.stringify(alias),
+			contentType: "application/json; charset=utf-8",
+			success: function (obj) {
+				callbacks.success.each(function (cb) {
+					cb(obj);
+				});
+			},
+			error: function (obj) {
+				callbacks.error.each(function (cb) {
+					cb(obj);
+				});
+			}
+		});
+	};
 
 	me.updateAttributesUsingDescribeFeaturetype = function (args) {
 		args = args || {};
@@ -1299,6 +1344,10 @@ CCH.Objects.Publish.UI = function () {
 					url: CCH.CONFIG.contextPath + '/data/item/' + id,
 					method: 'DELETE',
 					success: function () {
+						$.ajax({
+							url: CCH.CONFIG.contextPath + '/data/alias/item/' + id,
+							method: 'DELETE'
+						});
 						window.location = CCH.CONFIG.contextPath + '/publish/item/';
 					},
 					error: function (jqXHR, err, errTxt) {
@@ -1540,7 +1589,7 @@ CCH.Objects.Publish.UI = function () {
 	});
 	
 	$aliasAddButton.on(CCH.CONFIG.strings.click, function() {
-		me.createAliasRow();
+		me.createAliasRow(null);
 	});
 
 	$buttonSave.on(CCH.CONFIG.strings.click, function () {
@@ -1552,26 +1601,6 @@ CCH.Objects.Publish.UI = function () {
 		var performSave = function () {
 			item = me.buildItemFromForm();
 			
-			//Save Aliases
-			$('.alias-panel .panel-body ul > li div.well').each(function (idx, panel) {
-				var $panel = $(panel),
-				name = $panel.find('>div:nth-child(2) input').val().trim();
-				var invalidChars = name.match("(?!([\\w|-])).");
-
-				if(invalidChars != null){
-					for(var i = 0; i < invalidChars.count(); i++){
-						name = name.replace(invalidChars[i], "");
-					}
-				}
-
-				var alias = {
-					name: name,
-					itemId: ""
-				};
-
-				console.log("Saving " + alias.name + " with ID " + alias.id);
-			});
-						
 			//Save Item
 			me.saveItem({
 				item: item,
@@ -1583,18 +1612,27 @@ CCH.Objects.Publish.UI = function () {
 								id = $itemIdInput.val();
 							}
 							
-							$(window).on('generate.image.complete', function (evt, id) {
-								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
+							//Delete all aliases for this item and then re-save the ones we still have
+							$.ajax({
+								url: CCH.CONFIG.contextPath + '/data/alias/item/' + id,
+								method: "DELETE",
+								success: function(){
+									if($('.alias-panel .panel-body ul > li div.well').length > 0){
+										me.saveItemAliases(id);
+									} else {
+										$(window).on('generate.image.complete', function (evt, id) {
+											window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
+										});
+
+										// Do not image gen if no bbox
+										if ([$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()].join('')) {
+											CCH.ui.generateImage(id);
+										} else {
+											window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
+										}
+									}
+								}
 							});
-							
-							// Do not image gen if no bbox
-							if ([$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()].join('')) {
-								CCH.ui.generateImage(id);
-							} else {
-								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
-							}
-							
-							
 						}
 					],
 					error: [
@@ -2146,7 +2184,72 @@ CCH.Objects.Publish.UI = function () {
 			});
 		});
 	};
+	
+	me.saveItemAliases = function(id) {
+		//Save Aliases
+		var savedAliases = [];
+		for(var i = $('.alias-panel .panel-body ul > li div.well').length - 1; i >= 0; i--){
+			var $panel = $($('.alias-panel .panel-body ul > li div.well')[i]),
+			name = $panel.find('>div:nth-child(2) input').val().trim();
+			var invalidChars = name.match(ALIAS_NAME_REGEX);
+
+			//Remove Invalid Characters
+			if(invalidChars != null){
+				var replace = new RegExp(ALIAS_NAME_REGEX, 'g');
+				name = name.replace(replace, '');
+			}
+
+			var alias = {
+				id: name,
+				item_id: id
+			};
+
+			//Don't save duplicate aliases
+			if(savedAliases.indexOf(alias) < 0){
+				savedAliases.push(alias);
+				var saveConfig = {
+					alias: alias,
+					callbacks: {
+						success: [],
+						error: []
+					}
+				};
+
+				//Add a callback to the last alias save to refresh the page and generate the thumbnail
+				if(i == 0){
+					saveConfig.callbacks.success.push(function() {
+						$(window).on('generate.image.complete', function (evt, id) {
+							window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
+						});
+
+						// Do not image gen if no bbox
+						if ([$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()].join('')) {
+							CCH.ui.generateImage(id);
+						} else {
+							window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
+						}
+					});
+				}
+
+				//Save alias
+				me.saveAlias(saveConfig);
+			}
+		}
+	}
         
+	me.loadAliases = function() {
+		$.ajax({
+			url: CCH.baseUrl + "/data/alias/",
+			type: 'GET',
+			success: function (data){
+				console.log("gotem");
+				me.allAliasList = data;
+			},
+			error: function() {
+				window.alert('Unable to load aliases. Please contact CCH admin team.');
+			}
+		});
+	}
 
 	me.initializeResourceSorting = function () {
 		$resourceSortableContainers.sortable({

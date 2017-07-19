@@ -167,7 +167,7 @@
                             Create Raster Layer
                         </button>
 						<button type="button" id="publish-button-manage-aliases" class="btn btn-lg btn-success">
-                            Manage Aliases
+                            Manage All Aliases
                         </button>	
                         <button type="button" id="publish-button-save" class="btn btn-lg btn-success" disabled="disabled">
                             Save
@@ -718,7 +718,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" id="alias-modal-close-button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title">Manage Aliases</h4>
+                        <h4 class="modal-title">Manage All Aliases</h4>
                     </div>
                     <div class="modal-body">
                         <div class="list-group">

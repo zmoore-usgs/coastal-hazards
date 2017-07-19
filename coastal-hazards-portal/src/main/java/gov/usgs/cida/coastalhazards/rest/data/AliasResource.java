@@ -47,10 +47,10 @@ public class AliasResource {
 			List<Alias> aliases = manager.loadAll();
 			Gson gson = GsonUtil.getDefault();
 			
-			if(aliases != null && aliases.size() > 0){
+			if(aliases != null){
 			    response = Response.ok(gson.toJson(aliases), MediaType.APPLICATION_JSON_TYPE).build();
 			} else {
-			    throw new NotFoundException();
+				throw new Error();
 			}
 		}
 		return response;
@@ -179,15 +179,13 @@ public class AliasResource {
 		Response response;
 		Alias alias = Alias.fromJSON(content);
 		
-		String aliasId;
+		String aliasId = alias != null ? alias.getId() : null;
 		
 		try (AliasManager aliasManager = new AliasManager()) {
 			Alias savedAlias = aliasManager.load(alias.getId());
 			
 			if(savedAlias == null){
 			    aliasId = aliasManager.save(alias);
-			} else {
-			    throw new BadRequestException();
 			}
 		}
 		
@@ -200,19 +198,6 @@ public class AliasResource {
 		return response;
 	}
 	
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-	@PUT
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateAlias(String content, @Context HttpServletRequest request) {
-		Response response = null;
-		Alias newAlias = Alias.fromJSON(content);
-				
-		response = updateAlias(newAlias.getId(), content, request);
-		
-		return response;
-	}
-
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@PUT
 	@Path("/{id}")
