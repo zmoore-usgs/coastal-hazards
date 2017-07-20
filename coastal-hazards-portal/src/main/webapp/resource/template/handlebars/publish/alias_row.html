@@ -1,17 +1,11 @@
 <li class="ui-state-default">
-	<div class="well well-small">
-		<div class="pull-right aliasrow-closebutton">
-			<i class="fa fa-times"></i>
-		</div>
-		
-		<div class="row">
-			<label>Name (Accepted Characters: Letters, Numbers, and '-')</label>
-			<input type="text" maxlength="{{this.titleInputMaxLength}}" class="form-control panel-item-name" value="{{this.id}}" />
-		</div>
-		<div class="row">
-			<label>Item ID</label>
-			<input type="text" maxlength="{{this.linkInputMaxLength}}" class="form-control panel-item-id" value="{{this.item_id}}" disabled="disabled" />
+	<div class="well well-small alias-modal-row">
+		<div class="alias-modal-display-row">
+			<label class="">Name:&nbsp;</label>
+			<span class="alias-modal-display-name">{{this.id}}</span>
+			<br/>
+			<label>Item:&nbsp;</label>
+			<span class="alias-modal-display-item">{{this.item_id}}</span>
 		</div>
 	</div>
-
 </li>

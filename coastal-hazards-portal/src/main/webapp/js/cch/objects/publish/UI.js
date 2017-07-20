@@ -54,11 +54,7 @@ CCH.Objects.Publish.UI = function () {
 		$alertModalTitle = $alertModal.find('.modal-title'),
 		$alertModalBody = $alertModal.find('.modal-body'),
 		$alertModalFooter = $alertModal.find('.modal-footer'),
-		$aliasModal = $('#alias-modal'),
 		$itemAliasList = $('#sortable-aliases'),
-		$aliasModalSubmitButton = $('#alias-modal-submit-btn'),
-		$aliasModalPopButton = $('#alias-modal-populate-button'),
-		$aliasAddButton = $('#form-publish-alias-button-add'),
 		$vectorModal = $('#vector-modal'),
 		$vectorModalSubmitButton = $('#vector-modal-submit-btn'),
 		$vectorModalPopButton = $('#vector-modal-populate-button'),
@@ -78,6 +74,11 @@ CCH.Objects.Publish.UI = function () {
 		$buttonLogout = $('#publish-button-logout'),
 		$buttonViewAll = $('#publish-button-view-all'),
 		$buttonManageAliases = $('#publish-button-manage-aliases'),
+		$aliasModalAddButton = $('#form-publish-alias-modal-button-add'),
+		$aliasModal = $('#alias-modal'),
+		$aliasModalList = $('#sortable-modal-aliases'),
+		$aliasModalSubmitButton = $('#alias-modal-submit-btn'),
+		$aliasModalPopButton = $('#alias-modal-populate-button'),
 		$buttonCreateVectorLayer = $('#publish-button-create-vector-layer'),
 		$buttonCreateRasterLayer = $('#publish-button-create-raster-layer'),
 		$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
@@ -108,10 +109,10 @@ CCH.Objects.Publish.UI = function () {
 		$editingEnabled = false;
 
 	const ALIAS_NAME_REGEX = "(?!([A-Z|a-z|0-9|-])).";
-	
+	me.loadedAllAliases = false;
 	me.allAliasList = [];
-	
-	me.templateNames = ["publication_row", "item_list", "alias_row"];
+	me.visibleAliasList = [];
+	me.templateNames = ["publication_row", "item_list", "alias_row", "alias_modal_list_row"];
 	me.templates = {};
 	
 	me.createHelpPopover = function ($content, $element) {
@@ -144,7 +145,7 @@ CCH.Objects.Publish.UI = function () {
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $descriptionTinyTextArea,
 			$downloadLinkTextArea, $typeSb, $attributeSelect, $attributeSelectHelper,
-			$srcWfsServiceInput, $srcWfsServiceParamInput, $aliasAddButton,
+			$srcWfsServiceInput, $srcWfsServiceParamInput, 
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $proxyWmsServiceParamInput,
 			$ribbonableCb, $showChildrenCb, $itemType, $name,
@@ -195,7 +196,6 @@ CCH.Objects.Publish.UI = function () {
                             $item.removeAttr(CCH.CONFIG.strings.disabled);
 			});
 		$editingEnabled = true;
-		$aliasAddButton.prop(CCH.CONFIG.strings.disabled, false);
 		$aliasModalPopButton.prop("disabled", false);
 		
 		if($newVectorLayerId !== null){
@@ -218,8 +218,7 @@ CCH.Objects.Publish.UI = function () {
 		$itemType.val('aggregation');
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $typeSb,
-			$attributeSelect, $aliasAddButton,
-			$srcWfsServiceInput, $srcWfsServiceParamInput,
+			$attributeSelect, $srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
 			$proxyWmsServiceParamInput, $ribbonableCb, $name, $wfsServerHelpButton,
@@ -359,27 +358,6 @@ CCH.Objects.Publish.UI = function () {
 				// TODO- What  goes into an agregation type? Anything?
 				// TODO- What validation goes into a template type? Anything?
 			}
-			
-			//Validate alias names
-			var uniqueNames = [];
-			$('.alias-panel .panel-body ul > li div.well').each(function (idx, panel) {
-				var $panel = $(panel),
-				name = $panel.find('>div:nth-child(2) input').val().trim();
-				var invalidChars = name.match(ALIAS_NAME_REGEX);
-				
-				if(invalidChars != null && invalidChars.count() > 0){
-					errors.push("Alias name: " + name + " contains invalid characters.");
-					var replace = new RegExp(ALIAS_NAME_REGEX, 'g');
-					name = name.replace(replace, '');
-				}
-				
-				if(uniqueNames.indexOf(name) < 0){
-					uniqueNames.push(name);
-				} else {
-					var errorMessage = "Duplicate aliases detected after removing invalid characters. Name: " + name;
-					errors.push(errorMessage);
-				}
-			});
 			
 			if (me.isBlank($titleFullTextArea)) {
 				errors.push('Full title not provided');
@@ -864,6 +842,107 @@ CCH.Objects.Publish.UI = function () {
 		}
 	};
 	
+	me.createModalAliasRow = function(alias, newAlias) {
+		var aliasRowHtml = CCH.ui.templates.alias_modal_list_row({
+			id: alias.id,
+			item_id: alias.item_id
+		});
+		var $rowObject = $(aliasRowHtml);
+		var $panel = $('#all-alias-panel');
+		var $panelBodyListContainer = $panel.find('.panel-body > ul');
+		
+		if(newAlias){
+			$rowObject.find('.alias-modal-row-button-edit').removeClass("fa-pencil");
+			$rowObject.find('.alias-modal-edit-row').show();
+		}
+		
+		$panelBodyListContainer.prepend($rowObject);
+		
+		//Add listeners
+		$rowObject.find('.alias-modal-row-button-container .alias-modal-row-button-edit').on('click', function(evt) {
+			//Toggle edit row
+			if(!$(evt.target).parent().parent().parent().find('.alias-modal-edit-row').is(':visible')){
+				$(evt.target).parent().parent().parent().find('.alias-modal-edit-row').slideDown("fast");
+				$(evt.target).removeClass("fa-pencil");
+				$(evt.target).addClass("fa-ban");
+			} else {
+				$(evt.target).parent().parent().parent().find('.alias-modal-edit-row').slideUp("fast", function() {
+					//Reset Edit Fields once the slide has completed
+					$(evt.target).parent().parent().parent().find('.alias-modal-item-name').val($(evt.target).parent().parent().parent().find('.alias-modal-display-name').text());
+					$(evt.target).parent().parent().parent().find('.alias-modal-item-item').val($(evt.target).parent().parent().parent().find('.alias-modal-display-item').text());
+				});
+				$(evt.target).parent().parent().find('alias-modal-error-container').hide();
+				$(evt.target).removeClass("fa-ban");
+				$(evt.target).addClass("fa-pencil");
+			}
+		});
+		
+		$rowObject.find('.alias-modal-row-button-trash').on('click', function(evt) {
+			me.deleteAlias({id: $(evt.target).parent().parent().parent().find('.alias-modal-item-name').val()});
+			$(evt.target).parent().parent().parent().remove();
+		});
+		
+		$rowObject.find('.alias-modal-row-button-save').on('click', function(evt) {
+			$(evt.target).parent().parent().find('alias-modal-error-container').hide();
+			
+			//Build alias object
+			var alias = {};
+			alias.id = $(evt.target).parent().parent().find('.alias-modal-item-name').val();
+			alias.item_id = $(evt.target).parent().parent().find('.alias-modal-item-item').val();
+			
+			//Validate
+			var errorString = "";
+			//Minimum Lengths
+			if(alias.id == "" || alias.item_id == ""){
+				errorString = "Field cannot be empty.";
+			}
+			
+			//Characters
+			var invalidParts = alias.id.match(ALIAS_NAME_REGEX);
+			
+			if(invalidParts != null && invalidParts.length > 0){
+				errorString = "Name contains invalid characters";
+			}
+			
+			//Uniqueness
+			me.allAliasList.each(function(entry) {
+				if(alias.id == entry.id){
+					errorString = "There is already an alias using this name.";
+				}
+			});
+			
+			//If we're invalid then don't continue saving
+			if(!errorString == ""){ 
+				$(evt.target).parent().parent().find('alias-modal-error-container').show();
+				$(evt.target).parent().parent().find('alias-modal-error-container .alias-modal-error-text').text("Error: " + errorStirng);
+				return;
+			}
+			
+			//Delete original alias this row reprsented
+			me.deleteAlias({
+				id: $(evt.target).parent().parent().parent().find('.alias-modal-display-name').text(),
+				callbacks: {
+					success: [function(){
+						//Save current alias
+						me.saveAlias({alias: alias});
+						me.allAliasList.push(alias);
+
+						//Update display row
+						$(evt.target).parent().parent().parent().find('.alias-modal-display-name').text(alias.id);
+						$(evt.target).parent().parent().parent().find('.alias-modal-display-item').text(alias.item_id);
+
+						//Close the edit slider
+						$(evt.target).parent().parent().parent().find('.alias-modal-row-button-container .alias-modal-row-button-edit').click();	
+					}]
+				}
+			});
+		});
+		
+		$rowObject.find('.alias-modal-item-name').on("blur", function(evt) {
+			evt.target.value = evt.target.value.trim();
+		});
+	};
+	
 	me.createAliasRow = function(id) {
 		var aliasRowHtml = CCH.ui.templates.alias_row({
 			id: id != null ? id : "",
@@ -873,14 +952,6 @@ CCH.Objects.Publish.UI = function () {
 		var $panel = $('#aliases-panel');
 		var $panelBodyListContainer = $panel.find('.panel-body > ul');
 		$panelBodyListContainer.prepend($rowObject);
-		
-		$rowObject.find('.panel-item-name').on("blur", function(evt) {
-			evt.target.value = evt.target.value.trim();
-		});
-		
-		$rowObject.find('.aliasrow-closebutton').on(CCH.CONFIG.strings.click, function (evt) {
-			$(evt.target).closest('.well').remove();
-		});
 		
 		return $rowObject;
 	};
@@ -1101,7 +1172,7 @@ CCH.Objects.Publish.UI = function () {
 			}
 			
 			[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
-					$wmsServerHelpButton, $aliasAddButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
+					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
 					$proxyWmsCheckButton, $isFeaturedCB, $downloadLinkTextArea,
 					$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $ribbonableCb,
 					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
@@ -1587,10 +1658,6 @@ CCH.Objects.Publish.UI = function () {
 	$buttonLogout.on(CCH.CONFIG.strings.click, function () {
 		CCH.Auth.logout();
 	});
-	
-	$aliasAddButton.on(CCH.CONFIG.strings.click, function() {
-		me.createAliasRow(null);
-	});
 
 	$buttonSave.on(CCH.CONFIG.strings.click, function () {
 		var errors = me.validateForm.call(this),
@@ -1612,27 +1679,16 @@ CCH.Objects.Publish.UI = function () {
 								id = $itemIdInput.val();
 							}
 							
-							//Delete all aliases for this item and then re-save the ones we still have
-							$.ajax({
-								url: CCH.CONFIG.contextPath + '/data/alias/item/' + id,
-								method: "DELETE",
-								success: function(){
-									if($('.alias-panel .panel-body ul > li div.well').length > 0){
-										me.saveItemAliases(id);
-									} else {
-										$(window).on('generate.image.complete', function (evt, id) {
-											window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
-										});
-
-										// Do not image gen if no bbox
-										if ([$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()].join('')) {
-											CCH.ui.generateImage(id);
-										} else {
-											window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
-										}
-									}
-								}
+							$(window).on('generate.image.complete', function (evt, id) {
+								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
 							});
+
+							// Do not image gen if no bbox
+							if ([$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()].join('')) {
+								CCH.ui.generateImage(id);
+							} else {
+								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
+							}
 						}
 					],
 					error: [
@@ -1684,7 +1740,21 @@ CCH.Objects.Publish.UI = function () {
 	});
 	
 	$buttonManageAliases.on(CCH.CONFIG.strings.click, function() {
+		$aliasModalList.empty();
+		
+		me.allAliasList.each(function(alias){
+			me.createModalAliasRow(alias, false);
+		});
+		
 		$aliasModal.modal(CCH.CONFIG.strings.show);
+		if(!me.loadedAllAliases){
+			me.loadedAllAliases = true;
+			me.loadAllAliases();
+		}
+	});
+	
+	$aliasModalAddButton.on(CCH.CONFIG.strings.click, function() {
+		me.createModalAliasRow({id: "", item_id: ""}, true);
 	});
 	
 	$buttonCreateVectorLayer.on(CCH.CONFIG.strings.click, function() {
@@ -2185,65 +2255,27 @@ CCH.Objects.Publish.UI = function () {
 		});
 	};
 	
-	me.saveItemAliases = function(id) {
-		//Save Aliases
-		var savedAliases = [];
-		for(var i = $('.alias-panel .panel-body ul > li div.well').length - 1; i >= 0; i--){
-			var $panel = $($('.alias-panel .panel-body ul > li div.well')[i]),
-			name = $panel.find('>div:nth-child(2) input').val().trim();
-			var invalidChars = name.match(ALIAS_NAME_REGEX);
-
-			//Remove Invalid Characters
-			if(invalidChars != null){
-				var replace = new RegExp(ALIAS_NAME_REGEX, 'g');
-				name = name.replace(replace, '');
-			}
-
-			var alias = {
-				id: name,
-				item_id: id
-			};
-
-			//Don't save duplicate aliases
-			if(savedAliases.indexOf(alias) < 0){
-				savedAliases.push(alias);
-				var saveConfig = {
-					alias: alias,
-					callbacks: {
-						success: [],
-						error: []
-					}
-				};
-
-				//Add a callback to the last alias save to refresh the page and generate the thumbnail
-				if(i == 0){
-					saveConfig.callbacks.success.push(function() {
-						$(window).on('generate.image.complete', function (evt, id) {
-							window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
-						});
-
-						// Do not image gen if no bbox
-						if ([$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()].join('')) {
-							CCH.ui.generateImage(id);
-						} else {
-							window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
-						}
-					});
-				}
-
-				//Save alias
-				me.saveAlias(saveConfig);
-			}
-		}
-	}
-        
-	me.loadAliases = function() {
+	me.deleteAlias = function(args) {
+		args = args || {};
+		var id = args.id;
+		var callbacks = args.callbacks || {};
+		
+		$.ajax({
+			url: CCH.CONFIG.contextPath + '/data/alias/' + id,
+			method: "DELETE",
+			success: callbacks.success,
+			error: callbacks.error
+		});
+	};
+	
+	me.loadAllAliases = function() {
 		$.ajax({
 			url: CCH.baseUrl + "/data/alias/",
 			type: 'GET',
 			success: function (data){
-				console.log("gotem");
 				me.allAliasList = data;
+				me.visibleAliasList = data;
+				$buttonManageAliases.removeAttr(CCH.CONFIG.strings.disabled);
 			},
 			error: function() {
 				window.alert('Unable to load aliases. Please contact CCH admin team.');
@@ -2256,7 +2288,8 @@ CCH.Objects.Publish.UI = function () {
 			placeholder: 'ui-state-highlight'
 		});
 	};
-
+	
+	me.loadAllAliases();
 	me.initializeResourceSorting();
 	me.loadTemplates();
 

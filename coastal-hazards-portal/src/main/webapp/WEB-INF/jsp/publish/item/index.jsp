@@ -166,7 +166,7 @@
                         <button type="button" id="publish-button-create-raster-layer" class="btn btn-lg btn-success">
                             Create Raster Layer
                         </button>
-						<button type="button" id="publish-button-manage-aliases" class="btn btn-lg btn-success">
+						<button type="button" id="publish-button-manage-aliases" class="btn btn-lg btn-success" disabled="disabled">
                             Manage All Aliases
                         </button>	
                         <button type="button" id="publish-button-save" class="btn btn-lg btn-success" disabled="disabled">
@@ -201,8 +201,7 @@
 												<input type="text" class="form-control" id="form-publish-item-id" placeholder="Item ID" disabled="disabled" />
 												<div id="aliases-panel" class="alias-panel panel panel-default">
 													<div class="panel-heading">
-														<button id="form-publish-alias-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" disabled="disabled">Add</button>
-														<h3 class="panel-title">Aliases</h3>
+														<h3 class="panel-title">Linked Aliases</h3>
 													</div>
 													<div class="panel-body">
 														<ul id="sortable-aliases" class="resource-list-container-sortable">
@@ -722,13 +721,13 @@
                     </div>
                     <div class="modal-body">
                         <div class="list-group">
-							<div id="aliases-panel" class="resource-panel panel panel-default">
+							<div id="all-alias-panel" class="resource-panel panel panel-default">
 								<div class="panel-heading">
 									<button id="form-publish-alias-modal-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" >Add</button>
 									<h3 class="panel-title">Aliases</h3>
 								</div>
 								<div class="panel-body">
-									<ul id="sortable-aliases" class="resource-list-container-sortable">
+									<ul id="sortable-modal-aliases" class="resource-list-container-sortable">
 										<%-- Added programatically --%>
 									</ul>
 								</div>
