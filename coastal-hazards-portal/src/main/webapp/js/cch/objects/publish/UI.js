@@ -858,90 +858,219 @@ CCH.Objects.Publish.UI = function () {
 		
 		$panelBodyListContainer.prepend($rowObject);
 		
-		//Add listeners
+		//Add Event Listeners
+		//Edit Button Click
 		$rowObject.find('.alias-modal-row-button-container .alias-modal-row-button-edit').on('click', function(evt) {
-			//Toggle edit row
-			if(!$(evt.target).parent().parent().parent().find('.alias-modal-edit-row').is(':visible')){
-				$(evt.target).parent().parent().parent().find('.alias-modal-edit-row').slideDown("fast");
+			var $aliasModalEditRow = $(evt.target).parent().parent().parent().find('.alias-modal-edit-row'),
+				$aliasModalEditItem = $(evt.target).parent().parent().parent().find('.alias-modal-item-item'),
+				$aliasModalEditName = $(evt.target).parent().parent().parent().find('.alias-modal-item-name'),
+				$aliasModalDisplayItem = $(evt.target).parent().parent().parent().find('.alias-modal-display-item'),
+				$aliasModalDisplayName = $(evt.target).parent().parent().parent().find('.alias-modal-display-name'),
+				$aliasModalErrorContainer = $(evt.target).parent().parent().find('alias-modal-error-container');
+			
+			//Toggle UI Features
+			if(!$aliasModalEditRow .is(':visible')){
+				//Show edit row
+				$aliasModalEditRow .slideDown("fast");
+				
+				//Change icons
 				$(evt.target).removeClass("fa-pencil");
 				$(evt.target).addClass("fa-ban");
 			} else {
-				$(evt.target).parent().parent().parent().find('.alias-modal-edit-row').slideUp("fast", function() {
+				//Hide edit row
+				$aliasModalEditRow .slideUp("fast", function() {
 					//Reset Edit Fields once the slide has completed
-					$(evt.target).parent().parent().parent().find('.alias-modal-item-name').val($(evt.target).parent().parent().parent().find('.alias-modal-display-name').text());
-					$(evt.target).parent().parent().parent().find('.alias-modal-item-item').val($(evt.target).parent().parent().parent().find('.alias-modal-display-item').text());
+					$aliasModalEditItem.val($aliasModalDisplayItem.text());
+					$aliasModalEditName.val($aliasModalDisplayName.text());
+					
+					//Hide error messages
+					$aliasModalErrorContainer.hide();
 				});
-				$(evt.target).parent().parent().find('alias-modal-error-container').hide();
+				
+				//Reset icons
 				$(evt.target).removeClass("fa-ban");
 				$(evt.target).addClass("fa-pencil");
 			}
 		});
 		
 		$rowObject.find('.alias-modal-row-button-trash').on('click', function(evt) {
-			me.deleteAlias({id: $(evt.target).parent().parent().parent().find('.alias-modal-item-name').val()});
-			$(evt.target).parent().parent().parent().remove();
+			var $aliasModalDisplayName = $(evt.target).parent().parent().parent().find('.alias-modal-display-name');
+			var isNewAlias = $aliasModalDisplayName.text() == "";
+			var $aliasRow = $(evt.target).parent().parent().parent();
+			
+			//Dlete the alias from the DB if it is saved already and then remove the row
+			if(!isNewAlias){
+				var deleteArgs = {
+					id: $aliasModalDisplayName.text(),
+					callbacks:  {
+						success: [function(){
+							$aliasRow.remove();
+						}]
+					}
+				};
+				me.deleteModalAlias(deleteArgs);
+			} else {
+				//If we don't need to delete from the db then just remove the row
+				$aliasRow.remove();
+			}
 		});
 		
 		$rowObject.find('.alias-modal-row-button-save').on('click', function(evt) {
-			$(evt.target).parent().parent().find('alias-modal-error-container').hide();
+			var	$aliasModalEditItem = $(evt.target).parent().parent().parent().find('.alias-modal-item-item'),
+				$aliasModalEditName = $(evt.target).parent().parent().parent().find('.alias-modal-item-name'),
+				$aliasModalDisplayItem = $(evt.target).parent().parent().parent().find('.alias-modal-display-item'),
+				$aliasModalDisplayName = $(evt.target).parent().parent().parent().find('.alias-modal-display-name'),
+				$aliasModalErrorContainer = $(evt.target).parent().parent().find('alias-modal-error-container'),
+				$aliasModalErrorText = $(evt.target).parent().parent().find('.alias-modal-error-container .alias-modal-error-text'),
+				$aliasModalEditButton = $(evt.target).parent().parent().parent().find('.alias-modal-row-button-container .alias-modal-row-button-edit');
+				
+			//Clear old validation errors
+			$aliasModalErrorContainer.hide();
 			
-			//Build alias object
-			var alias = {};
-			alias.id = $(evt.target).parent().parent().find('.alias-modal-item-name').val();
-			alias.item_id = $(evt.target).parent().parent().find('.alias-modal-item-item').val();
+			//Build original alias object from display fields
+			var oldAlias = {};
+			oldAlias.id = $aliasModalDisplayName.text();
+			oldAlias.item_id = $aliasModalDisplayItem.text();
 			
-			//Validate
-			var errorString = "";
-			//Minimum Lengths
-			if(alias.id == "" || alias.item_id == ""){
-				errorString = "Field cannot be empty.";
-			}
+			//If the alias doesn't already have an ID then it's new
+			var isNewAlias = oldAlias.id == "";
 			
-			//Characters
-			var invalidParts = alias.id.match(ALIAS_NAME_REGEX);
+			//Build new alias object from edit fields
+			var newAlias = {};
+			newAlias.id = $aliasModalEditName.val();
+			newAlias.item_id = $aliasModalEditItem.val();
 			
-			if(invalidParts != null && invalidParts.length > 0){
-				errorString = "Name contains invalid characters";
-			}
-			
-			//Uniqueness
-			me.allAliasList.each(function(entry) {
-				if(alias.id == entry.id){
-					errorString = "There is already an alias using this name.";
-				}
-			});
-			
-			//If we're invalid then don't continue saving
-			if(!errorString == ""){ 
-				$(evt.target).parent().parent().find('alias-modal-error-container').show();
-				$(evt.target).parent().parent().find('alias-modal-error-container .alias-modal-error-text').text("Error: " + errorStirng);
+			//If there are no changes then just close the edit form
+			if(oldAlias == newAlias){
+				$aliasModalEditButton.click();
 				return;
 			}
 			
-			//Delete original alias this row reprsented
-			me.deleteAlias({
-				id: $(evt.target).parent().parent().parent().find('.alias-modal-display-name').text(),
+			//Validate
+			var errorString = "";
+			
+			//Minimum Lengths
+			if(newAlias.id == "" || newAlias.item_id == ""){
+				errorString = (newAlias.id == "" ? "Name" : "Item ID") + " cannot be empty.";
+			}
+			
+			//Characters
+			if(errorString == ""){
+				var invalidParts = newAlias.id.match(ALIAS_NAME_REGEX);
+			
+				if(invalidParts != null && invalidParts.length > 0){
+					errorString = "Name contains invalid characters";
+				}
+			}
+			
+			//Uniqueness
+			if(errorString == ""){
+				me.allAliasList.each(function(entry) {
+					if(newAlias.id == entry.id && alias.item_id != entry.item_id){
+						errorString = "There is already an alias using this name.";
+					}
+				});
+			}
+			
+			//If we're invalid then don't continue saving
+			if(!errorString == ""){ 
+				$aliasModalErrorContainer.show();
+				$aliasModalErrorText.text(errorString);
+				return;
+			}
+			
+			//Build save argemnts and callbacks
+			var saveArgs = {
+				alias: alias,
 				callbacks: {
 					success: [function(){
-						//Save current alias
-						me.saveAlias({alias: alias});
-						me.allAliasList.push(alias);
-
 						//Update display row
-						$(evt.target).parent().parent().parent().find('.alias-modal-display-name').text(alias.id);
-						$(evt.target).parent().parent().parent().find('.alias-modal-display-item').text(alias.item_id);
+						$aliasModalDisplayName.text(alias.id);
+						$aliasModalDisplayItem.text(alias.item_id);
 
 						//Close the edit slider
-						$(evt.target).parent().parent().parent().find('.alias-modal-row-button-container .alias-modal-row-button-edit').click();	
+						$aliasModalEditButton.click();
 					}]
 				}
-			});
+			}
+			
+			//Delete original alias this row reprsented and save the new one after
+			if(!isNewAlias){
+				me.deleteModalAlias({
+					id: oldAlias.id,
+					callbacks:  {
+						success: [function(){
+							me.saveEditedAlias(saveArgs);
+						}]
+					}
+				});
+			} else {
+				//If this is a new alias then just save it
+				me.saveEditedAlias(saveArgs);
+			}
 		});
 		
+		//Add listeners to always trim the item ID and name fields
 		$rowObject.find('.alias-modal-item-name').on("blur", function(evt) {
 			evt.target.value = evt.target.value.trim();
 		});
+		
+		$rowObject.find('.alias-modal-item-item').on("blur", function(evt) {
+			evt.target.value = evt.target.value.trim();
+		});
 	};
+	
+	me.deleteModalAlias = function(args) {
+		var args = args || {};
+		var id = args.id;
+		var callbacks = args.callbacks || {
+			success: [],
+			error: []
+		};
+		
+		//Add a success callback to remove the alias from allAliasList before anything else
+		callbacks.success.unshift(function(){
+			//Remove the deleted alias from the alias list
+			var removeIndex = null;
+			for(var i = 0; i < me.allAliasList.length; i++){
+				if(me.allAliasList[i].id == id){
+					removeIndex = i;
+					break;
+				}
+			}
+			if(removeIndex != null){
+				me.allAliasList.splice(i, 1);	
+			}
+		});
+		
+		//Delete the alias if the id is valid
+		if(id != ""){
+			me.deleteAlias({
+				id: id,
+				callbacks: args.callbacks
+			});	
+		}
+	}
+	
+	me.saveEditedAlias = function(args) {
+		var args = args || {};
+		var alias = args.alias;
+		var callbacks = args.callbacks || {
+			success: [],
+			error: []
+		};
+		
+		//Add a default callback to save the saved alias to the alias list
+		callbacks.success.unshift(function(){
+			me.allAliasList.push(alias);
+		});
+		
+		//Save current alias
+		me.saveAlias({
+			alias: alias,
+			callbacks: callbacks
+		});	
+	}
 	
 	me.createAliasRow = function(id) {
 		var aliasRowHtml = CCH.ui.templates.alias_row({
@@ -2236,6 +2365,25 @@ CCH.Objects.Publish.UI = function () {
 	    } else {
 		me.lockTitlesResourcesMetadata();
 	    }
+	});
+	
+	//When the alias modal is closed reload the item alias list
+	$('#alias-modal').on('hidden.bs.modal', function () {
+		if($itemIdInput.val() != "" && $editingEnabled){
+			$itemAliasList.empty();
+			$.ajax({
+				url: CCH.CONFIG.contextPath + '/data/alias/item/' + $itemIdInput.val(),
+				method: "GET",
+				success: function(data){
+					data.each(function(alias) {
+						me.createAliasRow(alias.id);
+					});
+				},
+				error: function() {
+
+				}
+			});
+		}
 	});
 
 	me.loadTemplates = function () {
