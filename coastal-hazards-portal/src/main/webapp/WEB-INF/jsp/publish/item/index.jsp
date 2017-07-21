@@ -172,7 +172,7 @@
                         <button type="button" id="publish-button-save" class="btn btn-lg btn-success" disabled="disabled">
                             Save
                         </button>
-                        <button type="button" id="publish-button-delete" class="btn btn-lg btn-success" disabled="disabled">
+						<button type="button" id="publish-button-delete" class="btn btn-lg btn-success" disabled="disabled">
                             Delete
                         </button>
                         <div class="btn-group">
