@@ -78,6 +78,7 @@ CCH.Objects.Publish.UI = function () {
 		$aliasModal = $('#alias-modal'),
 		$aliasModalList = $('#sortable-modal-aliases'),
 		$aliasModalPopButton = $('#alias-modal-populate-button'),
+		$aliasModalFilterButton = $('.alias-modal-filter-button'),
 		$buttonCreateVectorLayer = $('#publish-button-create-vector-layer'),
 		$buttonCreateRasterLayer = $('#publish-button-create-raster-layer'),
 		$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
@@ -2382,7 +2383,7 @@ CCH.Objects.Publish.UI = function () {
 	});
 	
 	//Filtering for aliases
-	$('.alias-modal-filter-button').on('click', function(evt) {
+	$aliasModalFilterButton.on('click', function(evt) {
 		var $nameFilter = $(evt.target).parent().parent().parent().find('.alias-modal-name-filter'),
 			$itemFilter = $(evt.target).parent().parent().parent().find('.alias-modal-item-filter');
 		
