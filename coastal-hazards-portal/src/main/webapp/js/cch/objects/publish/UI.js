@@ -77,7 +77,6 @@ CCH.Objects.Publish.UI = function () {
 		$aliasModalAddButton = $('#form-publish-alias-modal-button-add'),
 		$aliasModal = $('#alias-modal'),
 		$aliasModalList = $('#sortable-modal-aliases'),
-		$aliasModalSubmitButton = $('#alias-modal-submit-btn'),
 		$aliasModalPopButton = $('#alias-modal-populate-button'),
 		$buttonCreateVectorLayer = $('#publish-button-create-vector-layer'),
 		$buttonCreateRasterLayer = $('#publish-button-create-raster-layer'),
@@ -866,7 +865,7 @@ CCH.Objects.Publish.UI = function () {
 				$aliasModalEditName = $(evt.target).parent().parent().parent().find('.alias-modal-item-name'),
 				$aliasModalDisplayItem = $(evt.target).parent().parent().parent().find('.alias-modal-display-item'),
 				$aliasModalDisplayName = $(evt.target).parent().parent().parent().find('.alias-modal-display-name'),
-				$aliasModalErrorContainer = $(evt.target).parent().parent().find('alias-modal-error-container');
+				$aliasModalErrorContainer = $(evt.target).parent().parent().find('.alias-modal-error-container');
 			
 			//Toggle UI Features
 			if(!$aliasModalEditRow .is(':visible')){
@@ -901,7 +900,7 @@ CCH.Objects.Publish.UI = function () {
 			//Dlete the alias from the DB if it is saved already and then remove the row
 			if(!isNewAlias){
 				var deleteArgs = {
-					id: $aliasModalDisplayName.text(),
+					id: $aliasModalDisplayName.text().toLowerCase().trim(),
 					callbacks:  {
 						success: [function(){
 							$aliasRow.remove();
@@ -920,7 +919,7 @@ CCH.Objects.Publish.UI = function () {
 				$aliasModalEditName = $(evt.target).parent().parent().parent().find('.alias-modal-item-name'),
 				$aliasModalDisplayItem = $(evt.target).parent().parent().parent().find('.alias-modal-display-item'),
 				$aliasModalDisplayName = $(evt.target).parent().parent().parent().find('.alias-modal-display-name'),
-				$aliasModalErrorContainer = $(evt.target).parent().parent().find('alias-modal-error-container'),
+				$aliasModalErrorContainer = $(evt.target).parent().parent().find('.alias-modal-error-container'),
 				$aliasModalErrorText = $(evt.target).parent().parent().find('.alias-modal-error-container .alias-modal-error-text'),
 				$aliasModalEditButton = $(evt.target).parent().parent().parent().find('.alias-modal-row-button-container .alias-modal-row-button-edit');
 				
@@ -929,7 +928,7 @@ CCH.Objects.Publish.UI = function () {
 			
 			//Build original alias object from display fields
 			var oldAlias = {};
-			oldAlias.id = $aliasModalDisplayName.text();
+			oldAlias.id = $aliasModalDisplayName.text().trim().toLowerCase();
 			oldAlias.item_id = $aliasModalDisplayItem.text();
 			
 			//If the alias doesn't already have an ID then it's new
@@ -937,11 +936,11 @@ CCH.Objects.Publish.UI = function () {
 			
 			//Build new alias object from edit fields
 			var newAlias = {};
-			newAlias.id = $aliasModalEditName.val();
+			newAlias.id = $aliasModalEditName.val().trim().toLowerCase();
 			newAlias.item_id = $aliasModalEditItem.val();
 			
 			//If there are no changes then just close the edit form
-			if(oldAlias == newAlias){
+			if(JSON.stringify(oldAlias) == JSON.stringify(newAlias)){
 				$aliasModalEditButton.click();
 				return;
 			}
@@ -981,12 +980,12 @@ CCH.Objects.Publish.UI = function () {
 			
 			//Build save argemnts and callbacks
 			var saveArgs = {
-				alias: alias,
+				alias: newAlias,
 				callbacks: {
 					success: [function(){
 						//Update display row
-						$aliasModalDisplayName.text(alias.id);
-						$aliasModalDisplayItem.text(alias.item_id);
+						$aliasModalDisplayName.text(newAlias.id);
+						$aliasModalDisplayItem.text(newAlias.item_id);
 
 						//Close the edit slider
 						$aliasModalEditButton.click();
@@ -1012,7 +1011,7 @@ CCH.Objects.Publish.UI = function () {
 		
 		//Add listeners to always trim the item ID and name fields
 		$rowObject.find('.alias-modal-item-name').on("blur", function(evt) {
-			evt.target.value = evt.target.value.trim();
+			evt.target.value = evt.target.value.trim().trim().toLowerCase();
 		});
 		
 		$rowObject.find('.alias-modal-item-item').on("blur", function(evt) {
@@ -2221,11 +2220,7 @@ CCH.Objects.Publish.UI = function () {
 	var getLayerIdFromUrl = function(layerUrl){
 		return layerUrl.from(layerUrl.lastIndexOf('/') + 1);
 	};
-	
-	$aliasModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
 		
-	});
-	
 	$vectorModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
 		var $result = $('#vector-modal-result');
 		var $form = $('#vector-form');
@@ -2384,6 +2379,30 @@ CCH.Objects.Publish.UI = function () {
 				}
 			});
 		}
+	});
+	
+	//Filtering for aliases
+	$('.alias-modal-filter-button').on('click', function(evt) {
+		var $nameFilter = $(evt.target).parent().parent().parent().find('.alias-modal-name-filter'),
+			$itemFilter = $(evt.target).parent().parent().parent().find('.alias-modal-item-filter');
+		
+		$aliasModalList.empty();
+		
+		me.allAliasList.each(function(alias) {
+			var fitName = false, fitItem = false;
+			
+			if($nameFilter.val().trim() == "" || alias.id.toLowerCase().includes($nameFilter.val().trim().toLowerCase())){
+				fitName = true;
+			}
+			
+			if($itemFilter.val().trim() == "" || alias.item_id.toLowerCase().includes($itemFilter.val().trim().toLowerCase())){
+				fitItem = true;
+			}
+			
+			if(fitName && fitItem){
+				me.createModalAliasRow(alias, false);
+			}
+		});
 	});
 
 	me.loadTemplates = function () {

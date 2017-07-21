@@ -727,6 +727,19 @@
 									<h3 class="panel-title">Aliases</h3>
 								</div>
 								<div class="panel-body">
+									<div class="alias-modal-filter-container">
+										<label style="margin-left: 2px; margin-right: 3px;">Name:</label>
+										<input type="text" class="form-control alias-modal-filter-box alias-modal-name-filter" value="">
+										<label style="margin-left: 10px; margin-right: 3px;">Item:</label>
+										<input type="text" class="form-control alias-modal-filter-box alias-modal-item-filter" value="">
+										<br/>
+										<div class="alias-modal-filter-controls-container">
+											<div style="float: right;">
+												<label class="alias-modal-filter-warning">Warning: Changing filters will remove any unsaved aliases.</label>
+												<button type="button" class="btn btn-default btn-sm alias-modal-filter-button">Apply Filters</button>
+											</div>
+										</div>
+									</div>
 									<ul id="sortable-modal-aliases" class="resource-list-container-sortable">
 										<%-- Added programatically --%>
 									</ul>
