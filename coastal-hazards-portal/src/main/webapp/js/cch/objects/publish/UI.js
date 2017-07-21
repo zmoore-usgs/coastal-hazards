@@ -1869,15 +1869,8 @@ CCH.Objects.Publish.UI = function () {
 	});
 	
 	$buttonManageAliases.on(CCH.CONFIG.strings.click, function() {
-		$aliasModalList.empty();
-		
-		me.allAliasList.each(function(alias){
-			me.createModalAliasRow(alias, false);
-		});
-		
 		$aliasModal.modal(CCH.CONFIG.strings.show);
 		if(!me.loadedAllAliases){
-			me.loadedAllAliases = true;
 			me.loadAllAliases();
 		}
 	});
@@ -2444,6 +2437,11 @@ CCH.Objects.Publish.UI = function () {
 				me.allAliasList = data;
 				me.visibleAliasList = data;
 				$buttonManageAliases.removeAttr(CCH.CONFIG.strings.disabled);
+				$aliasModalList.empty();
+				me.loadedAllAliases = true;
+				me.allAliasList.each(function(alias){
+					me.createModalAliasRow(alias, false);
+				});
 			},
 			error: function() {
 				window.alert('Unable to load aliases. Please contact CCH admin team.');
