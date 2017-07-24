@@ -940,8 +940,8 @@ CCH.Objects.Publish.UI = function () {
 			newAlias.id = $aliasModalEditName.val().trim().toLowerCase();
 			newAlias.item_id = $aliasModalEditItem.val();
 			
-			//If there are no changes then just close the edit form
-			if(JSON.stringify(oldAlias) == JSON.stringify(newAlias)){
+			//If there are no changes and the fields are not empty then just close the edit form
+			if(JSON.stringify(oldAlias) == JSON.stringify(newAlias) && newAlias.id.length > 0 && newAlias.item_id.length > 0){
 				$aliasModalEditButton.click();
 				return;
 			}
@@ -990,6 +990,17 @@ CCH.Objects.Publish.UI = function () {
 
 						//Close the edit slider
 						$aliasModalEditButton.click();
+					}],
+					error: [function(err){
+						//Display the error
+						$aliasModalErrorContainer.show();
+						
+						if(err.status == 417){
+							$aliasModalErrorText.text("No Item exists with this ID.");
+						} else {
+							$aliasModalErrorText.text("An error occurred while saving the Alias.");
+						}
+						
 					}]
 				}
 			}
@@ -1068,7 +1079,10 @@ CCH.Objects.Publish.UI = function () {
 		//Save current alias
 		me.saveAlias({
 			alias: alias,
-			callbacks: callbacks
+			callbacks: {
+				success: callbacks.success,
+				error: callbacks.error
+			}
 		});	
 	}
 	

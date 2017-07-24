@@ -21,6 +21,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
+import javax.persistence.RollbackException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -187,10 +188,15 @@ public class AliasResource {
 			if(savedAlias == null){
 			    aliasId = aliasManager.save(alias);
 			}
+		} catch(RollbackException r){
+			response = Response.status(417).build();
+			return response;
+		} catch(Exception e){
+			throw new Error();
 		}
 		
 		if (null == aliasId) {
-			throw new BadRequestException();
+			throw new Error();
 		} else {
 			response = Response.ok(GsonUtil.getDefault().toJson(alias, Alias.class), MediaType.APPLICATION_JSON_TYPE).build();
 		}

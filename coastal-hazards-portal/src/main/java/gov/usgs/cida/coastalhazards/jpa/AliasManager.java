@@ -65,7 +65,8 @@ public class AliasManager implements AutoCloseable {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-	    aliasId = null;
+			aliasId = null;
+			throw ex;
         }
 	
 	return aliasId;
@@ -84,7 +85,8 @@ public class AliasManager implements AutoCloseable {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-	    aliasId = null;
+			aliasId = null;
+			throw ex;
         }
 	
 	return aliasId;
@@ -106,8 +108,9 @@ public class AliasManager implements AutoCloseable {
 	    deleted = true;
 	} catch (Exception ex) {
 	    if(transaction.isActive()){
-		transaction.rollback();
+			transaction.rollback();
 	    }
+		throw ex;
 	}
 
 	return deleted;
@@ -131,8 +134,9 @@ public class AliasManager implements AutoCloseable {
 	    deleted = true;
 	} catch (Exception ex) {
 	    if(transaction.isActive()){
-		transaction.rollback();
+			transaction.rollback();
 	    }
+		throw ex;
 	}
 
 	return deleted;
@@ -160,8 +164,9 @@ public class AliasManager implements AutoCloseable {
 	    deleted = true;
 	} catch (Exception ex) {
 	    if(transaction.isActive()){
-		transaction.rollback();
+			transaction.rollback();
 	    }
+		throw ex;
 	}
 	
 	return(deleted);
