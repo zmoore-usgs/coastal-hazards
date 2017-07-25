@@ -162,10 +162,13 @@
                         </div>
                         <button type="button" id="publish-button-create-vector-layer" class="btn btn-lg btn-success">
                             Create Vector Layer
-                        </button>	
+                        </button>    
                         <button type="button" id="publish-button-create-raster-layer" class="btn btn-lg btn-success">
                             Create Raster Layer
                         </button>
+                        <button type="button" id="publish-button-manage-aliases" class="btn btn-lg btn-success" disabled="disabled">
+                            Manage All Aliases
+                        </button>    
                         <button type="button" id="publish-button-save" class="btn btn-lg btn-success" disabled="disabled">
                             Save
                         </button>
@@ -185,70 +188,31 @@
                         <input type="hidden" id="form-publish-info-item-enabled" />
 
                         <%-- 2 column layout --%>
-
-                        <div class="flexSection">
-                            <%-- ITEM ID --%>
-                            <div id="item-id-panel" class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Item ID</h3>
-                                </div>
-                                <div class="panel-body">
-                                    <div id="form-publish-info-item-id" class="row row-id">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="form-publish-item-id" placeholder="Item ID" disabled="disabled" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <%-- FEATURES AND IMAGES --%>
-                            <div id="features-panel" class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Features/Image</h3>
-                                </div>
-                                <div class="panel-body sideBySide">
-                                    <div id="checkboxes">
-                                        <%-- Featured Item --%>
-                                        <div class="row row-id">
-                                            <div class="form-group">
-                                                <div class="checkbox">
-                                                    <input id="checkbox-featured" type="checkbox" disabled="disabled">
-                                                    <label for="checkbox-featured">Is Featured?</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <%-- Ribbonable --%>
-                                        <div class="row row-ribbonable">
-                                            <div class="form-group">
-                                                <div class="checkbox">
-                                                    <input id="form-publish-item-ribbonable" type="checkbox" disabled="disabled">
-                                                    <label for="form-publish-item-ribbonable">Ribbonable?</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <%-- Show Children --%>
-                                        <div class="row row-showchildren">
-                                            <div class="form-group">
-                                                <div class="checkbox">
-                                                    <input id="form-publish-item-showchildren" type="checkbox" disabled="disabled" checked="checked">
-                                                    <label for="form-publish-item-showchildren">Show Children?</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="imageGenerator">
-                                        <%-- ITEM IMAGE --%>
-                                        <div class="row row-id">
-                                            <img alt="Item Thumbnail" id="form-publish-info-item-image" src="" /> 
-                                        </div>
-                                        <button  id="form-publish-info-item-image-gen" class="btn btn-default" type="button" disabled="disabled">Generate</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="flexSection">
                             <div class="flexLeft">
+                                <%-- ITEM ID & Alias --%>
+                                <div id="item-id-panel" class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Item ID/Aliases</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div id="form-publish-info-item-id" class="row row-id">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="form-publish-item-id" placeholder="Item ID" disabled="disabled" />
+                                                <div id="aliases-panel" class="alias-panel panel panel-default">
+                                                    <div class="panel-heading">
+                                                        <h3 class="panel-title">Linked Aliases</h3>
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        <ul id="sortable-aliases" class="resource-list-container-sortable">
+                                                            <%-- Added programatically --%>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <%-- Services --%>
                                 <div id="services-panel" class="panel panel-default">
                                     <div class="panel-heading">
@@ -405,6 +369,51 @@
                             </div>
 
                             <div class="flexRight">
+                                <%-- FEATURES AND IMAGES --%>
+                                <div id="features-panel" class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Features/Image</h3>
+                                    </div>
+                                    <div class="panel-body sideBySide">
+                                        <div id="checkboxes">
+                                            <%-- Featured Item --%>
+                                            <div class="row row-id">
+                                                <div class="form-group">
+                                                    <div class="checkbox">
+                                                        <input id="checkbox-featured" type="checkbox" disabled="disabled">
+                                                        <label for="checkbox-featured">Is Featured?</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <%-- Ribbonable --%>
+                                            <div class="row row-ribbonable">
+                                                <div class="form-group">
+                                                    <div class="checkbox">
+                                                        <input id="form-publish-item-ribbonable" type="checkbox" disabled="disabled">
+                                                        <label for="form-publish-item-ribbonable">Ribbonable?</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <%-- Show Children --%>
+                                            <div class="row row-showchildren">
+                                                <div class="form-group">
+                                                    <div class="checkbox">
+                                                        <input id="form-publish-item-showchildren" type="checkbox" disabled="disabled" checked="checked">
+                                                        <label for="form-publish-item-showchildren">Show Children?</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="imageGenerator">
+                                            <%-- ITEM IMAGE --%>
+                                            <div class="row row-id">
+                                                <img alt="Item Thumbnail" id="form-publish-info-item-image" src="" /> 
+                                            </div>
+                                            <button  id="form-publish-info-item-image-gen" class="btn btn-default" type="button" disabled="disabled">Generate</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <%-- ITEM TYPE/ATTRIBUTE --%>
                                 <div id="item-type-panel" class="panel panel-default">
                                     <div class="panel-heading sideBySide">
@@ -574,7 +583,6 @@
                                                 </span>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -700,6 +708,47 @@
                     <div class="modal-footer">
                         <button id="raster-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Services From Layer</button>
                         <button id="raster-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="alias-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="alias-modal-close-button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Manage All Aliases</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="list-group">
+                            <div id="all-alias-panel" class="resource-panel panel panel-default">
+                                <div class="panel-heading">
+                                    <button id="form-publish-alias-modal-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" >Add</button>
+                                    <h3 class="panel-title">Aliases</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="alias-modal-filter-container">
+                                        <label style="margin-left: 2px; margin-right: 3px;">Name:</label>
+                                        <input type="text" class="form-control alias-modal-filter-box alias-modal-name-filter" value="">
+                                        <label style="margin-left: 10px; margin-right: 3px;">Item:</label>
+                                        <input type="text" class="form-control alias-modal-filter-box alias-modal-item-filter" value="">
+                                        <br/>
+                                        <div class="alias-modal-filter-controls-container">
+                                            <div style="float: right;">
+                                                <label class="alias-modal-filter-warning">Warning: Changing filters will remove any unsaved aliases.</label>
+                                                <button type="button" class="btn btn-default btn-sm alias-modal-filter-button">Apply Filters</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ul id="sortable-modal-aliases" class="resource-list-container-sortable">
+                                        <%-- Added programatically --%>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="alias-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

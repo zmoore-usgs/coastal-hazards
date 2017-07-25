@@ -54,6 +54,7 @@ CCH.Objects.Publish.UI = function () {
 		$alertModalTitle = $alertModal.find('.modal-title'),
 		$alertModalBody = $alertModal.find('.modal-body'),
 		$alertModalFooter = $alertModal.find('.modal-footer'),
+		$itemAliasList = $('#sortable-aliases'),
 		$vectorModal = $('#vector-modal'),
 		$vectorModalSubmitButton = $('#vector-modal-submit-btn'),
 		$vectorModalPopButton = $('#vector-modal-populate-button'),
@@ -62,7 +63,7 @@ CCH.Objects.Publish.UI = function () {
 		$rasterModalSubmitButton = $('#raster-modal-submit-btn'),
 		$titleModal = $('#title-modal'),
 		$titleModalContinueButton = $('#title-modal-continue-button'),
-                $resourceModal = $('#resource-modal'),
+		$resourceModal = $('#resource-modal'),
 		$resourceModalContinueButton = $('#resource-modal-continue-button'),
 		$metadataSummaryField = $('#form-publish-info-item-summary-version'),
 		$itemEnabledField = $('#form-publish-info-item-enabled'),
@@ -72,6 +73,12 @@ CCH.Objects.Publish.UI = function () {
 		$buttonDelete = $('#publish-button-delete'),
 		$buttonLogout = $('#publish-button-logout'),
 		$buttonViewAll = $('#publish-button-view-all'),
+		$buttonManageAliases = $('#publish-button-manage-aliases'),
+		$aliasModalAddButton = $('#form-publish-alias-modal-button-add'),
+		$aliasModal = $('#alias-modal'),
+		$aliasModalList = $('#sortable-modal-aliases'),
+		$aliasModalPopButton = $('#alias-modal-populate-button'),
+		$aliasModalFilterButton = $('.alias-modal-filter-button'),
 		$buttonCreateVectorLayer = $('#publish-button-create-vector-layer'),
 		$buttonCreateRasterLayer = $('#publish-button-create-raster-layer'),
 		$wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
@@ -91,18 +98,23 @@ CCH.Objects.Publish.UI = function () {
 		$isActiveStormRow = $form.find('#form-publish-info-item-active-storm'),
 		$isActiveStormChecbox = $form.find('#checkbox-isactive'),
 		$resourceSortableContainers = $('.resource-list-container-sortable'),
-                $servicePanel = $('#services-panel'),
-                $itemAttributePanel = $('#item-type-panel'),
-                $featuresPanel = $('#features-panel'),
-                $titlesPanel = $('#titles-panel'),
-                $resourcesPanel = $('#Resources-panel'),
-                $metaDataPanel = $('#metadata-panel'),
+		$servicePanel = $('#services-panel'),
+		$itemAttributePanel = $('#item-type-panel'),
+		$featuresPanel = $('#features-panel'),
+		$titlesPanel = $('#titles-panel'),
+		$resourcesPanel = $('#Resources-panel'),
+		$metaDataPanel = $('#metadata-panel'),
 		$newVectorLayerId = null,
 		$newRasterLayerId = null,
 		$editingEnabled = false;
 
+	const ALIAS_NAME_REGEX = "(?!([A-Z|a-z|0-9|-])).";
+	me.loadedAllAliases = false;
+	me.allAliasList = [];
+	me.visibleAliasList = [];
+	me.templateNames = ["publication_row", "item_list", "alias_row", "alias_modal_list_row"];
 	me.templates = {};
-
+	
 	me.createHelpPopover = function ($content, $element) {
 		$element.popover('destroy');
 		$element.popover({
@@ -133,7 +145,7 @@ CCH.Objects.Publish.UI = function () {
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $descriptionTinyTextArea,
 			$downloadLinkTextArea, $typeSb, $attributeSelect, $attributeSelectHelper,
-			$srcWfsServiceInput, $srcWfsServiceParamInput,
+			$srcWfsServiceInput, $srcWfsServiceParamInput, 
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $proxyWmsServiceParamInput,
 			$ribbonableCb, $showChildrenCb, $itemType, $name,
@@ -161,11 +173,13 @@ CCH.Objects.Publish.UI = function () {
 			$i.prop(CCH.CONFIG.strings.checked, false);
 		});
 		$editingEnabled = false;
+		$aliasModalPopButton.prop("disabled", true);
 		$vectorModalPopButton.prop("disabled", true);
 		$rasterModalPopButton.prop("disabled", true);
 		$('.form-group-keyword').not(':first').remove();
 		$('.form-group-keyword button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
 		$publicationsPanel.find('.resource-list-container-sortable').empty();
+		$itemAliasList.empty();
 		$itemImage.attr('src', '');
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
@@ -175,17 +189,14 @@ CCH.Objects.Publish.UI = function () {
 
 	me.enableNewItemForm = function () {
 		var gsBaseUrl = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources[CCH.CONFIG.strings.cidaGeoserver].proxy + 'proxied/';
-		
+				
 		$itemType.val('data');
-                
                 [$servicePanel.find('input, button'), $buttonSave, $buttonDelete]
                         .each(function ($item) {
                             $item.removeAttr(CCH.CONFIG.strings.disabled);
 			});
-                
-                
-		
 		$editingEnabled = true;
+		$aliasModalPopButton.prop("disabled", false);
 		
 		if($newVectorLayerId !== null){
 			$vectorModalPopButton.prop("disabled", false);
@@ -207,8 +218,7 @@ CCH.Objects.Publish.UI = function () {
 		$itemType.val('aggregation');
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $typeSb,
-			$attributeSelect,
-			$srcWfsServiceInput, $srcWfsServiceParamInput,
+			$attributeSelect, $srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
 			$proxyWmsServiceParamInput, $ribbonableCb, $name, $wfsServerHelpButton,
@@ -222,6 +232,7 @@ CCH.Objects.Publish.UI = function () {
 					$item.removeAttr(CCH.CONFIG.strings.disabled);
 				});
 		$editingEnabled = true;
+		$aliasModalPopButton.prop("disabled", false);
 		
 		if($newVectorLayerId !== null){
 			$vectorModalPopButton.prop("disabled", false);
@@ -288,7 +299,6 @@ CCH.Objects.Publish.UI = function () {
 				} else if ($cswServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('CSW endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
-				
 
 				if ($srcWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
 					errors.push('WFS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
@@ -348,7 +358,7 @@ CCH.Objects.Publish.UI = function () {
 				// TODO- What  goes into an agregation type? Anything?
 				// TODO- What validation goes into a template type? Anything?
 			}
-
+			
 			if (me.isBlank($titleFullTextArea)) {
 				errors.push('Full title not provided');
 			} else if ($titleFullTextArea.val().length > CCH.CONFIG.limits.summary.full.title) {
@@ -475,7 +485,7 @@ CCH.Objects.Publish.UI = function () {
 				type: pubType
 			});
 		});
-
+		
 		$('.form-group-keyword').not(':first').find('input').each(function (ind, input) {
 			keywordsArray.push($(input).val().trim());
 		});
@@ -831,6 +841,263 @@ CCH.Objects.Publish.UI = function () {
 			});
 		}
 	};
+	
+	me.createModalAliasRow = function(alias, newAlias) {
+		var aliasRowHtml = CCH.ui.templates.alias_modal_list_row({
+			id: alias.id,
+			item_id: alias.item_id
+		});
+		var $rowObject = $(aliasRowHtml);
+		var $panel = $('#all-alias-panel');
+		var $panelBodyListContainer = $panel.find('.panel-body > ul');
+		
+		if(newAlias){
+			$rowObject.find('.alias-modal-row-button-edit').removeClass("fa-pencil");
+			$rowObject.find('.alias-modal-edit-row').show();
+		}
+		
+		$panelBodyListContainer.prepend($rowObject);
+		
+		//Add Event Listeners
+		//Edit Button Click
+		$rowObject.find('.alias-modal-row-button-container .alias-modal-row-button-edit').on('click', function(evt) {
+			var $aliasModalEditRow = $(evt.target).parent().parent().parent().find('.alias-modal-edit-row'),
+				$aliasModalEditItem = $(evt.target).parent().parent().parent().find('.alias-modal-item-item'),
+				$aliasModalEditName = $(evt.target).parent().parent().parent().find('.alias-modal-item-name'),
+				$aliasModalDisplayItem = $(evt.target).parent().parent().parent().find('.alias-modal-display-item'),
+				$aliasModalDisplayName = $(evt.target).parent().parent().parent().find('.alias-modal-display-name'),
+				$aliasModalErrorContainer = $(evt.target).parent().parent().find('.alias-modal-error-container');
+			
+			//Toggle UI Features
+			if(!$aliasModalEditRow .is(':visible')){
+				//Show edit row
+				$aliasModalEditRow .slideDown("fast");
+				
+				//Change icons
+				$(evt.target).removeClass("fa-pencil");
+				$(evt.target).addClass("fa-ban");
+			} else {
+				//Hide edit row
+				$aliasModalEditRow .slideUp("fast", function() {
+					//Reset Edit Fields once the slide has completed
+					$aliasModalEditItem.val($aliasModalDisplayItem.text());
+					$aliasModalEditName.val($aliasModalDisplayName.text());
+					
+					//Hide error messages
+					$aliasModalErrorContainer.hide();
+				});
+				
+				//Reset icons
+				$(evt.target).removeClass("fa-ban");
+				$(evt.target).addClass("fa-pencil");
+			}
+		});
+		
+		$rowObject.find('.alias-modal-row-button-trash').on('click', function(evt) {
+			var $aliasModalDisplayName = $(evt.target).parent().parent().parent().find('.alias-modal-display-name');
+			var isNewAlias = $aliasModalDisplayName.text() == "";
+			var $aliasRow = $(evt.target).parent().parent().parent();
+			
+			//Dlete the alias from the DB if it is saved already and then remove the row
+			if(!isNewAlias){
+				var deleteArgs = {
+					id: $aliasModalDisplayName.text().toLowerCase().trim(),
+					callbacks:  {
+						success: [function(){
+							$aliasRow.remove();
+						}]
+					}
+				};
+				me.deleteModalAlias(deleteArgs);
+			} else {
+				//If we don't need to delete from the db then just remove the row
+				$aliasRow.remove();
+			}
+		});
+		
+		$rowObject.find('.alias-modal-row-button-save').on('click', function(evt) {
+			var	$aliasModalEditItem = $(evt.target).parent().parent().parent().find('.alias-modal-item-item'),
+				$aliasModalEditName = $(evt.target).parent().parent().parent().find('.alias-modal-item-name'),
+				$aliasModalDisplayItem = $(evt.target).parent().parent().parent().find('.alias-modal-display-item'),
+				$aliasModalDisplayName = $(evt.target).parent().parent().parent().find('.alias-modal-display-name'),
+				$aliasModalErrorContainer = $(evt.target).parent().parent().find('.alias-modal-error-container'),
+				$aliasModalErrorText = $(evt.target).parent().parent().find('.alias-modal-error-container .alias-modal-error-text'),
+				$aliasModalEditButton = $(evt.target).parent().parent().parent().find('.alias-modal-row-button-container .alias-modal-row-button-edit');
+				
+			//Clear old validation errors
+			$aliasModalErrorContainer.hide();
+			
+			//Build original alias object from display fields
+			var oldAlias = {};
+			oldAlias.id = $aliasModalDisplayName.text().trim().toLowerCase();
+			oldAlias.item_id = $aliasModalDisplayItem.text();
+			
+			//If the alias doesn't already have an ID then it's new
+			var isNewAlias = oldAlias.id == "";
+			
+			//Build new alias object from edit fields
+			var newAlias = {};
+			newAlias.id = $aliasModalEditName.val().trim().toLowerCase();
+			newAlias.item_id = $aliasModalEditItem.val();
+			
+			//If there are no changes and the fields are not empty then just close the edit form
+			if(JSON.stringify(oldAlias) == JSON.stringify(newAlias) && newAlias.id.length > 0 && newAlias.item_id.length > 0){
+				$aliasModalEditButton.click();
+				return;
+			}
+			
+			//Validate
+			var errorString = "";
+			
+			//Minimum Lengths
+			if(newAlias.id == "" || newAlias.item_id == ""){
+				errorString = (newAlias.id == "" ? "Name" : "Item ID") + " cannot be empty.";
+			}
+			
+			//Characters
+			if(errorString == ""){
+				var invalidParts = newAlias.id.match(ALIAS_NAME_REGEX);
+			
+				if(invalidParts != null && invalidParts.length > 0){
+					errorString = "Name contains invalid characters";
+				}
+			}
+			
+			//Uniqueness
+			if(errorString == ""){
+				me.allAliasList.each(function(entry) {
+					if(newAlias.id == entry.id && alias.item_id != entry.item_id){
+						errorString = "There is already an alias using this name.";
+					}
+				});
+			}
+			
+			//If we're invalid then don't continue saving
+			if(!errorString == ""){ 
+				$aliasModalErrorContainer.show();
+				$aliasModalErrorText.text(errorString);
+				return;
+			}
+			
+			//Build save argemnts and callbacks
+			var saveArgs = {
+				alias: newAlias,
+				callbacks: {
+					success: [function(){
+						//Update display row
+						$aliasModalDisplayName.text(newAlias.id);
+						$aliasModalDisplayItem.text(newAlias.item_id);
+
+						//Close the edit slider
+						$aliasModalEditButton.click();
+					}],
+					error: [function(err){
+						//Display the error
+						$aliasModalErrorContainer.show();
+						
+						if(err.status == 417){
+							$aliasModalErrorText.text("No Item exists with this ID.");
+						} else {
+							$aliasModalErrorText.text("An error occurred while saving the Alias.");
+						}
+						
+					}]
+				}
+			}
+			
+			//Delete original alias this row reprsented and save the new one after
+			if(!isNewAlias){
+				me.deleteModalAlias({
+					id: oldAlias.id,
+					callbacks:  {
+						success: [function(){
+							me.saveEditedAlias(saveArgs);
+						}]
+					}
+				});
+			} else {
+				//If this is a new alias then just save it
+				me.saveEditedAlias(saveArgs);
+			}
+		});
+		
+		//Add listeners to always trim the item ID and name fields
+		$rowObject.find('.alias-modal-item-name').on("blur", function(evt) {
+			evt.target.value = evt.target.value.trim().trim().toLowerCase();
+		});
+		
+		$rowObject.find('.alias-modal-item-item').on("blur", function(evt) {
+			evt.target.value = evt.target.value.trim();
+		});
+	};
+	
+	me.deleteModalAlias = function(args) {
+		var args = args || {};
+		var id = args.id;
+		var callbacks = args.callbacks || {
+			success: [],
+			error: []
+		};
+		
+		//Add a success callback to remove the alias from allAliasList before anything else
+		callbacks.success.unshift(function(){
+			//Remove the deleted alias from the alias list
+			var removeIndex = null;
+			for(var i = 0; i < me.allAliasList.length; i++){
+				if(me.allAliasList[i].id == id){
+					removeIndex = i;
+					break;
+				}
+			}
+			if(removeIndex != null){
+				me.allAliasList.splice(i, 1);	
+			}
+		});
+		
+		//Delete the alias if the id is valid
+		if(id != ""){
+			me.deleteAlias({
+				id: id,
+				callbacks: args.callbacks
+			});	
+		}
+	}
+	
+	me.saveEditedAlias = function(args) {
+		var args = args || {};
+		var alias = args.alias;
+		var callbacks = args.callbacks || {
+			success: [],
+			error: []
+		};
+		
+		//Add a default callback to save the saved alias to the alias list
+		callbacks.success.unshift(function(){
+			me.allAliasList.push(alias);
+		});
+		
+		//Save current alias
+		me.saveAlias({
+			alias: alias,
+			callbacks: {
+				success: callbacks.success,
+				error: callbacks.error
+			}
+		});	
+	}
+	
+	me.createAliasRow = function(id) {
+		var aliasRowHtml = CCH.ui.templates.alias_row({
+			id: id != null ? id : "",
+			item_id: $itemIdInput.val()
+		});
+		var $rowObject = $(aliasRowHtml);
+		var $panel = $('#aliases-panel');
+		var $panelBodyListContainer = $panel.find('.panel-body > ul');
+		$panelBodyListContainer.prepend($rowObject);
+		
+		return $rowObject;
+	};
 
 	me.createPublicationRow = function (link, title, type, prepend) {
 		var exists = false,
@@ -933,6 +1200,20 @@ CCH.Objects.Publish.UI = function () {
 
 			// Item ID
 			$itemIdInput.val(id);
+			
+			//Aliases
+			$.ajax({
+				url: CCH.CONFIG.contextPath + '/data/alias/item/' + id,
+				method: "GET",
+				success: function(data){
+					data.each(function(alias) {
+						me.createAliasRow(alias.id);
+					});
+				},
+				error: function() {
+					
+				}
+			});
 
 			$imageGenButton.removeAttr(CCH.CONFIG.strings.disabled);
 
@@ -1155,6 +1436,35 @@ CCH.Objects.Publish.UI = function () {
 			}
 		});
 	};
+	
+	me.saveAlias = function (args) {
+		args = args || {};
+
+		var alias = args.alias,
+			callbacks = args.callbacks || {
+				success: [],
+				error: []
+			},
+			method = "POST",
+			url = CCH.CONFIG.contextPath + '/data/alias/';
+
+		$.ajax({
+			url: url,
+			method: method,
+			data: JSON.stringify(alias),
+			contentType: "application/json; charset=utf-8",
+			success: function (obj) {
+				callbacks.success.each(function (cb) {
+					cb(obj);
+				});
+			},
+			error: function (obj) {
+				callbacks.error.each(function (cb) {
+					cb(obj);
+				});
+			}
+		});
+	};
 
 	me.updateAttributesUsingDescribeFeaturetype = function (args) {
 		args = args || {};
@@ -1248,6 +1558,10 @@ CCH.Objects.Publish.UI = function () {
 					url: CCH.CONFIG.contextPath + '/data/item/' + id,
 					method: 'DELETE',
 					success: function () {
+						$.ajax({
+							url: CCH.CONFIG.contextPath + '/data/alias/item/' + id,
+							method: 'DELETE'
+						});
 						window.location = CCH.CONFIG.contextPath + '/publish/item/';
 					},
 					error: function (jqXHR, err, errTxt) {
@@ -1496,6 +1810,8 @@ CCH.Objects.Publish.UI = function () {
 		
 		var performSave = function () {
 			item = me.buildItemFromForm();
+			
+			//Save Item
 			me.saveItem({
 				item: item,
 				callbacks: {
@@ -1509,15 +1825,13 @@ CCH.Objects.Publish.UI = function () {
 							$(window).on('generate.image.complete', function (evt, id) {
 								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
 							});
-							
+
 							// Do not image gen if no bbox
 							if ([$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()].join('')) {
 								CCH.ui.generateImage(id);
 							} else {
 								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
 							}
-							
-							
 						}
 					],
 					error: [
@@ -1566,6 +1880,17 @@ CCH.Objects.Publish.UI = function () {
 		if (id !== '') {
 			me.deleteItem(id);
 		}
+	});
+	
+	$buttonManageAliases.on(CCH.CONFIG.strings.click, function() {
+		$aliasModal.modal(CCH.CONFIG.strings.show);
+		if(!me.loadedAllAliases){
+			me.loadAllAliases();
+		}
+	});
+	
+	$aliasModalAddButton.on(CCH.CONFIG.strings.click, function() {
+		me.createModalAliasRow({id: "", item_id: ""}, true);
 	});
 	
 	$buttonCreateVectorLayer.on(CCH.CONFIG.strings.click, function() {
@@ -1903,7 +2228,7 @@ CCH.Objects.Publish.UI = function () {
 	var getLayerIdFromUrl = function(layerUrl){
 		return layerUrl.from(layerUrl.lastIndexOf('/') + 1);
 	};
-	
+		
 	$vectorModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
 		var $result = $('#vector-modal-result');
 		var $form = $('#vector-form');
@@ -2008,6 +2333,10 @@ CCH.Objects.Publish.UI = function () {
 		});
 	});	
 	
+	$aliasModalPopButton.on(CCH.CONFIG.strings.click, function(){
+		
+	});
+	
 	$vectorModalPopButton.on(CCH.CONFIG.strings.click, function(){
 		$popFromLayerInput.val($newVectorLayerId);
 		me.loadLayerInfo($popFromLayerInput.val());
@@ -2040,9 +2369,52 @@ CCH.Objects.Publish.UI = function () {
 		me.lockTitlesResourcesMetadata();
 	    }
 	});
+	
+	//When the alias modal is closed reload the item alias list
+	$('#alias-modal').on('hidden.bs.modal', function () {
+		if($itemIdInput.val() != "" && $editingEnabled){
+			$itemAliasList.empty();
+			$.ajax({
+				url: CCH.CONFIG.contextPath + '/data/alias/item/' + $itemIdInput.val(),
+				method: "GET",
+				success: function(data){
+					data.each(function(alias) {
+						me.createAliasRow(alias.id);
+					});
+				},
+				error: function() {
+
+				}
+			});
+		}
+	});
+	
+	//Filtering for aliases
+	$aliasModalFilterButton.on('click', function(evt) {
+		var $nameFilter = $(evt.target).parent().parent().parent().find('.alias-modal-name-filter'),
+			$itemFilter = $(evt.target).parent().parent().parent().find('.alias-modal-item-filter');
+		
+		$aliasModalList.empty();
+		
+		me.allAliasList.each(function(alias) {
+			var fitName = false, fitItem = false;
+			
+			if($nameFilter.val().trim() == "" || alias.id.toLowerCase().includes($nameFilter.val().trim().toLowerCase())){
+				fitName = true;
+			}
+			
+			if($itemFilter.val().trim() == "" || alias.item_id.toLowerCase().includes($itemFilter.val().trim().toLowerCase())){
+				fitItem = true;
+			}
+			
+			if(fitName && fitItem){
+				me.createModalAliasRow(alias, false);
+			}
+		});
+	});
 
 	me.loadTemplates = function () {
-		["publication_row", "item_list"].each(function (templateName) {
+		me.templateNames.each(function (templateName) {
 			$.ajax({
 				url: CCH.CONFIG.contextPath + '/resource/template/handlebars/publish/' + templateName + '.html',
 				context: {
@@ -2057,14 +2429,47 @@ CCH.Objects.Publish.UI = function () {
 			});
 		});
 	};
-        
+	
+	me.deleteAlias = function(args) {
+		args = args || {};
+		var id = args.id;
+		var callbacks = args.callbacks || {};
+		
+		$.ajax({
+			url: CCH.CONFIG.contextPath + '/data/alias/' + id,
+			method: "DELETE",
+			success: callbacks.success,
+			error: callbacks.error
+		});
+	};
+	
+	me.loadAllAliases = function() {
+		$.ajax({
+			url: CCH.baseUrl + "/data/alias/",
+			type: 'GET',
+			success: function (data){
+				me.allAliasList = data;
+				me.visibleAliasList = data;
+				$buttonManageAliases.removeAttr(CCH.CONFIG.strings.disabled);
+				$aliasModalList.empty();
+				me.loadedAllAliases = true;
+				me.allAliasList.each(function(alias){
+					me.createModalAliasRow(alias, false);
+				});
+			},
+			error: function() {
+				window.alert('Unable to load aliases. Please contact CCH admin team.');
+			}
+		});
+	}
 
 	me.initializeResourceSorting = function () {
 		$resourceSortableContainers.sortable({
 			placeholder: 'ui-state-highlight'
 		});
 	};
-
+	
+	me.loadAllAliases();
 	me.initializeResourceSorting();
 	me.loadTemplates();
 

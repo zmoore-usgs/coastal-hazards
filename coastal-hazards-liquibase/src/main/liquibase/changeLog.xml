@@ -45,4 +45,5 @@
 	<include file="addSessionZoomLevel.xml" relativeToChangelogFile="true" />
 	<include file="addGetVisibleAncestorsFunction.xml" relativeToChangelogFile="true" />
 	<include file="addAliasTable.xml" relativeToChangelogFile="true" />
+	<include file="addAliasTablePrimaryKey.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
