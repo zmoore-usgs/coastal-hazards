@@ -2372,7 +2372,7 @@ CCH.Objects.Publish.UI = function () {
 	
 	//When the alias modal is closed reload the item alias list
 	$('#alias-modal').on('hidden.bs.modal', function () {
-		if($itemIdInput.val() != "" && $editingEnabled){
+		if($itemIdInput.val() != ""){
 			$itemAliasList.empty();
 			$.ajax({
 				url: CCH.CONFIG.contextPath + '/data/alias/item/' + $itemIdInput.val(),
@@ -2413,7 +2413,11 @@ CCH.Objects.Publish.UI = function () {
 		});
 	});
 
-	me.loadTemplates = function () {
+	me.loadTemplates = function (args) {
+		args = args || {};
+		var callbacks = args.callbacks;
+		var success = callbacks ? callbacks.success : {};
+		var error = callbacks ? callbacks.error : {};
 		me.templateNames.each(function (templateName) {
 			$.ajax({
 				url: CCH.CONFIG.contextPath + '/resource/template/handlebars/publish/' + templateName + '.html',
@@ -2422,9 +2426,21 @@ CCH.Objects.Publish.UI = function () {
 				},
 				success: function (data) {
 					CCH.ui.templates[this.templateName] = Handlebars.compile(data);
+					
+					if(success){
+						success.each(function(func) {
+							func(data);
+						});
+					}
 				},
 				error: function () {
 					window.alert('Unable to load resources required for a functional publication page. Please contact CCH admin team.');
+					
+					if(error){
+						error.each(function(func) {
+							func(data);
+						});
+					}
 				}
 			});
 		});
@@ -2469,9 +2485,15 @@ CCH.Objects.Publish.UI = function () {
 		});
 	};
 	
-	me.loadAllAliases();
 	me.initializeResourceSorting();
-	me.loadTemplates();
+	
+	me.loadTemplates({
+		callbacks: {
+			success: [
+				me.loadAllAliases
+			]
+		}
+	});
 
 	return $.extend(me, {});
 };
