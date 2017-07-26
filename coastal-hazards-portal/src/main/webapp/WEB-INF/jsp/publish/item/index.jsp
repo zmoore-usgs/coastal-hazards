@@ -721,7 +721,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="list-group">
-                            <div id="all-alias-panel" class="resource-panel panel panel-default">
+                            <div id="all-alias-panel" class="alias-modal-panel panel panel-default">
                                 <div class="panel-heading">
                                     <button id="form-publish-alias-modal-button-add" type="button" class="btn btn-default btn-sm pull-right form-publish-info-item-panel-button-add" >Add</button>
                                     <h3 class="panel-title">Aliases</h3>
