@@ -63,48 +63,62 @@ public class RibboningProcess implements GeoServerProcess {
 
 	@DescribeResult(name = "result", description = "Layer with ribboned clones")
 	public SimpleFeatureCollection execute(
+			//geometry + attributes come from the SLD, may be static in SLD or parameters that come directly from standard WMS, can look at the geoserver rendering transforms to see what is going on here
 			@DescribeParameter(name = "features", min = 1, max = 1) SimpleFeatureCollection features,
 			@DescribeParameter(name = "bbox", min = 0, max = 1) ReferencedEnvelope bbox,
 			@DescribeParameter(name = "width", min = 1, max = 1) Integer width,
 			@DescribeParameter(name = "height", min = 1, max = 1) Integer height,
 			@DescribeParameter(name = "invert-side", min = 0, max = 1) Boolean invertSide,
 			@DescribeParameter(name = "calcAngles", min = 0, max = 1) Boolean calcAngles,
+			// which ribbon it is in the set, to be ribboned correctly, all child items in an aggregate ribboned parent must share the same bbox, if they do not, the ribboning process starts over and you'll get overlapping ribbons
 			@DescribeParameter(name = "ribbon-count", min = 0, max = 1) Integer ribbonCount,
+			// how many pixels is the offset, maybe set in the sld
 			@DescribeParameter(name = "offset", min = 0, max = 1) Integer offset,
+			// this is the bug ticket we have; given the feature collection it should order first N-S, the attribute it's using might be incorrect, because they're not in the right order, everything is defaulting to 45 degrees at certain zoom levels?
 			@DescribeParameter(name = "sort-attribute", min = 0, max = 1) String sortAttribute,
+			// which zoom level we're at, m/pixel
 			@DescribeParameter(name = "scale", min = 0, max = 1) Double scale) throws Exception {
 		
-		
+		//whether or not the ribbons should be inverted, set to default false if not passed in
 		if (null == invertSide) {
 			invertSide = Boolean.FALSE;
 		}
+		
+		//whether or not the angles are calculated, set to default false if not passed in
 		if (null == calcAngles) {
 			calcAngles = Boolean.FALSE;
 		}
+		
+		//which ribbon currently we're working on, if not provided, defaults to 1
 		if (null == ribbonCount) {
 			ribbonCount = 1;
 		}
+		
+		//how many pixels the offset between the ribbons is, defaults to 5 if not provided 
 		if (null == offset) {
 			offset = 5;
 		}
+		
+		//which zoom level we're at to know what constants to use in calculations
 		if (null == scale) {
 			scale = Double.MAX_VALUE;
 		}
 		SimpleFeatureCollection featuresToProcess = features;
 		
+		//the attribute to sort the features by, if it's not null
 		if (null != sortAttribute) {
 			featuresToProcess = sortFeatures(sortAttribute, features);
 		}
 		
 		CoordinateReferenceSystem bboxCRS = bbox.getCoordinateReferenceSystem();
 		CoordinateReferenceSystem featureCRS = CRSUtils.getCRSFromFeatureCollection(featuresToProcess);
-		
+		//calculate the offset of the ribbon based on the bbox, coordinate systems, window size, offset and scale 
 		double[] xyOffset = getXYOffset(bbox, bboxCRS, featureCRS, width, height, offset, scale);
 		
 		return new Process(featuresToProcess, invertSide, sortAttribute, calcAngles, ribbonCount, xyOffset).execute();
 
 	}
-	
+	//if there's an attribute to sort by, sort by it
 	public SimpleFeatureCollection sortFeatures(String sortAttribute, SimpleFeatureCollection features) {
 		SimpleFeatureCollection result = features;
 		
@@ -119,13 +133,15 @@ public class RibboningProcess implements GeoServerProcess {
 		
 		return result;
 	}
-
+	
+	// ?? check to see if this is even used ? might be needed but not doing anything
 	public Query invertQuery(Query targetQuery, GridGeometry targetGridGeometry) throws ProcessException {
 		Query result = new Query(targetQuery);
 		result.setProperties(Query.ALL_PROPERTIES);
 		return result;
 	}
 	
+	//adjusts the width of the stroke depending on scale
 	private double calculateScaledOffset(double scale, double offset) {
 		double result = offset;
 		
@@ -160,7 +176,7 @@ public class RibboningProcess implements GeoServerProcess {
 		
 		return result;
 	}
-	
+	// calculating the offset in pixels of the ribbons at the different scales
 	private double[] getXYOffset(ReferencedEnvelope bbox, CoordinateReferenceSystem bboxCRS, CoordinateReferenceSystem featureCRS, Integer width, Integer height, Integer unscaledOffset, Double scale) {
 		double[] result = new double[] {unscaledOffset.doubleValue(), unscaledOffset.doubleValue()};
 		
@@ -197,7 +213,7 @@ public class RibboningProcess implements GeoServerProcess {
 		
 		return result;
 	}
-	
+	// transform step to pre-process the data before its sent along for rendering
 	private class Process {
 		
 		private final double SEQUENTIAL_DISTANCE = 10.0;
@@ -243,8 +259,9 @@ public class RibboningProcess implements GeoServerProcess {
 				features = this.featureCollection.features();
 				while (features.hasNext()) {
 					SimpleFeature feature = features.next();
-
+					//joins single lines together, but the attributes are extended to the entire multilinestring
 					MultiLineString lines = getMultiLineString(feature);
+					//may also be old code? 
 					if (null != lines) {
 						List<Geometry> ribbonLines = new ArrayList<>(ribbonCount);
 						for (int ribbonNum = 0; ribbonNum < ribbonCount; ribbonNum++) {
@@ -289,7 +306,7 @@ public class RibboningProcess implements GeoServerProcess {
 
 			return result;
 		}
-		
+		//apply the xyoffset and compute the angle of the ribbon based on whether or not its sequential data
 		private double[] computeXYOffset(LineString prevLine, double[] prevLineOffset, LineString currLine) {
 			double[] result;
 			
@@ -333,6 +350,7 @@ public class RibboningProcess implements GeoServerProcess {
 					&& (null != currStart && null != currEnd)) {
 				if (isSequential) {
 					LOGGER.log(Level.FINE, "Sequential order");
+					//may be that this.calcangles is false, but what the cooperators desired
 					if (null != this.sortAttribute && this.calcAngles) {
 						angle = invertIfNecessary(getAngle(prevStart, currStart, currEnd), this.invert);
 					} else {
@@ -420,7 +438,7 @@ public class RibboningProcess implements GeoServerProcess {
 			
 			return result;
 		}
-		
+		//gets the perpendicular angle of the line
 		private Double getAngle(Point a, Point b) {
 			Double result = null;
 			double TWO_PI = 2 * Math.PI;
@@ -437,7 +455,7 @@ public class RibboningProcess implements GeoServerProcess {
 			
 			return result;
 		}
-		
+		//angle of the two lines and decide whether it needs to adjust - gets the perpendicular to the average of the two angles
 		private Double getAngle(Point a, Point b, Point c) {
 			Double result = null;
 			double TWO_PI = 2 * Math.PI;
@@ -456,7 +474,7 @@ public class RibboningProcess implements GeoServerProcess {
 			
 			return result;
 		}
-		
+		//multilinestring verifier otherwise it balks at the features
 		private MultiLineString getMultiLineString(SimpleFeature feature) {
 			MultiLineString result = null;
 			
@@ -485,7 +503,7 @@ public class RibboningProcess implements GeoServerProcess {
 			return result;
 		}
 	}
-	
+	// features move through here and are modified based on offset, ribbon and order
 	public static class RibboningFilter implements CoordinateSequenceFilter {
 		private final double[][] pointOffsets;
 		private final int ribbonNum;
@@ -519,7 +537,7 @@ public class RibboningProcess implements GeoServerProcess {
 				offsetX = pointOffsets[pointOffsets.length - 1][0] * ribbonNum;
 				offsetY = pointOffsets[pointOffsets.length - 1][1] * ribbonNum;
 			}
-			
+			//add offset to the original line 
 			seq.setOrdinate(i, 0, seq.getOrdinate(i, 0) + offsetX);
 			seq.setOrdinate(i, 1, seq.getOrdinate(i, 1) + offsetY);
         }
