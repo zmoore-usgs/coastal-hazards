@@ -775,9 +775,25 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 					'eventAction': 'shareItemButtonClicked',
 					'eventLabel': 'bucket buttons'
 				});
+				
+				var item = CCH.items.getById({id: id});
+				var shareId;
+				var shareType;
+				
+				if((CCH.CONFIG.params.type + String()).toLowerCase() == 'alias' && item.aliases.indexOf(CCH.CONFIG.params.id) >= 0){
+					shareId = CCH.CONFIG.params.id;
+					shareType = 'alias';
+				} else if(item.aliases.length > 0){
+					shareId = item.aliases[0];
+					shareType = 'alias';
+				} else {
+					shareId = item.id;
+					shareType = 'item';
+				}
+				
 				$(window).trigger('slide.bucket.button.click.share', {
-					'type': 'item',
-					'id': id,
+					'type': shareType,
+					'id': shareId,
 					'shareTitle' : shareTitle
 				});
 			});
@@ -792,7 +808,18 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				$(window).trigger('slide.bucket.button.click.info', {
 					'id': id
 				});
-				window.open(CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_self');
+				var item = CCH.items.getById({id: id});
+				var openUrl;
+				
+				if((CCH.CONFIG.params.type + String()).toLowerCase() == 'alias' && item.aliases.indexOf(CCH.CONFIG.params.id) >= 0){
+					openUrl = CCH.CONFIG.contextPath + '/ui/info/alias/' + CCH.CONFIG.params.id
+				} else if(item.aliases.length > 0){
+					openUrl = CCH.CONFIG.contextPath + '/ui/info/alias/' + item.aliases[0]
+				} else {
+					openUrl = CCH.CONFIG.contextPath + '/ui/info/item/' + item.id
+				}
+				
+				window.open(openUrl, '_self');
 			});
 
 		$cardHtml.getContainer = function () {

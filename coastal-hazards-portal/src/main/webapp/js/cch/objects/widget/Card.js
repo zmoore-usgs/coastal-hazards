@@ -429,9 +429,14 @@ CCH.Objects.Widget.Card = function (args) {
 				$buttonRow = container.find('.application-card-control-row'),
 				$bucketButton = $buttonRow.find('.application-card-add-bucket-btn'),
 				$exploreRow = container.find('.application-card-explore-row'),
-				$moreInfoTarget = CCH.CONFIG.contextPath + '/ui/info/item/' + me.id,
 				$moreInfoBtn = container.find('.application-card-more-info-btn').on("click", function () {
-					window.location = $moreInfoTarget;
+					if((CCH.CONFIG.params.type + String()).toLowerCase() == 'alias' && me.item.aliases.indexOf(CCH.CONFIG.params.id) >= 0){
+						window.location = CCH.CONFIG.contextPath + '/ui/info/alias/' + CCH.CONFIG.params.id
+					} else if(me.item.aliases.length > 0){
+						window.location = CCH.CONFIG.contextPath + '/ui/info/alias/' + me.item.aliases[0]
+					} else {
+						window.location = CCH.CONFIG.contextPath + '/ui/info/item/' + me.item.id
+					}
 				}),
 				$zoomToBtn = container.find('.application-card-zoom-to-btn'),
 				isItemInBucket = CCH.ui.bucket.getItemById(me.id) !== undefined;

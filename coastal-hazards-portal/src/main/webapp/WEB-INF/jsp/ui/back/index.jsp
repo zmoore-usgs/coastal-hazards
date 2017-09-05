@@ -1,3 +1,4 @@
+<%@page import="gov.usgs.cida.coastalhazards.model.Alias"%>
 <%@page import="org.apache.commons.lang3.time.DateFormatUtils"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -42,6 +43,7 @@
 <%
 	Map<String, Object> paramMap = ((Map<String, Object>) request.getAttribute("it"));
 	Item item = (Item) paramMap.get("item");
+	Alias alias = (Alias) paramMap.get("alias");
 
 	boolean isTouring = Boolean.parseBoolean((String) paramMap.get("tutorial"));
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
@@ -54,6 +56,14 @@
 	}
 	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
 	String userAgent = request.getHeader("user-agent");
+	
+	String printUrl = baseUrl + "/ui/print/";
+	
+	if(alias != null){
+		printUrl += "alias/" + alias.getId();
+	} else {
+		printUrl += "item/" + item.getId();
+	}
 
 	String relPath = baseUrl + "/";
 	String publicUrl = props.getProperty("coastal-hazards.public.url", "https://127.0.0.1:8443/coastal-hazards-portal");
@@ -80,6 +90,7 @@
     <head>
         <jsp:include page="../common/meta-tags.jsp">
             <jsp:param name="description" value="<%= item.getSummary().getFull().getText()%>" />
+			<jsp:param name="aliasUrl" value='<%= alias != null ? (baseUrl + "/ui/info/alias/" + alias.getId()) : ""%>' />
             <jsp:param name="itemUrl" value='<%= baseUrl + "/ui/info/item/" + item.getId()%>' />
             <jsp:param name="baseUrl" value='<%= baseUrl %>' />
             <jsp:param name="thumb" value='<%= baseUrl + "/data/thumbnail/item/" + item.getId()%>' />
@@ -169,7 +180,7 @@
                                         <button type="button" class="btn btn-default help-button" id="application-info-button" data-tooltip="tooltip" data-placement="right" title="Action Center Descriptions"><i class="fa fa-question-circle action-question"></i></button>
                                         <button type="button" class="btn btn-default control-button" id="application-link-button" data-tooltip="tooltip" data-placement="right" title="Go back to the map view of the portal">Return To Map</button>
                                         <button type="button" class="btn btn-default control-button" id="add-bucket-link-button" data-tooltip="tooltip" data-placement="right" title="Add this item to your bucket. Use the bucket to collect, view, and download lots of data and products, or share your bucket with friends and colleagues">Add to Your Bucket</button>
-                                        <form id="print-route-form" action="<%=baseUrl%>/ui/print/item/<%=item.getId()%>"><button type="submit" class="btn btn-default control-button" id="print-button" data-tooltip="tooltip" data-placement="right" title="Go To Print View">Print Snapshot</button></form>
+                                        <form id="print-route-form" action="<%=printUrl%>"><button type="submit" class="btn btn-default control-button" id="print-button" data-tooltip="tooltip" data-placement="right" title="Go To Print View">Print Snapshot</button></form>
                                         <button type="button" class="btn btn-default control-button" id="map-services-link-button" data-tooltip="tooltip" data-toggle="modal" data-target="#modal-services-view" data-placement="right" title="Explore available services that can be added to your own or other web-based mapping applications">Map Services</button>
                                         <button type="button" class="btn btn-default control-button" id="metadata-link-button"  role="button" data-tooltip="tooltip" data-placement="right" title="Review detailed geographic, bibliographic and other descriptive information about this item.">Metadata</button>
                                         <button type="button" class="btn btn-default control-button" id="download-link-button" data-tooltip="tooltip" data-placement="right" title="Download this item to your computer">Download Dataset</button>
@@ -285,6 +296,7 @@
 					version: '<%=version%>',
 					itemData: <%= item.toJSON(true)%>,
 					itemId: '<%= item.getId()%>',
+					aliasId: '<%= alias != null ? alias.getId() : "" %>',
 					contextPath: '<%=baseUrl%>',
 					development: <%=development%>,
 					item: <%= item.toJSON(true)%>,
@@ -298,6 +310,9 @@
 						sources: {
 							'item': {
 								'endpoint': '/data/item'
+							},
+							'alias': {
+								'endpoint': '/data/alias'
 							},
 							'download': {
 								'endpoint': '/data/download/item/'

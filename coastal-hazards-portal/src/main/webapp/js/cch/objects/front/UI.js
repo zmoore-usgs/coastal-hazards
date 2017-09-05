@@ -231,6 +231,8 @@ CCH.Objects.Front.UI = function (args) {
 			});
 		} else if (shareType === 'item') {
 			me.displayShareModal(CCH.CONFIG.publicUrl + '/ui/item/' + shareId, shareTitle);
+		} else if (shareType === 'alias') {
+			me.displayShareModal(CCH.CONFIG.publicUrl + '/ui/alias/' + shareId, shareTitle);
 		}
 	};
 

@@ -19,6 +19,7 @@ public class Identifier {
     public enum IdentifierType {
         VIEW,
         ITEM,
+		ALIAS,
         INFO,
 		TOUR;
     }

@@ -30,6 +30,7 @@ CCH.Objects.Item = function (args) {
 	me.services = args.services || null;
 	me.activeStorm = args.activeStorm || false;
 	me.featured = args.featured || false;
+	me.aliases = args.aliases || [];
 
 	me.load = function (args) {
 		args = args || {};

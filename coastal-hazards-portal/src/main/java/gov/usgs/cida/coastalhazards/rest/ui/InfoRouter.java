@@ -1,6 +1,8 @@
 package gov.usgs.cida.coastalhazards.rest.ui;
 
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
+import gov.usgs.cida.coastalhazards.jpa.AliasManager;
+import gov.usgs.cida.coastalhazards.model.Alias;
 import gov.usgs.cida.coastalhazards.model.Item;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,12 +19,12 @@ import org.glassfish.jersey.server.mvc.Viewable;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Path("/info/item")
+@Path("/info")
 public class InfoRouter {
 
 	@GET
 	@Produces(MediaType.TEXT_HTML)
-	@Path("{id}")
+	@Path("/item/{id}")
 	public Response useInfoJsp(@PathParam("id") String id) {
 		Map<String, Object> map = new HashMap<>();
 		
@@ -43,7 +45,7 @@ public class InfoRouter {
 	
 	@GET
 	@Produces(MediaType.TEXT_HTML)
-	@Path("/print/{id}")
+	@Path("/item/print/{id}")
 	public Response useInfoPrintViewJsp(@PathParam("id") String id) {
 		Item item;
 		
@@ -60,8 +62,58 @@ public class InfoRouter {
 
 	@GET
 	@Produces(MediaType.TEXT_HTML)
-	@Path("{jspPath:.*/?.*\\..*}")
+	@Path("/item/{jspPath:.*/?.*\\..*}")
 	public Response useResourceAtInfoPath(@PathParam("jspPath") String jspPath) {
+		return Response.ok(new Viewable("/" + jspPath)).build();
+	}
+	
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	@Path("/alias/{aliasId}")
+	public Response useAliasInfoJsp(@PathParam("aliasId") String aliasId) {
+		Map<String, Object> map = new HashMap<>();
+		
+		Item item;
+		Alias alias;
+		
+		try (ItemManager mgr = new ItemManager(); AliasManager amgr = new AliasManager();) {
+			alias = amgr.load(aliasId);
+			item = mgr.load(alias.getItemId());
+		}
+		
+		if (item == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		
+		map.put("item", item);
+		map.put("alias", alias);
+		
+		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index.jsp", map)).build();
+	}
+	
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	@Path("/alias/print/{aliasId}")
+	public Response useAliasInfoPrintViewJsp(@PathParam("aliasId") String aliasId) {
+		Item item;
+		Alias alias;
+		
+		try (ItemManager mgr = new ItemManager(); AliasManager amgr = new AliasManager();) {
+			alias = amgr.load(aliasId);
+			item = mgr.load(alias.getItemId());
+		}
+		
+		if (item == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		
+		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", item)).build();
+	}
+
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	@Path("/alias/{jspPath:.*/?.*\\..*}")
+	public Response useResourceAtAliasInfoPath(@PathParam("jspPath") String jspPath) {
 		return Response.ok(new Viewable("/" + jspPath)).build();
 	}
 }

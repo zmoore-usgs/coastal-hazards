@@ -54,7 +54,11 @@ CCH.Objects.Back.UI = function (args) {
 		});
 
 		me.$applicationButton.on('click', function () {
-			window.location.href = CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId;
+			//URL Hiearachy - Supplied alias --> First related alias --> Item ID
+			var appUrl = CCH.CONFIG.aliasId.length > 0 ? CCH.CONFIG.contextPath + '/ui/alias/' + CCH.CONFIG.aliasId : null;
+			appUrl = appUrl ? appUrl : me.item.aliases.length > 0 ? CCH.CONFIG.contextPath + '/ui/alias/' + me.item.aliases[0] : null;
+			appUrl = appUrl ? appUrl : CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId;
+			window.location.href = appUrl
 			ga('send', 'event', {
 				'eventCategory': 'infopage',
 				'eventAction': 'backToAppButtonClicked',
@@ -140,6 +144,18 @@ CCH.Objects.Back.UI = function (args) {
 		// Build the publications list for the item
 		if (me.item.summary.full.publications) {
 			me.$publist = $('<ul />').attr('id', 'info-container-publications-list');
+			
+			var itemIdSection = $('<li />').addClass('publist-header').html("Item ID");
+			itemIdSection.append($('<ul />').append($('<li />').append($('<span />').html(me.item.id))));
+			itemIdSection.appendTo(me.$publist);
+			
+			var itemAliasSection = $('<li />').addClass('publist-header').html("Aliases");
+			itemAliasSection.append($('<ul />'));
+			$.each(me.item.aliases, function(alias) {
+				$('<li />').append($('<span />').html(alias)).appendTo(itemAliasSection);
+			});
+			itemAliasSection.appendTo(me.$publist);
+			
 			Object.keys(me.item.summary.full.publications, function (type) {
 				var pubTypeArray = me.item.summary.full.publications[type],
 						pubTypeListHeader = $('<li />')
@@ -223,8 +239,12 @@ CCH.Objects.Back.UI = function (args) {
 		};
 
 		// Build the share modal
+		//URL Hiearachy - Supplied alias --> First related alias --> Item ID
+		var locUrl = CCH.CONFIG.aliasId.length > 0 ? CCH.CONFIG.publicUrl + '/ui/alias/' + CCH.CONFIG.aliasId : null;
+		locUrl = locUrl ? locUrl : me.item.aliases.length > 0 ? CCH.CONFIG.publicUrl + '/ui/alias/' + me.item.aliases[0] : null;
+		locUrl = locUrl ? locUrl : CCH.CONFIG.publicUrl + '/ui/item/' + CCH.CONFIG.itemId;
 		CCH.Util.Util.getMinifiedEndpoint({
-			location: CCH.CONFIG.publicUrl + '/ui/info/item/' + CCH.CONFIG.itemId
+			location: locUrl
 		}).always(minificationCallback);
 
 		// Is this item already in the bucket? If so, disable the add to bucket button

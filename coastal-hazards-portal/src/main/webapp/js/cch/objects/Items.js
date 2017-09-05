@@ -74,6 +74,16 @@ CCH.Objects.Items = function (args) {
 			var id = args.id;
 			return me.items[id];
 		},
+		getByAlias: function (args) {
+			var alias = args.alias;
+			var itemIds = Object.keys(CCH.items.getItems())
+			
+			for(var i = 0; i < itemIds.length; i++){
+				if(me.items[itemIds[i]].aliases.indexOf(alias) >= 0){
+					return me.items[itemIds[i]];
+				}
+			}
+		},
 		Types: {
 			AGGREGATION: 'aggregation',
 			HISTORICAL: 'historical',

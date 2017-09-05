@@ -26,7 +26,8 @@ CCH.CONFIG = CCH.CONFIG || {};
 						CCH.LOG.trace("Loaded " + obj.id);
 						
 						// If the incoming item is the uber item, that means that by now, everything under it has been
-						// fully hydrated, so I can now add sub items to the accordion and remove the overlay
+						// fully hydrated, so I can now add sub items to the accordion and remove the overlay.
+						// I can also now load and attach item aliases
 						if (obj.id === 'uber') {
 							data.children.each(function (id, index) {
 								var item = CCH.items.getById({id: id});
@@ -59,11 +60,28 @@ CCH.CONFIG = CCH.CONFIG || {};
 									CCH.map.getMap().zoomToExtent(CCH.map.initialExtent, true);
 								}
 							};
-							$(window).one('cch.ui.resized', resizeHandler);
-							$(window).trigger('cch.loaded.uber');
-							CCH.splashUpdate("Working...");
-							CCH.ui.removeOverlay();
-							$(window).resize();
+							
+							//Load aliases and assign them to items
+							var aliasSearch = CCH.Util.Search().getAllAliases({
+								callbacks: {
+									success: [function(data) {
+										data.each(function(alias, index) {
+											if(alias.item_id != null && CCH.items.getById({id: alias.item_id}) != null){
+												CCH.items.getById({id: alias.item_id}).aliases.push(alias.id);
+											}
+										});
+										
+										$(window).one('cch.ui.resized', resizeHandler);
+										$(window).trigger('cch.loaded.uber');
+										CCH.splashUpdate("Working...");
+										CCH.ui.removeOverlay();
+										$(window).resize();
+									}],
+									error: [
+										CCH.ui.errorResponseHandler
+									]
+								}
+							});
 						}
 					});
 
@@ -132,6 +150,66 @@ CCH.CONFIG = CCH.CONFIG || {};
 				'exDescription': 'ViewNotFound',
 				'exFatal': false
 			});
+		});
+	},
+	loadAliasItem = function() {
+		// User is coming in with an item, so load that item
+		$(window).one('cch.loaded.uber', function () {
+			var alias = CCH.CONFIG.params.id;
+			CCH.Util.Search().getAliasById({
+				id: alias, 
+				callbacks: {
+					success: [function(data) {
+						var id = data.item_id;
+						
+						var item = CCH.items.getById({id: id});
+						if (item) {
+							// All items have been loaded and my item exists. Show my item in the accordion.
+							$(window).trigger('cch.slide.search.button.click.explore', {
+								id: id
+							});
+
+							// Triggering the explore click above also triggers the basket slider to close. When 
+							// the basket slider closes, it may hide all the layers though through testing, sometimes
+							// it doesn't. It looks like a timing issue. Adding this hack here ensure that the layer 
+							// the user came to see shows up
+							CCH.items.getById({id: id}).showLayer();
+
+							$(window).on('cch.ui.resized', function () {
+								CCH.map.zoomToBoundingBox({
+									'bbox': CCH.items.getById({id: id}).bbox,
+									'fromProjection': CCH.CONFIG.map.modelProjection.projCode
+								});
+							});
+						} else {
+							// The item could not be found. Show an error and wait for the app to resize
+							// (happens on loading completetion). When it happens, zoom to the bounding
+							// box of the map's initial extent (the continentat US) and then unbind the handler
+							alertify.error('The item you\'re looking for could not be found.', 6000);
+							var resizeHandler = function () {
+								$(window).off('cch.ui.resized', resizeHandler);
+								CCH.map.getMap().zoomToExtent(CCH.map.getMap().initialExtent);
+							};
+							$(window).on('cch.ui.resized', resizeHandler);
+							ga('send', 'exception', {
+								'exDescription': 'ItemNotFound',
+								'exFatal': false
+							});
+						}
+					}],
+					error: [
+						CCH.ui.errorResponseHandler
+					]
+				}
+			});
+		});
+
+		CCH.ui.addItemsToBucketOnLoad(CCH.session.getSession().items);
+
+		loadUberItem({
+			subtree: true,
+			zoomToUberBbox: true,
+			overridePreviousBounds: false
 		});
 	},
 	loadItem = function () {
@@ -247,6 +325,7 @@ CCH.CONFIG = CCH.CONFIG || {};
 		// Decide how to load the application. 
 		// Depending on the 'idType' string, the application can be loaded either through:
 		// 'ITEM' = Load a single item from the database
+		// 'ALIAS' = Load a single item from the datbase using the specified alias
 		// 'VIEW' = Load a session which can have zero, one or more items
 		// '' = Load the application normally through the uber item
 		// 
@@ -268,6 +347,14 @@ CCH.CONFIG = CCH.CONFIG || {};
 				'eventLabel': 'app load'
 			});
 			loadItem();
+			break;
+		case 'alias':
+			ga('send', 'event', {
+				'eventCategory': 'app',
+				'eventAction': 'loadItem',
+				'eventLabel': 'app load'
+			});
+			loadAliasItem();
 			break;
 		case 'tour':
 			ga('send', 'event', {
