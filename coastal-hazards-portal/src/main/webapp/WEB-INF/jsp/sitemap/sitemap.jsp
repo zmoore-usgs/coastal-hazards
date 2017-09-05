@@ -1,6 +1,9 @@
 <%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
 <%@page import="gov.usgs.cida.coastalhazards.jpa.ItemManager"%>
+<%@page import="gov.usgs.cida.coastalhazards.jpa.AliasManager"%>
 <%@page import="gov.usgs.cida.coastalhazards.model.Item"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.Alias"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -23,8 +26,18 @@
 %>
 <%
 	ItemManager itemMgr = new ItemManager();
+	AliasManager aliasMgr = new AliasManager();
 	List<String> items = itemMgr.getActiveItemIdsNamesAndDescription(false);
+	List<Alias> aliases = aliasMgr.loadAll();
+	List<String> aliasItems = new ArrayList<>();
+	List<String> aliasIds = new ArrayList<>();
+	for(Alias alias : aliases){
+		aliasItems.add(alias.getItemId());
+		aliasIds.add(alias.getId());
+	}
 	pageContext.setAttribute("items", items);
+	pageContext.setAttribute("aliasIds", aliasIds);
+	pageContext.setAttribute("aliasItems", aliasItems);
 	String baseUrl = props.getProperty("coastal-hazards.base.url");
 	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
 %>
@@ -84,9 +97,18 @@
 
 							</header>
 							<p>
-								<span id="item-desc">${item[2]}
-									(<a href="<%=baseUrl%>/ui/item/${item[0]}">Map</a>, <a href="<%=baseUrl%>/ui/info/item/${item[0]}">Info</a>) 
-								</span>
+								<c:choose>
+									<c:when test="${aliasItems.indexOf(item[0]) > -1}">
+										<span id="item-desc">${item[2]}
+											(<a href="<%=baseUrl%>/ui/alias/${aliasIds[aliasItems.indexOf(item[0])]}">Map</a>, <a href="<%=baseUrl%>/ui/info/alias/${aliasIds[aliasItems.indexOf(item[0])]}">Info</a>) 
+										</span>
+									</c:when>
+									<c:otherwise>
+										<span id="item-desc">${item[2]}
+											(<a href="<%=baseUrl%>/ui/item/${item[0]}">Map</a>, <a href="<%=baseUrl%>/ui/info/item/${item[0]}">Info</a>) 
+										</span>
+									</c:otherwise>
+								</c:choose>
 							</p>
 						</article>
 					</nav>
