@@ -141,7 +141,7 @@ CCH.Objects.Back.UI = function (args) {
 			me.$metadataButton.remove();
 		}
 
-		// Build the publications list for the item
+		// Build the additional information section for the item
 		if (me.item.summary.full.publications) {
 			me.$publist = $('<ul />').attr('id', 'info-container-publications-list');
 			
@@ -150,12 +150,14 @@ CCH.Objects.Back.UI = function (args) {
 			itemIdSection.appendTo(me.$publist);
 			
 			var itemAliasSection = $('<li />').addClass('publist-header').html("Aliases");
-			itemAliasSection.append($('<ul />'));
-			$.each(me.item.aliases, function(alias) {
-				$('<li />').append($('<span />').html(alias)).appendTo(itemAliasSection);
+			var aliasList = $('<ul />');
+			me.item.aliases.each(function(alias, index) {
+				aliasList.append($('<li />').append($('<span />').html(alias)));
 			});
+			itemAliasSection.append(aliasList);
 			itemAliasSection.appendTo(me.$publist);
 			
+			//Publications list (data, resources, and pubs)
 			Object.keys(me.item.summary.full.publications, function (type) {
 				var pubTypeArray = me.item.summary.full.publications[type],
 						pubTypeListHeader = $('<li />')
