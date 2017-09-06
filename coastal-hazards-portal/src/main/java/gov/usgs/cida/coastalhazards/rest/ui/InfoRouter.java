@@ -75,23 +75,20 @@ public class InfoRouter {
 	@Path("/alias/{aliasId}")
 	public Response useAliasInfoJsp(@PathParam("aliasId") String aliasId) {
 		Map<String, Object> map = new HashMap<>();
-		
-		Item item;
-		Alias alias;
-		
 		try (ItemManager mgr = new ItemManager(); AliasManager amgr = new AliasManager();) {
-			alias = amgr.load(aliasId);
-			item = mgr.load(alias.getItemId());
+			Alias alias = amgr.load(aliasId);
+			if(alias != null){
+				Item item = mgr.load(alias.getItemId());
+				if (item == null) {
+					return Response.status(Response.Status.NOT_FOUND).build();
+				}
+				map.put("item", item);
+				map.put("alias", alias);
+				return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index.jsp", map)).build();
+			} else {
+				return Response.status(Response.Status.NOT_FOUND).build(); 
+			}
 		}
-		
-		if (item == null) {
-			return Response.status(Status.NOT_FOUND).build();
-		}
-		
-		map.put("item", item);
-		map.put("alias", alias);
-		
-		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index.jsp", map)).build();
 	}
 	
 	@GET
@@ -99,22 +96,20 @@ public class InfoRouter {
 	@Path("/alias/print/{aliasId}")
 	public Response useAliasInfoPrintViewJsp(@PathParam("aliasId") String aliasId) {
 		Map<String, Object> map = new HashMap<>();
-		Item item;
-		Alias alias;
-		
 		try (ItemManager mgr = new ItemManager(); AliasManager amgr = new AliasManager();) {
-			alias = amgr.load(aliasId);
-			item = mgr.load(alias.getItemId());
+			Alias alias = amgr.load(aliasId);
+			if(alias != null){
+				Item item = mgr.load(alias.getItemId());
+				if (item == null) {
+					return Response.status(Response.Status.NOT_FOUND).build();
+				}
+				map.put("item", item);
+				map.put("alias", alias);
+				return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", map)).build();
+			} else {
+				return Response.status(Response.Status.NOT_FOUND).build(); 
+			}
 		}
-		
-		if (item == null) {
-			return Response.status(Status.NOT_FOUND).build();
-		}
-		
-		map.put("item", item);
-		map.put("alias", alias);
-		
-		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", map)).build();
 	}
 
 	@GET
