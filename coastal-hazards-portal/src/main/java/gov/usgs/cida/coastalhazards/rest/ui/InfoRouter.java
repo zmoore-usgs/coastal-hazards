@@ -47,6 +47,7 @@ public class InfoRouter {
 	@Produces(MediaType.TEXT_HTML)
 	@Path("/item/print/{id}")
 	public Response useInfoPrintViewJsp(@PathParam("id") String id) {
+		Map<String, Object> map = new HashMap<>();
 		Item item;
 		
 		try (ItemManager mgr = new ItemManager()) {
@@ -57,7 +58,9 @@ public class InfoRouter {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 		
-		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", item)).build();
+		map.put("item", item);
+		
+		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", map)).build();
 	}
 
 	@GET
@@ -95,6 +98,7 @@ public class InfoRouter {
 	@Produces(MediaType.TEXT_HTML)
 	@Path("/alias/print/{aliasId}")
 	public Response useAliasInfoPrintViewJsp(@PathParam("aliasId") String aliasId) {
+		Map<String, Object> map = new HashMap<>();
 		Item item;
 		Alias alias;
 		
@@ -107,7 +111,10 @@ public class InfoRouter {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 		
-		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", item)).build();
+		map.put("item", item);
+		map.put("alias", alias);
+		
+		return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", map)).build();
 	}
 
 	@GET

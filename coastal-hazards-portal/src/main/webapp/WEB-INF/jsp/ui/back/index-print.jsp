@@ -7,6 +7,7 @@
 <%@page import="gov.usgs.cida.coastalhazards.rest.ui.Identifier"%>
 <%@page import="java.util.Map"%>
 <%@page import="gov.usgs.cida.coastalhazards.model.Item"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.Alias"%>
 <%@page import="gov.usgs.cida.coastalhazards.jpa.ItemManager"%>
 <%@page import="gov.usgs.cida.coastalhazards.rest.data.ItemResource"%>
 <%@page import="java.io.File"%>
@@ -43,7 +44,9 @@
 
 %>
 <%
-	Item item = (Item) request.getAttribute("it");
+	Map<String, Object> paramMap = ((Map<String, Object>) request.getAttribute("it"));
+	Item item = (Item) paramMap.get("item");
+	Alias alias = (Alias) paramMap.get("alias");
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 	String baseUrl = props.getProperty("coastal-hazards.base.url");
 	String secureBaseUrlJndiString = props.getProperty("coastal-hazards.base.secure.url");
@@ -53,6 +56,15 @@
 		baseUrl = secureBaseUrlJndiString;
 	}
 	baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
+	
+	String infoUrl = baseUrl + "/ui/info/";
+	
+	if(alias != null){
+		infoUrl += "alias/" + alias.getId();
+	} else {
+		infoUrl += "item/" + item.getId();
+	}
+	
 	String userAgent = request.getHeader("user-agent");
 
 	String version = props.getProperty("application.version");
@@ -194,7 +206,7 @@
 			$(document).on('ready', function () {
 				CCH.CONFIG = {
 					contextPath: '<%=baseUrl%>',
-					infoItemUrl: '<%=baseUrl + "/ui/info/item/" + item.getId()%>',
+					infoItemUrl: '<%=infoUrl%>',
 					minifyCallback: function (data) {
 						var url = data.tinyUrl || data.responseJSON.full_url,
 							link = $('<a />').attr('href', url).html(url);

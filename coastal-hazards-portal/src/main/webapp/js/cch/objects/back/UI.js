@@ -146,16 +146,18 @@ CCH.Objects.Back.UI = function (args) {
 			me.$publist = $('<ul />').attr('id', 'info-container-publications-list');
 			
 			var itemIdSection = $('<li />').addClass('publist-header').html("Item ID");
-			itemIdSection.append($('<ul />').append($('<li />').append($('<span />').html(me.item.id))));
+			itemIdSection.append($('<ul />').append($('<li />').append($('<span />').addClass('no-caps').html(me.item.id))));
 			itemIdSection.appendTo(me.$publist);
-			
-			var itemAliasSection = $('<li />').addClass('publist-header').html("Aliases");
-			var aliasList = $('<ul />');
-			me.item.aliases.each(function(alias, index) {
-				aliasList.append($('<li />').append($('<span />').html(alias)));
-			});
-			itemAliasSection.append(aliasList);
-			itemAliasSection.appendTo(me.$publist);
+						
+			if(me.item.aliases.length > 0){
+				var itemAliasSection = $('<li />').addClass('publist-header').html("Aliases");
+				var aliasList = $('<ul />');
+				me.item.aliases.each(function(alias, index) {
+					aliasList.append($('<li />').append($('<span />').addClass('no-caps').html(alias)));
+				});
+				itemAliasSection.append(aliasList);
+				itemAliasSection.appendTo(me.$publist);
+			}
 			
 			//Publications list (data, resources, and pubs)
 			Object.keys(me.item.summary.full.publications, function (type) {

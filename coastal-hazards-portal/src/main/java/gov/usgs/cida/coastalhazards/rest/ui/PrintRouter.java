@@ -4,6 +4,8 @@ import gov.usgs.cida.coastalhazards.jpa.AliasManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Alias;
 import gov.usgs.cida.coastalhazards.model.Item;
+import java.util.HashMap;
+import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -23,12 +25,14 @@ public class PrintRouter {
 	@Produces(MediaType.TEXT_HTML)
 	@Path("/item/{id}")
 	public Response useInfoPrintViewJsp(@PathParam("id") String id) {
+		Map<String, Object> map = new HashMap<>();
 		try (ItemManager mgr = new ItemManager()) {
 			Item item = mgr.load(id);
 			if (item == null) {
 				return Response.status(Response.Status.NOT_FOUND).build();
 			}
-			return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", item)).build();
+			map.put("item", item);
+			return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", map)).build();
 		}
 
 	}
@@ -37,6 +41,7 @@ public class PrintRouter {
 	@Produces(MediaType.TEXT_HTML)
 	@Path("/alias/{aliasId}")
 	public Response useAliasInfoPrintViewJsp(@PathParam("aliasId") String aliasId) {
+		Map<String, Object> map = new HashMap<>();
 		try (ItemManager mgr = new ItemManager(); AliasManager amgr = new AliasManager();) {
 			Alias alias = amgr.load(aliasId);
 			if(alias != null){
@@ -44,7 +49,9 @@ public class PrintRouter {
 				if (item == null) {
 					return Response.status(Response.Status.NOT_FOUND).build();
 				}
-				return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", item)).build();
+				map.put("item", item);
+				map.put("alias", alias);
+				return Response.ok(new Viewable("/WEB-INF/jsp/ui/back/index-print.jsp", map)).build();
 			} else {
 				return Response.status(Response.Status.NOT_FOUND).build(); 
 			}
