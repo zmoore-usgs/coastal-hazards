@@ -777,23 +777,11 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				});
 				
 				var item = CCH.items.getById({id: id});
-				var shareId;
-				var shareType;
-				
-				if((CCH.CONFIG.params.type + String()).toLowerCase() == 'alias' && item.aliases.indexOf(CCH.CONFIG.params.id) >= 0){
-					shareId = CCH.CONFIG.params.id;
-					shareType = 'alias';
-				} else if(item.aliases.length > 0){
-					shareId = item.aliases[0];
-					shareType = 'alias';
-				} else {
-					shareId = item.id;
-					shareType = 'item';
-				}
+				var urlAlias = (CCH.CONFIG.params.type + String()).toLowerCase() == 'alias' ? CCH.CONFIG.params.id : null;
 				
 				$(window).trigger('slide.bucket.button.click.share', {
-					'type': shareType,
-					'id': shareId,
+					'type': 'item',
+					'link': item.getPreferredUrl(urlAlias),
 					'shareTitle' : shareTitle
 				});
 			});
@@ -809,15 +797,9 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 					'id': id
 				});
 				var item = CCH.items.getById({id: id});
-				var openUrl;
 				
-				if((CCH.CONFIG.params.type + String()).toLowerCase() == 'alias' && item.aliases.indexOf(CCH.CONFIG.params.id) >= 0){
-					openUrl = CCH.CONFIG.contextPath + '/ui/info/alias/' + CCH.CONFIG.params.id
-				} else if(item.aliases.length > 0){
-					openUrl = CCH.CONFIG.contextPath + '/ui/info/alias/' + item.aliases[0]
-				} else {
-					openUrl = CCH.CONFIG.contextPath + '/ui/info/item/' + item.id
-				}
+				var urlAlias = (CCH.CONFIG.params.type + String()).toLowerCase() == 'alias' ? CCH.CONFIG.params.id : null;
+				var openUrl = CCH.CONFIG.contextPath + '/ui/info' + item.getPreferredUrl(urlAlias);
 				
 				window.open(openUrl, '_self');
 			});

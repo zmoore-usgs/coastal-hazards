@@ -196,7 +196,7 @@ CCH.Objects.Front.UI = function (args) {
 
 		var shareType = args.type,
 			shareTitle = args.shareTitle,
-			shareId = args.id;
+			shareLink = args.link;
 
 		if (shareType === 'session') {
 			// A user has clicked on the share menu item. A session needs to be 
@@ -230,9 +230,7 @@ CCH.Objects.Front.UI = function (args) {
 				}
 			});
 		} else if (shareType === 'item') {
-			me.displayShareModal(CCH.CONFIG.publicUrl + '/ui/item/' + shareId, shareTitle);
-		} else if (shareType === 'alias') {
-			me.displayShareModal(CCH.CONFIG.publicUrl + '/ui/alias/' + shareId, shareTitle);
+			me.displayShareModal(CCH.CONFIG.publicUrl + '/ui' + shareLink, shareTitle);
 		}
 	};
 
