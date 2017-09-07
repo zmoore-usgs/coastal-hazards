@@ -1,6 +1,5 @@
 package gov.usgs.cida.coastalhazards.rest.ui;
 
-import gov.usgs.cida.coastalhazards.model.Item;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
@@ -12,7 +11,7 @@ import org.glassfish.jersey.server.mvc.Viewable;
 
 /**
  *
- * @author Jordan Walker <jiwalker@usgs.gov>
+ * @author Zack Moore <zmoore@usgs.gov>
  */
 @Path("/alias")
 public class AliasRouter {
