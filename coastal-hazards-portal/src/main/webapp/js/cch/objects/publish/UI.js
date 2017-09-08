@@ -109,7 +109,6 @@ CCH.Objects.Publish.UI = function () {
 		$editingEnabled = false;
 
 	const ALIAS_NAME_REGEX = "(?!([A-Z|a-z|0-9|-])).";
-	me.loadedAllAliases = false;
 	me.allAliasList = [];
 	me.visibleAliasList = [];
 	me.templateNames = ["publication_row", "item_list", "alias_row", "alias_modal_list_row"];
@@ -842,11 +841,7 @@ CCH.Objects.Publish.UI = function () {
 		}
 	};
 	
-	me.createModalAliasRow = function(alias, newAlias) {
-		var aliasRowHtml = CCH.ui.templates.alias_modal_list_row({
-			id: alias.id,
-			item_id: alias.item_id
-		});
+	me.createModalAliasRowListeners = function(alias, newAlias, aliasRowHtml){
 		var $rowObject = $(aliasRowHtml);
 		var $panel = $('#all-alias-panel');
 		var $panelBodyListContainer = $panel.find('.panel-body > ul');
@@ -1029,6 +1024,40 @@ CCH.Objects.Publish.UI = function () {
 		$rowObject.find('.alias-modal-item-item').on("blur", function(evt) {
 			evt.target.value = evt.target.value.trim();
 		});
+	};
+	
+	me.createModalAliasRow = function(alias, newAlias) {
+		if(CCH.ui.templates.alias_modal_list_row != null){
+			var aliasRowHtml = CCH.ui.templates.alias_modal_list_row({
+				id: alias.id,
+				item_id: alias.item_id
+			});
+			
+			me.createModalAliasRowListeners(alias, newAlias, aliasRowHtml);
+		} else {
+			//Attempt to load the template if it has not already been loaded
+			var templateName = "alias_modal_list_row"
+			var _this = this;
+			$.ajax({
+				url: CCH.CONFIG.contextPath + '/resource/template/handlebars/publish/' + templateName + '.html',
+				context: {
+					templateName: templateName
+				},
+				success: function (data) {
+					CCH.ui.templates[this.templateName] = Handlebars.compile(data);
+					
+					var aliasRowHtml = CCH.ui.templates.alias_modal_list_row({
+						id: _this.alias.id,
+						item_id: _this.alias.item_id
+					});
+					
+					me.createModalAliasRowListeners(alias, newAlias, aliasRowHtml);
+				},
+				error: function () {
+					window.alert('Unable to load resources required for a functional publication page. Please contact CCH admin team.');
+				}
+			});
+		}
 	};
 	
 	me.deleteModalAlias = function(args) {
@@ -1884,9 +1913,6 @@ CCH.Objects.Publish.UI = function () {
 	
 	$buttonManageAliases.on(CCH.CONFIG.strings.click, function() {
 		$aliasModal.modal(CCH.CONFIG.strings.show);
-		if(!me.loadedAllAliases){
-			me.loadAllAliases();
-		}
 	});
 	
 	$aliasModalAddButton.on(CCH.CONFIG.strings.click, function() {
@@ -2468,7 +2494,6 @@ CCH.Objects.Publish.UI = function () {
 				me.visibleAliasList = data;
 				$buttonManageAliases.removeAttr(CCH.CONFIG.strings.disabled);
 				$aliasModalList.empty();
-				me.loadedAllAliases = true;
 				me.allAliasList.each(function(alias){
 					me.createModalAliasRow(alias, false);
 				});
