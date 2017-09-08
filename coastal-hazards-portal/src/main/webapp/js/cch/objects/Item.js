@@ -30,6 +30,7 @@ CCH.Objects.Item = function (args) {
 	me.services = args.services || null;
 	me.activeStorm = args.activeStorm || false;
 	me.featured = args.featured || false;
+	me.aliases = args.aliases || [];
 
 	me.load = function (args) {
 		args = args || {};
@@ -390,6 +391,20 @@ CCH.Objects.Item = function (args) {
 			});
 		}
 	};
+	
+	me.createUrl = function(type, id){
+		return '/' + type + '/' + id;
+	}
+	
+	me.getPreferredUrl = function(providedAlias){
+		if(providedAlias != null && providedAlias.length > 0 && me.aliases.indexOf(providedAlias) >= 0){
+			return me.createUrl('alias', providedAlias);
+		} else if (me.aliases.length > 0) {
+			return me.createUrl('alias', me.aliases[0]);
+		} else {
+			return me.createUrl('item', me.id);
+		}
+	}
 
 	/**
 	 * Using an item id, this function will run through itself and children to

@@ -82,6 +82,94 @@ CCH.Util.Search = function (args) {
 		});
 		return new OpenLayers.Geometry.MultiPoint(points).getBounds();
 	};
+	
+	me.getAliasById = function (args) {
+		if (!args || !args.id) {
+			throw 'arguments required';
+		}
+		
+		var id = args.id,
+			callbacks = args.callbacks || {
+				success: [],
+				error: []
+		};
+		
+		var url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.alias.endpoint + '/' + id;
+		
+		var search = $.ajax({
+			url: url,
+			dataType: 'json',
+			context: this,
+			traditional: true,
+			success: function (data, statusText, xhrResponse) {
+				callbacks.success.each(function (cb) {
+					cb.apply(this, [data, statusText, xhrResponse]);
+				});
+			},
+			error: function (xhr, status, error) {
+				callbacks.error.each(function (cb) {
+					cb.apply(this, [xhr, status, error]);
+				});
+			}
+		});
+	}
+	
+	me.getAliasListForItem = function (args) {
+		if (!args || !args.itemId) {
+			throw 'arguments required';
+		}
+		
+		var itemId = args.itemId,
+			callbacks = args.callbacks || {
+				success: [],
+				error: []
+		};
+		
+		var url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.alias.endpoint + '/item/' + itemId;
+		
+		var search = $.ajax({
+			url: url,
+			dataType: 'json',
+			context: this,
+			traditional: true,
+			success: function (data, statusText, xhrResponse) {
+				callbacks.success.each(function (cb) {
+					cb.apply(this, [data, statusText, xhrResponse]);
+				});
+			},
+			error: function (xhr, status, error) {
+				callbacks.error.each(function (cb) {
+					cb.apply(this, [xhr, status, error]);
+				});
+			}
+		});
+	}
+	
+	me.getAllAliases = function (args) {
+		var callbacks = args.callbacks || {
+				success: [],
+				error: []
+		};
+		
+		var url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.alias.endpoint;
+		
+		var search = $.ajax({
+			url: url,
+			dataType: 'json',
+			context: this,
+			traditional: true,
+			success: function (data, statusText, xhrResponse) {
+				callbacks.success.each(function (cb) {
+					cb.apply(this, [data, statusText, xhrResponse]);
+				});
+			},
+			error: function (xhr, status, error) {
+				callbacks.error.each(function (cb) {
+					cb.apply(this, [xhr, status, error]);
+				});
+			}
+		});
+	}
 
 	me.submitItemSearch = function (args) {
 		if (!args) {
@@ -176,7 +264,10 @@ CCH.Util.Search = function (args) {
 	return {
 		submitLocationSearch: me.submitLocationSearch,
 		submitItemSearch: me.submitItemSearch,
-		getBboxOfLocationResults: me.getBboxOfLocationResults
+		getBboxOfLocationResults: me.getBboxOfLocationResults,
+		getAliasById: me.getAliasById,
+		getAliasListForItem: me.getAliasListForItem,
+		getAllAliases: me.getAllAliases
 	};
 
 };

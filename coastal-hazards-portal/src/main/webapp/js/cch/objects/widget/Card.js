@@ -429,9 +429,9 @@ CCH.Objects.Widget.Card = function (args) {
 				$buttonRow = container.find('.application-card-control-row'),
 				$bucketButton = $buttonRow.find('.application-card-add-bucket-btn'),
 				$exploreRow = container.find('.application-card-explore-row'),
-				$moreInfoTarget = CCH.CONFIG.contextPath + '/ui/info/item/' + me.id,
 				$moreInfoBtn = container.find('.application-card-more-info-btn').on("click", function () {
-					window.location = $moreInfoTarget;
+					var urlAlias = (CCH.CONFIG.params.type + String()).toLowerCase() == 'alias' ? CCH.CONFIG.params.id : null;
+					window.location = CCH.CONFIG.contextPath + '/ui/info' + me.item.getPreferredUrl(urlAlias);
 				}),
 				$zoomToBtn = container.find('.application-card-zoom-to-btn'),
 				isItemInBucket = CCH.ui.bucket.getItemById(me.id) !== undefined;
