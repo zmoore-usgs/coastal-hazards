@@ -142,6 +142,27 @@ public class GeoserverUtil {
 		UUID uuid = UUID.randomUUID();
 		File wpsRequestFile = new File(tempDirectory, uuid.toString() + ".xml");
 		
+		String fileId = UUID.randomUUID().toString();
+		String realFileName = TempFileResource.getFileNameForId(fileId);
+		//temp file must not include fileId, it should include the realFileName. We don't hand out the realFileName.
+		File tempFile = new File(TempFileResource.getTempFileSubdirectory(), realFileName);
+		FileOutputStream fileOut = null;
+		try {
+			fileOut = new FileOutputStream(tempFile);
+			IOUtils.copy(shapefile, fileOut);  // this is the renamed zip file (the raster tif)
+		} catch (IOException ex) {
+			throw new RuntimeException("Error writing zip to file '" + tempFile.getAbsolutePath() + "'.", ex);
+		} finally {
+			IOUtils.closeQuietly(shapefile);
+			IOUtils.closeQuietly(fileOut);
+		}
+		// tempFile should now have all the data transferred to it
+		log.info("Data should now have been copied to the tempFile located here:" + tempFile.getAbsoluteFile()); //this puts it under <tomcat>/temp/cch-temp<randomkeyA>/<randomkeyB>  without the .zip ext
+		log.info("The file id is: " + fileId);
+		String uri = props.getProperty("coastal-hazards.base.url"); 
+		log.info("The uri from the props is: " + uri);
+		uri += DataURI.DATA_SERVICE_ENDPOINT + DataURI.TEMP_FILE_PATH + "/" + fileId;
+		
 		try {
 
 			wpsRequestOutputStream = new FileOutputStream(wpsRequestFile);
@@ -159,12 +180,7 @@ public class GeoserverUtil {
 					+ "<wps:DataInputs>"
 					+ "<wps:Input>"
 					+ "<ows:Identifier>features</ows:Identifier>"
-					+ "<wps:Data>"
-					+ "<wps:ComplexData mimeType=\"application/zip\"><![CDATA[").getBytes());
-			IOUtils.copy(shapefile, new Base64OutputStream(wpsRequestOutputStream, true, 0, null));
-			wpsRequestOutputStream.write(new String(
-					"]]></wps:ComplexData>"
-					+ "</wps:Data>"
+					+ "<wps:Reference xlink:href=\""+ uri + "\" mimeType=\"application/zip\"/>"
 					+ "</wps:Input>"
 					+ "<wps:Input>"
 					+ "<ows:Identifier>workspace</ows:Identifier>"
@@ -211,6 +227,7 @@ public class GeoserverUtil {
 			IOUtils.closeQuietly(wpsRequestOutputStream);
 			IOUtils.closeQuietly(uploadedInputStream);
 			FileUtils.deleteQuietly(wpsRequestFile);
+			FileUtils.deleteQuietly(tempFile);
 		}
 
 		return layerCreated;
