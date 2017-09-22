@@ -208,13 +208,9 @@ public class GeoserverUtil {
 					"wps/WebProcessingService", geoserverUser, geoserverPass, wpsRequestFile);
 		}
 		finally {
-			try {
 			IOUtils.closeQuietly(wpsRequestOutputStream);
 			IOUtils.closeQuietly(uploadedInputStream);
 			FileUtils.deleteQuietly(wpsRequestFile);
-			} catch(Exception e) {
-				log.error("Failed to close stream or delete temp file: " + e);
-			}
 		}
 
 		return layerCreated;
@@ -238,16 +234,11 @@ public class GeoserverUtil {
 			post.addHeader(new BasicHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString(userPass.getBytes())));
 			HttpResponse response = httpClient.execute(post);
 			String responseString = EntityUtils.toString(response.getEntity());
-			
 			log.info("WPS Response Recieved: " + responseString);
 			return responseString;
 		} finally {
-			try {
-				IOUtils.closeQuietly(wpsRequestInputStream);
-				FileUtils.deleteQuietly(wpsRequestFile);
-			} catch(Exception e) {
-				log.error("Failed to close stream or delete temp file: " + e);
-			}
+			IOUtils.closeQuietly(wpsRequestInputStream);
+			FileUtils.deleteQuietly(wpsRequestFile);
 		}
 	}
         /**
@@ -265,7 +256,6 @@ public class GeoserverUtil {
                 } catch (IOException ex) {
                         log.error("Unable to post wps request. Error creating xml request.");
                         throw ex;
-                        
                 }
 
             return absPath;
@@ -322,13 +312,9 @@ public class GeoserverUtil {
                                             "wps/WebProcessingService", geoserverUser, geoserverPass, wpsRequestFile);
                     }
                     finally {
-		try {
-			IOUtils.closeQuietly(wpsRequestOutputStream);
-			IOUtils.closeQuietly(uploadedInputStream);
-			FileUtils.deleteQuietly(wpsRequestFile);
-		} catch(Exception e) {
-			log.error("Failed to close stream or delete temp file: " + e);
-		}
+                            IOUtils.closeQuietly(wpsRequestOutputStream);
+                            IOUtils.closeQuietly(uploadedInputStream);
+                            FileUtils.deleteQuietly(wpsRequestFile);
                     }
                     return urlString;
             }
