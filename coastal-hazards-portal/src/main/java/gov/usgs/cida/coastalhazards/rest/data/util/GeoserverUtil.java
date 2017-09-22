@@ -77,9 +77,11 @@ public class GeoserverUtil {
 		List<Service> serviceList = new LinkedList<>();
 
 		try {
+			log.info("addVectorLayer - Attempting WPS import with name: " + name);
 			String created = importUsingWPS(PROXY_WORKSPACE, PROXY_STORE, name, is);
 
 			if (StringUtils.isNotBlank(created)) {
+				log.info("addVectorLayer - WPS import succeeded, creating services with data: " + created);
 				serviceList.add(wfsService(created));
 				serviceList.add(wmsService(created));
 			}
@@ -101,6 +103,7 @@ public class GeoserverUtil {
 	 * @return Service with a www-accessible url
 	 */
 	private static Service wfsService(String layer) {
+		log.info("createWfsService using layer: " + layer);
 		Service service = new Service();
 		URI uri = UriBuilder.fromUri(geoserverExternalEndpoint).path(PROXY_WORKSPACE).path("wfs").build();
 		service.setType(Service.ServiceType.proxy_wfs);
@@ -117,6 +120,7 @@ public class GeoserverUtil {
 	 * @return Service with a www-accessible url
 	 */
 	private static Service wmsService(String layer) {
+		log.info("createWmsService using layer: " + layer);
 		Service service = new Service();
 		URI uri = UriBuilder.fromUri(geoserverExternalEndpoint).path(PROXY_WORKSPACE).path("wms").build();
 		service.setType(Service.ServiceType.proxy_wms);
@@ -204,9 +208,13 @@ public class GeoserverUtil {
 					"wps/WebProcessingService", geoserverUser, geoserverPass, wpsRequestFile);
 		}
 		finally {
+			try {
 			IOUtils.closeQuietly(wpsRequestOutputStream);
 			IOUtils.closeQuietly(uploadedInputStream);
 			FileUtils.deleteQuietly(wpsRequestFile);
+			} catch(Exception e) {
+				log.error("Failed to close stream or delete temp file: " + e);
+			}
 		}
 
 		return layerCreated;
@@ -221,6 +229,7 @@ public class GeoserverUtil {
 
 		FileInputStream wpsRequestInputStream = null;
 		try {
+			log.info("About to perform wps post request at URL: " + url);
 			wpsRequestInputStream = new FileInputStream(wpsRequestFile);
 			AbstractHttpEntity entity = new InputStreamEntity(wpsRequestInputStream, wpsRequestFile.length());
 			post.setEntity(entity);
@@ -228,12 +237,17 @@ public class GeoserverUtil {
 			String userPass = username + ":" + password;
 			post.addHeader(new BasicHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString(userPass.getBytes())));
 			HttpResponse response = httpClient.execute(post);
-
-			return EntityUtils.toString(response.getEntity());
-
+			String responseString = EntityUtils.toString(response.getEntity());
+			
+			log.info("WPS Response Recieved: " + responseString);
+			return responseString;
 		} finally {
-			IOUtils.closeQuietly(wpsRequestInputStream);
-			FileUtils.deleteQuietly(wpsRequestFile);
+			try {
+				IOUtils.closeQuietly(wpsRequestInputStream);
+				FileUtils.deleteQuietly(wpsRequestFile);
+			} catch(Exception e) {
+				log.error("Failed to close stream or delete temp file: " + e);
+			}
 		}
 	}
         /**
@@ -308,9 +322,13 @@ public class GeoserverUtil {
                                             "wps/WebProcessingService", geoserverUser, geoserverPass, wpsRequestFile);
                     }
                     finally {
-                            IOUtils.closeQuietly(wpsRequestOutputStream);
-                            IOUtils.closeQuietly(uploadedInputStream);
-                            FileUtils.deleteQuietly(wpsRequestFile);
+		try {
+			IOUtils.closeQuietly(wpsRequestOutputStream);
+			IOUtils.closeQuietly(uploadedInputStream);
+			FileUtils.deleteQuietly(wpsRequestFile);
+		} catch(Exception e) {
+			log.error("Failed to close stream or delete temp file: " + e);
+		}
                     }
                     return urlString;
             }

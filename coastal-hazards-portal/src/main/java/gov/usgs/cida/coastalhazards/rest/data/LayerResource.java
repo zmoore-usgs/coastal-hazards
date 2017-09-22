@@ -106,12 +106,17 @@ public class LayerResource {
 		
 		List<Service> added = null;
 		try {
+			 log.info("Vector layer upload - about to parseRequest");
 			byte[] inmemory = IOUtils.toByteArray(postBody);
 			try (ByteArrayInputStream bais = new ByteArrayInputStream(inmemory)) {
+				 log.info("Vector layer create - about to doCSWInsertFromString");
 				String metadataId = MetadataUtil.doCSWInsertFromString(MetadataUtil.extractMetadataFromShp(bais));
 				bais.reset();
+				
+				log.info("Vector layer create - about to do GeoserverUtil.addVectorLayer with Id: " + newId);
 				added = GeoserverUtil.addVectorLayer(bais, newId);
-
+				
+				log.info("Vector layer create - about to makeCSWServiceForUrl with metadataId: " + metadataId);
 				added.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
 			} finally {
 				inmemory = null; // just in case
