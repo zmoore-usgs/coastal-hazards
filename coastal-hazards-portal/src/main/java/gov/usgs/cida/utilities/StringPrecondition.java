@@ -16,7 +16,7 @@ public class StringPrecondition {
     
     public static void checkStringArgument(String string, int length) {
         if (!willFit(string, length)) {
-            throw new IllegalArgumentException("Max length is: " + length);
+            throw new IllegalArgumentException("Max length is: " + length + " | Provided string (" + string.length() + "): " + string);
         }
     }
     
