@@ -775,9 +775,13 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 					'eventAction': 'shareItemButtonClicked',
 					'eventLabel': 'bucket buttons'
 				});
+				
+				var item = CCH.items.getById({id: id});
+				var urlAlias = (CCH.CONFIG.params.type + String()).toLowerCase() == 'alias' ? CCH.CONFIG.params.id : null;
+				
 				$(window).trigger('slide.bucket.button.click.share', {
 					'type': 'item',
-					'id': id,
+					'link': item.getPreferredUrl(urlAlias),
 					'shareTitle' : shareTitle
 				});
 			});
@@ -792,7 +796,12 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				$(window).trigger('slide.bucket.button.click.info', {
 					'id': id
 				});
-				window.open(CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_self');
+				var item = CCH.items.getById({id: id});
+				
+				var urlAlias = (CCH.CONFIG.params.type + String()).toLowerCase() == 'alias' ? CCH.CONFIG.params.id : null;
+				var openUrl = CCH.CONFIG.contextPath + '/ui/info' + item.getPreferredUrl(urlAlias);
+				
+				window.open(openUrl, '_self');
 			});
 
 		$cardHtml.getContainer = function () {

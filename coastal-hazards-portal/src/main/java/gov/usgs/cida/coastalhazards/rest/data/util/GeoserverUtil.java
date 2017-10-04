@@ -77,9 +77,11 @@ public class GeoserverUtil {
 		List<Service> serviceList = new LinkedList<>();
 
 		try {
+			log.info("addVectorLayer - Attempting WPS import with name: " + name);
 			String created = importUsingWPS(PROXY_WORKSPACE, PROXY_STORE, name, is);
 
 			if (StringUtils.isNotBlank(created)) {
+				log.info("addVectorLayer - WPS import succeeded, creating services with data: " + created);
 				serviceList.add(wfsService(created));
 				serviceList.add(wmsService(created));
 			}
@@ -101,6 +103,7 @@ public class GeoserverUtil {
 	 * @return Service with a www-accessible url
 	 */
 	private static Service wfsService(String layer) {
+		log.info("createWfsService using layer: " + layer);
 		Service service = new Service();
 		URI uri = UriBuilder.fromUri(geoserverExternalEndpoint).path(PROXY_WORKSPACE).path("wfs").build();
 		service.setType(Service.ServiceType.proxy_wfs);
@@ -117,6 +120,7 @@ public class GeoserverUtil {
 	 * @return Service with a www-accessible url
 	 */
 	private static Service wmsService(String layer) {
+		log.info("createWmsService using layer: " + layer);
 		Service service = new Service();
 		URI uri = UriBuilder.fromUri(geoserverExternalEndpoint).path(PROXY_WORKSPACE).path("wms").build();
 		service.setType(Service.ServiceType.proxy_wms);
@@ -138,6 +142,27 @@ public class GeoserverUtil {
 		UUID uuid = UUID.randomUUID();
 		File wpsRequestFile = new File(tempDirectory, uuid.toString() + ".xml");
 		
+		String fileId = UUID.randomUUID().toString();
+		String realFileName = TempFileResource.getFileNameForId(fileId);
+		//temp file must not include fileId, it should include the realFileName. We don't hand out the realFileName.
+		File tempFile = new File(TempFileResource.getTempFileSubdirectory(), realFileName);
+		FileOutputStream fileOut = null;
+		try {
+			fileOut = new FileOutputStream(tempFile);
+			IOUtils.copy(shapefile, fileOut);  // this is the renamed zip file (the raster tif)
+		} catch (IOException ex) {
+			throw new RuntimeException("Error writing zip to file '" + tempFile.getAbsolutePath() + "'.", ex);
+		} finally {
+			IOUtils.closeQuietly(shapefile);
+			IOUtils.closeQuietly(fileOut);
+		}
+		// tempFile should now have all the data transferred to it
+		log.info("Data should now have been copied to the tempFile located here:" + tempFile.getAbsoluteFile()); //this puts it under <tomcat>/temp/cch-temp<randomkeyA>/<randomkeyB>  without the .zip ext
+		log.info("The file id is: " + fileId);
+		String uri = props.getProperty("coastal-hazards.base.url"); 
+		log.info("The uri from the props is: " + uri);
+		uri += DataURI.DATA_SERVICE_ENDPOINT + DataURI.TEMP_FILE_PATH + "/" + fileId;
+		
 		try {
 
 			wpsRequestOutputStream = new FileOutputStream(wpsRequestFile);
@@ -155,12 +180,7 @@ public class GeoserverUtil {
 					+ "<wps:DataInputs>"
 					+ "<wps:Input>"
 					+ "<ows:Identifier>features</ows:Identifier>"
-					+ "<wps:Data>"
-					+ "<wps:ComplexData mimeType=\"application/zip\"><![CDATA[").getBytes());
-			IOUtils.copy(shapefile, new Base64OutputStream(wpsRequestOutputStream, true, 0, null));
-			wpsRequestOutputStream.write(new String(
-					"]]></wps:ComplexData>"
-					+ "</wps:Data>"
+					+ "<wps:Reference xlink:href=\""+ uri + "\" mimeType=\"application/zip\"/>"
 					+ "</wps:Input>"
 					+ "<wps:Input>"
 					+ "<ows:Identifier>workspace</ows:Identifier>"
@@ -207,6 +227,7 @@ public class GeoserverUtil {
 			IOUtils.closeQuietly(wpsRequestOutputStream);
 			IOUtils.closeQuietly(uploadedInputStream);
 			FileUtils.deleteQuietly(wpsRequestFile);
+			FileUtils.deleteQuietly(tempFile);
 		}
 
 		return layerCreated;
@@ -221,6 +242,7 @@ public class GeoserverUtil {
 
 		FileInputStream wpsRequestInputStream = null;
 		try {
+			log.info("About to perform wps post request at URL: " + url);
 			wpsRequestInputStream = new FileInputStream(wpsRequestFile);
 			AbstractHttpEntity entity = new InputStreamEntity(wpsRequestInputStream, wpsRequestFile.length());
 			post.setEntity(entity);
@@ -228,9 +250,9 @@ public class GeoserverUtil {
 			String userPass = username + ":" + password;
 			post.addHeader(new BasicHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString(userPass.getBytes())));
 			HttpResponse response = httpClient.execute(post);
-
-			return EntityUtils.toString(response.getEntity());
-
+			String responseString = EntityUtils.toString(response.getEntity());
+			log.info("WPS Response Recieved: " + responseString);
+			return responseString;
 		} finally {
 			IOUtils.closeQuietly(wpsRequestInputStream);
 			FileUtils.deleteQuietly(wpsRequestFile);
@@ -251,7 +273,6 @@ public class GeoserverUtil {
                 } catch (IOException ex) {
                         log.error("Unable to post wps request. Error creating xml request.");
                         throw ex;
-                        
                 }
 
             return absPath;

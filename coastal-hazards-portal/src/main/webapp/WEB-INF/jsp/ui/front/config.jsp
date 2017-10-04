@@ -169,6 +169,9 @@
 					'item': {
 						'endpoint': '/data/item'
 					},
+					'alias' : {
+						'endpoint': '/data/alias'
+					},
 					'geocoding': {
 						'endpoint': '<%=geocodeEndpoint%>'
 					},

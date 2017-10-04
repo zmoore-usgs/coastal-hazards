@@ -43,6 +43,7 @@ CCH.Objects.Front.Map = function (args) {
 			name = args.name,
 			visible = args.visible === false ? false : true,
 			selectedItem = args.selectedItem,
+			newLayer = false,
 			layer;
 
 		layer = me.map.getLayersByName(name)[0];
@@ -51,6 +52,7 @@ CCH.Objects.Front.Map = function (args) {
 			if (item && 'function' === typeof item.getWmsLayer) {
 				layer = item.getWmsLayer(args);
 			}
+			newLayer = true;
 		}
 
 		layer.name = name;
@@ -73,6 +75,11 @@ CCH.Objects.Front.Map = function (args) {
 		layer.setVisibility(visible);
 
 		me.addLayer(layer);
+		
+		//Reverse-sort index of ribbon layers to draw inner-most layer first and clean up overlap
+		if(newLayer && ribbonIndex !== 0 && layer.params.SLD && layer.params.SLD.indexOf('ribbon') !== -1){
+			me.map.raiseLayer(layer, -ribbonIndex);
+		}
 
 		$(window).trigger('cch.map.shown.layer', {
 			layer: layer
