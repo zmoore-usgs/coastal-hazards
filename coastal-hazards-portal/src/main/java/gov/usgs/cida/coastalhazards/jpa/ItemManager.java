@@ -256,17 +256,43 @@ public class ItemManager implements AutoCloseable {
 	}
 	
 	public boolean isOrphan(String itemId) {		
-		for(Item rootItem : loadRootItems()) {
-			if(rootItem.getId().equals(itemId)){
-				return true;
+		boolean isOrphan = false;
+		
+		for (Item root : loadRootItems()) {
+			if (!root.getId().equals(Item.UBER_ID)) {
+				isOrphan = nestedOrphan(root, itemId);
+				
+				if(isOrphan){
+					break;
+				}
 			}
 		}
-		
-		return false;
+				
+		return isOrphan;
 	}
 	
 	public boolean isOrphan(Item item) {
 		return isOrphan(item.getId());
+	}
+	
+	private boolean nestedOrphan(Item root, String targetId) {
+		boolean isOrphan = false;
+		
+		if(root.getId().equals(targetId)){
+			return true;
+		}
+		
+		if(root.getChildren() != null && root.getChildren().size() > 0){
+			for(Item child : root.getChildren()){
+				isOrphan = nestedOrphan(child, targetId);
+
+				if(isOrphan){
+					break;
+				}
+			}
+		}
+		
+		return isOrphan;
 	}
 	
 	/**
