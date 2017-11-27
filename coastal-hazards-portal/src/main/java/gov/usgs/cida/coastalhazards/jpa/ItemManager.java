@@ -207,16 +207,30 @@ public class ItemManager implements AutoCloseable {
 		return id;
 	}
 
-	public boolean delete(String itemId) {
+	public boolean delete(String itemId, boolean deleteChildren) {
 		boolean deleted = false;
 		EntityTransaction transaction = em.getTransaction();
 		try {
 			Item item = em.find(Item.class, itemId);
-			mergeAll(updateAncestors(item));
 			
-			transaction.begin();
-			em.remove(item);
-			transaction.commit();
+			if(!deleteChildren) {
+				mergeAll(updateAncestors(item));
+				transaction.begin();
+				em.remove(item);
+				transaction.commit();
+			} else {
+				mergeAll(updateAncestors(item));
+				transaction.begin();
+				
+				if(item.getChildren() != null && item.getChildren().size() > 0){
+					for(Item child: item.getChildren()){
+						deleteNested(child.getId());
+					}
+				}
+				em.remove(item);
+				transaction.commit();
+			}
+			
 			fixEnabledStatus();
 			deleted = true;
 		}
@@ -227,6 +241,32 @@ public class ItemManager implements AutoCloseable {
 			}
 		}
 		return deleted;
+	}
+	
+	private boolean deleteNested(String itemId) {		
+		Item item = em.find(Item.class, itemId);
+		if(item.getChildren() != null && item.getChildren().size() > 0){
+			for(Item child : item.getChildren()) {
+				deleteNested(child.getId());
+			}
+		}
+		em.remove(item);
+
+		return true;
+	}
+	
+	public boolean isOrphan(String itemId) {		
+		for(Item rootItem : loadRootItems()) {
+			if(rootItem.getId().equals(itemId)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean isOrphan(Item item) {
+		return isOrphan(item.getId());
 	}
 	
 	/**

@@ -216,22 +216,28 @@ public class ItemResource {
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@DELETE
 	@Path("/{id}")
-	public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id) {
+	public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id, @QueryParam("deleteChildren") boolean deleteChildren) {
 		Response response = null;
+		
 		try (ItemManager itemManager = new ItemManager()) {
-			if (itemManager.delete(id)) {
-				response = Response.ok().build();
-			} else {
-				throw new Error();
-			}
-			try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
-				Status status = new Status();
-				status.setStatusName(Status.StatusName.ITEM_UPDATE);
-				statusMan.save(status);
+			if(itemManager.isOrphan(id)){
+				if (itemManager.delete(id, deleteChildren)) {
+					response = Response.ok().build();
+				} else {
+					throw new Error();
+				}
+				try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
+					Status status = new Status();
+					status.setStatusName(Status.StatusName.ITEM_UPDATE);
+					statusMan.save(status);
 
-				thumbMan.updateDirtyBits(id);
-			}
+					thumbMan.updateDirtyBits(id);
+				}
+			} else {
+				response = Response.status(400).build();
+			}			
 		}
+		
 		return response;
 	}
 
