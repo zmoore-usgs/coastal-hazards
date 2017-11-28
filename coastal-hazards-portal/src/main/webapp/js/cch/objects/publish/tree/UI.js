@@ -244,14 +244,10 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 						$('#' + node.li_attr.id + '_anchor').addClass(invisClass);
 					}
 				}
-	
 			}
 		} else {
+			console.log("Error - Could not get root item from tree.");
 			console.log(tree);
-			console.log(uber);
-			console.log(allItems);
-			console.log(tree.get_json());
-			console.log("Error");
 		}		
 	};
 
