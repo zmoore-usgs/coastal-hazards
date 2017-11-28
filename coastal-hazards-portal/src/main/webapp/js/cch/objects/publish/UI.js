@@ -57,7 +57,6 @@ CCH.Objects.Publish.UI = function () {
 		$deleteErrorModal = $('#delete-modal'),
 		$deleteErrorModalTitle = $deleteErrorModal.find('.modal-title'),
 		$deleteErrorModalBody = $deleteErrorModal.find('.modal-body'),
-		$deleteErrorModalFooter = $deleteErrorModal.find('.modal-footer'),
 		$itemAliasList = $('#sortable-aliases'),
 		$vectorModal = $('#vector-modal'),
 		$vectorModalSubmitButton = $('#vector-modal-submit-btn'),

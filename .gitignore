@@ -16,6 +16,9 @@ build.properties
 .project
 .classpath
 
+### VS Code ###
+.vscode/
+
 ### Java ###
 *.class
 

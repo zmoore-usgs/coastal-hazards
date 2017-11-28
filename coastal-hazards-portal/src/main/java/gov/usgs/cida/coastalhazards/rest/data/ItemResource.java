@@ -221,7 +221,7 @@ public class ItemResource {
 		
 		try (ItemManager itemManager = new ItemManager()) {
 			if(itemManager.isOrphan(id)){
-				if (itemManager.delete(id, deleteChildren)) {
+				if (itemManager.delete(id, deleteChildren, true)) {
 					response = Response.ok().build();
 				} else {
 					throw new Error();

@@ -156,7 +156,7 @@ public class ItemManager implements AutoCloseable {
 		
 		try(DataDomainManager dm = new DataDomainManager()){
 		    if (anyCycles(item)) {
-			throw new CycleIntroductionException();
+				throw new CycleIntroductionException();
 		    }
 		    List<Item> children = item.getChildren();
 		    List<Item> replaceList = new LinkedList<>();
@@ -172,11 +172,11 @@ public class ItemManager implements AutoCloseable {
 
 		    //Clear the upstream data domains if this item has a domain
 		    if(dm.load(id) != null){
-			List<Item> domainsToDelete = findVisibleAncestors(item);
+				List<Item> domainsToDelete = findVisibleAncestors(item);
 
-			for(Item toDelete : domainsToDelete){
-			    dm.deleteDomainForItem(toDelete);
-			}
+				for(Item toDelete : domainsToDelete){
+					dm.deleteDomainForItem(toDelete);
+				}
 		    }
 		} catch (Exception e){
 		    log.error("Failed to save item: " + item.getId() + " | Error: " + e.getMessage());
@@ -207,30 +207,22 @@ public class ItemManager implements AutoCloseable {
 		return id;
 	}
 
-	public boolean delete(String itemId, boolean deleteChildren) {
+	public boolean delete(String itemId, boolean deleteChildren, boolean onlyOrphans) {
 		boolean deleted = false;
 		EntityTransaction transaction = em.getTransaction();
+
 		try {
 			Item item = em.find(Item.class, itemId);
-			
+			mergeAll(updateAncestors(item));
+			transaction.begin();
+
 			if(!deleteChildren) {
-				mergeAll(updateAncestors(item));
-				transaction.begin();
 				em.remove(item);
-				transaction.commit();
 			} else {
-				mergeAll(updateAncestors(item));
-				transaction.begin();
-				
-				if(item.getChildren() != null && item.getChildren().size() > 0){
-					for(Item child: item.getChildren()){
-						deleteNested(child.getId());
-					}
-				}
-				em.remove(item);
-				transaction.commit();
+				deleteNested(item.getId(), onlyOrphans);
 			}
 			
+			transaction.commit();
 			fixEnabledStatus();
 			deleted = true;
 		}
@@ -243,56 +235,29 @@ public class ItemManager implements AutoCloseable {
 		return deleted;
 	}
 	
-	private boolean deleteNested(String itemId) {		
-		Item item = em.find(Item.class, itemId);
-		if(item.getChildren() != null && item.getChildren().size() > 0){
-			for(Item child : item.getChildren()) {
-				deleteNested(child.getId());
+	private boolean deleteNested(String itemId, boolean onlyOrphans) {
+		if(!onlyOrphans || isOrphan(itemId)){
+			Item item = em.find(Item.class, itemId);
+			if(item.getChildren() != null && item.getChildren().size() > 0){
+				for(Item child : item.getChildren()) {
+					deleteNested(child.getId(), onlyOrphans);
+				}
 			}
+			em.remove(item);
+	
+			return true;
 		}
-		em.remove(item);
 
-		return true;
+		return false;
 	}
 	
 	public boolean isOrphan(String itemId) {		
-		boolean isOrphan = false;
-		
-		for (Item root : loadRootItems()) {
-			if (!root.getId().equals(Item.UBER_ID)) {
-				isOrphan = nestedOrphan(root, itemId);
-				
-				if(isOrphan){
-					break;
-				}
-			}
-		}
-				
-		return isOrphan;
+		List<String> ancestorIds = findAncestorItemIds(itemId);
+		return !ancestorIds.contains(Item.UBER_ID);
 	}
 	
 	public boolean isOrphan(Item item) {
 		return isOrphan(item.getId());
-	}
-	
-	private boolean nestedOrphan(Item root, String targetId) {
-		boolean isOrphan = false;
-		
-		if(root.getId().equals(targetId)){
-			return true;
-		}
-		
-		if(root.getChildren() != null && root.getChildren().size() > 0){
-			for(Item child : root.getChildren()){
-				isOrphan = nestedOrphan(child, targetId);
-
-				if(isOrphan){
-					break;
-				}
-			}
-		}
-		
-		return isOrphan;
 	}
 	
 	/**
@@ -538,14 +503,32 @@ public class ItemManager implements AutoCloseable {
 		}
 		return result;
 	}
+
+	private List<String> findAncestorItemIds(String itemId) {
+		Query ancestors = em.createNativeQuery("SELECT id FROM cch_get_ancestors(:childId)");
+		ancestors.setParameter("childId", itemId);
+		return (List<String>) ancestors.getResultList();
+	}
+
+	private List<String> findAncestorItemIds(Item item) {
+		return findAncestorItemIds(item.getId());
+	}
+
+	private List<String> findVisibleAncestorIds(String itemId) {
+	    Query ancestors = em.createNativeQuery("SELECT id FROM cch_get_visible_ancestors(:childId)");
+	    ancestors.setParameter("childId", itemId);
+		return (List<String>) ancestors.getResultList();
+	}
+
+	private List<String> findVisibleAncestorIds(Item item) {
+		return findVisibleAncestorIds(item.getId());
+	}
 	
 	private List<Item> findAncestors(Item item) {
 		List<Item> items = new ArrayList<>();
-		Query ancestors = em.createNativeQuery("SELECT id FROM cch_get_ancestors(:childId)");
-		ancestors.setParameter("childId", item.getId());
-		List<String> resultList = ancestors.getResultList();
+		List<String> idList = findAncestorItemIds(item);
 		
-		for (String result : resultList) {
+		for (String result : idList) {
 			Item ancestor = load(result);
 			if (ancestor != null) {
 				items.add(ancestor);
@@ -555,12 +538,10 @@ public class ItemManager implements AutoCloseable {
 	}
 	
 	private List<Item> findVisibleAncestors(Item item) {
-	    List<Item> items = new ArrayList<>();
-	    Query ancestors = em.createNativeQuery("SELECT id FROM cch_get_visible_ancestors(:childId)");
-	    ancestors.setParameter("childId", item.getId());
-	    List<String> resultList = ancestors.getResultList();
+		List<Item> items = new ArrayList<>();
+	    List<String> idList = findVisibleAncestorIds(item);
 
-	    for (String result : resultList) {
+	    for (String result : idList) {
 		    Item ancestor = load(result);
 		    if (ancestor != null) {
 			    items.add(ancestor);

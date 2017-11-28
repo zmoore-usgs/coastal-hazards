@@ -237,11 +237,12 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		if(allItems !== undefined){
 			for (var cIdx = 0; cIdx < allItems.length; cIdx++) {
 				var node = tree.get_node(allItems[cIdx]);
+				var $nodeElement = $('#' + node.li_attr.id + '_anchor');
 				if (node.parent && node.parent !== '#' && node.parent !== 'uber' && node.parent !== 'root') {
 					if (node.state.displayed) {
-						$('#' + node.li_attr.id + '_anchor').removeClass(invisClass);
+						$nodeElement.removeClass(invisClass);
 					} else {
-						$('#' + node.li_attr.id + '_anchor').addClass(invisClass);
+						$nodeElement.addClass(invisClass);
 					}
 				}
 			}
