@@ -234,17 +234,22 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				allItems = uber.children_d,
 				invisClass = 'invisible-item';
 
-		for (var cIdx = 0; cIdx < allItems.length; cIdx++) {
-			var node = tree.get_node(allItems[cIdx]);
-			if (node.parent && node.parent !== '#' && node.parent !== 'uber' && node.parent !== 'root') {
-				if (node.state.displayed) {
-					$('#' + node.li_attr.id + '_anchor').removeClass(invisClass);
-				} else {
-					$('#' + node.li_attr.id + '_anchor').addClass(invisClass);
+		if(allItems !== undefined){
+			for (var cIdx = 0; cIdx < allItems.length; cIdx++) {
+				var node = tree.get_node(allItems[cIdx]);
+				var $nodeElement = $('#' + node.li_attr.id + '_anchor');
+				if (node.parent && node.parent !== '#' && node.parent !== 'uber' && node.parent !== 'root') {
+					if (node.state.displayed) {
+						$nodeElement.removeClass(invisClass);
+					} else {
+						$nodeElement.addClass(invisClass);
+					}
 				}
 			}
-
-		}
+		} else {
+			console.log("Error - Could not get root item from tree.");
+			console.log(tree);
+		}		
 	};
 
 	// When a user hits save, I need to reconstruct the data into the same format
@@ -343,31 +348,27 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 				// First create a data node for the top level item with all children
 				parentItem.children.push(this.buildAdjacencyListFromData(item));
-				// Use that date to create the tree
-				this.createTree([parentItem]);
-				this.loadOrphans().done(me.updateItemsLook);
+
+				//Load Orphans
+				$.ajax(CCH.config.baseUrl + '/data/tree/item/orphans/', {
+					context: this,
+					success: function (item) {
+						var orphanItem = {
+							'id': 'orphans',
+							'itemType': 'aggregation',
+							'title': 'Orphans',
+							'children': item.items
+						}
+
+						// Create a data node for the top level orphan item with all of its children
+						parentItem.children.push(this.buildAdjacencyListFromData(orphanItem));
+
+						//Use the retrieved data to create the tree
+						me.createTree([parentItem]);
+					}
+				});
 			}
 		});
-
-		// Load the orphans object
-		me.loadOrphans = function () {
-			return $.ajax(CCH.config.baseUrl + '/data/tree/item/orphans/', {
-				context: this,
-				success: function (item) {
-					var orphanItem = {
-						'id': 'orphans',
-						'itemType': 'aggregation',
-						'title': 'Orphans',
-						'children': item.items
-					},
-					orphanNode = this.buildAdjacencyListFromData(orphanItem);
-					CCH.ui.getTree().create_node('root', orphanNode, 'last');
-					if (me.autoSearch) {
-						CCH.ui.getTree().search(me.autoSearch, true);
-					}
-				}
-			});
-		};
 
 		// Bind the save button
 		me.$saveButton.on('click', me.saveItems);

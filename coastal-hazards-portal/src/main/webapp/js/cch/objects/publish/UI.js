@@ -54,6 +54,9 @@ CCH.Objects.Publish.UI = function () {
 		$alertModalTitle = $alertModal.find('.modal-title'),
 		$alertModalBody = $alertModal.find('.modal-body'),
 		$alertModalFooter = $alertModal.find('.modal-footer'),
+		$deleteErrorModal = $('#delete-modal'),
+		$deleteErrorModalTitle = $deleteErrorModal.find('.modal-title'),
+		$deleteErrorModalBody = $deleteErrorModal.find('.modal-body'),
 		$itemAliasList = $('#sortable-aliases'),
 		$vectorModal = $('#vector-modal'),
 		$vectorModalSubmitButton = $('#vector-modal-submit-btn'),
@@ -1577,14 +1580,14 @@ CCH.Objects.Publish.UI = function () {
 	me.deleteItem = function (id) {
 		var $deleteButton = $('<button />')
 			.attr({
-				type: 'button',
-				'data-dismiss': 'modal'
+				type: 'button'
 			})
 			.addClass('btn btn-danger')
 			.html('Delete')
 			.on(CCH.CONFIG.strings.click, function () {
+				$alertModal.modal(CCH.CONFIG.strings.hide);
 				$.ajax({
-					url: CCH.CONFIG.contextPath + '/data/item/' + id,
+					url: CCH.CONFIG.contextPath + '/data/item/' + id + "?deleteChildren=" + $("#deleteChildren").is(':checked').toString(),
 					method: 'DELETE',
 					success: function () {
 						$.ajax({
@@ -1594,27 +1597,34 @@ CCH.Objects.Publish.UI = function () {
 						window.location = CCH.CONFIG.contextPath + '/publish/item/';
 					},
 					error: function (jqXHR, err, errTxt) {
-						if (errTxt.indexOf('Unauthorized') !== -1) {
-							$alertModal.modal(CCH.CONFIG.strings.hide);
-							$alertModalTitle.html('Item Could Not Be Deleted');
-							$alertModalBody.html('It looks like your session has expired.' +
+						if (errTxt.indexOf('Unauthorized') !== -1 || jqXHR.status == 401) {
+							$deleteErrorModalTitle.html('Item Could Not Be Deleted');
+							$deleteErrorModalBody.html('It looks like your session has expired. ' +
 									'You should try reloading the page to continue.');
-							$alertModal.modal(CCH.CONFIG.strings.show);
+							$deleteErrorModal.modal(CCH.CONFIG.strings.show);
+						} else if(jqXHR.status == 400) {
+							$deleteErrorModalTitle.html('Item Not an Orphan');
+							$deleteErrorModalBody.html('The item you\'re trying to delete is not an orphan. ' +
+									'When you want to delete an item you must first orphan it from the ' +
+									'item tree view.');
+							$deleteErrorModal.modal(CCH.CONFIG.strings.show);
 						} else {
-							$alertModal.modal(CCH.CONFIG.strings.hide);
-							$alertModalTitle.html('Item Could Not Be Deleted');
-							$alertModalBody.html('Unfortunately the item you\'re ' +
+							$deleteErrorModalTitle.html('Item Could Not Be Deleted');
+							$deleteErrorModalBody.html('Unfortunately the item you\'re ' +
 									'trying to delete couldn\'t be deleted. ' +
 									'You may need to contact the system administrator ' +
-									'to manually remove it in order to continue');
-							$alertModal.modal(CCH.CONFIG.strings.show);
+									'to manually remove it in order to continue.');
+							$deleteErrorModal.modal(CCH.CONFIG.strings.show);
 						}
 					}
 				});
 			});
 		$alertModal.modal(CCH.CONFIG.strings.hide);
 		$alertModalTitle.html('Delete Item?');
-		$alertModalBody.html('<h2>WARNING: This action cannot be undone</h2>');
+		$alertModalBody.html('<h2>WARNING: This action cannot be undone</h2><br/><p>Note that only orphaned items may be deleted. ' +
+			'In order to delete an item you should first mark it as an orphan in the item tree view.<br/>' +
+			'<form id="deleteChildrenForm"><input type="radio" id="orphanChildren" name="childOption" value="orphan" checked/><label for="orphanChildren">Orphan Children</label><br/>' +
+			'<input type="radio" id="deleteChildren" name="childOption" value="delete"/><label for="deleteChildren">Delete Children</label></form>');
 		$alertModalFooter.append($deleteButton);
 		$alertModal.modal(CCH.CONFIG.strings.show);
 	};
