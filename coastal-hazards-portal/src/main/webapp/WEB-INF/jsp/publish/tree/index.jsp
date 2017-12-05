@@ -64,20 +64,18 @@
 				<div class="col-md-12">
 					<p class="lead">Instructions</p>
 					<p class="text-muted">
-						"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed 
-						do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-						Ut enim ad minim veniam, quis nostrud exercitation ullamco 
-						laboris nisi ut aliquip ex ea commodo consequat. Duis aute 
-						irure dolor in reprehenderit in voluptate velit esse cillum 
-						dolore eu fugiat nulla pariatur. Excepteur sint occaecat 
-						cupidatat non proident, sunt in culpa qui officia deserunt 
-						mollit anim id est laborum."
+						"Click and drag items to re-order them within the tree. Only items nested 
+						underneath 'Uber' will be displayed on the portal UI. Items nested under 
+						'Orphans' will still exist in the portal database but will not be shown
+						through the UI. Right click an item for additional available actions. Changes
+						made to the tree will not be applied unless you click the 'Save' button. If
+						the page is refreshed without 'Save' being clicked changes made will be lost."
 					</p>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-6">
-					<i class="fa fa-search"></i><input type="text" id="search-input" />			
+					<i class="fa fa-search"></i><input type="text" id="search-input" /><button id="clear-search" class="btn">Clear Search</button>		
 				</div>
 
 				<div id="save-button-container" class="col-md-6">
