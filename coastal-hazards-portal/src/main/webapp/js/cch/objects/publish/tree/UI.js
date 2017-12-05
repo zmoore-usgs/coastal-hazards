@@ -12,6 +12,8 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 	me.originalIdToRandomIdMap = {};
 	me.updatedItems = {};
+	me.deletedItems = {};
+	me.highlightedNodes = [];
 	me.autoSearch = "";
 
 
@@ -28,6 +30,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				'itemType': itemType,
 				'title': title,
 				'original-id': id,
+				'to-delete': false,
 				'displayed': false,
 				'displayedChildren': displayedChildren
 			};
@@ -105,7 +108,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 						'action': function () {
 							var tree = CCH.ui.getTree(),
 									selectedId = tree.get_selected()[0],
-									originalId = CCH.ui.getTree().get_node(selectedId).state['original-id'];
+									originalId = tree.get_node(selectedId).state['original-id'];
 
 							window.location = CCH.config.baseUrl + "/publish/item/" + originalId;
 						}
@@ -122,6 +125,41 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 								tree.move_node(selectedId, 'orphans');
 								me.itemUpdated(parentId);
 							}
+						}
+					},
+					'remove': {
+						'label': 'Toggle Delete',
+						'icon': 'fa fa-trash',
+						'action': function() {
+							var tree = CCH.ui.getTree(),
+								selectedId = tree.get_selected()[0];
+
+							if(selectedId.toLowerCase() !== 'uber' && selectedId.toLowerCase() !== 'orphans') {
+								if(me.isNodeItemOrphaned(selectedId)) {
+									//Delete
+									node.state['to-delete'] = !node.state['to-delete'];
+
+								} else {
+									//Display message that it's not an orphan
+									alert("There are copies of this item in the tree which are not orphans. In order to delete this item all copies must be orphaned.");
+								}
+							}
+						}
+					},
+					'highlight': {
+						'label': 'Toggle Hihglight Copies',
+						'icon': 'fa fa-bolt',
+						'action': function () {
+							var tree = CCH.ui.getTree(),
+								selectedId = tree.get_selected()[0],
+								node = tree.get_node(selectedId),
+								originalId = node.state['original-id'];
+								
+							if(me.highlightedNodes.includes(node)){
+								me.toggleHighlightedNodes([]);
+							} else {
+								me.toggleHighlightedNodes(me.findNodesByItemId(originalId));
+							}		
 						}
 					},
 					'displayed': {
@@ -189,36 +227,61 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				me.updateItemsLook();
 			},
 			'copy_node.jstree': function (evt, copyEvt) {
-				var oldParent = copyEvt.old_parent,
-						newParent = copyEvt.parent;
+				var newParent = copyEvt.parent;
 
-				// I don't want to allow users to move nodes to the root node. If they 
-				// try to, move back to the old node
-				if (newParent === 'root') {
-					CCH.ui.getTree().copy_node(copyEvt.original, oldParent);
-				} else {
+				// I don't want to allow users to copy to the root node, to orphans,
+				// or to any item under orphans
+				if (newParent !== 'root' && newParent !== '#' && !me.isNodeOrphaned(newParent)) {
 					copyEvt.node.state = copyEvt.original.state;
 					copyEvt.node.id = CCH.Util.Util.generateUUID();
 					me.itemUpdated(newParent);
+					me.updateItemsLook();
+				} else {
+					CCH.ui.getTree().delete_node(copyEvt.node);
 				}
-				me.updateItemsLook();
 			},
 			'show_contextmenu.jstree': function (evt, obj) {
-				var node = obj.node,
-					displayed = node.state.displayed,
-					$visibilityRow = $('.jstree-contextmenu').find('li:last-child'),
-					$iconContainer = $visibilityRow.find('i');
+				var node = obj.node;
 
-				$iconContainer.removeClass('fa-eye fa-eye-slash');
-				if (node.parent && node.parent !== '#' && node.parent !== 'uber' && node.parent !== 'root') {
-					if (displayed) {
-						$iconContainer.addClass('fa-eye');
-					} else {
-						$iconContainer.addClass('fa-eye-slash');
-					}
-					$visibilityRow.removeClass('hidden');
+				//Don't show the context menu at all if this item is not an actual CCH item
+				if(node.parents.length < 3) {
+					$('.jstree-contextmenu').addClass('hidden');
 				} else {
-					$visibilityRow.addClass('hidden');
+					//Show Context Menu
+					$('.jstree-contextmenu').removeClass('hidden');
+
+					//Toggle Orphan Context Entry
+					var $orphanRow = $($('.jstree-contextmenu').children()[1])
+					if(node.parents.includes('orphans')) {
+						$orphanRow.addClass('hidden');
+					} else {
+						$orphanRow.removeClass('hidden');
+					}
+
+					//Toggle Delete Context Entry
+					var $deleteRow = $($('.jstree-contextmenu').children()[2])
+					if(node.parents.includes('uber')) {
+						$deleteRow.addClass('hidden');
+					} else {
+						$deleteRow.removeClass('hidden');
+					}
+
+					//Toggle Visibility Context Entry and Icon
+					var $visibilityRow = $($('.jstree-contextmenu').children()[4]);
+					var $iconContainer = $visibilityRow.find('i');
+					var displayed = node.state.displayed;
+
+					if (node.parent && node.parent !== 'uber' && node.parent !== 'root' && node.parent !== 'orphans') {
+						$iconContainer.removeClass('fa-eye fa-eye-slash');
+						if (displayed) {
+							$iconContainer.addClass('fa-eye');
+						} else {
+							$iconContainer.addClass('fa-eye-slash');
+						}
+						$visibilityRow.removeClass('hidden');
+					} else {
+						$visibilityRow.addClass('hidden');
+					}
 				}
 			},
 			'after_open.jstree': function () {
@@ -227,7 +290,54 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		});
 	};
 
-	// Update the CSS on all items based on if they have visibility toggled on or off
+	me.isNodeOrphaned = function(nodeId) {
+		var tree = CCH.ui.getTree(),
+			node = CCH.ui.getTree().get_node(nodeId);
+
+		return node.parent.toLowerCase() == 'orphans';
+	}
+
+	me.findNodesByItemId = function(itemId) {
+		var tree = CCH.ui.getTree(),
+			allChildren = tree.get_node('root').children_d,
+			nodes = [];
+
+		for(var i = 0; i < allChildren.length; i++){
+			var childNode = tree.get_node(allChildren[i]);
+			if(childNode.state['original-id'] === itemId) {
+				nodes.push(childNode);
+			}
+		}
+
+		return nodes;
+	}
+
+	me.isNodeItemOrphaned = function(nodeId) {
+		var isOrphan = false;
+
+		if(nodeId.toLowerCase() !== 'uber' && nodeId.toLowerCase() !== 'orphans'
+			&& nodeId.toLowerCase() !== '#' && nodeId.toLowerCase() !== 'root') {
+
+			var tree = CCH.ui.getTree(),
+				node = tree.get_node(nodeId),
+				originalId = node.state['original-id'],
+				allChildren = tree.get_node('root').children_d;
+			
+			isOrphan = true;
+
+			for(var i = 0; i < allChildren.length; i++){
+				var childNode = tree.get_node(allChildren[i]);
+				if(childNode.state['original-id'] === originalId && childNode !== node) {
+					isOrphan = false;
+					break;
+				}
+			}
+		}
+
+		return isOrphan;
+	}
+
+	// Update the CSS on all items
 	me.updateItemsLook = function () {
 		var tree = CCH.ui.getTree(),
 				uber = tree.get_node('uber'),
@@ -246,11 +356,74 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					}
 				}
 			}
+
+			me.highlightNodes();
 		} else {
 			console.log("Error - Could not get root item from tree.");
 			console.log(tree);
 		}		
 	};
+
+	// Switch highlighted nodes
+	me.toggleHighlightedNodes = function(newNodes) {
+		var tree = CCH.ui.getTree(),
+			highlightClass = 'highlight-item',
+			selectedId = tree.get_selected()[0],
+			originalNode = CCH.ui.getTree().get_node(selectedId);
+
+		//Unhighlight highlighted
+		for(var i = 0; i < me.highlightedNodes.length; i++){
+			var node = me.highlightedNodes[i],
+				$nodeElement = $('#' + node.li_attr.id + '_anchor');
+			
+			$nodeElement.removeClass(highlightClass);
+		}
+
+		//Highlight new nodes
+		me.highlightedNodes = newNodes;
+		for(var i = 0; i < me.highlightedNodes.length; i++){
+			var node = me.highlightedNodes[i],
+				$nodeElement = $('#' + node.li_attr.id + '_anchor');
+	
+			//Select the node to open it so that we can highlight it
+			tree.select_node(node);
+			$nodeElement.addClass(highlightClass);
+		}
+
+		//Focus back on the original node
+		tree.deselect_all(true);
+		tree.select_node(originalNode);
+	}
+
+	me.highlightNodes = function() {
+		var highlightClass = 'highlight-item';
+
+		for(var i = 0; i < me.highlightedNodes.length; i++){
+			var node = me.highlightedNodes[i],
+				$nodeElement = $('#' + node.li_attr.id + '_anchor');
+	
+			$nodeElement.addClass(highlightClass);
+		}
+	}
+
+	me.clearSearch = function() {
+		var tree = CCH.ui.getTree(),
+		root = tree.get_node('root'),
+		allItems = root.children_d,
+		searchClass = 'jstree-search';
+
+		if(allItems !== undefined){
+			for (var cIdx = 0; cIdx < allItems.length; cIdx++) {
+				var node = tree.get_node(allItems[cIdx]);
+				var $nodeElement = $('#' + node.li_attr.id + '_anchor');
+				$nodeElement.removeClass(searchClass);
+			}
+			me.$searchInput.val = "";
+		} else {
+			console.log("Error - Could not get root item from tree.");
+			console.log(tree);
+		}		
+	}
 
 	// When a user hits save, I need to reconstruct the data into the same format
 	// as when it came in. This is an iterative process that requires me to dive
@@ -372,6 +545,9 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 		// Bind the save button
 		me.$saveButton.on('click', me.saveItems);
+
+		// Bind the save button
+		me.$clearSearchButton.on('click', me.clearSearch);
 
 		// Bind the search box
 		me.$searchInput.on('keyup', me.performTreeSearch);
