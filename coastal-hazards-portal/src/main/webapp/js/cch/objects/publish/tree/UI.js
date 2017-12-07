@@ -10,7 +10,6 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 	$.extend(me, args);
 
-	me.originalIdToRandomIdMap = {};
 	me.updatedItems = {};
 	me.deletedItems = {};
 	me.highlightedNodes = [];
@@ -28,14 +27,13 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			state = {
 				'opened': false,
 				'itemType': itemType,
+				'new-copy': false,
 				'title': title,
 				'original-id': id,
 				'to-delete': false,
 				'displayed': false,
 				'displayedChildren': displayedChildren
 			};
-
-		me.originalIdToRandomIdMap[id] = randomId;
 
 		return {
 			id: randomId,
@@ -118,30 +116,41 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 						'icon': 'fa fa-eraser',
 						'action': function () {
 							var tree = CCH.ui.getTree(),
-									selectedId = tree.get_selected()[0],
-									parentId = tree.get_parent(selectedId);
+									selectedIds = tree.get_selected();
 
-							if (selectedId.toLowerCase() !== 'uber') {
-								tree.move_node(selectedId, 'orphans');
-								me.itemUpdated(parentId);
-							}
+								for(var i = 0; i < selectedIds.length; i++){
+									var selectedId = selectedIds[i],
+										parentId = tree.get_parent(selectedId);
+									
+									if (selectedId.toLowerCase() !== 'uber') {
+										tree.move_node(selectedId, 'orphans');
+										me.itemUpdated(parentId);
+									}
+								}
 						}
 					},
 					'delete-all': {
-						'label': 'Orphan (and Orphan all Copies)',
+						'label': 'Orphan all Copies',
 						'icon': 'fa fa-eraser',
 						'action': function () {
 							var tree = CCH.ui.getTree(),
-									selectedId = tree.get_selected()[0],
+									selectedIds = tree.get_selected();
+							
+							for(var i = 0; i < selectedIds.length; i++){
+								var selectedId = selectedIds[i],
 									selectedNode = tree.get_node(selectedId),
 									originalId = selectedNode.state['original-id'],
 									allNodes = me.findNodesByItemId(originalId);
 
-							for(var i = 0; i < allNodes.length; i++){
-								var nodeId = allNodes[i].id;
-								var parentId = tree.get_parent(nodeId);
-								tree.move_node(nodeId, 'orphans');
-								me.itemUpdated(parentId);
+								for(var j = 0; j < allNodes.length; j++){
+									var nodeId = allNodes[j].id;
+
+									if(!selectedIds.includes(nodeId)){
+										var parentId = tree.get_parent(nodeId);
+										tree.move_node(nodeId, 'orphans');
+										me.itemUpdated(parentId);
+									}
+								}
 							}
 						}
 					},
@@ -149,14 +158,14 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 						'label': 'Mark for Delete (Delete Orphaned Children)',
 						'icon': 'fa fa-trash',
 						'action': function() {
-							me.deleteContext(true);
+							me.deleteContextAction(true);
 						}
 					},
 					'remove-orphan-children': {
 						'label': 'Mark for Delete (Orphan Children)',
 						'icon': 'fa fa-trash',
 						'action': function() {
-							me.deleteContext(false);
+							me.deleteContextAction(false);
 						}
 					},
 					'highlight': {
@@ -224,134 +233,144 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		});
 
 		me.$treeContainer.bind({
+			'select_node.jstree': function(evt, selectEvt) {
+				var selectedId = selectEvt.node.id;
+				if(selectedId === 'uber' || selectedId === 'orphans' || selectedId === 'root' || selectedId === '#'){
+					CCH.ui.getTree().deselect_node(selectedId);
+				}
+			},
 			'move_node.jstree': function (evt, moveEvt) {
 				var oldParent = moveEvt.old_parent,
-						newParent = moveEvt.parent;
+					newParent = moveEvt.parent,
+					tree = CCH.ui.getTree();
 
 				// I don't want to allow users to move nodes to the root node. If they 
 				// try to, move back to the old node
-				if (newParent === 'root') {
-					CCH.ui.getTree().move_node(moveEvt.node, oldParent);
+				if (newParent === 'root' || newParent === '#') {
+					tree.move_node(moveEvt.node, oldParent);
 				} else {
+					//Coalesce Duplicates
+					var newParentNode =  tree.get_node(newParent);
+					for(var i = 0; i < newParentNode.children.length; i++){
+						var childNode = tree.get_node(newParentNode.children[i]);
+						if(childNode.state['original-id'] === moveEvt.node.state['original-id'] && childNode.id !== moveEvt.node.id){
+							tree.delete_node(moveEvt.node);
+						}
+					}
+
+					//Update parents
 					[oldParent, newParent].each(function (itemId) {
 						me.itemUpdated(itemId);
 					});
 				}
+
 				me.updateItemsLook();
 			},
 			'copy_node.jstree': function (evt, copyEvt) {
-				var newParent = copyEvt.parent;
+				var tree = CCH.ui.getTree(),
+					newParent = copyEvt.parent,
+					newParentNode = tree.get_node(newParent);
 
 				// I don't want to allow users to copy to the root node, to orphans,
-				// or to any item under orphans
-				if (newParent !== 'root' && newParent !== '#' && !me.isNodeOrphaned(newParent)) {
+				// or to any item under orphans, or to a parent that already contains a copy of this item
+				var copyCount = 0;
+				for(var i = 0; i < newParentNode.children.length; i++){
+					var childNode = tree.get_node(newParentNode.children[i]);
+					if(childNode.state['original-id'] === copyEvt.node.state['original-id']){
+						copyCount++;
+						
+						if(copyCount > 1){
+							break;
+						}
+					}
+				}
+				// At this point the node should have already been copied to the parent so there should be at least 1 copy.
+				// If there is more than one copy that means there is already a copy of this node under the selected parent.
+				if (newParent !== 'root' && newParent !== '#' && !me.isNodeOrphaned(newParent) && copyCount === 1) {
+					var doHighlight = me.highlightedNodes.includes(copyEvt.original);
+
 					copyEvt.node.state = copyEvt.original.state;
-					copyEvt.node.id = CCH.Util.Util.generateUUID();
+					copyEvt.node.state['opened'] = false;
+					copyEvt.node.state['selected'] = false;
+					copyEvt.node.state['disabled'] = false;
+					copyEvt.node.state['new-copy'] = true;
+					tree.set_id(copyEvt.node, CCH.Util.Util.generateUUID());
+					copyEvt.node.a_attr.id = copyEvt.node.id + "_anchor";
+
+					if(doHighlight) {
+						me.highlightedNodes.push(copyEvt.node);
+					}
+
 					me.itemUpdated(newParent);
-					me.updateItemsLook();
 				} else {
 					CCH.ui.getTree().delete_node(copyEvt.node);
 				}
+				me.updateItemsLook();
 			},
 			'show_contextmenu.jstree': function (evt, obj) {
-				var node = obj.node;
+				var clickedNode = obj.node,
+					tree = CCH.ui.getTree(),
+					selectedIds = tree.get_selected();
 
-				//Don't show the context menu at all if this item is not an actual CCH item
-				if(node.parents.length < 3) {
+				if(!selectedIds.includes(clickedNode.id)){
+					tree.deselect_all();
+					tree.select_node(clickedNode.id);
+					selectedIds = tree.get_selected();
+				}
+
+				//Don't show the context menu at all if  a non-CCH Item node is selected
+				if(clickedNode.parents.length < 3 || selectedIds.includes('orphans') || selectedIds.includes('root') || selectedIds.includes('uber') || selectedIds.includes('#')) {
 					$('.jstree-contextmenu').addClass('hidden');
 				} else {
 					//Show Context Menu
 					$('.jstree-contextmenu').removeClass('hidden');
 
-					//Toggle Orphan Context Entries
-					var $orphanRow = $($('.jstree-contextmenu').children()[1]);
-					if(node.parents.includes('orphans') && node.parents.length == 3) {
-						$orphanRow.addClass('hidden');
-					} else {
-						$orphanRow.removeClass('hidden');
+					//Determine Selected Node Group Common Properties
+					var showHighlight = selectedIds.length === 1,
+						showEdit = selectedIds.length === 1,
+						showVisibility = true,
+						showOrphan = true,
+						showDelete = true;
+
+					for(var i = 0; i < selectedIds.length; i++){
+						var selectedId = selectedIds[i],
+							node = tree.get_node(selectedId);
+						
+						//Show orphan row if all selected nodes can show it
+						if(showOrphan) {
+							showOrphan = showOrphan && me.canShowOrphanRow(node);
+						}
+						
+						//Show delete row if all selected nodes can show it and all have same delete state
+						if(showDelete) {
+							showDelete = me.canShowDeleteRows(node) && node.state['to-delete'] === clickedNode.state['to-delete'] && node.state['delete-children'] === clickedNode.state['delete-children'];
+						}
+
+						//Show visibility row if all selected nodes can show it and all have same visibility
+						if(showVisibility) {
+							showVisibility = me.canShowVisibilityRow(node) && node.state['visibility'] === clickedNode.state['visibility'];
+						}
+
+						//Stop looping if we can't show any context entries
+						if(!(showOrphan || showDelete || showVisibility)){
+							break;
+						}
 					}
+
+					//Toggle Edit Context Entry
+					me.toggleEditContext(showEdit);
+
+					//Toggle Orphan Context Entries
+					me.toggleOrphanContext(showOrphan);
  
 					//Toggle Delete Context Entries
-					var $deleteRemoveRow = $($('.jstree-contextmenu').children()[3]);
-					var $deleteOrphanRow = $($('.jstree-contextmenu').children()[4]);
-					var $deleteOIcon = $deleteOrphanRow.find('i');
-					var $deleteRIcon = $deleteRemoveRow.find('i');
-					var $deleteOText = $deleteOrphanRow.find('a');
-					var $deleteRText = $deleteRemoveRow.find('a');
-					var toDelete = node.state['to-delete'];
-					var deleteChildren = node.state['delete-children'];
-
-					if(node.parents.includes('uber') || node.parents.length !== 3) {
-						$deleteOrphanRow.addClass('hidden');
-						$deleteRemoveRow.addClass('hidden');
-					} else {
-						$deleteOIcon.removeClass('fa-trash fa-trash-o');
-						$deleteRIcon.removeClass('fa-trash fa-trash-o');
-
-						if(toDelete){
-							if(deleteChildren){
-								$deleteRIcon.addClass('fa-trash-o');
-								var children = $deleteRText.children();
-								$deleteRText.text('Un-Mark for Delete (Delete Orphaned Children)').prepend(children);
-
-								//Hide Orphan Row, Show All Row
-								$deleteOrphanRow.addClass('hidden');
-								$deleteRemoveRow.removeClass('hidden');
-							} else {
-								$deleteOIcon.addClass('fa-trash-o');
-								var children = $deleteOText.children();
-								$deleteOText.text('Un-Mark for Delete (Orphan Children)').prepend(children);
-
-								//Hide All Row, Show Orphan Row
-								$deleteRemoveRow.addClass('hidden');
-								$deleteOrphanRow.removeClass('hidden');
-							}
-						} else {
-							$deleteOIcon.addClass('fa-trash');
-							$deleteRIcon.addClass('fa-trash');
-							var childrenO = $deleteOText.children();
-							var childrenR = $deleteRText.children();
-							$deleteOText.text('Mark for Delete (Orphan Children)').prepend(childrenO);
-							$deleteRText.text('Mark for Delete (Delete Orphaned Children)').prepend(childrenR);
-
-							//Show Both Delete Rows
-							$deleteOrphanRow.removeClass('hidden');
-							$deleteRemoveRow.removeClass('hidden');
-						}
-					}
+					me.toggleDeleteContext(showDelete, clickedNode.state['to-delete'], clickedNode.state['delete-children']);
 
 					//Toggle Highlight Context Entry Icon
-					var $highlightRow = $($('.jstree-contextmenu').children()[5]);
-					var $highlightIcon = $highlightRow.find('i');
-					var $highlightText = $highlightRow.find('a');
-					var highlighted = me.highlightedNodes.includes(node);
-					$highlightIcon.removeClass('fa-circle fa-circle-o');
-					if(highlighted){
-						$highlightIcon.addClass('fa-circle-o');
-						var children = $highlightText.children();
-						$highlightText.text('Un-Highlight Copies').prepend(children);
-					} else {
-						$highlightIcon.addClass('fa-circle');
-						var children = $highlightText.children();
-						$highlightText.text('Highlight Copies').prepend(children);
-					}
+					me.toggleHighlightContext(showHighlight, me.highlightedNodes.includes(clickedNode));
 
 					//Toggle Visibility Context Entry and Icon
-					var $visibilityRow = $($('.jstree-contextmenu').children()[6]);
-					var $visibilityIcon = $visibilityRow.find('i');
-					var displayed = node.state.displayed;
-
-					if (node.parent && node.parent !== 'uber' && node.parent !== 'root' && node.parent !== 'orphans') {
-						$visibilityIcon.removeClass('fa-eye fa-eye-slash');
-						if (displayed) {
-							$visibilityIcon.addClass('fa-eye');
-						} else {
-							$visibilityIcon.addClass('fa-eye-slash');
-						}
-						$visibilityRow.removeClass('hidden');
-					} else {
-						$visibilityRow.addClass('hidden');
-					}
+					me.toggleVisibilityContext(showVisibility, clickedNode.state['visibility']);
 				}
 			},
 			'after_open.jstree': function () {
@@ -360,27 +379,165 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		});
 	};
 
-	me.deleteContext = function(deleteChildren){
-		var tree = CCH.ui.getTree(),
-		selectedId = tree.get_selected()[0],
-		node = tree.get_node(selectedId),
-		originalId = node.state['original-id'];
+	me.toggleEditContext = function(canShow) {
+		var $editRow = $($('.jstree-contextmenu').children()[0]);
+		if(canShow) {
+			$editRow.removeClass('hidden');
+		} else {
+			
+			$editRow.addClass('hidden');
+		}
+	}
 
-		if(selectedId.toLowerCase() !== 'uber' && selectedId.toLowerCase() !== 'orphans') {
-			if(me.isNodeItemOrphaned(selectedId)) {
-				var itemNodes = me.findNodesByItemId(originalId);
+	me.toggleDeleteContext = function(canShow, toDelete, deleteChildren) {
+		var $deleteRemoveRow = $($('.jstree-contextmenu').children()[3]),
+			$deleteOrphanRow = $($('.jstree-contextmenu').children()[4]),
+			$deleteOIcon = $deleteOrphanRow.find('i'),
+			$deleteRIcon = $deleteRemoveRow.find('i'),
+			$deleteOText = $deleteOrphanRow.find('a'),
+			$deleteRText = $deleteRemoveRow.find('a');
 
-				//Mark item and all duplicates for Delete
-				for(var i = 0; i < itemNodes.length; i++){
-					var curNode = itemNodes[i];
-					curNode.state['to-delete'] = !curNode.state['to-delete'];
-					curNode.state['delete-children'] = deleteChildren;
+		if(canShow) {
+			$deleteOIcon.removeClass('fa-trash fa-trash-o');
+			$deleteRIcon.removeClass('fa-trash fa-trash-o');
+
+			if(toDelete){
+				if(deleteChildren){
+					$deleteRIcon.addClass('fa-trash-o');
+					var children = $deleteRText.children();
+					$deleteRText.text('Un-Mark for Delete (Delete Orphaned Children)').prepend(children);
+
+					//Hide Orphan Row, Show All Row
+					$deleteOrphanRow.addClass('hidden');
+					$deleteRemoveRow.removeClass('hidden');
+				} else {
+					$deleteOIcon.addClass('fa-trash-o');
+					var children = $deleteOText.children();
+					$deleteOText.text('Un-Mark for Delete (Orphan Children)').prepend(children);
+
+					//Hide All Row, Show Orphan Row
+					$deleteRemoveRow.addClass('hidden');
+					$deleteOrphanRow.removeClass('hidden');
 				}
-				
-				me.markDeleteNodes();
 			} else {
-				//Display message that it's not an orphan
-				alert("There are copies of this item in the tree which are not orphans. In order to delete this item all copies must be orphaned.");
+				$deleteOIcon.addClass('fa-trash');
+				$deleteRIcon.addClass('fa-trash');
+				var childrenO = $deleteOText.children();
+				var childrenR = $deleteRText.children();
+				$deleteOText.text('Mark for Delete (Orphan Children)').prepend(childrenO);
+				$deleteRText.text('Mark for Delete (Delete Orphaned Children)').prepend(childrenR);
+
+				//Show Both Delete Rows
+				$deleteOrphanRow.removeClass('hidden');
+				$deleteRemoveRow.removeClass('hidden');
+			}
+		} else {
+			$deleteOrphanRow.addClass('hidden');
+			$deleteRemoveRow.addClass('hidden');
+		}
+	}
+
+	me.toggleOrphanContext = function(canShow) {
+		var $orphanRow = $($('.jstree-contextmenu').children()[1]);
+		if(canShow) {
+			$orphanRow.removeClass('hidden');
+		} else {
+			$orphanRow.addClass('hidden');
+		}
+	}
+
+	me.toggleHighlightContext = function(canShow, highlighted) {
+		var $highlightRow = $($('.jstree-contextmenu').children()[5]),
+			$highlightIcon = $highlightRow.find('i'),
+			$highlightText = $highlightRow.find('a');
+
+		if(canShow) {
+			$highlightIcon.removeClass('fa-circle fa-circle-o');
+			if(highlighted){
+				$highlightIcon.addClass('fa-circle-o');
+				var children = $highlightText.children();
+				$highlightText.text('Un-Highlight Copies').prepend(children);
+			} else {
+				$highlightIcon.addClass('fa-circle');
+				var children = $highlightText.children();
+				$highlightText.text('Highlight Copies').prepend(children);
+			}
+			$highlightRow.removeClass('hidden');
+		} else {
+			$highlightRow.addClass('hidden');
+		}
+		
+	}
+
+	me.toggleVisibilityContext = function(canShow, displayed) {
+		var $visibilityRow = $($('.jstree-contextmenu').children()[6]),
+			$visibilityIcon = $visibilityRow.find('i');
+
+		if (canShow) {
+			$visibilityIcon.removeClass('fa-eye fa-eye-slash');
+			if (displayed) {
+				$visibilityIcon.addClass('fa-eye');
+			} else {
+				$visibilityIcon.addClass('fa-eye-slash');
+			}
+			$visibilityRow.removeClass('hidden');
+		} else {
+			$visibilityRow.addClass('hidden');
+		}
+	}
+
+	me.canShowVisibilityRow = function(node){
+		if (node.parent && node.parent !== 'uber' && node.parent !== 'root' && node.parent !== 'orphans' && node.parent !== '#' && node.parents.includes('uber')) {
+			return true;
+		}
+		return false;
+	}
+
+	me.canShowOrphanRow = function(node){
+		if(node.parents.includes('uber') || node.parents.length > 3) {
+			return true;
+		}
+		return false;
+	}
+
+	me.canShowDeleteRows = function(node){
+		if(node.parents.includes('orphans') && node.parents.length == 3) {
+			return true;
+		}
+		return false;
+	}
+
+	me.deleteContextAction = function(deleteChildren){
+		var tree = CCH.ui.getTree(),
+			selectedIds = tree.get_selected();
+		var processedItems = [];
+
+		for(var i = 0; i < selectedIds.length; i++){
+			var selectedId = selectedIds[i],
+				node = tree.get_node(selectedId),
+				originalId = node.state['original-id'];
+			
+			if(!processedItems.includes(originalId)){
+				//Add this item to the processed items list so we don't process any copies of node which would undo these actions
+				processedItems.push(originalId);
+
+				if(selectedId.toLowerCase() !== 'uber' && selectedId.toLowerCase() !== 'orphans') {
+					if(me.isNodeItemOrphaned(selectedId)) {
+						var itemNodes = me.findNodesByItemId(originalId);
+
+						//Mark item and all duplicates for Delete
+						for(var j = 0; j < itemNodes.length; j++){
+							var curNode = itemNodes[j];
+							curNode.state['to-delete'] = !curNode.state['to-delete'];
+							curNode.state['delete-children'] = deleteChildren;
+						}
+						
+						me.markDeleteNodes();
+					} else {
+						//Display message that it's not an orphan
+						alert("There are copies of a selected item in the tree which are not orphans. In order to delete the selected items all copies must also be orphaned.");
+					}
+				}
 			}
 		}
 	}
@@ -435,9 +592,9 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	// Update the CSS on all items
 	me.updateItemsLook = function () {
 		var tree = CCH.ui.getTree(),
-				uber = tree.get_node('uber'),
-				allItems = uber.children_d,
-				invisClass = 'invisible-item';
+			uber = tree.get_node('uber'),
+			allItems = uber.children_d,
+			invisClass = 'invisible-item';
 
 		if(allItems !== undefined){
 			for (var cIdx = 0; cIdx < allItems.length; cIdx++) {
@@ -528,9 +685,9 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 	me.clearSearch = function() {
 		var tree = CCH.ui.getTree(),
-		root = tree.get_node('root'),
-		allItems = root.children_d,
-		searchClass = 'jstree-search';
+			root = tree.get_node('root'),
+			allItems = root.children_d,
+			searchClass = 'jstree-search';
 
 		if(allItems !== undefined){
 			for (var cIdx = 0; cIdx < allItems.length; cIdx++) {
@@ -545,13 +702,16 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		}		
 	}
 
+	/*
 	// When a user hits save, I need to reconstruct the data into the same format
 	// as when it came in. This is an iterative process that requires me to dive
 	// into each child item. Eventually, out comes a fully built out data set
 	// that reflects what the tree currently looks like
 	me.buildDataFromJsTreeData = function (data, node, tree) {
 		var nodeId = node.id,
-			children = [];
+			children = [],
+			deleteWithChildren = [],
+			deleteOrphanChildren = [];
 
 		if (data === undefined) {
 			data = {};
@@ -559,10 +719,16 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 		if (node.children && node.children.length) {
 			for (var cIdx = 0; cIdx < node.children.length; cIdx++) {
-				var child = node.children[cIdx],
-						childData = me.buildDataFromJsTreeData(null, tree.get_node(child), tree);
+				var child = node.children[cIdx];
 
-				children.push(childData);
+				//If this item is marked to be deleted then don't include it in the children list
+				if(!child.state['to-delete']){
+					var childData = me.buildDataFromJsTreeData(null, tree.get_node(child), tree);
+					children.push(childData);
+				} else {
+
+				}
+				
 			}
 		}
 
@@ -574,6 +740,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 		return data;
 	};
+	*/
 
 	me.updateRandomIdToOriginalId = function (data) {
 		var dataClone = Object.clone(data, true);
