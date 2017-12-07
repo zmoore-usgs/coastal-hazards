@@ -127,17 +127,58 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 							}
 						}
 					},
-					'remove': {
-						'label': 'Toggle Delete',
+					'delete-all': {
+						'label': 'Orphan (and Orphan all Copies)',
+						'icon': 'fa fa-eraser',
+						'action': function () {
+							var tree = CCH.ui.getTree(),
+									selectedId = tree.get_selected()[0],
+									selectedNode = tree.get_node(selectedId),
+									originalId = selectedNode.state['original-id'],
+									allNodes = me.findNodesByItemId(originalId);
+
+							for(var i = 0; i < allNodes.length; i++){
+								var nodeId = allNodes[i].id;
+								var parentId = tree.get_parent(nodeId);
+								tree.move_node(nodeId, 'orphans');
+								me.itemUpdated(parentId);
+							}
+						}
+					},
+					'remove-delete-children': {
+						'label': 'Mark for Delete (Delete Orphaned Children)',
 						'icon': 'fa fa-trash',
 						'action': function() {
 							var tree = CCH.ui.getTree(),
-								selectedId = tree.get_selected()[0];
+							selectedId = tree.get_selected()[0],
+							node = tree.get_node(selectedId);
 
 							if(selectedId.toLowerCase() !== 'uber' && selectedId.toLowerCase() !== 'orphans') {
 								if(me.isNodeItemOrphaned(selectedId)) {
 									//Delete
 									node.state['to-delete'] = !node.state['to-delete'];
+									node.state['delete-children'] = true;
+
+								} else {
+									//Display message that it's not an orphan
+									alert("There are copies of this item in the tree which are not orphans. In order to delete this item all copies must be orphaned.");
+								}
+							}
+						}
+					},
+					'remove-orphan-children': {
+						'label': 'Mark for Delete (Orphan Children)',
+						'icon': 'fa fa-trash',
+						'action': function() {
+							var tree = CCH.ui.getTree(),
+								selectedId = tree.get_selected()[0],
+								node = tree.get_node(selectedId);
+
+							if(selectedId.toLowerCase() !== 'uber' && selectedId.toLowerCase() !== 'orphans') {
+								if(me.isNodeItemOrphaned(selectedId)) {
+									//Delete
+									node.state['to-delete'] = !node.state['to-delete'];
+									node.state['delete-children'] = false;
 
 								} else {
 									//Display message that it's not an orphan
@@ -147,8 +188,8 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 						}
 					},
 					'highlight': {
-						'label': 'Toggle Hihglight Copies',
-						'icon': 'fa fa-bolt',
+						'label': 'Highlight Copies',
+						'icon': 'fa fa-circle',
 						'action': function () {
 							var tree = CCH.ui.getTree(),
 								selectedId = tree.get_selected()[0],
@@ -250,33 +291,93 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					//Show Context Menu
 					$('.jstree-contextmenu').removeClass('hidden');
 
-					//Toggle Orphan Context Entry
-					var $orphanRow = $($('.jstree-contextmenu').children()[1])
-					if(node.parents.includes('orphans')) {
+					//Toggle Orphan Context Entries
+					var $orphanRow = $($('.jstree-contextmenu').children()[1]);
+					var $orphanAllRow = $($('.jstree-contextmenu').children()[2]);
+					if(node.parents.includes('orphans') && node.parents.length == 3) {
 						$orphanRow.addClass('hidden');
+						$orphanAllRow.addClass('hidden');
 					} else {
 						$orphanRow.removeClass('hidden');
+						$orphanAllRow.removeClass('hidden');
+					}
+ 
+					//Toggle Delete Context Entries
+					var $deleteOrphanRow = $($('.jstree-contextmenu').children()[3]);
+					var $deleteRemoveRow = $($('.jstree-contextmenu').children()[4]);
+					var $deleteOIcon = $deleteOrphanRow.find('i');
+					var $deleteRIcon = $deleteRemoveRow.find('i');
+					var $deleteOText = $deleteOrphanRow.find('a');
+					var $deleteRText = $deleteRemoveRow.find('a');
+					var toDelete = node.state['to-delete'];
+					var deleteChildren = node.state['delete-children'];
+
+					if(node.parents.includes('uber') || node.parents.length !== 3) {
+						$deleteOrphanRow.addClass('hidden');
+						$deleteRemoveRow.addClass('hidden');
+					} else {
+						$deleteOIcon.removeClass('fa-trash fa-trash-o');
+						$deleteRIcon.removeClass('fa-trash fa-trash-o');
+
+						if(toDelete){
+							if(deleteChildren){
+								$deleteOIcon.addClass('fa-trash-o');
+								var children = $deleteOText.children();
+								$deleteOText.text('Un-Mark for Delete (Orphan Children)').prepend(children);
+
+								//Hide All Row, Show Orphan Row
+								$deleteRemoveRow.addClass('hidden');
+								$deleteOrphanRow.removeClass('hidden');
+							} else {
+								$deleteRIcon.addClass('fa-trash-o');
+								var children = $deleteRText.children();
+								$deleteRText.text('Un-Mark for Delete (Delete Orphaned Children)').prepend(children);
+
+								//Hide Orphan Row, Show All Row
+								$deleteOrphanRow.addClass('hidden');
+								$deleteRemoveRow.removeClass('hidden');
+							}
+						} else {
+							$deleteOIcon.addClass('fa-trash');
+							$deleteRIcon.addClass('fa-trash');
+							var childrenO = $deleteOText.children();
+							var childrenR = $deleteRText.children();
+							$deleteOText.text('Mark for Delete (Orphan Children)').prepend(childrenO);
+							$deleteRText.text('Mark for Delete (Delete Orphaned Children)').prepend(childrenR);
+
+							//Show Both Delete Rows
+							$deleteOrphanRow.removeClass('hidden');
+							$deleteRemoveRow.removeClass('hidden');
+						}
 					}
 
-					//Toggle Delete Context Entry
-					var $deleteRow = $($('.jstree-contextmenu').children()[2])
-					if(node.parents.includes('uber')) {
-						$deleteRow.addClass('hidden');
+					//Toggle Highlight Context Entry Icon
+					var $highlightRow = $($('.jstree-contextmenu').children()[5]);
+					var $highlightIcon = $highlightRow.find('i');
+					var $highlightText = $highlightRow.find('a');
+					var highlighted = me.highlightedNodes.includes(node);
+					$highlightIcon.removeClass('fa-circle fa-circle-o');
+					if(highlighted){
+						$highlightIcon.addClass('fa-circle-o');
+						var children = $highlightText.children();
+						$highlightText.text('Un-Highlight Copies').prepend(children);
 					} else {
-						$deleteRow.removeClass('hidden');
+						$highlightIcon.addClass('fa-circle');
+						var children = $highlightText.children();
+						$highlightText.text('Highlight Copies').prepend(children);
 					}
 
 					//Toggle Visibility Context Entry and Icon
-					var $visibilityRow = $($('.jstree-contextmenu').children()[4]);
-					var $iconContainer = $visibilityRow.find('i');
+					var $visibilityRow = $($('.jstree-contextmenu').children()[6]);
+					var $visibilityIcon = $visibilityRow.find('i');
 					var displayed = node.state.displayed;
 
 					if (node.parent && node.parent !== 'uber' && node.parent !== 'root' && node.parent !== 'orphans') {
-						$iconContainer.removeClass('fa-eye fa-eye-slash');
+						$visibilityIcon.removeClass('fa-eye fa-eye-slash');
 						if (displayed) {
-							$iconContainer.addClass('fa-eye');
+							$visibilityIcon.addClass('fa-eye');
 						} else {
-							$iconContainer.addClass('fa-eye-slash');
+							$visibilityIcon.addClass('fa-eye-slash');
 						}
 						$visibilityRow.removeClass('hidden');
 					} else {
@@ -294,7 +395,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		var tree = CCH.ui.getTree(),
 			node = CCH.ui.getTree().get_node(nodeId);
 
-		return node.parent.toLowerCase() == 'orphans';
+		return node.parent.toLowerCase() === 'orphans';
 	}
 
 	me.findNodesByItemId = function(itemId) {
@@ -327,7 +428,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 			for(var i = 0; i < allChildren.length; i++){
 				var childNode = tree.get_node(allChildren[i]);
-				if(childNode.state['original-id'] === originalId && childNode !== node) {
+				if(childNode.state['original-id'] === originalId && childNode !== node && childNode.parent.toLowerCase() !== 'orphans') {
 					isOrphan = false;
 					break;
 				}
