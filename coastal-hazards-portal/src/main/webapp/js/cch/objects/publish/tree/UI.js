@@ -149,42 +149,14 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 						'label': 'Mark for Delete (Delete Orphaned Children)',
 						'icon': 'fa fa-trash',
 						'action': function() {
-							var tree = CCH.ui.getTree(),
-							selectedId = tree.get_selected()[0],
-							node = tree.get_node(selectedId);
-
-							if(selectedId.toLowerCase() !== 'uber' && selectedId.toLowerCase() !== 'orphans') {
-								if(me.isNodeItemOrphaned(selectedId)) {
-									//Delete
-									node.state['to-delete'] = !node.state['to-delete'];
-									node.state['delete-children'] = true;
-
-								} else {
-									//Display message that it's not an orphan
-									alert("There are copies of this item in the tree which are not orphans. In order to delete this item all copies must be orphaned.");
-								}
-							}
+							me.deleteContext(true);
 						}
 					},
 					'remove-orphan-children': {
 						'label': 'Mark for Delete (Orphan Children)',
 						'icon': 'fa fa-trash',
 						'action': function() {
-							var tree = CCH.ui.getTree(),
-								selectedId = tree.get_selected()[0],
-								node = tree.get_node(selectedId);
-
-							if(selectedId.toLowerCase() !== 'uber' && selectedId.toLowerCase() !== 'orphans') {
-								if(me.isNodeItemOrphaned(selectedId)) {
-									//Delete
-									node.state['to-delete'] = !node.state['to-delete'];
-									node.state['delete-children'] = false;
-
-								} else {
-									//Display message that it's not an orphan
-									alert("There are copies of this item in the tree which are not orphans. In order to delete this item all copies must be orphaned.");
-								}
-							}
+							me.deleteContext(false);
 						}
 					},
 					'highlight': {
@@ -293,18 +265,15 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 					//Toggle Orphan Context Entries
 					var $orphanRow = $($('.jstree-contextmenu').children()[1]);
-					var $orphanAllRow = $($('.jstree-contextmenu').children()[2]);
 					if(node.parents.includes('orphans') && node.parents.length == 3) {
 						$orphanRow.addClass('hidden');
-						$orphanAllRow.addClass('hidden');
 					} else {
 						$orphanRow.removeClass('hidden');
-						$orphanAllRow.removeClass('hidden');
 					}
  
 					//Toggle Delete Context Entries
-					var $deleteOrphanRow = $($('.jstree-contextmenu').children()[3]);
-					var $deleteRemoveRow = $($('.jstree-contextmenu').children()[4]);
+					var $deleteRemoveRow = $($('.jstree-contextmenu').children()[3]);
+					var $deleteOrphanRow = $($('.jstree-contextmenu').children()[4]);
 					var $deleteOIcon = $deleteOrphanRow.find('i');
 					var $deleteRIcon = $deleteRemoveRow.find('i');
 					var $deleteOText = $deleteOrphanRow.find('a');
@@ -321,14 +290,6 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 						if(toDelete){
 							if(deleteChildren){
-								$deleteOIcon.addClass('fa-trash-o');
-								var children = $deleteOText.children();
-								$deleteOText.text('Un-Mark for Delete (Orphan Children)').prepend(children);
-
-								//Hide All Row, Show Orphan Row
-								$deleteRemoveRow.addClass('hidden');
-								$deleteOrphanRow.removeClass('hidden');
-							} else {
 								$deleteRIcon.addClass('fa-trash-o');
 								var children = $deleteRText.children();
 								$deleteRText.text('Un-Mark for Delete (Delete Orphaned Children)').prepend(children);
@@ -336,6 +297,14 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 								//Hide Orphan Row, Show All Row
 								$deleteOrphanRow.addClass('hidden');
 								$deleteRemoveRow.removeClass('hidden');
+							} else {
+								$deleteOIcon.addClass('fa-trash-o');
+								var children = $deleteOText.children();
+								$deleteOText.text('Un-Mark for Delete (Orphan Children)').prepend(children);
+
+								//Hide All Row, Show Orphan Row
+								$deleteRemoveRow.addClass('hidden');
+								$deleteOrphanRow.removeClass('hidden');
 							}
 						} else {
 							$deleteOIcon.addClass('fa-trash');
@@ -390,6 +359,31 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			}
 		});
 	};
+
+	me.deleteContext = function(deleteChildren){
+		var tree = CCH.ui.getTree(),
+		selectedId = tree.get_selected()[0],
+		node = tree.get_node(selectedId),
+		originalId = node.state['original-id'];
+
+		if(selectedId.toLowerCase() !== 'uber' && selectedId.toLowerCase() !== 'orphans') {
+			if(me.isNodeItemOrphaned(selectedId)) {
+				var itemNodes = me.findNodesByItemId(originalId);
+
+				//Mark item and all duplicates for Delete
+				for(var i = 0; i < itemNodes.length; i++){
+					var curNode = itemNodes[i];
+					curNode.state['to-delete'] = !curNode.state['to-delete'];
+					curNode.state['delete-children'] = deleteChildren;
+				}
+				
+				me.markDeleteNodes();
+			} else {
+				//Display message that it's not an orphan
+				alert("There are copies of this item in the tree which are not orphans. In order to delete this item all copies must be orphaned.");
+			}
+		}
+	}
 
 	me.isNodeOrphaned = function(nodeId) {
 		var tree = CCH.ui.getTree(),
@@ -457,7 +451,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					}
 				}
 			}
-
+			me.markDeleteNodes();
 			me.highlightNodes();
 		} else {
 			console.log("Error - Could not get root item from tree.");
@@ -465,7 +459,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		}		
 	};
 
-	// Switch highlighted nodes
+	// Switch highlighted nodes - drill down list to new nodes
 	me.toggleHighlightedNodes = function(newNodes) {
 		var tree = CCH.ui.getTree(),
 			highlightClass = 'highlight-item',
@@ -496,6 +490,31 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		tree.select_node(originalNode);
 	}
 
+	//Highlight Nodes Marked for Delete
+	me.markDeleteNodes = function() {
+		var deleteOClass = 'delete-orphan',
+			deleteRClass = 'delete-children',
+			tree = CCH.ui.getTree(),
+			orphans = tree.get_node('orphans'),
+			orphanNodes = orphans.children;
+		
+		for(var i = 0; i < orphanNodes.length; i++){
+			var node = tree.get_node(orphanNodes[i]),
+				$nodeElement = $('#' + node.li_attr.id + '_anchor');
+			
+			if(node.state['to-delete']){
+				if(node.state['delete-children']){
+					$nodeElement.addClass(deleteRClass);
+				} else {
+					$nodeElement.addClass(deleteOClass);
+				}
+			} else {
+				$nodeElement.removeClass(deleteOClass + ' ' + deleteRClass);
+			}
+		}
+	}
+
+	//Highlight Nodes in the Highlighted List
 	me.highlightNodes = function() {
 		var highlightClass = 'highlight-item';
 
@@ -505,7 +524,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	
 			$nodeElement.addClass(highlightClass);
 		}
-	}
+	}	
 
 	me.clearSearch = function() {
 		var tree = CCH.ui.getTree(),
