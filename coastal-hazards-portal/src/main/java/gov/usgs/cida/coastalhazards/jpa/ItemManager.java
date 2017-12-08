@@ -207,53 +207,94 @@ public class ItemManager implements AutoCloseable {
 		return id;
 	}
 
-	public boolean delete(String itemId, boolean deleteChildren, boolean onlyOrphans) {
+	public boolean delete(String itemId, boolean deleteChildren) {
+		boolean deleted = false;
+
+		if(isOrphan(itemId)){
+			Item item = load(itemId);
+
+			List<Item> children = new ArrayList<>();
+
+			if(item.getChildren() != null && item.getChildren().size() > 0){
+				children = new ArrayList<>(item.getChildren());
+			}
+	
+			deleted = delete(itemId);
+	
+			if(deleted){
+				if(deleteChildren){
+					for(Item child : children){
+						if(isOrphan(child)){
+							deleted = delete(child.getId(), true);
+
+							if(!deleted){
+								log.error("An error occured while deleting child " + child.getId() + " of " + itemId + ". Remaining children will be orphaned.");
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return deleted;
+	}
+
+	public boolean delete(String itemId) {
 		boolean deleted = false;
 		EntityTransaction transaction = em.getTransaction();
 
 		try {
 			Item item = em.find(Item.class, itemId);
 			mergeAll(updateAncestors(item));
-			transaction.begin();
 
-			if(!deleteChildren) {
+			//Delete Dependant Items then delete item
+			if(deleteDependants(itemId)){
+				transaction.begin();
 				em.remove(item);
+				transaction.commit();
+				deleted = true;
 			} else {
-				deleteNested(item.getId(), onlyOrphans);
-			}
-			
-			transaction.commit();
+				throw new Exception("Failed to delete dependant objects for " + itemId);
+			}		
 			fixEnabledStatus();
-			deleted = true;
 		}
 		catch (Exception ex) {
-			log.debug("Transaction failed on delete", ex);
+			log.debug("Transaction failed on delete of item " + itemId, ex);
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
 		}
+
 		return deleted;
 	}
-	
-	private boolean deleteNested(String itemId, boolean onlyOrphans) {
-		if(!onlyOrphans || isOrphan(itemId)){
-			Item item = em.find(Item.class, itemId);
-			if(item.getChildren() != null && item.getChildren().size() > 0){
-				for(Item child : item.getChildren()) {
-					deleteNested(child.getId(), onlyOrphans);
-				}
-			}
-			em.remove(item);
-	
-			return true;
-		}
 
-		return false;
+	/*
+	 * Delete oobjects in the DB that are dependant on the specified item.
+	 * Should be executed before an item will be removed from the DB.
+	 */
+	private boolean deleteDependants(String itemId) {
+		boolean status = true;
+
+		try(DataDomainManager domains = new DataDomainManager(); AliasManager aliases = new AliasManager(); SessionManager sessions = new SessionManager();){
+			status = sessions.removeItemFromSessions(itemId);
+
+			if(status) {
+				status = aliases.deleteAliasesForItemId(itemId);
+			}
+
+			if(status) {
+				status = domains.deleteDomainForItemId(itemId);
+			}
+		}
+		
+		return status;
 	}
 	
 	public boolean isOrphan(String itemId) {		
 		List<String> ancestorIds = findAncestorItemIds(itemId);
-		return !ancestorIds.contains(Item.UBER_ID);
+
+		return  ancestorIds.size() == 1 && ancestorIds.get(0).equals(itemId);
 	}
 	
 	public boolean isOrphan(Item item) {
