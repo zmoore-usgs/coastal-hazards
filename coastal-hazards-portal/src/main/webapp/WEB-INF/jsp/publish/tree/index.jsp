@@ -75,7 +75,8 @@
 			</div>
 			<div class="row">
 				<div class="col-md-6">
-					<i class="fa fa-search"></i><input type="text" id="search-input" /><button id="clear-search" class="btn">Clear Search</button>		
+					<i class="fa fa-search"></i><input type="text" id="search-input" /><button id="search-button" class="btn btn-success">Search</button>
+					&nbsp;&nbsp;&nbsp;<button id="clear-search" class="btn btn-warning">Clear Search</button>		
 				</div>
 
 				<div id="save-button-container" class="col-md-6">

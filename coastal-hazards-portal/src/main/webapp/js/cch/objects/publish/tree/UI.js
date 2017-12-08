@@ -130,7 +130,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 						}
 					},
 					'delete-all': {
-						'label': 'Remove All Copies',
+						'label': 'Remove Copies',
 						'icon': 'fa fa-eraser',
 						'action': function () {
 							var tree = CCH.ui.getTree(),
@@ -802,8 +802,11 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			success: function () {
 				location.reload();
 			},
-			error: function () {
-
+			error: function (error) {
+				alert("An error occurred while saving the tree. Some changes may have been applied. Please report this error to the CCH team and " + 
+					  "refresh the page to see the accurate current state of the tree. Error: " + JSON.stringify(error));
+					
+				$me.$saveButton.addClass('disabled');
 			}
 		});
 	};
@@ -860,7 +863,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		me.$clearSearchButton.on('click', me.clearSearch);
 
 		// Bind the search box
-		me.$searchInput.on('keyup', me.performTreeSearch);
+		me.$searchButton.on('click', me.performTreeSearch);
 	};
 
 	me.init();

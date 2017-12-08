@@ -22,6 +22,7 @@ $(document).ready(function () {
 		'$treeContainer' : $('#tree-container'),
 		'$saveButton' : $('#save-button'),
 		'$clearSearchButton' : $('#clear-search'),
+		'$searchButton' : $('#search-button'),
 		'$searchInput' : $('#search-input')
 	});
 });
