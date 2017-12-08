@@ -113,7 +113,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					},
 					'delete': {
 						'label': 'Orphan',
-						'icon': 'fa fa-eraser',
+						'icon': 'fa fa-user-o',
 						'action': function () {
 							var tree = CCH.ui.getTree(),
 									selectedIds = tree.get_selected();
@@ -130,7 +130,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 						}
 					},
 					'delete-all': {
-						'label': 'Orphan all Copies',
+						'label': 'Remove All Copies',
 						'icon': 'fa fa-eraser',
 						'action': function () {
 							var tree = CCH.ui.getTree(),
@@ -147,7 +147,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 									if(!selectedIds.includes(nodeId)){
 										var parentId = tree.get_parent(nodeId);
-										tree.move_node(nodeId, 'orphans');
+										tree.delete_node(nodeId);
 										me.itemUpdated(parentId);
 									}
 								}
@@ -765,6 +765,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	// User has hit the save button. Reconstruct the data and persist it to the server
 	me.saveItems = function () {
 		var data = me.updatedItems;
+		var tree = CCH.ui.getTree();
 
 		// Delete the orphans node in the data object if it exists. This is an 
 		// artifact of how I build this data. 
@@ -772,8 +773,30 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 		delete data.orphans;
 
+		//Fetch Items to Delete
+		var toDeleteChildren = [];
+		var toOrphanChildren = [];
+		var orphans = tree.get_node('orphans').children;
+
+		for(var i = 0; i < orphans.length; i++){
+			var orphanNode = tree.get_node(orphans[i]);
+			if(orphanNode.state['to-delete']){
+				if(orphanNode.state['delete-children']){
+					toDeleteChildren.push(orphanNode.state['original-id']);
+				} else {
+					toOrphanChildren.push(orphanNode.state['original-id']);
+				}
+			}
+		}
+
+		var fullData = {
+			data: data,
+			deleteWithChildren: toDeleteChildren,
+			deleteNoChildren: toOrphanChildren
+		}
+
 		$.ajax(CCH.config.relPath + 'data/tree/item', {
-			data: JSON.stringify(data),
+			data: JSON.stringify(fullData),
 			method: 'POST',
 			contentType: 'application/json',
 			success: function () {
