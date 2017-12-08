@@ -806,14 +806,14 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				alert("An error occurred while saving the tree. Some changes may have been applied. Please report this error to the CCH team and " + 
 					  "refresh the page to see the accurate current state of the tree. Error: " + JSON.stringify(error));
 					
-				$me.$saveButton.addClass('disabled');
+				me.$saveButton.addClass('disabled');
 			}
 		});
 	};
 
 	// User wants to perform a search in the tree
 	me.performTreeSearch = function (evt) {
-		var searchCriteria = evt.target.value,
+		var searchCriteria = me.$searchInput.val,
 				tree = CCH.ui.getTree();
 
 		if (searchCriteria) {
