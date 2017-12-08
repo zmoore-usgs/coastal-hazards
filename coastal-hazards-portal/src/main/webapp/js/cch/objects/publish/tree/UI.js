@@ -695,7 +695,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				var $nodeElement = $('#' + node.li_attr.id + '_anchor');
 				$nodeElement.removeClass(searchClass);
 			}
-			me.$searchInput.val = "";
+			me.$searchInput.val("");
 		} else {
 			console.log("Error - Could not get root item from tree.");
 			console.log(tree);
