@@ -105,7 +105,7 @@ public class SessionManager implements SessionIO, AutoCloseable {
 
     private List<String> getSessionIdsByItemId(String itemId) {
         Query sessions = em.createNativeQuery("SELECT session_id FROM session_item WHERE item_id = :itemId");
-		sessions.setParameter("itemId", itemId);
-		return (List<String>) sessions.getResultList();
+        sessions.setParameter("itemId", itemId);
+        return (List<String>) sessions.getResultList();
     }
 }
