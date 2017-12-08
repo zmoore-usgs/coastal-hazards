@@ -1590,10 +1590,6 @@ CCH.Objects.Publish.UI = function () {
 					url: CCH.CONFIG.contextPath + '/data/item/' + id + "?deleteChildren=" + $("#deleteChildren").is(':checked').toString(),
 					method: 'DELETE',
 					success: function () {
-						$.ajax({
-							url: CCH.CONFIG.contextPath + '/data/alias/item/' + id,
-							method: 'DELETE'
-						});
 						window.location = CCH.CONFIG.contextPath + '/publish/item/';
 					},
 					error: function (jqXHR, err, errTxt) {
