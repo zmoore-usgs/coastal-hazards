@@ -813,7 +813,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 	// User wants to perform a search in the tree
 	me.performTreeSearch = function (evt) {
-		var searchCriteria = me.$searchInput.val,
+		var searchCriteria = me.$searchInput.val(),
 				tree = CCH.ui.getTree();
 
 		if (searchCriteria) {
