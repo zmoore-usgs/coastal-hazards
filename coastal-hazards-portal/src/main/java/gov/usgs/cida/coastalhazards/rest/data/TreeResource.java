@@ -205,6 +205,7 @@ public class TreeResource {
 				if(totalItemCount == 0){
 					log.error("Incoming content had no items.");
 					response = Response.status(Response.Status.BAD_REQUEST).build();
+					return response;
 				}
 
 				response = Response.ok().build();
