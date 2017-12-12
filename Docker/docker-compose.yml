@@ -30,14 +30,8 @@ services:
       args:
         - doi_network=$doi_network
     image: cch_rserve
-    environment:
-      - PASSWORD=rserve
     ports:
       - "6311:6311"
-    networks:
-      cchnet:
-        aliases:
-        - rserve
 
   cch_n52_wps:
     build:
@@ -45,17 +39,10 @@ services:
       args:
         - doi_network=$doi_network
     image: cch_n52_wps
-    command: dockerize -wait tcp://rserve:6311 -timeout 30s catalina.sh run
     ports:
-      - "8082:8080"
-    networks:
-      cchnet:
-        aliases:
-        - n52_wps
+      - "8081:8080"
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
-    depends_on:
-      - cch_rserve
 
   cch_db:
     build:
@@ -63,10 +50,6 @@ services:
     image: cch_db
     ports:
       - "5432:5432"
-    networks:
-      cchnet:
-        aliases:
-        - db
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
 
@@ -81,10 +64,6 @@ services:
     volumes:
         - cch_geoserver_data:/heapdumps
         - cch_geoserver_data:/data
-    networks:
-        cchnet:
-          aliases:
-          - cch_portal
     ports:
       - "8080:8080"
       - "8443:8443"
@@ -100,10 +79,6 @@ services:
     volumes:
         - cch_geoserver_data:/heapdumps
         - cch_geoserver_data:/data
-    networks:
-        cchnet:
-          aliases:
-          - geoserver
     ports:
       - "8081:8081"
       - "8444:8444"
@@ -117,10 +92,6 @@ services:
         - doi_network=$doi_network
     image: cch_pycsw
     command: dockerize -wait tcp://db:5432 -timeout 30s /bin/sh "run.sh"
-    networks:
-        cchnet:
-          aliases:
-          - pycsw
     ports:
       - "8000:8000"
     depends_on:
