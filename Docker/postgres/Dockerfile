@@ -1,65 +1,81 @@
-FROM camptocamp/postgis:9.5
+FROM mdillon/postgis:9.6-alpine
 
-MAINTAINER Ivan Suftin <isuftin@usgs.gov>
+RUN if [ "${doi_network}" = true ]; then \
+		mkdir -p /usr/lib/ssl/certs/ && \
+		/usr/bin/wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://sslhelp.doi.net/docs/DOIRootCA2.cer && \
+		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0 && \
+		echo "\\n\\nca-certificate = /usr/lib/ssl/certs/DOIRootCA.crt" >> /etc/wgetrc; \
+	fi
 
-RUN apt-get update && \
-	apt-get -y install openjdk-7-jre wget postgresql-plpython-9.5 && \
-	apt-get clean
+# Required for JRE 8 - Java 8 is required to run the Liquibase JAR - lifted from https://github.com/docker-library/openjdk
 
-ENV LIQUIBASE_HOME "/opt/liquibase"
+RUN { \
+		echo '#!/bin/sh'; \
+		echo 'set -e'; \
+		echo; \
+		echo 'dirname "$(dirname "$(readlink -f "$(which javac || which java)")")"'; \
+	} > /usr/local/bin/docker-java-home \
+	&& chmod +x /usr/local/bin/docker-java-home
+ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
+ENV PATH $PATH:$JAVA_HOME/bin
 
-ENV POSTGRES_PASSWORD "postgres"
+RUN set -x \
+    && apk update && apk upgrade \
+	&& apk add --no-cache git \
+    && apk add --no-cache bash \
+    && apk add --no-cache curl\
+    && apk add --no-cache openjdk8 \
+    && [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
-ENV POSTGRES_USER "postgres"
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_DB=cchportal
+ENV PYCSW_DB=pycsw
 
-ENV POSTGRES_DB "public"
+# Install Liquibase
 
-ENV CCH_LIQUIBASE_VERSION "1.1.47"
+ENV LIQUIBASE_HOME /opt/liquibase
+ENV LIQUIBASE_VERSION 3.4.1
+ENV POSTGRES_JDBC_VERSION 42.1.4
 
-ENV JAVA_HOME "/usr/lib/jvm/java-7-openjdk-amd64"
+RUN mkdir -p $LIQUIBASE_HOME
+RUN curl -Lk https://github.com/liquibase/liquibase/releases/download/liquibase-parent-$LIQUIBASE_VERSION/liquibase-$LIQUIBASE_VERSION-bin.tar.gz > liquibase-bin.tar.gz
+RUN tar -xzf liquibase-bin.tar.gz -C $LIQUIBASE_HOME/
 
-# Set up Liquibase
-RUN mkdir $LIQUIBASE_HOME
-ADD https://github.com/liquibase/liquibase/releases/download/liquibase-parent-3.4.2/liquibase-3.4.2-bin.tar.gz $LIQUIBASE_HOME/liquibase.tar.gz
-ADD https://jdbc.postgresql.org/download/postgresql-42.0.0.jre7.jar $LIQUIBASE_HOME/lib/
-RUN /bin/tar xzvf $LIQUIBASE_HOME/liquibase.tar.gz -C $LIQUIBASE_HOME && chmod +x $LIQUIBASE_HOME/liquibase
+RUN curl -o $LIQUIBASE_HOME/lib/postgresql-$POSTGRES_JDBC_VERSION.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar
 
-RUN	echo "driver: org.postgresql.Driver" >> $LIQUIBASE_HOME/liquibase.properties && \
-	echo "url: jdbc:postgresql://127.0.0.1:5432/${POSTGRES_DB}" >> $LIQUIBASE_HOME/liquibase.properties && \
-	echo "username: ${POSTGRES_USER}" >> $LIQUIBASE_HOME/liquibase.properties && \
-	echo "password: ${POSTGRES_PASSWORD}" >> $LIQUIBASE_HOME/liquibase.properties && \
-	echo "promptOnNonLocalDatabase: false" >> $LIQUIBASE_HOME/liquibase.properties && \
-	echo "outputDefaultSchema: true" >> $LIQUIBASE_HOME/liquibase.properties
+RUN ls ${LIQUIBASE_HOME}/lib/
 
-RUN cp $LIQUIBASE_HOME/liquibase.properties $LIQUIBASE_HOME/liquibase.bootstrap.properties && \
-	cp $LIQUIBASE_HOME/liquibase.properties $LIQUIBASE_HOME/liquibase.loadtestdata.properties
+# Pull CCH Liquibase
 
-RUN echo "changeLogFile: /liquibase/coastal-hazards-liquibase/src/main/liquibase/changeLog.xml" >> $LIQUIBASE_HOME/liquibase.properties && \
-	echo "contexts: default" >> $LIQUIBASE_HOME/liquibase.properties && \
-	echo "changeLogFile: /liquibase/coastal-hazards-liquibase/src/main/liquibase/bootstrap.xml" >> $LIQUIBASE_HOME/liquibase.bootstrap.properties && \
-	echo "contexts: bootstrap" >> $LIQUIBASE_HOME/liquibase.properties && \
-	echo "changeLogFile: /liquibase/coastal-hazards-liquibase/src/main/liquibase/test_data.xml" >> $LIQUIBASE_HOME/liquibase.loadtestdata.properties && \
-	echo "contexts: test" >> $LIQUIBASE_HOME/liquibase.properties
+###############
+#  Git Build
+###############
 
-# Grab CCH Liquibase files
-RUN mkdir /liquibase
+RUN git clone https://github.com/USGS-CIDA/coastal-hazards.git
+WORKDIR coastal-hazards
+RUN git checkout ${CCH_LIQUIBASE_VERSION}
+WORKDIR /
+RUN cp -r /coastal-hazards/coastal-hazards-liquibase/src/main/resources/bootstrap .
 
-RUN /usr/bin/wget --no-check-certificate -O /root/cch.zip "https://codeload.github.com/USGS-CIDA/coastal-hazards/tar.gz/coastal-hazards-${CCH_LIQUIBASE_VERSION}" && \
-	/bin/tar xzfv /root/cch.zip --strip-components=1 -C /liquibase
+###############
+# End Git Build
+###############
 
-RUN ln -s /liquibase/coastal-hazards-liquibase/src/main/resources/bootstrap /liquibase/coastal-hazards-liquibase/src/main/liquibase && \
-	ln -s /liquibase/coastal-hazards-liquibase/src/main/resources/data /liquibase/coastal-hazards-liquibase/src/main/liquibase
+#################
+#  Local Build
+#################
 
-# Copy in the shell scripts (default and optional files)
-COPY postgres_entrypoint.sh /docker-entrypoint-initdb.d/postgres_entrypoint.sh
-COPY liquibase_bootstrap.sh /liquibase_bootstrap.sh
-COPY liquibase_load_test_data.sh /liquibase_load_test_data.sh
+#ADD src coastal-hazards/coastal-hazards-liquibase/src 
+#RUN cp -r /coastal-hazards/coastal-hazards-liquibase/src/main/resources/bootstrap .
 
-# Set executable bit
-RUN chmod +x /docker-entrypoint-initdb.d/postgres_entrypoint.sh && \
-	chmod +x /liquibase_bootstrap.sh && \
-	chmod +x /liquibase_load_test_data.sh && \
-	chmod 664 $LIQUIBASE_HOME/lib/postgresql-42.0.0.jre7.jar
+#################
+# End Local Build
+#################
 
-HEALTHCHECK --interval=15s --timeout=3s \
-	CMD /usr/lib/postgresql/9.5/bin/pg_isready -U ${POSTGRES_USER} || exit 1
+# Grab DB Setup Script
+
+COPY ./dbInit/setup_db.sh /docker-entrypoint-initdb.d/z_setup_db.sh
+
+EXPOSE 5432
+
+RUN chmod -R 777 $LIQUIBASE_HOME
