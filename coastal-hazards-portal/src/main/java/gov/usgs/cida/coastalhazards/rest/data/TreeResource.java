@@ -153,9 +153,14 @@ public class TreeResource {
 		if (StringUtils.isNotBlank(content)) {
 			try {
 				JsonObject jsonObj = (JsonObject) new JsonParser().parse(content);
-				
-				Set<Entry<String, JsonElement>> entrySet = jsonObj.entrySet();
+				int totalItemCount = 0;
+
+				// Update Items
+				JsonObject updateItems = jsonObj.getAsJsonObject("data");
+				Set<Entry<String, JsonElement>> entrySet = updateItems.entrySet();
 				int itemCount = entrySet.size();
+				totalItemCount += itemCount;
+
 				if (itemCount > 0) {
 					// Create the map that the updating function expects 
 					Map<String, JsonObject> itemMap = new HashMap<>();
@@ -164,16 +169,46 @@ public class TreeResource {
 					}
 
 					// Now that I have the map, update the items
-					if (updateItemChildren(itemMap)) {
-						response = Response.ok().build();
-					} else {
+					if (!updateItemChildren(itemMap)) {
 						response = Response.serverError().build();
+						log.error("An error occurred while updating items! Skipping deletes.");
+						return response;
 					}
 				} else {
-					log.error("Incoming content had no items");
-					response = Response.status(Response.Status.BAD_REQUEST).build();
+					log.info("Incoming content had no item updates");
 				}
 
+				// Delete items that aren't deleting their orphaned children
+				JsonArray  deleteNoChildren = jsonObj.getAsJsonArray("deleteNoChildren");
+				itemCount = deleteNoChildren.size();
+				totalItemCount += itemCount;
+
+				if(!deleteItems(deleteNoChildren, false)){
+					response = Response.serverError().build();
+					log.error("An error occurred while deleteing items and orphaning children! Skipping deletes with children.");
+					return response;
+				}
+				
+				
+				// Then delete Items that are deleting their orphaned children
+				JsonArray  deleteWithChildren = jsonObj.getAsJsonArray("deleteWithChildren");
+				itemCount = deleteWithChildren.size();
+				totalItemCount += itemCount;
+
+				if(!deleteItems(deleteWithChildren, true)){
+					response = Response.serverError().build();
+					log.error("An error occurred while deleteing items and children!");
+					return response;
+				}
+
+				//If there was no data recieved then return as a bad request
+				if(totalItemCount == 0){
+					log.error("Incoming content had no items.");
+					response = Response.status(Response.Status.BAD_REQUEST).build();
+					return response;
+				}
+
+				response = Response.ok().build();
 			} catch (JsonSyntaxException ex) {
 				log.error("Could not parse incoming content: {}", content, ex);
 				response = Response.status(Response.Status.BAD_REQUEST).build();
@@ -270,4 +305,33 @@ public class TreeResource {
 		return updated;
 	}
 
+	private boolean deleteItems(JsonArray toDelete, boolean deleteChildren) {
+		boolean returnStatus = true;
+
+		for(JsonElement item : toDelete){
+			String itemId = item.getAsString();
+
+			try (ItemManager itemManager = new ItemManager()) {
+				if(itemManager.isOrphan(itemId)){
+					if (!itemManager.delete(itemId, deleteChildren)) {
+						log.error("Failed to delete some items marked for delete [item: " + itemId + "] [delete children: " + (deleteChildren ? "yes" : "no") + "].");
+						returnStatus = false;
+					} else {
+						log.info("Successfully deleted item " + itemId + " [delete children: " + (deleteChildren ? "yes" : "no") + "].");
+					}
+				} else {
+					log.info("Item " + itemId + " skipped because it is not an orphan.");
+				}
+			} catch(Exception e){
+				log.error("Failed to delete some items marked for delete [delete children: " + (deleteChildren ? "yes" : "no") + "]. Error: " + e.getMessage());
+				returnStatus = false;
+			}
+
+			if(!returnStatus){
+				break;
+			}
+		}
+
+		return returnStatus;
+	}
 }

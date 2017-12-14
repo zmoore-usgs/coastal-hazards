@@ -116,7 +116,7 @@
 		<version.jquery>2.1.1</version.jquery>
 		<version.jquery.ui>1.11.1</version.jquery.ui>
 		<version.bootstrap>3.3.4</version.bootstrap>
-		<version.fontawesome>4.3.0</version.fontawesome>
+		<version.fontawesome>4.7.0</version.fontawesome>
 		<version.openlayers>2.13.1</version.openlayers>
 		<gs.version>2.10.2</gs.version>
 		<gt.version>16.2</gt.version>
@@ -392,7 +392,7 @@
 			<dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>font-awesome</artifactId>
-				<version>${version.fontawesome}-1</version>
+				<version>${version.fontawesome}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
