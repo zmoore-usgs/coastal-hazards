@@ -9,14 +9,17 @@ RUN if [ "${doi_network}" = true ]; then \
 
 COPY rserve.conf rserve.conf
 COPY rserve.pwd rserve.pwd
+COPY rserve.pwd rserve-original.pwd
 COPY profile.conf profile.conf
+COPY run.sh run.sh
 
 RUN apt-get update
 RUN apt-get install -y libcurl4-openssl-dev
 RUN apt-get install -y libssl-dev
 RUN apt-get install -y libxml2-dev
+RUN mkdir work
 RUN R -e "install.packages('devtools');library(devtools);install.packages(c('Rserve','RCurl','XML'));install_github('USGS-R/hazardItems');"
 
 EXPOSE 6311
 
-ENTRYPOINT [ "sh", "-c", "R -e 'library(Rserve);library(hazardItems);setBaseURL(\"${cchportal_url}\");run.Rserve(config.file=\"rserve.conf\")'" ]
+ENTRYPOINT [ "sh", "-c", "sh run.sh" ]

@@ -2,16 +2,10 @@ FROM python:2.7
 
 ARG doi_network=false
 
-ARG PYCSW_VERSION="1.6.0"
-
-ENV POSTGRES_PASSWORD "postgres"
-
-ENV POSTGRES_USER "postgres"
-
-ENV POSTGRES_DB "public"
+ENV PYCSW_VERSION="1.6.0"
 
 RUN apt-get update && \
-	apt-get install -y git libgeos-c1 gettext
+	apt-get install -y git libgeos-c1 gettext postgresql-client
 
 RUN if [ "${doi_network}" = true ]; then \
 		mkdir -p /usr/lib/ssl/certs/ && \
@@ -28,13 +22,16 @@ RUN git checkout ${PYCSW_VERSION}
 
 RUN pip install --trusted-host pypi.python.org -e . && pip install --trusted-host pypi.python.org -r requirements.txt
 
+COPY run.sh ./run.sh
 COPY default.cfg ./default.cfg
 
-COPY run.sh ./run.sh
+RUN cp default.cfg default-original.cfg
 
-RUN chmod u+x run.sh
+RUN chmod -R 777 run.sh
 
 EXPOSE 8000
+
+ENTRYPOINT ["sh", "-c", "sh run.sh"]
 
 HEALTHCHECK --interval=15s --timeout=3s \
 	CMD curl -f http://localhost:8000/csw?service=CSW&request=GetCapabilities || exit 1

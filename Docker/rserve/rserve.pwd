@@ -1,1 +1,1 @@
-cchportal_rserve cchportal_password
+cchportal_rserve %RSERVE_PASSWORD%

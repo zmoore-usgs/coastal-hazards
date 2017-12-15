@@ -1,15 +1,24 @@
 #!/bin/bash 
-# create users, setup pycsw database, change ownership and privileges
-psql -v ON_ERROR_STOP=1 --dbname "postgres" --username "${POSTGRES_USER}" --password "${POSTGRES_PASSWORD}"  <<-EOSQL
-	CREATE OR REPLACE LANGUAGE plpythonu;
-    CREATE DATABASE pycsw;
-	CREATE USER cchportal WITH PASSWORD '${CCH_POSTGRES_PASSWORD}';
-	CREATE USER pycsw WITH PASSWORD '${PYCSW_POSTGRES_PASSWORD}';
+set -e
+
+# create pycsw DB
+psql -v ON_ERROR_STOP=1 --dbname "postgres" --username "${POSTGRES_USER}" --password "${POSTGRES_PASSWORD}" -c "CREATE DATABASE pycsw;"
+
+# create users and change ownership and privileges
+psql -v ON_ERROR_STOP=1 --dbname "postgres" --username "${POSTGRES_USER}" --password "${POSTGRES_PASSWORD}"  -c "
+	CREATE USER cchportal WITH PASSWORD '${POSTGRES_CCH_PASSWORD}';
     ALTER DATABASE ${POSTGRES_DB} OWNER TO cchportal;
-    ALTER DATABASE ${PYCSW_DB} OWNER TO pycsw;
 	GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO cchportal;
-	GRANT ALL PRIVILEGES ON DATABASE ${PYCSW_DB} TO pycsw;
-EOSQL
+"
+
+# configure pycsw DB
+psql -v ON_ERROR_STOP=1 --dbname "pycsw" --username "${POSTGRES_USER}" --password "${POSTGRES_PASSWORD}" -c "
+	CREATE OR REPLACE LANGUAGE plpythonu;
+	CREATE USER pycsw WITH SUPERUSER PASSWORD '${POSTGRES_PYCSW_PASSWORD}';
+	GRANT ALL PRIVILEGES ON DATABASE pycsw TO pycsw;
+    ALTER DATABASE pycsw OWNER TO pycsw;
+	ALTER LANGUAGE plpythonu OWNER TO pycsw;
+"
 
 # do base database update
 ${LIQUIBASE_HOME}/liquibase \

@@ -19,17 +19,26 @@ RUN { \
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV PATH $PATH:$JAVA_HOME/bin
 
+# Upgrade Alpine to 3.6 to get access to plpython
+RUN sed -i -e 's/v3\.5/v3\.6/g' /etc/apk/repositories
+
 RUN set -x \
     && apk update && apk upgrade \
+	&& apk add --no-cache python \
+	&& apk add --no-cache python-dev \
+	&& apk add --no-cache postgresql-plpython2 \
+	&& apk add --no-cache postgresql-plpython2-contrib \
 	&& apk add --no-cache git \
     && apk add --no-cache bash \
     && apk add --no-cache curl\
     && apk add --no-cache openjdk8 \
     && [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
+# Copy plpython libs to the mdillion/postgis image postgres lib directory
+RUN cp /usr/lib/postgresql/*.so /usr/local/lib/postgresql/
+
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_DB=cchportal
-ENV PYCSW_DB=pycsw
 
 # Install Liquibase
 
