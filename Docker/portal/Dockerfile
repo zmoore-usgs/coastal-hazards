@@ -1,18 +1,18 @@
-FROM tomcat:8-jre8
-
-MAINTAINER Ivan Suftin <isuftin@usgs.gov>
+FROM tomcat:8.0-jre8-alpine
 
 ARG doi_network=false
+ARG PORTAL_VERSION=1.1.58
+
+RUN apk add --update openssl
 
 RUN if [ "${doi_network}" = true ]; then \
-		/usr/bin/wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://blockpage.doi.gov/images/DOIRootCA.crt && \
+		mkdir -p /usr/lib/ssl/certs/ && \
+		/usr/bin/wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://sslhelp.doi.net/docs/DOIRootCA2.cer && \
 		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0 && \
 		echo "\\n\\nca-certificate = /usr/lib/ssl/certs/DOIRootCA.crt" >> /etc/wgetrc; \
 	fi
 
-ENV CCH_PORTAL_VERSION ${cch_portal_version:-"LATEST"}
-
-RUN wget -O /usr/local/tomcat/webapps/coastal-hazards-portal.war "https://cida.usgs.gov/maven/service/local/artifact/maven/redirect?r=cida-public-releases&g=gov.usgs.cida.coastalhazards&a=coastal-hazards-portal&v=${CCH_PORTAL_VERSION}&e=war"
+RUN wget -O /usr/local/tomcat/webapps/coastal-hazards-portal.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-portal/${PORTAL_VERSION}/coastal-hazards-portal-${PORTAL_VERSION}.war"
 
 RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/psi-probe/releases/download/3.0.0.M3/probe.war"
 
@@ -42,5 +42,7 @@ RUN rm -rf /usr/local/tomcat/bin/docs
 
 RUN rm -rf /usr/local/tomcat/bin/examples
 
-HEALTHCHECK --interval=15s --timeout=3s \
+EXPOSE 8080 8443
+
+HEALTHCHECK --interval=60s --timeout=3s \
 	CMD curl -f http://localhost:8080/manager/ || exit 1

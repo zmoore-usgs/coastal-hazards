@@ -2,12 +2,12 @@
 
 # Wait until the PyCSW PostgreSQL user is available or we time out
 WAIT_ITERATION=0
-MAX_WAIT_ITERATIONS=20
+MAX_WAIT_ITERATIONS=36
 
 until  ( ( PGPASSWORD=${POSTGRES_PASSWORD} psql -U postgres -h ${POSTGRES_HOST} --quiet -tAc "SELECT 1 FROM pg_roles WHERE rolname='pycsw'" | grep -q 1 ) || [ $WAIT_ITERATION -eq $MAX_WAIT_ITERATIONS ] ) ; do
   WAIT_ITERATION=$(($WAIT_ITERATION+1));
   echo "Postgres is unavailable - retrying (${WAIT_ITERATION}/${MAX_WAIT_ITERATIONS})"
-  sleep 3
+  sleep 5
 done
 
 if (  [ $WAIT_ITERATION -eq $MAX_WAIT_ITERATIONS ] ); then

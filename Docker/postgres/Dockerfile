@@ -1,5 +1,7 @@
 FROM mdillon/postgis:9.6-alpine
 
+ARG PORTAL_LIQUIBASE_TAG=master
+
 RUN if [ "${doi_network}" = true ]; then \
 		mkdir -p /usr/lib/ssl/certs/ && \
 		/usr/bin/wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://sslhelp.doi.net/docs/DOIRootCA2.cer && \
@@ -62,7 +64,7 @@ RUN ls ${LIQUIBASE_HOME}/lib/
 
 RUN git clone https://github.com/USGS-CIDA/coastal-hazards.git
 WORKDIR coastal-hazards
-RUN git checkout ${CCH_LIQUIBASE_VERSION}
+RUN git checkout ${PORTAL_LIQUIBASE_TAG}
 WORKDIR /
 RUN cp -r /coastal-hazards/coastal-hazards-liquibase/src/main/resources/bootstrap .
 

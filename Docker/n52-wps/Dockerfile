@@ -1,6 +1,8 @@
 FROM tomcat:8.0-jre8-alpine
 
-ENV CCH_N52WPS_VERSION ${cch_wps_version:-"LATEST"}
+ARG N52_WPS_VERSION=1.1.58
+
+ENV PROBE_VERSION 3.0.0.M3
 
 RUN apk add --update openssl
 
@@ -13,21 +15,19 @@ RUN if [ "${doi_network}" = true ]; then \
 		echo "\\n\\nca-certificate = /usr/lib/ssl/certs/DOIRootCA.crt" >> /etc/wgetrc; \
 	fi
 
-RUN wget -O /usr/local/tomcat/webapps/wps.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-n52/1.1.58/coastal-hazards-n52-1.1.58.war"
+RUN wget -O /usr/local/tomcat/webapps/wps.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-n52/${N52_WPS_VERSION}/coastal-hazards-n52-${N52_WPS_VERSION}.war"
 
-RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/psi-probe/releases/download/3.0.0.M3/probe.war"
+RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/psi-probe/releases/download/${PROBE_VERSION}/probe.war"
 
 COPY tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
-
 COPY context.xml /usr/local/tomcat/conf/context.xml
-
-COPY setenv.sh /usr/local/tomcat/bin/setenv.sh
-
+COPY run.sh run.sh
 COPY wps_config.xml /wps_config.xml
+COPY wps_config.xml /wps_config-original.xml
 
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "catalina.sh run"]
+ENTRYPOINT ["sh", "-c", "sh run.sh"]
 
-HEALTHCHECK --interval=15s --timeout=3s \
+HEALTHCHECK --interval=60s --timeout=3s \
 	CMD curl -f http://localhost:8080/wps || exit 1

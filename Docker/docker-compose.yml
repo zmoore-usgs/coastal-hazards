@@ -16,10 +16,6 @@ version: '2'
 # to change that, set  the environment variable "wps_version" to a valid version.
 #
 # Ex: $ wps_version="0.0.1" docker-compose build cch_n52_wps
-
-networks:
-  cchnet:
-
 volumes:
   cch_geoserver_data:
 
@@ -32,6 +28,8 @@ services:
     image: cch_rserve
     ports:
       - "6311:6311"
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"
 
   cch_n52_wps:
     build:
@@ -40,14 +38,16 @@ services:
         - doi_network=$doi_network
     image: cch_n52_wps
     ports:
-      - "8081:8080"
+      - "8082:8080"
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
+    depends_on:
+      - cch_rserve
 
-  cch_db:
+  cch_postgres:
     build:
       context: ./postgres
-    image: cch_db
+    image: cch_postgres
     ports:
       - "5432:5432"
     env_file:
@@ -58,8 +58,6 @@ services:
         args:
         - doi_network=$doi_network
         context: ./portal
-        args:
-        - doi_network=$doi_network
     image: cch_portal
     volumes:
         - cch_geoserver_data:/heapdumps
@@ -80,19 +78,18 @@ services:
         - cch_geoserver_data:/heapdumps
         - cch_geoserver_data:/data
     ports:
-      - "8081:8081"
-      - "8444:8444"
+      - "8081:8080"
+      - "8444:8443"
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
 
   cch_pycsw:
     build:
         context: ./pycsw
-        args:
-        - doi_network=$doi_network
     image: cch_pycsw
-    command: dockerize -wait tcp://db:5432 -timeout 30s /bin/sh "run.sh"
     ports:
       - "8000:8000"
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"
     depends_on:
-      - cch_db
+      - cch_postgres

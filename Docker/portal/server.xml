@@ -53,10 +53,10 @@
          APR (HTTP/AJP) Connector: /docs/apr.html
          Define a non-SSL/TLS HTTP/1.1 Connector on port 8080
     -->
-        <Connector port="${cch_http_port}" protocol="HTTP/1.1" executor="tomcatThreadPool" connectionTimeout="20000" redirectPort="${cch_https_port}" URIEncoding="UTF-8" maxPostSize="100000000" />
-        <Connector port="${cch_https_port}" maxThreads="150" scheme="https" secure="true" SSLEnabled="true" keystoreFile="/usr/local/tomcat/ssl/.keystore" keystorePass="changeit" clientAuth="false" keyAlias="cch-portal" sslProtocol="TLS" />
+        <Connector port="8080" protocol="HTTP/1.1" executor="tomcatThreadPool" connectionTimeout="20000" redirectPort="8443" URIEncoding="UTF-8" maxPostSize="100000000" />
+        <Connector port="8443" maxThreads="150" scheme="https" secure="true" SSLEnabled="true" keystoreFile="/usr/local/tomcat/ssl/.keystore" keystorePass="changeit" clientAuth="false" keyAlias="cch-portal" sslProtocol="TLS" />
         <!-- Define an AJP 1.3 Connector on port 8009 -->
-        <Connector port="8009" protocol="AJP/1.3" redirectPort="${cch_https_port}" />
+        <Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />
         <!-- An Engine represents the entry point (within Catalina) that processes
          every request.  The Engine implementation for Tomcat stand alone
          analyzes the HTTP headers included with the request, and passes them

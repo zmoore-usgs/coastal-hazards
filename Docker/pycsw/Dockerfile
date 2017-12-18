@@ -2,7 +2,7 @@ FROM python:2.7
 
 ARG doi_network=false
 
-ENV PYCSW_VERSION="1.6.0"
+ENV PYCSW_VERSION="1.10.0"
 
 RUN apt-get update && \
 	apt-get install -y git libgeos-c1 gettext postgresql-client
@@ -33,5 +33,5 @@ EXPOSE 8000
 
 ENTRYPOINT ["sh", "-c", "sh run.sh"]
 
-HEALTHCHECK --interval=15s --timeout=3s \
+HEALTHCHECK --interval=60s --timeout=3s \
 	CMD curl -f http://localhost:8000/csw?service=CSW&request=GetCapabilities || exit 1
