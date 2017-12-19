@@ -26,7 +26,7 @@ sed -i -e "s/%POSTGRES_PASSWORD%/${POSTGRES_PYCSW_PASSWORD}/g" default.cfg
 sed -i -e "s/%POSTGRES_HOST%/${POSTGRES_HOST}/g" default.cfg
 
 # Setup the database using the admin config file
-python sbin/pycsw-admin.py -c setup_db -f default.cfg;
+python bin/pycsw-admin.py -c setup_db -f default.cfg;
 
 python csw.wsgi;
 

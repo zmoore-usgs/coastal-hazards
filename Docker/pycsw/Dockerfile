@@ -20,7 +20,9 @@ WORKDIR pycsw
 
 RUN git checkout ${PYCSW_VERSION}
 
-RUN pip install --trusted-host pypi.python.org -e . && pip install --trusted-host pypi.python.org -r requirements.txt
+RUN pip install --trusted-host pypi.python.org -e . && \
+	pip install --trusted-host pypi.python.org -r requirements.txt && \
+	pip install --trusted-host pypi.python.org -r requirements-standalone.txt
 
 COPY run.sh ./run.sh
 COPY default.cfg ./default.cfg
