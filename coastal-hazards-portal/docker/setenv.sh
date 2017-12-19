@@ -11,8 +11,8 @@ export CATALINA_OPTS="$CATALINA_OPTS -Dcch_db_hostname=$POSTGRES_HOST"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_db_port=$POSTGRES_PORT"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_db_password=$POSTGRES_CCH_PASSWORD"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_auth_service_endpoint=$CIDA_AUTH_ENDPOINT"
-export CATALINA_OPTS="$CATALINA_OPTS -Dcch_public_url=https://$PORTAL_HOST:$PORTAL_HTTPS_PORT/coastal-hazards-portal"
-export CATALINA_OPTS="$CATALINA_OPTS -Dcch_base_url=https://$PORTAL_HOST:$PORTAL_HTTPS_PORT/coastal-hazards-portal"
+export CATALINA_OPTS="$CATALINA_OPTS -Dcch_public_url=http://$PORTAL_HOST:$PORTAL_HTTP_PORT/coastal-hazards-portal"
+export CATALINA_OPTS="$CATALINA_OPTS -Dcch_base_url=http://$PORTAL_HOST:$PORTAL_HTTP_PORT/coastal-hazards-portal"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_base_secure_url=https://$PORTAL_HOST:$PORTAL_HTTPS_PORT/coastal-hazards-portal"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_go_usa_login=$GO_USA_LOGIN"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_go_usa_apikey=$GO_USA_API_KEY"
@@ -42,9 +42,9 @@ export CATALINA_OPTS="$CATALINA_OPTS -Dcch_layer_age_max=604800000"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_geoserver_workspace_published=published"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_geoserver_workspace_permanent=published"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_geoserver_cache_name=cchGeoserverCache"
+export CATALINA_OPTS="$CATALINA_OPTS -Dcch_fetch_and_unzip_token=${FETCH_AND_UNZIP_TOKEN}"
+export CATALINA_OPTS="$CATALINA_OPTS -Dcch_keystore_password=${KEY_STORE_PASSWORD}"
 
 if [ "${PORTAL_ALLOW_ANONYMOUS_LOGIN}" = "true" ]; then
     export CATALINA_OPTS="$CATALINA_OPTS -Dcch_null_role=CCH_ADMIN"
 fi;
-
-

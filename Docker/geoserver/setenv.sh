@@ -1,1 +1,0 @@
-export CATALINA_OPTS="$CATALINA_OPTS -DGEOSERVER_DATA_DIR=/data/geoserver"

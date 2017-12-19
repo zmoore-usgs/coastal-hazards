@@ -8,4 +8,4 @@ cp /rserve-original.pwd /rserve.pwd
 sed -i -e "s/%RSERVE_PASSWORD%/${RSERVE_PASSWORD}/g" /rserve.pwd
 
 # Launch RServe With Hazard Items
-R -e "library(Rserve);library(hazardItems);setBaseURL('${PORTAL_BASE_URL}');run.Rserve(config.file=\"/rserve.conf\")";
+R -e "library(Rserve);library(hazardItems);setBaseURL('https://${PORTAL_HOST}:${PORTAL_HTTPS_PORT}/coastal-hazards-portal/');run.Rserve(config.file=\"/rserve.conf\")";

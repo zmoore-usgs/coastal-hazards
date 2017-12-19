@@ -62,11 +62,10 @@ RUN ls ${LIQUIBASE_HOME}/lib/
 #  Git Build
 ###############
 
-RUN git clone https://github.com/USGS-CIDA/coastal-hazards.git
-WORKDIR coastal-hazards
-RUN git checkout ${PORTAL_LIQUIBASE_TAG}
-WORKDIR /
-RUN cp -r /coastal-hazards/coastal-hazards-liquibase/src/main/resources/bootstrap .
+#RUN git clone https://github.com/USGS-CIDA/coastal-hazards.git
+#WORKDIR coastal-hazards
+#RUN git checkout ${PORTAL_LIQUIBASE_TAG}
+#WORKDIR /
 
 ###############
 # End Git Build
@@ -76,16 +75,18 @@ RUN cp -r /coastal-hazards/coastal-hazards-liquibase/src/main/resources/bootstra
 #  Local Build
 #################
 
-#ADD src coastal-hazards/coastal-hazards-liquibase/src 
-#RUN cp -r /coastal-hazards/coastal-hazards-liquibase/src/main/resources/bootstrap .
+RUN mkdir -p /coastal-hazards/coastal-hazards-liquibase/
+COPY src /coastal-hazards/coastal-hazards-liquibase/src
 
 #################
 # End Local Build
 #################
 
+RUN cp -r /coastal-hazards/coastal-hazards-liquibase/src/main/resources/bootstrap .
+
 # Grab DB Setup Script
 
-COPY ./dbInit/setup_db.sh /docker-entrypoint-initdb.d/z_setup_db.sh
+COPY docker/dbInit/setup_db.sh /docker-entrypoint-initdb.d/z_setup_db.sh
 
 EXPOSE 5432
 

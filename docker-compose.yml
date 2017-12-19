@@ -22,7 +22,7 @@ volumes:
 services:
   cch_rserve:
     build:
-      context: ./rserve
+      context: ./docker/rserve
       args:
         - doi_network=$doi_network
     image: cch_rserve
@@ -33,7 +33,7 @@ services:
 
   cch_n52_wps:
     build:
-      context: ./n52-wps
+      context: ./coastal-hazards-n52
       args:
         - doi_network=$doi_network
     image: cch_n52_wps
@@ -46,7 +46,9 @@ services:
 
   cch_postgres:
     build:
-      context: ./postgres
+      context: ./coastal-hazards-liquibase
+      args:
+        - doi_network=$doi_network
     image: cch_postgres
     ports:
       - "5432:5432"
@@ -55,9 +57,9 @@ services:
 
   cch_portal:
     build:
+        context: ./coastal-hazards-portal
         args:
-        - doi_network=$doi_network
-        context: ./portal
+          - doi_network=$doi_network
     image: cch_portal
     volumes:
         - cch_geoserver_data:/heapdumps
@@ -70,9 +72,9 @@ services:
 
   cch_geoserver:
     build:
-        context: ./geoserver
+        context: ./coastal-hazards-geoserver
         args:
-        - doi_network=$doi_network
+          - doi_network=$doi_network
     image: cch_geoserver
     volumes:
         - cch_geoserver_data:/heapdumps
@@ -85,7 +87,9 @@ services:
 
   cch_pycsw:
     build:
-        context: ./pycsw
+        context: ./docker/pycsw
+        args:
+          - doi_network=$doi_network
     image: cch_pycsw
     ports:
       - "8000:8000"
