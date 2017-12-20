@@ -1,12 +1,13 @@
 FROM tomcat:8.0-jre8-alpine
 
 ARG N52_WPS_VERSION=1.1.58
+ARG doi_network=false
+ARG PROBE_VERSION=3.0.0.M3
+ARG KEYSTORE_PASSWORD=changeit
 
-ENV PROBE_VERSION 3.0.0.M3
+ENV KEY_STORE_PASSWORD=${KEYSTORE_PASSWORD}
 
 RUN apk add --update openssl
-
-ARG doi_network=false
 
 RUN if [ "${doi_network}" = true ]; then \
 		mkdir -p /usr/lib/ssl/certs/ && \
@@ -20,7 +21,7 @@ RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/ps
 
 RUN mkdir -p /usr/local/tomcat/ssl
 
-COPY ./docker/trust-store.jks /usr/local/tomcat/ssl/trust-store.jks
+COPY docker/key-store.jks /usr/local/tomcat/ssl/trust-store.jks
 
 ####################
 #  Artifact Build
@@ -56,6 +57,3 @@ RUN chmod +x /usr/local/tomcat/bin/setenv.sh
 EXPOSE 8080
 
 ENTRYPOINT ["sh", "-c", "sh run.sh"]
-
-HEALTHCHECK --interval=60s --timeout=3s \
-	CMD curl -f http://localhost:8080/wps || exit 1

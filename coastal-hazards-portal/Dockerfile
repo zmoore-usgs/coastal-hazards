@@ -2,6 +2,10 @@ FROM tomcat:8.0-jre8-alpine
 
 ARG doi_network=false
 ARG PORTAL_VERSION=1.1.58
+ARG PROBE_VERSION=3.0.0.M3
+ARG KEYSTORE_PASSWORD=changeit
+
+ENV KEY_STORE_PASSWORD=${KEYSTORE_PASSWORD}
 
 RUN apk add --update openssl
 
@@ -13,7 +17,10 @@ RUN if [ "${doi_network}" = true ]; then \
 	fi
 
 
-RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/psi-probe/releases/download/3.0.0.M3/probe.war"
+RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/psi-probe/releases/download/${PROBE_VERSION}/probe.war"
+
+RUN mkdir -p /usr/local/tomcat/ssl
+COPY docker/key-store.jks /usr/local/tomcat/ssl/key-store.jks
 
 ####################
 #  Artifact Build
@@ -35,9 +42,6 @@ COPY target/coastal-hazards-portal.war /usr/local/tomcat/webapps/coastal-hazards
 # End Local Build
 #################
 
-RUN mkdir -p /usr/local/tomcat/ssl
-
-COPY ./docker/key-store.jks /usr/local/tomcat/ssl/key-store.jks
 
 ADD https://jdbc.postgresql.org/download/postgresql-9.3-1102.jdbc41.jar /usr/local/tomcat/lib
 
@@ -46,6 +50,8 @@ COPY docker/server.xml /usr/local/tomcat/conf/server.xml
 COPY docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 COPY docker/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 COPY docker/context.xml /usr/local/tomcat/conf/context.xml
+
+RUN sed -i -e "s/%KEY_STORE_PASSWORD%/${KEY_STORE_PASSWORD}/g" /usr/local/tomcat/conf/server.xml
 
 RUN chmod +x /usr/local/tomcat/bin/setenv.sh
 
@@ -56,6 +62,3 @@ RUN rm -rf /usr/local/tomcat/bin/docs
 RUN rm -rf /usr/local/tomcat/bin/examples
 
 EXPOSE 8080 8443
-
-HEALTHCHECK --interval=60s --timeout=3s \
-	CMD curl -f http://localhost:8080/manager/ || exit 1

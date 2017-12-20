@@ -1,9 +1,11 @@
 FROM tomcat:8.0-jre8-alpine
 
-VOLUME ["/heapdumps", "/data"]
-
 ARG doi_network=false
 ARG GEOSERVER_VERSION=1.1.58
+ARG PROBE_VERSION=3.0.0.M3
+ARG KEYSTORE_PASSWORD=changeit
+
+ENV KEY_STORE_PASSWORD=${KEYSTORE_PASSWORD}
 
 RUN apk add --update openssl
 
@@ -18,10 +20,10 @@ RUN if [ "${doi_network}" = true ]; then \
 RUN mkdir -p /data/coastal-hazards/uploaded-data
 
 RUN mkdir -p /usr/local/tomcat/ssl
-COPY ./docker/trust-store.jks /usr/local/tomcat/ssl/key-store.jks
-COPY ./docker/trust-store.jks /usr/local/tomcat/ssl/trust-store.jks
+COPY docker/key-store.jks /usr/local/tomcat/ssl/key-store.jks
+COPY docker/key-store.jks /usr/local/tomcat/ssl/trust-store.jks
 
-RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/psi-probe/releases/download/3.0.0.M3/probe.war"
+RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/psi-probe/releases/download/${PROBE_VERSION}/probe.war"
 
 ####################
 #  Artifact Build
@@ -47,6 +49,9 @@ COPY docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 COPY docker/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 COPY docker/context.xml /usr/local/tomcat/conf/context.xml
 COPY docker/server.xml /usr/local/tomcat/conf/server.xml
+
+RUN sed -i -e "s/%KEY_STORE_PASSWORD%/${KEY_STORE_PASSWORD}/g" /usr/local/tomcat/conf/server.xml
+RUN sed -i -e "s/%TRUST_STORE_PASSWORD%/${KEY_STORE_PASSWORD}/g" /usr/local/tomcat/conf/server.xml
 
 EXPOSE 8080 8443
 

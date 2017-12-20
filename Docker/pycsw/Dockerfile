@@ -34,6 +34,3 @@ RUN chmod -R 777 run.sh
 EXPOSE 8000
 
 ENTRYPOINT ["sh", "-c", "sh run.sh"]
-
-HEALTHCHECK --interval=60s --timeout=3s \
-	CMD curl -f http://localhost:8000/csw?service=CSW&request=GetCapabilities || exit 1

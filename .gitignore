@@ -18,6 +18,7 @@ build.properties
 
 ### Java ###
 *.class
+*.jks
 
 # Package Files #
 *.jar
