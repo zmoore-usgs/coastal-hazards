@@ -21,7 +21,7 @@ This project has support for running locally via Docker. The first step in getti
 
 1. In the project `Docker` directory run the following command where `<your docker IP>` is replaced with the IP address of the docker container that your CCH Portal service will be deployed on.
 
-    `keytool -genkey -noprompt -keystore key-store.jks -validity 999 -keysize 2048 -alias cch-portal -keyalg RSA -keypass changeit -storepass changeit -dname "CN=<your docker IP>, OU=owi, O=owi, L=middleton, S=WI, C=US"`
+    `keytool -genkey -noprompt -keystore key-store.jks -validity 999 -keysize 2048 -alias cch-portal -keyalg RSA -storepass changeit -dname "CN=<your docker IP>, OU=owi, O=owi, L=middleton, S=WI, C=US"`
 
     Note that the keystore password `storepass` can be changed from `changeit` to another value, however doing so will require that you pass in additional arguments when building the containers. This will be described later.
 
