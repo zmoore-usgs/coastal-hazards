@@ -55,7 +55,27 @@ Several of the configuration values in `compose.env` may need to be changed if y
     This should being the process of building and then launching all of the docker containers needed for this project. This process will take some time, possibly in upwards of 15 minutes.
 
 3. Once the portal has finished building and starting it should be accessible from `<your docker IP>:8080/coastal-hazards-portal/`
- 
+
+### Stopping the docker containers
+
+In order to bring down the running cch stack run the following command:
+
+`docker-compose down` 
+
+This will bring down _all_ of the running CCH services defined in the `docker-compose.yml` file. Note that running this command will also __REMOVE__ the associated docker containers meaning all data stored in them will be lost. 
+
+An alternative method for only brining down select services is to run `docker ps` to find the `container ID` of the service that you'd like to bring down. Once you've found the `container ID` run `docker stop <container ID>` to stop that service and then, if you'd like to also remove the container, run `docker rm <container ID>`.
+
+### Modifying the docker images
+
+When you launch a service using `docker-compose` it does _NOT_ always re-build the docker image for the service it is trying to launch. If there is already an existing image for the service you'd like to launch then it will use that rather than building a new one.
+
+In order to build a new docker image for a specific service you can either remove the existing image (which will force `docker-compose` to rebuild it), or you can overwrite it with a newer image using `docker build`. 
+
+If you remove the existing image note that the _entire_ image building process will need to run again, but if you simply run `docker build` and overwrite the existing image Docker will re-use the parts of the existing image that have not been modified.
+
+In order to use `docker build` first navigate into the directory containing the `Dockerfile` of the service that you would like to rebuild. In this directory open a terminal and run `docker build -t <image name> .` where `<image name>` matches the name of the image for that service as defined in the `docker-compose.yml` file. Build arguments can be passed into the `docker build` command in the same manner as the `docker-compose up` command (described above). Example: `KEYSTORE_PASSWORD=newpass docker build -t cch-portal .`
+
 ### Building from local sources vs building from artifacts
 
 Several of the sub-project docker files support buildling from local sources instead of pulling a specific artifact version from the CIDA Nexus. The sub-projects that support this are `coastal-hazards-n52`, `coastal-hazards-liquibase`, `coastal-hazards-geoserver`, and `coastal-hazards-portal`. 
