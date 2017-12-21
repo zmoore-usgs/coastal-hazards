@@ -21,6 +21,8 @@ $(document).ready(function () {
 		'$diagramContainer' : $('#app-container'),
 		'$treeContainer' : $('#tree-container'),
 		'$saveButton' : $('#save-button'),
+		'$searchButton' : $('#search-button'),
+		'$clearSearchButton' : $('#clear-search'),
 		'$searchInput' : $('#search-input')
 	});
 });

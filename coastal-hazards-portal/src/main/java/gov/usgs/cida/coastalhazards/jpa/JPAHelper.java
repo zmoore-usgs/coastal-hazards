@@ -18,11 +18,11 @@ public class JPAHelper {
 	@PersistenceUnit
 	private static EntityManagerFactory emf = null;
 
-	public static EntityManagerFactory getEntityManagerFactory() {
+	public synchronized static EntityManagerFactory getEntityManagerFactory() {
 		return getEntityManagerFactory("coastalhazards");
 	}
 
-	public static EntityManagerFactory getEntityManagerFactory(String unit) {
+	public synchronized static EntityManagerFactory getEntityManagerFactory(String unit) {
 		if (emf == null) {
 			try {
 				emf = Persistence.createEntityManagerFactory(unit);
@@ -34,13 +34,13 @@ public class JPAHelper {
 		return emf;
 	}
 
-	public static void closeEntityManagerFactory() {
+	public synchronized static void closeEntityManagerFactory() {
 		if (emf != null && emf.isOpen()) {
 			emf.close();
 		}
 	}
 
-	public static void close(EntityManager em) {
+	public synchronized static void close(EntityManager em) {
 		if (em != null && em.isOpen()) {
 			em.close();
 		}

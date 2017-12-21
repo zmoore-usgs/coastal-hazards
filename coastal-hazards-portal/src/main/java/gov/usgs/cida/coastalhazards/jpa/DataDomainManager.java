@@ -139,6 +139,19 @@ public class DataDomainManager implements AutoCloseable {
 	
 	return(delete(item.getId()));
     }
+
+    /**
+     * Delete the data domain associated with the given item ID
+     * @param itemId The item ID to delete the associated data domain for
+     * @return Boolean Representing whether or not the delete executed successfully.
+     */
+    public boolean deleteDomainForItemId(String itemId) {
+        if(itemId == null || itemId.length() == 0) {
+            throw new IllegalArgumentException("Item must be valid data item");
+        }
+
+        return delete(itemId);
+    }
     
     /**
      * Delete the data domain associated with the given item and then rebuild
