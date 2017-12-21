@@ -76,6 +76,8 @@ If you remove the existing image note that the _entire_ image building process w
 
 In order to use `docker build` first navigate into the directory containing the `Dockerfile` of the service that you would like to rebuild. In this directory open a terminal and run `docker build -t <image name> .` where `<image name>` matches the name of the image for that service as defined in the `docker-compose.yml` file. Build arguments can be passed into the `docker build` command in the same manner as the `docker-compose up` command (described above). Example: `KEYSTORE_PASSWORD=newpass docker build -t cch-portal .`
 
+Any re-built services can then be brought up via the service-specific version of `docker-compose` described above.
+
 ### Building from local sources vs building from artifacts
 
 Several of the sub-project docker files support buildling from local sources instead of pulling a specific artifact version from the CIDA Nexus. The sub-projects that support this are `coastal-hazards-n52`, `coastal-hazards-liquibase`, `coastal-hazards-geoserver`, and `coastal-hazards-portal`. 
