@@ -21,9 +21,9 @@ This project has support for running locally via Docker. The first step in getti
 
 1. In the project `Docker` directory run the following command where `<your docker IP>` is replaced with the IP address of the docker container that your CCH Portal service will be deployed on.
 
-    `keytool -genkey -noprompt -keystore key-store.jks -validity 999 -keysize 2048 -alias cch-portal -keyalg RSA -keypass changeit -storepass changeit -dname "CN=<your docker IP>, OU=owi, O=owi, L=middleton, S=WI, C=US"`
+    `keytool -genkey -noprompt -keystore key-store.jks -validity 999 -keysize 2048 -alias cch-portal -keyalg RSA -storepass changeit -dname "CN=<your docker IP>, OU=owi, O=owi, L=middleton, S=WI, C=US"`
 
-    Note that the keystore password `storepass` can be changed from `changeit` to another value, however doing so will require that you pass in additional arguments when building the containers. This will be described later.
+    Note that the keystore password `-storepass` can be changed from `changeit` to another value of your choice.
 
 2. Copy `key-store.jks` into `coastal-hazards/coastal-hazards-portal/docker` directory. 
 
@@ -41,10 +41,11 @@ Several of the configuration values in `compose.env` may need to be changed if y
 
 1. If building from local sources, prior to building the docker containers the CCH Maven project must first be built so that the WAR files are placed into the targe directories. There should be a total of 3 WAR files created, 1 in each of `coastal-hazards-n52`, `coastal-hazards-geoserver`, and `coastal-hazards-portal`.
 
-2. There are 2 build arguments that can be supplied which will modify the built containers.
-    - `doi_network` - Set this to true if you are having trouble pulling the necessary files for the docker containres during build and you are behind the DOI network. It's possible that the SSL inspection certificate is casuing problems.
+2. There are 2 build arguments that can be supplied which will modify the built containers. The first is required when building your images, the second is optional and only needs to be supplied if necessary.
 
-    - `KEYSTORE_PASSWORD` If you changed the default keystore password from `changeit` this is where you should provide the updated keystore password value.
+    - `KEYSTORE_PASSWORD` - [__REQUIRED__] This should be the password that you gave the keystore you created previously. This must be supplied even if you used the default keystore password `changeit`.
+
+    - `doi_network` - [_OPTIONAL_] Set this to true if you are having trouble pulling the necessary files for the docker containres during build and you are behind the DOI network. It's possible that the SSL inspection certificate is casuing problems.
 
     When running the `docker-compose` or `Docker build` commands these arguments can be passed in as follows: `KEYSTORE_PASSWORD=newpass docker-compose up`
 
@@ -55,7 +56,29 @@ Several of the configuration values in `compose.env` may need to be changed if y
     This should being the process of building and then launching all of the docker containers needed for this project. This process will take some time, possibly in upwards of 15 minutes.
 
 3. Once the portal has finished building and starting it should be accessible from `<your docker IP>:8080/coastal-hazards-portal/`
- 
+
+### Stopping the docker containers
+
+In order to bring down the running cch stack run the following command:
+
+`docker-compose down` 
+
+This will bring down _all_ of the running CCH services defined in the `docker-compose.yml` file. Note that running this command will also __REMOVE__ the associated docker containers meaning all data stored in them will be lost. 
+
+An alternative method for only brining down select services is to run `docker ps` to find the `container ID` of the service that you'd like to bring down. Once you've found the `container ID` run `docker stop <container ID>` to stop that service and then, if you'd like to also remove the container, run `docker rm <container ID>`.
+
+### Modifying the docker images
+
+When you launch a service using `docker-compose` it does _NOT_ always re-build the docker image for the service it is trying to launch. If there is already an existing image for the service you'd like to launch then it will use that rather than building a new one.
+
+In order to build a new docker image for a specific service you can either remove the existing image (which will force `docker-compose` to rebuild it), or you can overwrite it with a newer image using `docker build`. 
+
+If you remove the existing image note that the _entire_ image building process will need to run again, but if you simply run `docker build` and overwrite the existing image Docker will re-use the parts of the existing image that have not been modified.
+
+In order to use `docker build` first navigate into the directory containing the `Dockerfile` of the service that you would like to rebuild. In this directory open a terminal and run `docker build -t <image name> .` where `<image name>` matches the name of the image for that service as defined in the `docker-compose.yml` file. Build arguments can be passed into the `docker build` command in the same manner as the `docker-compose up` command (described above). Example: `KEYSTORE_PASSWORD=newpass docker build -t cch-portal .`
+
+Any re-built services can then be brought up via the service-specific version of `docker-compose` described in point `1` under `Additional Important Notes` below.
+
 ### Building from local sources vs building from artifacts
 
 Several of the sub-project docker files support buildling from local sources instead of pulling a specific artifact version from the CIDA Nexus. The sub-projects that support this are `coastal-hazards-n52`, `coastal-hazards-liquibase`, `coastal-hazards-geoserver`, and `coastal-hazards-portal`. 
