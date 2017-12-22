@@ -23,7 +23,7 @@ This project has support for running locally via Docker. The first step in getti
 
     `keytool -genkey -noprompt -keystore key-store.jks -validity 999 -keysize 2048 -alias cch-portal -keyalg RSA -storepass changeit -dname "CN=<your docker IP>, OU=owi, O=owi, L=middleton, S=WI, C=US"`
 
-    Note that the keystore password `storepass` can be changed from `changeit` to another value, however doing so will require that you pass in additional arguments when building the containers. This will be described later.
+    Note that the keystore password `-storepass` can be changed from `changeit` to another value of your choice.
 
 2. Copy `key-store.jks` into `coastal-hazards/coastal-hazards-portal/docker` directory. 
 
@@ -41,10 +41,11 @@ Several of the configuration values in `compose.env` may need to be changed if y
 
 1. If building from local sources, prior to building the docker containers the CCH Maven project must first be built so that the WAR files are placed into the targe directories. There should be a total of 3 WAR files created, 1 in each of `coastal-hazards-n52`, `coastal-hazards-geoserver`, and `coastal-hazards-portal`.
 
-2. There are 2 build arguments that can be supplied which will modify the built containers.
-    - `doi_network` - Set this to true if you are having trouble pulling the necessary files for the docker containres during build and you are behind the DOI network. It's possible that the SSL inspection certificate is casuing problems.
+2. There are 2 build arguments that can be supplied which will modify the built containers. The first is required when building your images, the second is optional and only needs to be supplied if necessary.
 
-    - `KEYSTORE_PASSWORD` If you changed the default keystore password from `changeit` this is where you should provide the updated keystore password value.
+    - `KEYSTORE_PASSWORD` - [__REQUIRED__] This should be the password that you gave the keystore you created previously. This must be supplied even if you used the default keystore password `changeit`.
+
+    - `doi_network` - [_OPTIONAL_] Set this to true if you are having trouble pulling the necessary files for the docker containres during build and you are behind the DOI network. It's possible that the SSL inspection certificate is casuing problems.
 
     When running the `docker-compose` or `Docker build` commands these arguments can be passed in as follows: `KEYSTORE_PASSWORD=newpass docker-compose up`
 
