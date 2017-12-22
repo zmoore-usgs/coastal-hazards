@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.rest.publish;
+package gov.usgs.cida.coastalhazards.rest.data.util;
 
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Bbox;
@@ -13,58 +13,70 @@ import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.model.summary.Tiny;
 import gov.usgs.cida.coastalhazards.model.summary.Publication.PublicationType;
 import gov.usgs.cida.coastalhazards.model.summary.Publication;
-import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 
-import java.net.URISyntaxException;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+public class StormUtil {
+    public static List< Map<String, Object> > createStormChildMap(String layerId) {
+        List< Map<String, Object> > childList = new ArrayList<>();
+        final String attrKey = "attr";
+        final String layerIdKey = "layerId";
+        final String visibleKey = "visible";
 
-import org.glassfish.jersey.server.mvc.Viewable;
+        Map<String, Object> pcolChild = new HashMap<>();
+        Map<String, Object> povwChild = new HashMap<>();
+        Map<String, Object> pindChild = new HashMap<>();
+        Map<String, Object> dhighChild = new HashMap<>();
+        Map<String, Object> dlowChild = new HashMap<>();
+        Map<String, Object> meanChild = new HashMap<>();
+        Map<String, Object> extremeChild = new HashMap<>();
 
-@Path("/storm")
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
-public class PublishStormResource {
-    public static final String STORM_TRACK_ITEM_ID = "DvDJ6Vcg";
+        pcolChild.put(attrKey, "PCOL");
+        pcolChild.put(layerIdKey, layerId);
+        pcolChild.put(visibleKey, true);
+        childList.add(pcolChild);
 
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-    @POST
-    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
-    @Path("/storm")
-	public Response createStorm(@Context HttpServletRequest req, InputStream postBody) {
-        Response response = null;
-        Item stormTrack = createStormTrack();
-        Item stormTemplate = null;
+        povwChild.put(attrKey, "POVW");
+        povwChild.put(layerIdKey, layerId);
+        povwChild.put(visibleKey, true);
+        childList.add(povwChild);
 
-        if(stormTrack == null) {
+        pindChild.put(attrKey, "PIND");
+        pindChild.put(layerIdKey, layerId);
+        pindChild.put(visibleKey, true);
+        childList.add(pindChild);
 
-        }
+        dhighChild.put(attrKey, "DHIGH");
+        dhighChild.put(layerIdKey, layerId);
+        dhighChild.put(visibleKey, false);
+        childList.add(dhighChild);
 
-        return response;
+        dlowChild.put(attrKey, "DLOW");
+        dlowChild.put(layerIdKey, layerId);
+        dlowChild.put(visibleKey, false);
+        childList.add(dlowChild);
+
+        meanChild.put(attrKey, "MEAN");
+        meanChild.put(layerIdKey, layerId);
+        meanChild.put(visibleKey, false);
+        childList.add(meanChild);
+
+        extremeChild.put(attrKey, "EXTREME");
+        extremeChild.put(layerIdKey, layerId);
+        extremeChild.put(visibleKey, false);
+        childList.add(extremeChild);
+
+        return childList;
     }
-    
-    
-    private Item createStormTrack() {
-        Item stormTrack = null;    
+
+    public static Item saveStormTrack() {
+        Item stormTrack = null;
+        final String STORM_TRACK_ITEM_ID = "DvDJ6Vcg";
 
         //If the Storm Track item has not yet been created then create it
         try(ItemManager manager = new ItemManager()) {
@@ -78,7 +90,7 @@ public class PublishStormResource {
             stormTrack.setShowChildren(true);
             stormTrack.setChildren(trackChildren());
 
-            if(stormTrack.getChildren().size() == 3) {
+            if(stormTrack.getChildren() != null) {
                 List<String> childIds = new ArrayList<>();
                 for(Item child : stormTrack.getChildren()) {
                     childIds.add(child.getId());
@@ -92,7 +104,7 @@ public class PublishStormResource {
         return stormTrack;
     }
 
-    private final Summary trackSummary() {
+    private static final Summary trackSummary() {
         Summary stormSummary = new Summary();
         stormSummary.setTiny(new Tiny());
         stormSummary.setMedium(new Medium());
@@ -113,7 +125,7 @@ public class PublishStormResource {
         return stormSummary;
     }
 
-    private final List<Publication> trackSummaryPublications() {
+    private static final List<Publication> trackSummaryPublications() {
         List<Publication> publications = new ArrayList<>();
         Publication nowCoast = new Publication();
 
@@ -126,13 +138,13 @@ public class PublishStormResource {
         return publications;
     }
 
-    private final Bbox trackBbox() {
+    private static final Bbox trackBbox() {
         Bbox stormBbox = new Bbox();
         stormBbox.setBbox(-101.8, 17.6, -62.4, 46.0);
         return stormBbox;
     }
 
-    private final List<Service> trackChildServices(String serviceParam) {
+    private static final List<Service> trackChildServices(String serviceParam) {
         List<Service> childServices = new ArrayList<>();
 
         Service sourceWms = new Service();
@@ -151,8 +163,8 @@ public class PublishStormResource {
         return childServices;
     }
 
-    private final List<Item> trackChildren() {
-        List<Item> children = new ArrayList<>();
+    private static final List<Item> trackChildren() {
+        List<Item> children = null;
 
         Item polyChild = baseTrackItem();
         polyChild.setItemType(ItemType.data);
@@ -172,14 +184,17 @@ public class PublishStormResource {
         ptChild.setServices(trackChildServices("8,7,4"));
         ptChild = saveTrackItem(ptChild);
 
-        children.add(polyChild);
-        children.add(linChild);
-        children.add(ptChild);
+        if(polyChild != null && linChild != null && ptChild != null) {
+            children = new ArrayList<>();
+            children.add(polyChild);
+            children.add(linChild);
+            children.add(ptChild);
+        }
 
         return children;
     }
 
-    private final Item baseTrackItem() {
+    private static final Item baseTrackItem() {
         Item baseItem = new Item();
 
         baseItem.setName("track");
@@ -190,13 +205,13 @@ public class PublishStormResource {
         baseItem.setFeatured(false);
         baseItem.setEnabled(true);
         baseItem.setLastModified(Date.from(Instant.now()));
-        baseItem.setBbox(trackBbox());
-        baseItem.setSummary(trackSummary());
+        baseItem.setBbox(Bbox.copyValues(trackBbox(), new Bbox()));
+        baseItem.setSummary(Summary.copyValues(trackSummary(), new Summary()));
 
         return baseItem;
     }
 
-    private Item saveTrackItem(Item toSave) {
+    private static Item saveTrackItem(Item toSave) {
         String id = null;
         Item saved = null;
 

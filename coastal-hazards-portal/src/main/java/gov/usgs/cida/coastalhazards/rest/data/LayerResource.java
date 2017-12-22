@@ -106,7 +106,7 @@ public class LayerResource {
 		
 		List<Service> added = null;
 		try {
-			 log.info("Vector layer upload - about to parseRequest");
+			log.info("Vector layer upload - about to parseRequest");
 			byte[] inmemory = IOUtils.toByteArray(postBody);
 			try (ByteArrayInputStream bais = new ByteArrayInputStream(inmemory)) {
 				 log.info("Vector layer create - about to doCSWInsertFromString");

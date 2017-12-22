@@ -20,6 +20,7 @@ import gov.usgs.cida.coastalhazards.model.summary.Publication;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
+import gov.usgs.cida.coastalhazards.rest.data.util.StormUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.coastalhazards.util.ogc.OGCService;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
@@ -44,6 +45,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -138,6 +140,28 @@ public class TemplateResource {
 				response = Response.serverError().build();
 			}
 		}
+		return response;
+	}
+
+	@POST
+	@Path("/storm/{id}")
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	public Response instantiateStormTemplate(@Context HttpServletRequest request, @PathParam("id") String id, @QueryParam("layerId") String layerId) {
+		Response response;
+
+		if(layerId != null) {
+			Gson gson = GsonUtil.getDefault();
+			String childJson = gson.toJson(StormUtil.createStormChildMap(layerId));
+
+			if(childJson != null) {
+				response = instantiateTemplate(request, id, childJson);
+			} else {
+				response = Response.status(500).build();
+			}
+		} else {
+			response = Response.status(400).build();
+		}
+
 		return response;
 	}
 	
