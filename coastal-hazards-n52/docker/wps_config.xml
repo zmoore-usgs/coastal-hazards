@@ -46,10 +46,10 @@
   </Datahandlers>
   <AlgorithmRepositoryList>
     <Repository name="LocalRAlgorithmRepository" className="org.n52.wps.server.r.LocalRAlgorithmRepository" active="true">
-      <Property name="Rserve_Host" active="true">localhost</Property>
+      <Property name="Rserve_Host" active="true">%RSERVE_HOST%</Property>
       <Property name="Rserve_Port" active="true">6311</Property>
-      <Property name="Rserve_User" active="true">cch</Property>
-      <Property name="Rserve_Password" active="true">cch</Property>
+      <Property name="Rserve_User" active="true">cchportal_rserve</Property>
+      <Property name="Rserve_Password" active="true">%RSERVE_PASSWORD%</Property>
       <Property name="Script_Dir" active="true">R/r_scripts</Property>
       <Property name="Resource_Dir" active="true">R/resources</Property>
       <Property name="R_Work_Dir" active="true">default</Property>

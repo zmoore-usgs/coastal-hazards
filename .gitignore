@@ -21,6 +21,7 @@ build.properties
 
 ### Java ###
 *.class
+*.jks
 
 # Package Files #
 *.jar
@@ -45,3 +46,4 @@ dependency-reduced-pom.xml
 **/.DS_Store
 
 Docker/compose*.env
+.vscode/

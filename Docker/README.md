@@ -1,3 +1,5 @@
+# Note this readme is outdated but kept for reference purposes. See the project readme for updated instructions for using docker. If you'd like more information about how the docker files work then read this readme.
+
 ## Coastal Hazards Docker Containers
 ---------------------------------
 

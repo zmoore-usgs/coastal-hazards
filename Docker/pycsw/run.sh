@@ -1,17 +1,33 @@
-#!/bin/bash
+#!/bin/sh
 
-if [ -z ${POSTGRES_PASSWORD} ]; then
-	echo "Must provide db password \$POSTGRES_PASSWORD"
-	exit 1
-fi
+# Wait until the PyCSW PostgreSQL user is available or we time out
+WAIT_ITERATION=0
+MAX_WAIT_ITERATIONS=36
 
-if [ -z ${POSTGRES_USER} ]; then
-	echo "Using default postgres user: postgres"
-	POSTGRES_USER=postgres
-fi
+until  ( ( PGPASSWORD=${POSTGRES_PASSWORD} psql -U postgres -h ${POSTGRES_HOST} --quiet -tAc "SELECT 1 FROM pg_roles WHERE rolname='pycsw'" | grep -q 1 ) || [ $WAIT_ITERATION -eq $MAX_WAIT_ITERATIONS ] ) ; do
+  WAIT_ITERATION=$(($WAIT_ITERATION+1));
+  echo "Postgres is unavailable - retrying (${WAIT_ITERATION}/${MAX_WAIT_ITERATIONS})"
+  sleep 5
+done
 
-cat default.cfg | envsubst > tmp.xml; mv tmp.xml default.cfg
+if (  [ $WAIT_ITERATION -eq $MAX_WAIT_ITERATIONS ] ); then
+echo "Failed to connect to PostgreSQL db on (host:port): $POSTGRES_HOST:5432";
 
-python sbin/pycsw-admin.py -c setup_db -f default.cfg
+else
+echo "Postgres is up - continuing setup";
 
-python csw.wsgi
+# Restore config from original so replacement keywords are restored
+rm default.cfg
+cp default-original.cfg default.cfg
+
+# Replace replacement keywords in the default config file
+sed -i -e "s/%POSTGRES_USER%/pycsw/g" default.cfg
+sed -i -e "s/%POSTGRES_PASSWORD%/${POSTGRES_PYCSW_PASSWORD}/g" default.cfg
+sed -i -e "s/%POSTGRES_HOST%/${POSTGRES_HOST}/g" default.cfg
+
+# Setup the database using the admin config file
+python bin/pycsw-admin.py -c setup_db -f default.cfg;
+
+python csw.wsgi;
+
+fi;

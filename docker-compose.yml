@@ -16,75 +16,56 @@ version: '2'
 # to change that, set  the environment variable "wps_version" to a valid version.
 #
 # Ex: $ wps_version="0.0.1" docker-compose build cch_n52_wps
-
-networks:
-  cchnet:
-
 volumes:
   cch_geoserver_data:
 
 services:
   cch_rserve:
     build:
-      context: ./rserve
+      context: ./docker/rserve
       args:
         - doi_network=$doi_network
     image: cch_rserve
-    environment:
-      - PASSWORD=rserve
     ports:
       - "6311:6311"
-    networks:
-      cchnet:
-        aliases:
-        - rserve
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"
 
   cch_n52_wps:
     build:
-      context: ./n52-wps
+      context: ./coastal-hazards-n52
       args:
         - doi_network=$doi_network
+        - KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD
     image: cch_n52_wps
-    command: dockerize -wait tcp://rserve:6311 -timeout 30s catalina.sh run
     ports:
       - "8082:8080"
-    networks:
-      cchnet:
-        aliases:
-        - n52_wps
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
     depends_on:
       - cch_rserve
 
-  cch_db:
+  cch_postgres:
     build:
-      context: ./postgres
-    image: cch_db
+      context: ./coastal-hazards-liquibase
+      args:
+        - doi_network=$doi_network
+    image: cch_postgres
     ports:
       - "5432:5432"
-    networks:
-      cchnet:
-        aliases:
-        - db
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
 
   cch_portal:
     build:
+        context: ./coastal-hazards-portal
         args:
-        - doi_network=$doi_network
-        context: ./portal
-        args:
-        - doi_network=$doi_network
+          - doi_network=$doi_network
+          - KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD
     image: cch_portal
     volumes:
         - cch_geoserver_data:/heapdumps
         - cch_geoserver_data:/data
-    networks:
-        cchnet:
-          aliases:
-          - cch_portal
     ports:
       - "8080:8080"
       - "8443:8443"
@@ -93,35 +74,29 @@ services:
 
   cch_geoserver:
     build:
-        context: ./geoserver
+        context: ./coastal-hazards-geoserver
         args:
-        - doi_network=$doi_network
+          - doi_network=$doi_network
+          - KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD
     image: cch_geoserver
     volumes:
         - cch_geoserver_data:/heapdumps
         - cch_geoserver_data:/data
-    networks:
-        cchnet:
-          aliases:
-          - geoserver
     ports:
-      - "8081:8081"
-      - "8444:8444"
+      - "8081:8080"
+      - "8444:8443"
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
 
   cch_pycsw:
     build:
-        context: ./pycsw
+        context: ./docker/pycsw
         args:
-        - doi_network=$doi_network
+          - doi_network=$doi_network
     image: cch_pycsw
-    command: dockerize -wait tcp://db:5432 -timeout 30s /bin/sh "run.sh"
-    networks:
-        cchnet:
-          aliases:
-          - pycsw
     ports:
       - "8000:8000"
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"
     depends_on:
-      - cch_db
+      - cch_postgres
