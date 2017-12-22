@@ -52,15 +52,19 @@ public class PublishStormResource {
     @Path("/storm")
 	public Response createStorm(@Context HttpServletRequest req, InputStream postBody) {
         Response response = null;
+        Item stormTrack = createStormTrack();
+        Item stormTemplate = null;
 
-        createStormTrack();
+        if(stormTrack == null) {
+
+        }
 
         return response;
     }
     
     
     private Item createStormTrack() {
-        Item stormTrack;    
+        Item stormTrack = null;    
 
         //If the Storm Track item has not yet been created then create it
         try(ItemManager manager = new ItemManager()) {
@@ -71,16 +75,18 @@ public class PublishStormResource {
             stormTrack = baseTrackItem();
             stormTrack.setId(STORM_TRACK_ITEM_ID);
             stormTrack.setItemType(ItemType.aggregation);
-            stormTrack.setChildren(trackChildren());
             stormTrack.setShowChildren(true);
+            stormTrack.setChildren(trackChildren());
 
-            List<String> childIds = new ArrayList<>();
-            for(Item child : stormTrack.getChildren()) {
-                childIds.add(child.getId());
+            if(stormTrack.getChildren().size() == 3) {
+                List<String> childIds = new ArrayList<>();
+                for(Item child : stormTrack.getChildren()) {
+                    childIds.add(child.getId());
+                }
+
+                stormTrack.setDisplayedChildren(childIds);
+                stormTrack = saveTrackItem(stormTrack);
             }
-
-            stormTrack.setDisplayedChildren(childIds);
-            stormTrack = saveTrackItem(stormTrack);
         }
 
         return stormTrack;
