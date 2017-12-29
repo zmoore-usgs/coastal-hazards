@@ -20,6 +20,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -29,6 +30,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.lang.StringUtils;
@@ -47,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -141,6 +147,29 @@ public class MetadataUtil {
 		return id;
 	}
 
+	public static String extractFirstStringFromCswDoc(Document cswDoc, String path) {
+        return extractStringsFromCswDoc(cswDoc, path).get(0);
+	}
+
+	public static List<String> extractStringsFromCswDoc(Document cswDoc, String path) {
+		XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
+        List<String> result = new ArrayList<>();
+
+        try {
+            XPathExpression expr = xpath.compile(path);
+			NodeList nl = (NodeList) expr.evaluate(cswDoc, XPathConstants.NODESET);
+			
+			for(int i = 0; i < nl.getLength(); i++) {
+				result.add(nl.item(i).getTextContent());
+			}
+        } catch (Exception e) {
+            log.error("Failed to parse CSW Document Path: " + path);
+        }
+        
+        return result;
+	}
+
 	/**
 	 * I really don't like this in its current form, we should rethink this
 	 * process and move this around
@@ -164,20 +193,25 @@ public class MetadataUtil {
 				+ metadataEndpoint
 				+ "]]></wps:LiteralData>"
 				+ "</wps:Data>"
-				+ "</wps:Input>"
-				+ "<wps:Input>"
-				+ "<ows:Identifier>attr</ows:Identifier>"
-				+ "<wps:Data>"
-				+ "<wps:LiteralData>" + attr + "</wps:LiteralData>"
-				+ "</wps:Data>"
-				+ "</wps:Input>"
-				+ "</wps:DataInputs>"
+				+ "</wps:Input>";
+
+				if(attr != null && attr.length() > 0) {
+					wpsRequest += "<wps:Input>"
+					+ "<ows:Identifier>attr</ows:Identifier>"
+					+ "<wps:Data>"
+					+ "<wps:LiteralData>" + attr + "</wps:LiteralData>"
+					+ "</wps:Data>"
+					+ "</wps:Input>";
+				}
+
+				wpsRequest += "</wps:DataInputs>"
 				+ "<wps:ResponseForm>"
 				+ "<wps:RawDataOutput>"
 				+ "<ows:Identifier>output</ows:Identifier>"
 				+ "</wps:RawDataOutput>"
 				+ "</wps:ResponseForm>"
 				+ "</wps:Execute>";
+
 		HttpUriRequest req = new HttpPost(cchn52Endpoint + "/WebProcessingService");
 		HttpClient client = new DefaultHttpClient();
 		req.addHeader("Content-Type", "text/xml");
