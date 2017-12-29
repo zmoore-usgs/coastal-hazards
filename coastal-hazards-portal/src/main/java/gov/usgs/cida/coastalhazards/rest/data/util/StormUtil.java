@@ -9,6 +9,7 @@ import gov.usgs.cida.coastalhazards.model.Layer;
 import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.summary.Full;
+import gov.usgs.cida.coastalhazards.model.summary.Legend;
 import gov.usgs.cida.coastalhazards.model.summary.Medium;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.model.summary.Tiny;
@@ -31,6 +32,7 @@ import org.w3c.dom.Document;
 
 public class StormUtil {    
     private static final Logger log = LoggerFactory.getLogger(StormUtil.class);
+    public static final String STORM_TRACK_ITEM_ID = "DvDJ6Vcg";
     
     public static Summary buildStormTemplateSummary(Layer layer) {
         Summary summary = new Summary();
@@ -46,13 +48,23 @@ public class StormUtil {
             Tiny tiny = buildTinyText(titleParts);
             Medium medium = buildMediumText(titleParts);
             Full full = buildFullText(titleParts, title, surgeDescription);
+            Legend legend = buildLegendText(titleParts);
             
             summary.setTiny(tiny);
             summary.setMedium(medium);
             summary.setFull(full);
+            summary.setLegend(legend);
         }
 
         return summary;
+    }
+
+    private static Legend buildLegendText(Map<String, String> titleParts) {
+        Legend legend = new Legend();
+
+        legend.setTitle(titleParts.get("name"));
+
+        return legend;
     }
 
     private static Tiny buildTinyText(Map<String, String> titleParts) {
@@ -239,6 +251,7 @@ public class StormUtil {
             childList.add(extremeChild);
 
             trackChild.put("id", track.getId());
+            trackChild.put(visibleKey, true);
             childList.add(trackChild);
 
             childMap.put("children", childList);
@@ -249,7 +262,6 @@ public class StormUtil {
 
     private static Item saveStormTrack() {
         Item stormTrack = null;
-        final String STORM_TRACK_ITEM_ID = "DvDJ6Vcg";
 
         //If the Storm Track item has not yet been created then create it
         try(ItemManager manager = new ItemManager()) {
