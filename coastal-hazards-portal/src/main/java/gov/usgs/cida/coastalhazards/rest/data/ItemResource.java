@@ -7,7 +7,6 @@ import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
-import gov.usgs.cida.coastalhazards.rest.data.util.StormUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
@@ -35,7 +34,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
