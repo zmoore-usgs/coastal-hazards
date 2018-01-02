@@ -802,7 +802,7 @@
                                 <span>The Summary includes the data from the Titles/Descriptions, Keywords, and Resources (Data, Publications, and Resource entires) sections of the publish item page.</span>
                                 <br/>
                                 <label for="copy-none">None <input type="radio" name="copy-type" id="copy-none" value="none" checked/></label>
-                                <label for="copy-item">From Item ID <input type="radio" name="copy-type" id="copy-item" value="item"/></label>
+                                <label for="copy-item">From Item <input type="radio" name="copy-type" id="copy-item" value="item"/></label>
                                 <label for="copy-alias">From Alias <input type="radio" name="copy-type" id="copy-alias" value="alias"/></label>
                                 <label for="copy-input"><span></span><input type="text" name="copy-input" hidden/></label>
                             </div>

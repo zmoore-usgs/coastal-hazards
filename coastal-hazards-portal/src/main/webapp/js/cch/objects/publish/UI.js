@@ -2463,7 +2463,7 @@ CCH.Objects.Publish.UI = function () {
 			var invalidParts = alias.match(ALIAS_NAME_REGEX);
 		
 			if(invalidParts != null && invalidParts.length > 0){
-				errorString = "Alias to Use contains invalid characters.";
+				errorString = "Alias to use contains invalid characters.";
 				$result.append(errorString);
 				return;
 			}
