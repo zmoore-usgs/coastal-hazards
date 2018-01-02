@@ -778,25 +778,27 @@
                         <h4 class="modal-title">Create New Storm</h4>
                     </div>
                     <div class="modal-body">
+                        <span>Warning: Creating a new storm will cause any un-saved changes currently on the mediation page to be lost.</span>
+                        <br/><br/>
                         <form id="storm-form" enctype="multipart/form-data">
                             <div>
-                                <label for="file">Zipped Shape File</label>
+                                <label for="file">1. Zipped Shape File</label>
                                 <input type="file" name="file"/>
                             </div>
                             <br/>
                             <div>
-                                <label for="new-active">Is Storm Active? <input type="checkbox" id="new-active" name="new-active"/></label>
+                                <label for="new-active">2. Is Storm Active? <input type="checkbox" id="new-active" name="new-active"/></label>
                             </div>
                             <br/>
                             <div>
-                                <label for="inherit-alias">Alias to Use [optional]</label>
+                                <label for="inherit-alias">3. Alias to Use [optional]</label>
                                 <span>If the provided Alias is already in-use by another Item it will be removed from that Item and assigned to the newly created Storm.</span>
                                 <br/>
                                 <input type="text" id="inherit-alias" name="inherit-alias"/>
                             </div>
                             <br/>
                             <div>
-                                <label for="copy-type">Copy Existing Summary [optional]</label>
+                                <label for="copy-type">4. Copy Existing Summary [optional]</label>
                                 <span>The Summary includes the data from the Titles/Descriptions, Keywords, and Resources (Data, Publications, and Resource entires) sections of the publish item page.</span>
                                 <br/>
                                 <label for="copy-none">None <input type="radio" name="copy-type" id="copy-none" value="none" checked/></label>
@@ -810,7 +812,7 @@
                         <br/>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-submit" id="new-storm-modal-submit-btn">Create Storm</button>
+                        <button type="button" class="btn btn-success" id="new-storm-modal-submit-btn">Create Storm</button>
                         <button id="storm-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                 </div>
