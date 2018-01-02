@@ -127,15 +127,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		});
 
 		me.createNodeContextMenu = function(node){
-			var items = {
-					'edit': {},
-					'highlight': {},
-					'orphan': {},
-					'removeCopies': {},
-					'deleteWithChildren': {},
-					'deleteNoChildren': {},
-					'visibility': {}
-				},
+			var items = {},
 				tree = CCH.ui.getTree(),
 				selectedIds = tree.get_selected();
 
@@ -143,6 +135,17 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			if (node.parents.length < 3 || selectedIds.includes('orphans') || selectedIds.includes('root') || selectedIds.includes('uber') || selectedIds.includes('#')) {
 				return items;
 			} else {
+				//Make base context menu
+				items = {
+					'edit': {},
+					'highlight': {},
+					'orphan': {},
+					'removeCopies': {},
+					'deleteWithChildren': {},
+					'deleteNoChildren': {},
+					'visibility': {}
+				};
+
 				//Make sure the node we clicked is selected, otherwise deslsect what's selected and select it
 				if (!selectedIds.includes(node.id)){
 					tree.deselect_all();
@@ -680,22 +683,11 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	}	
 
 	me.clearSearch = function() {
-		var tree = CCH.ui.getTree(),
-			root = tree.get_node('root'),
-			allItems = root.children_d,
-			searchClass = 'jstree-search';
+		CCH.ui.getTree().clear_search();	
+	}
 
-		if (allItems !== undefined){
-			for (var cIdx = 0; cIdx < allItems.length; cIdx++) {
-				var node = tree.get_node(allItems[cIdx]);
-				var $nodeElement = $('#' + node.li_attr.id + '_anchor');
-				$nodeElement.removeClass(searchClass);
-			}
-			me.$searchInput.val("");
-		} else {
-			console.log("Error - Could not get root item from tree.");
-			console.log(tree);
-		}		
+	me.collapseAll = function() {
+		CCH.ui.getTree().element.jstree('close_all')
 	}
 
 	me.updateRandomIdToOriginalId = function (data) {
