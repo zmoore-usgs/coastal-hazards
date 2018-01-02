@@ -807,8 +807,11 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		// Bind the save button
 		me.$saveButton.on('click', me.saveItems);
 
-		// Bind the save button
+		// Bind the clear button
 		me.$clearSearchButton.on('click', me.clearSearch);
+
+		// Bind the collapse button
+		me.$collapseAllButton.on('click', me.collapseAll);
 
 		// Bind the search box
 		me.$searchButton.on('click', me.performTreeSearch);
