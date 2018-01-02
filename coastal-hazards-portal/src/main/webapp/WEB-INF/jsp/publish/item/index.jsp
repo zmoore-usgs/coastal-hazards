@@ -790,13 +790,15 @@
                             <br/>
                             <div>
                                 <label for="inherit-alias">Alias to Use [optional]</label>
-                                <span>Note that if the provided Alias is already in-use by another Item it will be removed from that Item and assigned to the newly created Storm.</span>
+                                <span>If the provided Alias is already in-use by another Item it will be removed from that Item and assigned to the newly created Storm.</span>
                                 <br/>
                                 <input type="text" id="inherit-alias" name="inherit-alias"/>
                             </div>
                             <br/>
                             <div>
                                 <label for="copy-type">Copy Existing Summary [optional]</label>
+                                <span>The Summary includes the data from the Titles/Descriptions, Keywords, and Resources (Data, Publications, and Resource entires) sections of the publish item page.</span>
+                                <br/>
                                 <label for="copy-none">None <input type="radio" name="copy-type" id="copy-none" value="none" checked/></label>
                                 <label for="copy-item">From Item ID <input type="radio" name="copy-type" id="copy-item" value="item"/></label>
                                 <label for="copy-alias">From Alias <input type="radio" name="copy-type" id="copy-alias" value="alias"/></label>
