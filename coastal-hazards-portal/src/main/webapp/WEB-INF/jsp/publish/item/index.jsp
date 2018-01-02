@@ -158,6 +158,7 @@
                                 <li><a id="publish-button-create-item-option" href="#">Item</a></li>
                                 <li><a id="publish-button-create-aggregation-option" href="#">Aggregation</a></li>
                                 <li><a id="publish-button-create-template-option" href="#">Template</a></li>
+                                <li><a id="publish-button-create-storm-option" href="#">Storm</a></li>
                             </ul>
                         </div>
                         <button type="button" id="publish-button-create-vector-layer" class="btn btn-lg btn-success">
@@ -742,6 +743,8 @@
                                 </div>
                                 <div class="panel-body">
                                     <div class="alias-modal-filter-container">
+                                        <label>Filter Alias List</label>
+                                        <br/><br/>
                                         <label style="margin-left: 2px; margin-right: 3px;">Name:</label>
                                         <input type="text" class="form-control alias-modal-filter-box alias-modal-name-filter" value="">
                                         <label style="margin-left: 10px; margin-right: 3px;">Item:</label>
@@ -763,6 +766,50 @@
                     </div>
                     <div class="modal-footer">
                         <button id="alias-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="new-storm-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="storm-modal-close-button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Create New Storm</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form id="storm-form" enctype="multipart/form-data">
+                            <div>
+                                <label for="file">Zipped Shape File</label>
+                                <input type="file" name="file"/>
+                            </div>
+                            <br/>
+                            <div>
+                                <label for="new-active">Is Storm Active? <input type="checkbox" id="new-active" name="new-active"/></label>
+                            </div>
+                            <br/>
+                            <div>
+                                <label for="inherit-alias">Alias to Use [optional]</label>
+                                <span>Note that if the provided Alias is already in-use by another Item it will be removed from that Item and assigned to the newly created Storm.</span>
+                                <br/>
+                                <input type="text" id="inherit-alias" name="inherit-alias"/>
+                            </div>
+                            <br/>
+                            <div>
+                                <label for="copy-type">Copy Existing Summary [optional]</label>
+                                <label for="copy-none">None <input type="radio" name="copy-type" id="copy-none" value="none" checked/></label>
+                                <label for="copy-item">From Item ID <input type="radio" name="copy-type" id="copy-item" value="item"/></label>
+                                <label for="copy-alias">From Alias <input type="radio" name="copy-type" id="copy-alias" value="alias"/></label>
+                                <label for="copy-input"><span></span><input type="text" name="copy-input" hidden/></label>
+                            </div>
+                        </form>
+                        <br/>
+                        <p id="storm-modal-result"></p>
+                        <br/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-submit" id="new-storm-modal-submit-btn">Create Storm</button>
+                        <button id="storm-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
