@@ -20,8 +20,11 @@ import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.Item.ItemType;
 import gov.usgs.cida.coastalhazards.model.Item.Type;
 import gov.usgs.cida.coastalhazards.model.summary.Full;
+import gov.usgs.cida.coastalhazards.model.summary.Legend;
+import gov.usgs.cida.coastalhazards.model.summary.Medium;
 import gov.usgs.cida.coastalhazards.model.summary.Publication;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
+import gov.usgs.cida.coastalhazards.model.summary.Tiny;
 import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.StormUtil;
@@ -172,8 +175,8 @@ public class TemplateResource {
 					if(layer != null) {
 						Summary summary = null;
 	
-						if(copyType.toLowerCase() == "item" || copyType.toLowerCase() == "alias") {
-							summary = fetchExistingSummary(copyType, copyVal, itemMan, aliasMan);
+						if(copyType.equalsIgnoreCase("item") || copyType.equalsIgnoreCase("alias")){
+							summary = copyExistingSummary(copyType, copyVal, itemMan, aliasMan);
 						} else {
 							summary = StormUtil.buildStormTemplateSummary(layer);
 						}
@@ -250,21 +253,25 @@ public class TemplateResource {
 		return response;
 	}
 
-	private Summary fetchExistingSummary(String copyType, String copyVal, ItemManager itemMan, AliasManager aliasMan) {
-		Summary foundSummary = null;
+	private Summary copyExistingSummary(String copyType, String copyVal, ItemManager itemMan, AliasManager aliasMan) {
+		Summary newSummary = null;
 		Item summaryItem = null;
 
-		if(copyType.toLowerCase() == "item") {
+		if(copyType.equalsIgnoreCase("item")) {
 			summaryItem = itemMan.load(copyVal);
-		} else if(copyType.toLowerCase() == "alias") {
+		} else if(copyType.equalsIgnoreCase("alias")) {
 			summaryItem = itemMan.load(aliasMan.load(copyVal).getItemId());
+		} else {
+			log.error("Attempted to copy existing summary from invalid copy type: " + copyType);
 		}
 
 		if(summaryItem != null) {
-			foundSummary = summaryItem.getSummary();
+			newSummary = Summary.copyValues(summaryItem.getSummary(), new Summary());
+		} else {
+			log.error("Item provided to copy summary from (" + copyType + " | " + copyVal + ") could not be loaded.");
 		}
 
-		return foundSummary;
+		return newSummary;
 	}
 	
 	private boolean parseAllAttribute(JsonObject parent) {
