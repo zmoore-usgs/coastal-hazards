@@ -2454,7 +2454,7 @@ CCH.Objects.Publish.UI = function () {
 		
 		//Clear Result Text
 		$result.empty();
-		$result.append('Working... (Step 1/3)\n\n');
+		$result.append('Working... (Step 1/3)<br/><br/>');
 
 		//Validate Alias (If Present)
 		var alias = $newStormModalInheritAlias.val().trim().toLowerCase();
@@ -2516,7 +2516,7 @@ CCH.Objects.Publish.UI = function () {
 				})
 			} else {
 				errorString = "No Alias provided to copy from.";
-				$result.text(errorString);
+				$result.append(errorString);
 				return;
 			}
 		} else {
@@ -2541,7 +2541,7 @@ CCH.Objects.Publish.UI = function () {
 
 		//Step 1 - Create Layer
 		$result.empty();
-		$result.append('Working... (Step 2/3)');
+		$result.append('Working... (Step 2/3)<br/><br/>');
 		$.ajax({
 			url: CCH.baseUrl + "/data/layer/",
 			type: 'POST',
@@ -2559,7 +2559,7 @@ CCH.Objects.Publish.UI = function () {
 				$newStormLayerId = layerId;
 
 				//Step 2 - Create Storm
-				$result.append('Working... (Step 3/3)');
+				$result.append('Working... (Step 3/3)<br/><br/>');
 				$.ajax({
 					url: CCH.CONFIG.contextPath + '/data/template/storm/',
 					data: {
@@ -2585,21 +2585,21 @@ CCH.Objects.Publish.UI = function () {
 								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
 							}
 						} else {
-							$result.append('\n\nAn unkown error occurred while saving the storm. It may not have been created successfully.');
+							$result.append('An unkown error occurred while saving the storm. It may not have been created successfully.');
 							$closeButton.prop("disabled",false);
 							$cancelButton.prop("disabled",false);
 							$newStormModalSubmitButton.prop("disabled",false);
 						}
 					},
 					error: function(data) {
-						$result.append('\n\nFailed to create storm item and associated child items. Storm creation aborted.');
+						$result.append('Failed to create storm item and associated child items. Storm creation aborted.');
 						$closeButton.prop("disabled",false);
 						$cancelButton.prop("disabled",false);
 						$newStormModalSubmitButton.prop("disabled",false);
 					}
 				});
 			} else {
-				$result.append("\n\nReceived unexpected response during layer creation: '" + data + 
+				$result.append("Received unexpected response during layer creation: '" + data + 
 					"'. Layer might not have been created correctly. Storm creation aborted.");
 				$closeButton.prop("disabled",false);
 				$cancelButton.prop("disabled",false);
@@ -2607,7 +2607,7 @@ CCH.Objects.Publish.UI = function () {
 			}
 		})
 		.fail(function(jqXHR, textStatus, errorThrown){
-			$result.append("\n\nError creating layer using selected file.");
+			$result.append("Error creating layer using selected file.");
 			$newStormLayerId = null;
 			$closeButton.prop("disabled",false);
 			$cancelButton.prop("disabled",false);
