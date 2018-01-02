@@ -1835,7 +1835,6 @@ CCH.Objects.Publish.UI = function () {
 
 	$('#publish-button-create-storm-option').on(CCH.CONFIG.strings.click, function () {
 		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
-		me.clearForm();
 		$newStormModal.modal(CCH.CONFIG.strings.show);
 	});
 
@@ -2455,6 +2454,7 @@ CCH.Objects.Publish.UI = function () {
 		
 		//Clear Result Text
 		$result.empty();
+		$result.append('Working... (Step 1/3)\n\n');
 
 		//Validate Alias (If Present)
 		var alias = $newStormModalInheritAlias.val().trim().toLowerCase();
@@ -2534,12 +2534,14 @@ CCH.Objects.Publish.UI = function () {
 		$stormTrackItemId = null;
 
 		//Disable buttons
+		me.clearForm();
 		$closeButton.prop("disabled",true);
 		$cancelButton.prop("disabled",true);
 		$newStormModalSubmitButton.prop("disabled",true);
 
 		//Step 1 - Create Layer
-		$result.append('Working... (Step 1/2)');
+		$result.empty();
+		$result.append('Working... (Step 2/3)');
 		$.ajax({
 			url: CCH.baseUrl + "/data/layer/",
 			type: 'POST',
@@ -2557,7 +2559,7 @@ CCH.Objects.Publish.UI = function () {
 				$newStormLayerId = layerId;
 
 				//Step 2 - Create Storm
-				$result.append('Working... (Step 2/2)');
+				$result.append('Working... (Step 3/3)');
 				$.ajax({
 					url: CCH.CONFIG.contextPath + '/data/template/storm/',
 					data: {
@@ -2605,8 +2607,7 @@ CCH.Objects.Publish.UI = function () {
 			}
 		})
 		.fail(function(jqXHR, textStatus, errorThrown){
-			$result.empty();
-			$result.append("Error creating layer using selected file.");
+			$result.append("\n\nError creating layer using selected file.");
 			$newStormLayerId = null;
 			$closeButton.prop("disabled",false);
 			$cancelButton.prop("disabled",false);
