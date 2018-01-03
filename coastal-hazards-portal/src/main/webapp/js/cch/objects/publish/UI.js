@@ -2482,7 +2482,7 @@ CCH.Objects.Publish.UI = function () {
 						me.createNewStorm(alias, copyType, copyText);
 					},
 					error: function() {
-						errorString = "No Item could be retireved using the provided copy from Item ID.";
+						errorString = "No Item could be retrieved using the provided copy from Item ID.";
 						$result.append(errorString);
 						return;
 					}
@@ -2509,7 +2509,7 @@ CCH.Objects.Publish.UI = function () {
 						me.createNewStorm(alias, copyType, copyText);
 					},
 					error: function() {
-						errorString = "No Item could be retireved using the provided copy from Alias.";
+						errorString = "No Item could be retrieved using the provided copy from Alias.";
 						$result.text(errorString);
 						return;
 					}
