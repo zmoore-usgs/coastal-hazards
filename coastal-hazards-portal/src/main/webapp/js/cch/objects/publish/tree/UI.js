@@ -21,7 +21,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	me.createTreeNode = function (item) {
 		var id = item.id,
 			randomId = id === 'uber' || id === 'orphans' ? id : CCH.Util.Util.generateUUID(),
-			text = item.title,
+			text = item.title + (id != 'root' && id != 'uber' && id != 'orphans' ? " <i><small>(" + item.id + ")</small></i>" : ""),
 			itemType = item.itemType,
 			title = item.title,
 			displayedChildren = item.displayedChildren || [],
@@ -102,6 +102,19 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			'contextmenu': {
 				'items': function ($node) {
 					return me.createNodeContextMenu($node);
+				}
+			},
+			'search': {
+				'search_callback': function (str, node) {
+					var searchMode = $("input[name='search-type']:checked").val();
+
+					if(searchMode == "id" && node.state['original-id'] != null && node.state['original-id'].toLowerCase().includes(str.toLowerCase())) {
+						return true;
+					} else if(searchMode == "title" && node.state['title'] != null && node.state['title'].toLowerCase().includes(str.toLowerCase())) {
+						return true;
+					}
+
+					return false;
 				}
 			},
 			'types': {
@@ -548,14 +561,25 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	}
 
 	me.findNodesByItemId = function(itemId) {
+		return me.findNodesByItemIdFuzzy(itemId, false);
+	}
+
+	me.findNodesByItemIdFuzzy = function(itemId, fuzzy) {
 		var tree = CCH.ui.getTree(),
 			allChildren = tree.get_node('root').children_d,
 			nodes = [];
 
 		for (var i = 0; i < allChildren.length; i++){
 			var childNode = tree.get_node(allChildren[i]);
-			if (childNode.state['original-id'] === itemId) {
-				nodes.push(childNode);
+
+			if(!fuzzy) {
+				if (childNode.state['original-id'] === itemId) {
+					nodes.push(childNode);
+				}
+			} else {
+				if (childNode.state['original-id'].includes(itemId)) {
+					nodes.push(childNode);
+				}
 			}
 		}
 
@@ -770,7 +794,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	// User wants to perform a search in the tree
 	me.performTreeSearch = function (evt) {
 		var searchCriteria = me.$searchInput.val(),
-				tree = CCH.ui.getTree();
+			tree = CCH.ui.getTree();
 
 		if (searchCriteria) {
 			tree.search(searchCriteria);

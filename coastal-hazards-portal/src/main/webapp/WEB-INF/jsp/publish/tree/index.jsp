@@ -75,7 +75,10 @@
 			</div>
 			<div class="row">
 				<div class="col-md-6">
-					<i class="fa fa-search"></i><input type="text" id="search-input" /><button id="search-button" class="btn btn-success">Search</button>
+					<i class="fa fa-search"></i><input type="text" id="search-input" />
+					<label for="search-title">Item Title <input type="radio" name="search-type" id="search-title" value="title" checked/></label>
+                    &nbsp;<label for="search-id">Item ID <input type="radio" name="search-type" id="search-id" value="id"/></label>
+					&nbsp;&nbsp;<button id="search-button" class="btn btn-success">Search</button>
 					&nbsp;&nbsp;<button id="clear-search" class="btn btn-warning">Clear Search</button>		
 				</div>
 
