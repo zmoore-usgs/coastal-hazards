@@ -81,7 +81,8 @@
                     &nbsp;<label for="search-alias">Alias <input type="radio" name="search-type" id="search-alias" value="alias"/></label>
                     &nbsp;<label for="search-alias">Any <input type="radio" name="search-type" id="search-any" value="any"/></label>
 					&nbsp;&nbsp;<button id="search-button" class="btn btn-success">Search</button>
-					&nbsp;&nbsp;<button id="clear-search" class="btn btn-warning">Clear Search</button>		
+					&nbsp;&nbsp;<button id="clear-search" class="btn btn-warning">Clear Search</button>
+					&nbsp;&nbsp;&nbsp;<button id="collapse-all" class="btn">Collapse All</button>
 				</div>
 
 				<div id="save-button-container" class="col-md-6">

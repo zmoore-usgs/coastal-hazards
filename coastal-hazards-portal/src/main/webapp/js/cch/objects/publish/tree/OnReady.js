@@ -23,6 +23,7 @@ $(document).ready(function () {
 		'$saveButton' : $('#save-button'),
 		'$searchButton' : $('#search-button'),
 		'$clearSearchButton' : $('#clear-search'),
+		'$collapseAllButton': $('#collapse-all'),
 		'$searchInput' : $('#search-input')
 	});
 });
