@@ -130,10 +130,16 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				'search_callback': function (str, node) {
 					var searchMode = $("input[name='search-type']:checked").val();
 
-					if(searchMode == "id" && node.state['original-id'] != null && node.state['original-id'].toLowerCase().includes(str.toLowerCase())) {
+					if ((searchMode == "id" || searchMode == "any") && node.state['original-id'] != null && node.state['original-id'].toLowerCase().includes(str.toLowerCase())) {
 						return true;
-					} else if(searchMode == "title" && node.state['title'] != null && node.state['title'].toLowerCase().includes(str.toLowerCase())) {
+					} else if ((searchMode == "title" || searchMode == "any") && node.state['title'] != null && node.state['title'].toLowerCase().includes(str.toLowerCase())) {
 						return true;
+					} else if ((searchMode == "alias" || searchMode == "any") && node.state['aliases'] != null) {
+						for (var i = 0; i < node.state['aliases'].length; i++) {
+							if(node.state['aliases'][i].toLowerCase().includes(str.toLowerCase())) {
+								return true;
+							}
+						}
 					}
 
 					return false;
