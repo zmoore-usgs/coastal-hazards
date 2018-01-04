@@ -116,7 +116,7 @@ public class Summary implements Serializable {
 		summary.setMedium(from.getMedium());
 		summary.setDownload(from.getDownload());
 		Full toFull = new Full();
-		if (to != null) {
+		if (to != null && to.getFull() != null) {
 			toFull = to.getFull();
 		}
 		summary.setFull(Full.copyValues(from.getFull(), toFull));

@@ -23,6 +23,6 @@ public class DataURI {
 	public static final String DOWNLOAD_PATH = "/download";
 	public static final String HEALTH_PATH = "/health";
 	public static final String CACHE_PATH = "/cache";
-        public static final String TEMP_FILE_PATH = "/temp-file";
+	public static final String TEMP_FILE_PATH = "/temp-file";
 	public static final String ALIAS_PATH = "/alias";
 }

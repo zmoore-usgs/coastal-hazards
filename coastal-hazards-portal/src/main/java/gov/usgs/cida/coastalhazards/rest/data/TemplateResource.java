@@ -8,18 +8,26 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import gov.usgs.cida.coastalhazards.Attributes;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
+import gov.usgs.cida.coastalhazards.jpa.AliasManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.jpa.LayerManager;
 import gov.usgs.cida.coastalhazards.jpa.StatusManager;
+import gov.usgs.cida.coastalhazards.model.Alias;
 import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Layer;
 import gov.usgs.cida.coastalhazards.model.Service;
+import gov.usgs.cida.coastalhazards.model.Item.ItemType;
+import gov.usgs.cida.coastalhazards.model.Item.Type;
 import gov.usgs.cida.coastalhazards.model.summary.Full;
+import gov.usgs.cida.coastalhazards.model.summary.Legend;
+import gov.usgs.cida.coastalhazards.model.summary.Medium;
 import gov.usgs.cida.coastalhazards.model.summary.Publication;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
+import gov.usgs.cida.coastalhazards.model.summary.Tiny;
 import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
+import gov.usgs.cida.coastalhazards.rest.data.util.StormUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.coastalhazards.util.ogc.OGCService;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
@@ -27,7 +35,12 @@ import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.WFSIntrospector;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -36,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.security.RolesAllowed;
+import javax.inject.Qualifier;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
@@ -44,6 +58,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -51,6 +66,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.parsers.ParserConfigurationException;
 import jersey.repackaged.com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -139,6 +155,123 @@ public class TemplateResource {
 			}
 		}
 		return response;
+	}
+
+	@GET
+	@Path("/storm")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	public Response instantiateStormTemplate(@Context HttpServletRequest request, @QueryParam("layerId") String layerId, @QueryParam("activeStorm") String active, @QueryParam("alias") String alias, @QueryParam("copyType") String copyType, @QueryParam("copyVal") String copyVal) {
+		Response response;
+
+		if(layerId != null && active != null) {
+			Gson gson = GsonUtil.getDefault();
+			String childJson = gson.toJson(StormUtil.createStormChildMap(layerId));
+
+			if(childJson != null && childJson.length() > 0) {
+				try(ItemManager itemMan = new ItemManager(); LayerManager layerMan = new LayerManager(); AliasManager aliasMan = new AliasManager()) {
+					Layer layer = layerMan.load(layerId);
+	
+					if(layer != null) {
+						Summary summary = null;
+	
+						if(copyType.equalsIgnoreCase("item") || copyType.equalsIgnoreCase("alias")){
+							summary = copyExistingSummary(copyType, copyVal, itemMan, aliasMan);
+						} else {
+							summary = StormUtil.buildStormTemplateSummary(layer);
+						}
+	
+						if(summary != null) {
+							Item baseTemplate = new Item();
+							baseTemplate.setType(Type.storms);
+							baseTemplate.setRibbonable(true);
+							baseTemplate.setShowChildren(true);
+							baseTemplate.setName("storm_" + (new SimpleDateFormat("yyyyMMddHHmm").format(Date.from(Instant.now()))));
+							baseTemplate.setActiveStorm(Boolean.parseBoolean(active));
+							baseTemplate.setItemType(ItemType.template);
+							baseTemplate.setBbox(Bbox.copyValues(layer.getBbox(), new Bbox()));
+							List<Service> services = layer.getServices();
+							List<Service> serviceCopies = new LinkedList<>();
+							for (Service service : services) {
+								serviceCopies.add(Service.copyValues(service, new Service()));
+							}
+							baseTemplate.setServices(serviceCopies);
+							baseTemplate.setSummary(summary);
+							baseTemplate.setId(IdGenerator.generate());
+	
+							String templateId = itemMan.persist(baseTemplate);
+	
+							if(templateId != null && templateId.length() > 0) {
+								response = instantiateTemplate(request, templateId, childJson);
+								
+								if(response.getStatus() == HttpStatus.SC_OK) {
+									Map<String, Object> ok = new HashMap<String, Object>() {
+										private static final long serialVersionUID = 2398472L;
+	
+										{
+											put("id", templateId);
+										}
+									};
+	
+									if(alias != null && alias.length() > 0) {
+										Alias fullAlias = aliasMan.load(alias);
+		
+										if(fullAlias != null) {
+											fullAlias.setItemId(templateId);
+											aliasMan.update(fullAlias);
+										} else {
+											fullAlias = new Alias();
+											fullAlias.setId(alias);
+											fullAlias.setItemId(templateId);
+											aliasMan.save(fullAlias);
+										}
+									}
+	
+									response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+								}
+							} else {
+								response = Response.status(500).build();
+							}
+						} else {
+							response = Response.status(400).build();
+						}
+					} else {
+						response = Response.status(400).build();
+					}
+				} catch (Exception e) {
+					log.error(e.toString());
+					response = Response.status(500).build();
+				}
+			} else {
+				log.error("Failed to save storm track item.");
+				response = Response.status(500).build();
+			}
+		} else {
+			response = Response.status(400).build();
+		}
+
+		return response;
+	}
+
+	private Summary copyExistingSummary(String copyType, String copyVal, ItemManager itemMan, AliasManager aliasMan) {
+		Summary newSummary = null;
+		Item summaryItem = null;
+
+		if(copyType.equalsIgnoreCase("item")) {
+			summaryItem = itemMan.load(copyVal);
+		} else if(copyType.equalsIgnoreCase("alias")) {
+			summaryItem = itemMan.load(aliasMan.load(copyVal).getItemId());
+		} else {
+			log.error("Attempted to copy existing summary from invalid copy type: " + copyType);
+		}
+
+		if(summaryItem != null) {
+			newSummary = Summary.copyValues(summaryItem.getSummary(), new Summary());
+		} else {
+			log.error("Item provided to copy summary from (" + copyType + " | " + copyVal + ") could not be loaded.");
+		}
+
+		return newSummary;
 	}
 	
 	private boolean parseAllAttribute(JsonObject parent) {

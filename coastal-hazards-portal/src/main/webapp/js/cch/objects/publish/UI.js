@@ -58,6 +58,13 @@ CCH.Objects.Publish.UI = function () {
 		$deleteErrorModalTitle = $deleteErrorModal.find('.modal-title'),
 		$deleteErrorModalBody = $deleteErrorModal.find('.modal-body'),
 		$itemAliasList = $('#sortable-aliases'),
+		$newStormModal = $('#new-storm-modal'),
+		$newStormModalActiveBox = $("#new-active"),
+		$newStormModalSubmitButton = $("#new-storm-modal-submit-btn"),
+		$newStormModalInheritAlias = $("#inherit-alias"),
+		$newStormModalCopyFromRadios = $("input[name='copy-type']"),
+		$newStormModalCopyFromText = $("input[name='copy-input']"),
+		$newStormModalCopyFromTextLabelSpan = $("label[for='copy-input'] span"),
 		$vectorModal = $('#vector-modal'),
 		$vectorModalSubmitButton = $('#vector-modal-submit-btn'),
 		$vectorModalPopButton = $('#vector-modal-populate-button'),
@@ -107,6 +114,8 @@ CCH.Objects.Publish.UI = function () {
 		$titlesPanel = $('#titles-panel'),
 		$resourcesPanel = $('#Resources-panel'),
 		$metaDataPanel = $('#metadata-panel'),
+		$newStormLayerId = null,
+		$stormTrackItemId = null,
 		$newVectorLayerId = null,
 		$newRasterLayerId = null,
 		$editingEnabled = false;
@@ -151,7 +160,7 @@ CCH.Objects.Publish.UI = function () {
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $proxyWmsServiceParamInput,
 			$ribbonableCb, $showChildrenCb, $itemType, $name,
-			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')]
+			$resourcesPanel.find('.form-publish-info-item-panel-button-add')]
 				.concat($('.form-group-keyword input'))
 				.concat($bboxes)
 				.each(function ($item) {
@@ -180,7 +189,7 @@ CCH.Objects.Publish.UI = function () {
 		$rasterModalPopButton.prop("disabled", true);
 		$('.form-group-keyword').not(':first').remove();
 		$('.form-group-keyword button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
-		$publicationsPanel.find('.resource-list-container-sortable').empty();
+		$resourcesPanel.find('.resource-list-container-sortable').empty();
 		$itemAliasList.empty();
 		$itemImage.attr('src', '');
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
@@ -629,29 +638,29 @@ CCH.Objects.Publish.UI = function () {
 		    var bbox = responseObject["csw:GetRecordByIdResponse"].metadata.idinfo.spdom.bounding;
 
 		    for(var dir in bbox){
-			if(bbox.hasOwnProperty(dir)){
-			    var direction = dir.substring(0, dir.length - 2);
-			    var text = bbox[dir]["#text"];
+				if(bbox.hasOwnProperty(dir)){
+					var direction = dir.substring(0, dir.length - 2);
+					var text = bbox[dir]["#text"];
 
-			    if(text == null){
-				text = bbox[dir];
-			    }
-			    $('#form-publish-item-bbox-input-' + direction).val(text);
-			}
+					if(text == null){
+					text = bbox[dir];
+					}
+					$('#form-publish-item-bbox-input-' + direction).val(text);
+				}
 		    }
 
 		    //Keywords
 		    var keywords = responseObject["csw:GetRecordByIdResponse"].metadata.idinfo.keywords;
 
 		    for(var category in keywords){
-			var listKey = category.trim() + "key"
-			if(Array.isArray(keywords[category])){
-			    for(var sub in keywords[category]){
-				me.parseJsonKeywords(keywords[category][sub][listKey]);
-			    }
-			} else {
-			    me.parseJsonKeywords(keywords[category][listKey]);
-			}
+				var listKey = category.trim() + "key"
+				if(Array.isArray(keywords[category])){
+					for(var sub in keywords[category]){
+					me.parseJsonKeywords(keywords[category][sub][listKey]);
+					}
+				} else {
+					me.parseJsonKeywords(keywords[category][listKey]);
+				}
 		    }
 		}
 	    }
@@ -1824,6 +1833,11 @@ CCH.Objects.Publish.UI = function () {
 		me.enableNewItemForm();
 	});
 
+	$('#publish-button-create-storm-option').on(CCH.CONFIG.strings.click, function () {
+		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
+		$newStormModal.modal(CCH.CONFIG.strings.show);
+	});
+
 	$proxyWfsServiceInput.on('blur', me.wfsInfoUpdated);
 	$proxyWfsServiceParamInput.on('blur', me.wfsInfoUpdated);
 
@@ -2420,6 +2434,193 @@ CCH.Objects.Publish.UI = function () {
 			});
 		}
 	});
+
+	$newStormModalCopyFromRadios.change(function() {
+		if(this.value.toLowerCase() !== "none") {
+			$newStormModalCopyFromText.show();
+			$newStormModalCopyFromTextLabelSpan.show();
+			$newStormModalCopyFromTextLabelSpan.text(this.value.substring(0, 1).toUpperCase() + this.value.substring(1, this.value.length) + ": ");
+		} else {
+			$newStormModalCopyFromText.hide();
+			$newStormModalCopyFromTextLabelSpan.hide();
+		}
+	});
+
+	$newStormModalSubmitButton.on(CCH.CONFIG.strings.click, function(e) {
+		var $result = $('#storm-modal-result');
+		var errorString = "";
+
+		e.preventDefault();
+		
+		//Clear Result Text
+		$result.empty();
+		$result.append('Working... (Step 1/3)<br/><br/>');
+
+		//Validate Alias (If Present)
+		var alias = $newStormModalInheritAlias.val().trim().toLowerCase();
+
+		if(alias != null && alias !== "") {
+			var invalidParts = alias.match(ALIAS_NAME_REGEX);
+		
+			if(invalidParts != null && invalidParts.length > 0){
+				errorString = "Alias to use contains invalid characters.";
+				$result.append(errorString);
+				return;
+			}
+		}
+		
+		//Validate Copy Summary Item (If Present)
+		var copyType = $("input[name='copy-type']:checked").val();
+		var copyText = $newStormModalCopyFromText.val().trim();
+
+		if(copyType == "item") {
+			if(copyText != null && copyText != "") {
+				$.ajax({
+					url: CCH.baseUrl + "/data/item/" + copyText.trim(),
+					type: 'GET',
+					success: function() {
+						me.createNewStorm(alias, copyType, copyText);
+					},
+					error: function() {
+						errorString = "No Item could be retrieved using the provided copy from Item ID.";
+						$result.append(errorString);
+						return;
+					}
+				})
+			} else {
+				errorString = "No Item ID provided to copy from.";
+				$result.append(errorString);
+				return;
+			}			
+		} else if(copyType == "alias") {
+			if(copyText != null && copyText != "") {
+				var invalidParts = copyText.toLowerCase().match(ALIAS_NAME_REGEX);
+		
+				if(invalidParts != null && invalidParts.length > 0){
+					errorString = "Alias to copy from contains invalid characters.";
+					$result.append(errorString);
+					return;
+				}
+
+				$.ajax({
+					url: CCH.baseUrl + "/data/alias/" + copyText.toLowerCase() + "/item",
+					type: 'GET',
+					success: function() {
+						me.createNewStorm(alias, copyType, copyText);
+					},
+					error: function() {
+						errorString = "No Item could be retrieved using the provided copy from Alias.";
+						$result.text(errorString);
+						return;
+					}
+				})
+			} else {
+				errorString = "No Alias provided to copy from.";
+				$result.append(errorString);
+				return;
+			}
+		} else {
+			me.createNewStorm(alias, copyType, copyText);
+		}
+	});
+
+	me.createNewStorm = function(newAlias, copyType, copyText) {
+		var $result = $('#storm-modal-result');
+		var $form = $('#storm-form');
+		var $closeButton = $('#storm-modal-close-button');
+		var $cancelButton = $('#storm-modal-cancel-button');
+		var formData = new FormData($form[0]);
+		$newStormLayerId = null;
+		$stormTrackItemId = null;
+
+		//Disable buttons
+		me.clearForm();
+		$closeButton.prop("disabled",true);
+		$cancelButton.prop("disabled",true);
+		$newStormModalSubmitButton.prop("disabled",true);
+
+		//Step 1 - Create Layer
+		$result.empty();
+		$result.append('Working... (Step 2/3)<br/><br/>');
+		$.ajax({
+			url: CCH.baseUrl + "/data/layer/",
+			type: 'POST',
+			data: formData,
+			contentType: false,
+			processData: false
+		})
+		.done(function(data, textStatus, jqXHR){
+			$result.empty();
+			var status = jqXHR.status;
+			var layerUrl = jqXHR.getResponseHeader('Location');
+			var layerId = getLayerIdFromUrl(layerUrl);
+
+			if (201 === status){				
+				$newStormLayerId = layerId;
+
+				//Step 2 - Create Storm
+				$result.append('Working... (Step 3/3)<br/><br/>');
+				$.ajax({
+					url: CCH.CONFIG.contextPath + '/data/template/storm/',
+					data: {
+						layerId: layerId,
+						activeStorm: $newStormModalActiveBox.is(':checked'),
+						alias: newAlias,
+						copyType: copyType,
+						copyVal: copyText
+					},
+					method: "GET",
+					success: function(data) {
+						var id = data.id;
+
+						if(id != null) {
+							$(window).on('generate.image.complete', function (evt, id) {
+								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
+							});
+	
+							// Do not image gen if no bbox
+							if ([$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()].join('')) {
+								CCH.ui.generateImage(id);
+							} else {
+								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
+							}
+						} else {
+							$result.append('An unkown error occurred while saving the storm. It may not have been created successfully.');
+							$closeButton.prop("disabled",false);
+							$cancelButton.prop("disabled",false);
+							$newStormModalSubmitButton.prop("disabled",false);
+						}
+					},
+					error: function(data) {
+						$result.append('Failed to create storm item and associated child items. Storm creation aborted.');
+						$closeButton.prop("disabled",false);
+						$cancelButton.prop("disabled",false);
+						$newStormModalSubmitButton.prop("disabled",false);
+					}
+				});
+			} else {
+				$result.append("Received unexpected response during layer creation: '" + data + 
+					"'. Layer might not have been created correctly. Storm creation aborted.");
+				$closeButton.prop("disabled",false);
+				$cancelButton.prop("disabled",false);
+				$newStormModalSubmitButton.prop("disabled",false);
+			}
+		})
+		.fail(function(jqXHR, textStatus, errorThrown){
+			$result.append("Error creating layer using selected file.");
+			$newStormLayerId = null;
+			$closeButton.prop("disabled",false);
+			$cancelButton.prop("disabled",false);
+			$newStormModalSubmitButton.prop("disabled",false);
+		});
+	}
+
+	me.populateStormTemplateForm = function() {
+		$popFromLayerInput.val($newStormLayerId);
+		me.loadLayerInfo($popFromLayerInput.val());
+		me.unlockItemTypeFeatures();
+		$typeSb.val('storms');
+	}
 	
 	//Filtering for aliases
 	$aliasModalFilterButton.on('click', function(evt) {
