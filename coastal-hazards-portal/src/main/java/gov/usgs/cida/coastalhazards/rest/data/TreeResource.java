@@ -68,6 +68,8 @@ public class TreeResource {
 
 			root.add("items", rootItems);
 			response = Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
+		} catch (Exception e) {
+			log.error(e.toString());
 		}
 		return response;
 	}
@@ -77,6 +79,7 @@ public class TreeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getOrphans(@Context Request request) {
 		Response response = null;
+		Item curItem = null;
 		try (ItemManager itemManager = new ItemManager()) {
 			List<Item> items = itemManager.loadRootItems();
 			Gson treeGson = new GsonBuilder().registerTypeAdapter(Item.class, new ItemTreeAdapter()).create();
@@ -84,13 +87,21 @@ public class TreeResource {
 			JsonArray orphans = new JsonArray();
 
 			for (Item item : items) {
+				if(item.getId() == null) {
+					log.error("Item has null id!!" + item.toString());
+					break;
+				}
+
 				if (!item.getId().equals(Item.UBER_ID)) {
+					curItem = item;
 					orphans.add(treeGson.toJsonTree(item));
 				}
 			}
 
 			root.add("items", orphans);
 			response = Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
+		} catch (Exception e) {
+			log.error(e.toString() + curItem.getId());
 		}
 		return response;
 	}
@@ -103,6 +114,8 @@ public class TreeResource {
 		Item item = null;
 		try (ItemManager itemManager = new ItemManager()) {
 			item = itemManager.load(id);
+		} catch (Exception e) {
+			log.error(e.toString());
 		}
 
 		if (item == null) {
@@ -296,6 +309,8 @@ public class TreeResource {
 					} else {
 						log.warn("Status Manager did not update the structure status after updating items. This could lead to inconsistencies in the data");
 					}
+				} catch (Exception e) {
+					log.error(e.toString());
 				}
 			} else {
 				log.warn("Could not update {} items.", itemList.size());

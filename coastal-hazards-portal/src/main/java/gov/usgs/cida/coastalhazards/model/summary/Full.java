@@ -85,8 +85,9 @@ public class Full implements Serializable {
     public static List<Publication> fillInFullId(List<Publication> from, long fullId) {
         List<Publication> pubs = new LinkedList<>();
         for (Publication pub : from) {
-            pub.setFullId(fullId);
-            pubs.add(pub);
+            Publication newPub = Publication.copyValues(pub, new Publication());
+            newPub.setFullId(fullId);
+            pubs.add(newPub);
         }
         return pubs;
     }
