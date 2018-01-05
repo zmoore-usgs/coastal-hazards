@@ -788,6 +788,74 @@
                             <br/>
                             <div>
                                 <label for="new-active">2. Is Storm Active? <input type="checkbox" id="new-active" name="new-active"/></label>
+                                <span>Only storms marked as being active will contain an NHC Storm Track child item.</span>
+                                <div id="edit-new-track" style="/*! border: 1px solid black; */">
+                                    <br>
+                                    <label>2a).Modify NHC Storm Track</label>
+                                    <div id="storm-modal-nhc-form">
+                                        <small><div id="storm-nhc-bbox" class="">
+                                            <label for="storm-nhc-bbox-table">A). Bounding Box</label>
+                                            <label for="nhc-bbox-inherit">Inherit from Storm Shape File? <input id="nhc-bbox-inherit" name="nhc-bbox-inherit" type="checkbox"></label>
+                                            <table id="storm-nhc-bbox-table">
+                                                <tbody><tr>
+                                                    <td></td>
+                                                    <td id="storm-nhc-bbox-table-north">
+                                                        <label for="storm-nhc-bbox-input-north">North</label>
+                                                        <input id="storm-nhc-bbox-input-north" class="form-control bbox" placeholder="180" type="text">
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td id="storm-nhc-bbox-table-west">
+                                                        <label for="storm-nhc-bbox-input-west">West</label>
+                                                        <input id="storm-nhc-bbox-input-west" class="form-control bbox" placeholder="-180" type="text">
+                                                    </td>
+                                                    <td></td>
+                                                    <td id="storm-nhc-bbox-table-east">
+                                                        <label for="storm-nhc-bbox-input-east">East</label>
+                                                        <input id="storm-nhc-bbox-input-east" class="form-control bbox" placeholder="180" type="text">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td id="storm-nhc-bbox-table-south">
+                                                        <label for="storm-nhc-bbox-input-south">South</label>
+                                                        <input id="storm-nhc-bbox-input-south" class="form-control bbox" placeholder="-180" type="text">
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                            </tbody></table>
+                                        </div></small>
+                                        <br/>
+                                        <small><div id="storm-nhc-wms" class="">
+                                            <label for="storm-nhc-wms-link">B). WMS URL</label>
+                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-wms-link" name="storm-nhc-wms-link"/>
+                                            <br/>
+                                            <label for="storm-nhc-child-attr">C). Child WMS Attributes</label>
+                                            <div class="storm-modal-nhc-text-desc">One child item will be made per specified attribute name. Attributes should be separated by |.</div>
+                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-child-attr" name="storm-nhc-child-attr"/>
+                                            <br/>
+                                            <label for="storm-nhc-child-param">D). Child WMS Attribute Parameters</label>
+                                            <div class="storm-modal-nhc-text-desc">The list of WMS parameters to provide for each child attribute. Multiple parameters may be provided per attribute, separated by commas. Attributes should be separated by |. The number of groups here should be equal to the number of attributes specified above.</div>
+                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-child-param" name="storm-nhc-child-param"/>
+                                            <br/>
+                                            <label for="storm-nhc-wms-link">E). Summary - Tiny Text</label>
+                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-wms-link" rows="1" maxlength="105" name="storm-nhc-wms-link"></textarea>
+                                            <br/>
+                                            <label for="storm-nhc-wms-link">F). Summary - Medium Title</label>
+                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-wms-link" rows="1" maxlength="1024" name="storm-nhc-wms-link"></textarea>
+                                            <br/>
+                                            <label for="storm-nhc-wms-link">G). Summary - Medium Text</label>
+                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-wms-link" rows="2" maxlength="2048" name="storm-nhc-wms-link"></textarea>
+                                            <br/>
+                                            <label for="storm-nhc-wms-link">H). Summary - Full Title</label>
+                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-wms-link" rows="1" maxlength="1024" name="storm-nhc-wms-link"></textarea>
+                                            <br/>
+                                            <label for="storm-nhc-wms-link">I). Summary - Full Text</label>
+                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-wms-link" rows="3" maxlength="64000" name="storm-nhc-wms-link"></textarea>
+                                        </div></small>
+                                    </div>
+                                </div>
                             </div>
                             <br/>
                             <div>
