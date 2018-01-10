@@ -65,6 +65,9 @@ CCH.Objects.Publish.UI = function () {
 		$newStormModalCopyFromRadios = $("input[name='copy-type']"),
 		$newStormModalCopyFromText = $("input[name='copy-input']"),
 		$newStormModalCopyFromTextLabelSpan = $("label[for='copy-input'] span"),
+		$newStormModalEditTrackDiv = $('#edit-new-track'),
+		$newStormTrackBboxInherit = $('#nhc-bbox-inherit'),
+		$newStormTrackForm = $('#storm-modal-nhc-form'),
 		$vectorModal = $('#vector-modal'),
 		$vectorModalSubmitButton = $('#vector-modal-submit-btn'),
 		$vectorModalPopButton = $('#vector-modal-populate-button'),
@@ -2446,6 +2449,24 @@ CCH.Objects.Publish.UI = function () {
 		}
 	});
 
+	$newStormModalActiveBox.change(function() {
+		if($(this).is(':checked')) {
+			$newStormModalEditTrackDiv.removeAttr(CCH.CONFIG.strings.hidden);
+		} else {
+			$newStormModalEditTrackDiv.attr(CCH.CONFIG.strings.hidden, CCH.CONFIG.strings.hidden)
+		}
+	});
+
+	$newStormTrackBboxInherit.change(function() {
+		if($(this).is(':checked')) {
+			$(".nhc-bbox").attr("type", CCH.CONFIG.strings.hidden);
+			$(".nhc-bbox-label").addClass(CCH.CONFIG.strings.hidden);
+		} else {
+			$(".nhc-bbox").attr("type", "text");
+			$(".nhc-bbox-label").removeClass(CCH.CONFIG.strings.hidden);
+		}
+	});
+
 	$newStormModalSubmitButton.on(CCH.CONFIG.strings.click, function(e) {
 		var $result = $('#storm-modal-result');
 		var errorString = "";
@@ -2455,6 +2476,80 @@ CCH.Objects.Publish.UI = function () {
 		//Clear Result Text
 		$result.empty();
 		$result.append('Working... (Step 1/3)<br/><br/>');
+
+		//Validate NHC Track Item, if modified
+		if($newStormModalActiveBox.is(":checked")) {
+			var nhcTrackFormArr = $newStormTrackForm.serializeArray();
+			var nhcTrackFormData = {};
+			var nhcTrackJson;
+			var nhcTrackBbox = [];
+			
+			//Build JSON from serialized array
+			for(var i in nhcTrackFormArr) {
+				nhcTrackFormData[nhcTrackFormArr[i].name] = nhcTrackFormArr[i].value;
+			}
+
+			//Check BBOX Values
+			if(!$newStormTrackBboxInherit.is(":checked")) {
+				//West
+				if($.isNumeric(nhcTrackFormData["storm-nhc-bbox-input-west"])) {
+					nhcTrackBbox.push(nhcTrackFormData["storm-nhc-bbox-input-west"]);
+				}
+
+				//South
+				if($.isNumeric(nhcTrackFormData["storm-nhc-bbox-input-south"])) {
+					nhcTrackBbox.push(nhcTrackFormData["storm-nhc-bbox-input-south"]);
+				}
+
+				//East
+				if($.isNumeric(nhcTrackFormData["storm-nhc-bbox-input-east"])) {
+					nhcTrackBbox.push(nhcTrackFormData["storm-nhc-bbox-input-east"]);
+				}
+
+				//North
+				if($.isNumeric(nhcTrackFormData["storm-nhc-bbox-input-north"])) {
+					nhcTrackBbox.push(nhcTrackFormData["storm-nhc-bbox-input-north"]);
+				}
+
+				if(nhcTrackBbox.length !== 4) {
+					errorString = "Invalid NHC Track BBOX values provided.";
+					$result.append(errorString);
+					return;
+				}
+			}
+
+			//Check Child WMS Parameters
+			if(nhcTrackFormData["storm-nhc-child-attr"].split('|').length !== nhcTrackFormData["storm-nhc-child-param"].split('|').length) {
+				errorString = "NHC Track Child WMS Attributes don't have correctly matching Parameters.";
+				$result.append(errorString);
+				return;
+			}
+
+			//Check Resources - Data
+			if(nhcTrackFormData["storm-nhc-data-titles"].split('|').length !== nhcTrackFormData["storm-nhc-data-links"].split('|').length) {
+				errorString = "NHC Track Data Resources don't have correctly matching Titles and Links.";
+				$result.append(errorString);
+				return;
+			}
+
+			//Check Resources - Data
+			if(nhcTrackFormData["storm-nhc-pub-titles"].split('|').length !== nhcTrackFormData["storm-nhc-pub-links"].split('|').length) {
+				errorString = "NHC Track Publication Resources don't have correctly matching Titles and Links.";
+				$result.append(errorString);
+				return;
+			}
+
+			//Check Resources - Data
+			if(nhcTrackFormData["storm-nhc-res-titles"].split('|').length !== nhcTrackFormData["storm-nhc-res-links"].split('|').length) {
+				errorString = "NHC Track Resources don't have correctly matching Titles and Links.";
+				$result.append(errorString);
+				return;
+			}
+
+			var fullNhcJson = [];
+			fullNhcJson.push(me.buildTrackItem(nhcTrackFormData, nhcTrackBbox));
+			fullNhcJson.push(me.buildTrackChildren(nhcTrackFormData, nhcTrackBbox))
+		}
 
 		//Validate Alias (If Present)
 		var alias = $newStormModalInheritAlias.val().trim().toLowerCase();
@@ -2523,6 +2618,113 @@ CCH.Objects.Publish.UI = function () {
 			me.createNewStorm(alias, copyType, copyText);
 		}
 	});
+
+	me.buildTrackItem = function(nhcTrackFormData, nhcTrackBbox) {
+		var baseJson = buildBasicTrackJson(nhcTrackJson, nhcTrackBbox);
+		baseJson.itemType = "aggregation";
+		baseJson.children = [];
+		baseJson.displayedChildren = [];
+
+		return baseJson;
+	}
+
+	me.buildTrackChildren = function(nhcTrackFormData, nhcTrackBbox) {
+		var children = [];
+		var wmsAttrs = nhcTrackFormData["storm-nhc-wms-attr"].split('|');
+		var wmsParams = nhcTrackFormData["storm-nhc-wms-param"].split('|');
+
+		wmsAttrs.forEach(function(attr, index) {
+			if(attr.length > 0) {
+				var baseJson = buildBasicTrackJson(nhcTrackFormData, nhcTrackBbox);
+				var params = wmsParams[index];
+				var services = [
+					{
+						type: "source_wms",
+						endpoint: nhcTrackFormData["storm-nhc-wms-link"],
+						serviceParameter: params
+					},
+					{
+						type: "proxy_wms",
+						endpoint: nhcTrackFormData["storm-nhc-wms-link"],
+						serviceParameter: params
+					}
+				];
+				baseJson.attr = attr;
+				baseJson.itemType = "data";
+				baseJson.services = services;
+				children.push(baseJson);
+			}
+		});
+
+		return children;
+	}
+	
+	me.buildBasicTrackJson = function(nhcTrackFormData, nhcTrackBbox) {
+		var nhcJson = {
+			name: "track",
+			type: "storms",
+			ribbonable: false,
+			showChildren: false,
+			bbox: nhcTrackBbox,
+			summary: {
+				full: {
+					title: nhcTrackFormData["storm-nhc-sum-full-title"],
+					text: nhcTrackFormData["storm-nhc-sum-full-text"],
+					publications: {
+						data: [],
+						publications: [],
+						resources: []
+					}
+				},
+				medium: {
+					title: nhcTrackFormData["storm-nhc-sum-med-title"],
+					text: nhcTrackFormData["storm-nhc-sum-med-text"]
+				},
+				tiny: {
+					text: nhcTrackFormData["storm-nhc-sum-tiny-text"]
+				},
+				keywords: nhcTrackFormData["storm-nhc-sum-keywords"]
+			}
+		};
+
+		//Summary Publications - Data
+		var dataTitles = nhcTrackFormData["storm-nhc-data-titles"].split('|');
+		var dataLinks = nhcTrackFormData["storm-nhc-data-links"].split('|');
+		dataTitles.forEach(function(title, index) {
+			if(title.length > 0) {
+				var entry = {};
+				entry.title = title;
+				entry.link = dataLinks[index];
+				nhcJson.summary.full.publications.data.push(entry);
+			}
+		});
+
+		//Summary Publications - Pubs
+		var pubTitles = nhcTrackFormData["storm-nhc-pub-titles"].split('|');
+		var pubLinks = nhcTrackFormData["storm-nhc-pub-links"].split('|');
+		pubTitles.forEach(function(title, index) {
+			if(title.length > 0) {
+				var entry = {};
+				entry.title = title;
+				entry.link = pubLinks[index];
+				nhcJson.summary.full.publications.publications.push(entry);
+			}
+		});
+
+		//Summary Publications - Resources
+		var resTitles = nhcTrackFormData["storm-nhc-res-titles"].split('|');
+		var resLinks = nhcTrackFormData["storm-nhc-res-links"].split('|');
+		resTitles.forEach(function(title, index) {
+			if(title.length > 0) {
+				var entry = {};
+				entry.title = title;
+				entry.link = resLinks[index];
+				nhcJson.summary.full.publications.resources.push(entry);
+			}
+		});
+
+		return nhcJson;
+	}
 
 	me.createNewStorm = function(newAlias, copyType, copyText) {
 		var $result = $('#storm-modal-result');

@@ -59,6 +59,7 @@
     String nhcTrackMedText = getProp("coastal-hazards.nhc.track.med.text");
     String nhcTrackFullTitle = getProp("coastal-hazards.nhc.track.full.title");
     String nhcTrackFullText = getProp("coastal-hazards.nhc.track.full.text");
+    String nhcTrackKeywords = getProp("coastal-hazards.nhc.track.keywords");
     String nhcTrackDataTitles = getProp("coastal-hazards.nhc.track.data.titles");
     String nhcTrackDataLinks = getProp("coastal-hazards.nhc.track.data.links");
     String nhcTrackPubTitles = getProp("coastal-hazards.nhc.track.pub.titles");
@@ -878,6 +879,9 @@
                                             <br/>
                                             <label for="storm-nhc-sum-full-text">D-e). Summary - Full Text</label>
                                             <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-sum-full-text" rows="4" maxlength="64000" name="storm-nhc-sum-full-text"><%=nhcTrackFullText%></textarea>
+                                            <br/>
+                                            <label for="storm-nhc-sum-keywords">D-f). Summary - Keywords</label>
+                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-sum-keywords" rows="4" maxlength="64000" name="storm-nhc-sum-keywords"><%=nhcTrackKeywords%></textarea>
                                         </div>
                                         <br/>
                                         <br/>
