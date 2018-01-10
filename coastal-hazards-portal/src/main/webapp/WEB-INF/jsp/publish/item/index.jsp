@@ -47,6 +47,25 @@
     String baseUrl = props.getProperty("coastal-hazards.base.secure.url");
     baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
 
+    double nhcTrackBboxNorth = Double.parseDouble(getProp("coastal-hazards.nhc.track.bbox.north"));
+    double nhcTrackBboxWest = Double.parseDouble(getProp("coastal-hazards.nhc.track.bbox.west"));
+    double nhcTrackBboxEast = Double.parseDouble(getProp("coastal-hazards.nhc.track.bbox.east"));
+    double nhcTrackBboxSouth = Double.parseDouble(getProp("coastal-hazards.nhc.track.bbox.south"));
+    String nhcTrackWmsUrl = getProp("coastal-hazards.nhc.track.wms");
+    String nhcTrackAttrs = getProp("coastal-hazards.nhc.track.attrs");
+    String nhcTrackAttrParams = getProp("coastal-hazards.nhc.track.attr.params");
+    String nhcTrackTinyText = getProp("coastal-hazards.nhc.track.tiny.text");
+    String nhcTrackMedTitle = getProp("coastal-hazards.nhc.track.med.title");
+    String nhcTrackMedText = getProp("coastal-hazards.nhc.track.med.text");
+    String nhcTrackFullTitle = getProp("coastal-hazards.nhc.track.full.title");
+    String nhcTrackFullText = getProp("coastal-hazards.nhc.track.full.text");
+    String nhcTrackDataTitles = getProp("coastal-hazards.nhc.track.data.titles");
+    String nhcTrackDataLinks = getProp("coastal-hazards.nhc.track.data.links");
+    String nhcTrackPubTitles = getProp("coastal-hazards.nhc.track.pub.titles");
+    String nhcTrackPubLinks = getProp("coastal-hazards.nhc.track.pub.links");
+    String nhcTrackResTitles = getProp("coastal-hazards.nhc.track.res.titles");
+    String nhcTrackResLinks = getProp("coastal-hazards.nhc.track.res.links");
+
     // Figure out the path based on the ID passed in, if any
     Map<String, String> attributeMap = (Map<String, String>) pageContext.findAttribute("it");
     String id = attributeMap.get("id") == null ? "" : attributeMap.get("id");
@@ -137,7 +156,6 @@
         </script>
     </head>
     <body>
-
         <div class="container">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -786,95 +804,139 @@
                                 <input type="file" name="file"/>
                             </div>
                             <br/>
-                            <div>
-                                <label for="new-active">2. Is Storm Active? <input type="checkbox" id="new-active" name="new-active"/></label>
-                                <span>Only storms marked as being active will contain an NHC Storm Track child item.</span>
-                                <div id="edit-new-track" style="/*! border: 1px solid black; */">
-                                    <br>
-                                    <label>2a).Modify NHC Storm Track</label>
-                                    <div id="storm-modal-nhc-form">
-                                        <small><div id="storm-nhc-bbox" class="">
-                                            <label for="storm-nhc-bbox-table">A). Bounding Box</label>
-                                            <label for="nhc-bbox-inherit">Inherit from Storm Shape File? <input id="nhc-bbox-inherit" name="nhc-bbox-inherit" type="checkbox"></label>
-                                            <table id="storm-nhc-bbox-table">
-                                                <tbody><tr>
-                                                    <td></td>
-                                                    <td id="storm-nhc-bbox-table-north">
-                                                        <label for="storm-nhc-bbox-input-north">North</label>
-                                                        <input id="storm-nhc-bbox-input-north" class="form-control bbox" placeholder="180" type="text">
-                                                    </td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td id="storm-nhc-bbox-table-west">
-                                                        <label for="storm-nhc-bbox-input-west">West</label>
-                                                        <input id="storm-nhc-bbox-input-west" class="form-control bbox" placeholder="-180" type="text">
-                                                    </td>
-                                                    <td></td>
-                                                    <td id="storm-nhc-bbox-table-east">
-                                                        <label for="storm-nhc-bbox-input-east">East</label>
-                                                        <input id="storm-nhc-bbox-input-east" class="form-control bbox" placeholder="180" type="text">
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td></td>
-                                                    <td id="storm-nhc-bbox-table-south">
-                                                        <label for="storm-nhc-bbox-input-south">South</label>
-                                                        <input id="storm-nhc-bbox-input-south" class="form-control bbox" placeholder="-180" type="text">
-                                                    </td>
-                                                    <td></td>
-                                                </tr>
-                                            </tbody></table>
-                                        </div></small>
-                                        <br/>
-                                        <small><div id="storm-nhc-wms" class="">
-                                            <label for="storm-nhc-wms-link">B). WMS URL</label>
-                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-wms-link" name="storm-nhc-wms-link"/>
-                                            <br/>
-                                            <label for="storm-nhc-child-attr">C). Child WMS Attributes</label>
-                                            <div class="storm-modal-nhc-text-desc">One child item will be made per specified attribute name. Attributes should be separated by |.</div>
-                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-child-attr" name="storm-nhc-child-attr"/>
-                                            <br/>
-                                            <label for="storm-nhc-child-param">D). Child WMS Attribute Parameters</label>
-                                            <div class="storm-modal-nhc-text-desc">The list of WMS parameters to provide for each child attribute. Multiple parameters may be provided per attribute, separated by commas. Attributes should be separated by |. The number of groups here should be equal to the number of attributes specified above.</div>
-                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-child-param" name="storm-nhc-child-param"/>
-                                            <br/>
-                                            <label for="storm-nhc-wms-link">E). Summary - Tiny Text</label>
-                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-wms-link" rows="1" maxlength="105" name="storm-nhc-wms-link"></textarea>
-                                            <br/>
-                                            <label for="storm-nhc-wms-link">F). Summary - Medium Title</label>
-                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-wms-link" rows="1" maxlength="1024" name="storm-nhc-wms-link"></textarea>
-                                            <br/>
-                                            <label for="storm-nhc-wms-link">G). Summary - Medium Text</label>
-                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-wms-link" rows="2" maxlength="2048" name="storm-nhc-wms-link"></textarea>
-                                            <br/>
-                                            <label for="storm-nhc-wms-link">H). Summary - Full Title</label>
-                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-wms-link" rows="1" maxlength="1024" name="storm-nhc-wms-link"></textarea>
-                                            <br/>
-                                            <label for="storm-nhc-wms-link">I). Summary - Full Text</label>
-                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-wms-link" rows="3" maxlength="64000" name="storm-nhc-wms-link"></textarea>
-                                        </div></small>
-                                    </div>
-                                </div>
-                            </div>
-                            <br/>
-                            <div>
-                                <label for="inherit-alias">3. Alias to Use [optional]</label>
-                                <span>If the provided Alias is already in-use by another Item it will be removed from that Item and assigned to the newly created Storm.</span>
-                                <br/>
-                                <input type="text" id="inherit-alias" name="inherit-alias"/>
-                            </div>
-                            <br/>
-                            <div>
-                                <label for="copy-type">4. Copy Existing Summary [optional]</label>
-                                <span>The Summary includes the data from the Titles/Descriptions, Keywords, and Resources (Data, Publications, and Resource entires) sections of the publish item page.</span>
-                                <br/>
-                                <label for="copy-none">None <input type="radio" name="copy-type" id="copy-none" value="none" checked/></label>
-                                <label for="copy-item">From Item <input type="radio" name="copy-type" id="copy-item" value="item"/></label>
-                                <label for="copy-alias">From Alias <input type="radio" name="copy-type" id="copy-alias" value="alias"/></label>
-                                <label for="copy-input"><span></span><input type="text" name="copy-input" hidden/></label>
-                            </div>
                         </form>
+                        <div>
+                            <label for="new-active">2. Is Storm Active? <input type="checkbox" id="new-active" name="new-active"/></label>
+                            <span>Only storms marked as being active will contain an NHC Storm Track child item.</span>
+                            <div id="edit-new-track" style="/*! border: 1px solid black; */" hidden>
+                                <br>
+                                <label>2a).Modify NHC Storm Track</label>
+                                <form id="storm-modal-nhc-form">
+                                    <small><div id="storm-nhc-bbox" class="">
+                                        <label for="storm-nhc-bbox-table">A). Bounding Box</label>
+                                        <label for="nhc-bbox-inherit">Inherit from Storm Shape File? <input id="nhc-bbox-inherit" name="nhc-bbox-inherit" type="checkbox"></label>
+                                        <table id="storm-nhc-bbox-table">
+                                            <tbody><tr>
+                                                <td></td>
+                                                <td id="storm-nhc-bbox-table-north">
+                                                    <label for="storm-nhc-bbox-input-north" class="nhc-bbox-label">North</label>
+                                                    <input id="storm-nhc-bbox-input-north" name="storm-nhc-bbox-input-north" class="form-control nhc-bbox" placeholder="180" type="text" value="<%=nhcTrackBboxNorth%>">
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td id="storm-nhc-bbox-table-west">
+                                                    <label for="storm-nhc-bbox-input-west" class="nhc-bbox-label">West</label>
+                                                    <input id="storm-nhc-bbox-input-west" name="storm-nhc-bbox-input-west" class="form-control nhc-bbox" placeholder="-180" type="text" value="<%=nhcTrackBboxWest%>">
+                                                </td>
+                                                <td></td>
+                                                <td id="storm-nhc-bbox-table-east">
+                                                    <label for="storm-nhc-bbox-input-east" class="nhc-bbox-label">East</label>
+                                                    <input id="storm-nhc-bbox-input-east" name="storm-nhc-bbox-input-east" class="form-control nhc-bbox" placeholder="180" type="text" value="<%=nhcTrackBboxEast%>">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td id="storm-nhc-bbox-table-south">
+                                                    <label for="storm-nhc-bbox-input-south" class="nhc-bbox-label">South</label>
+                                                    <input id="storm-nhc-bbox-input-south" name="storm-nhc-bbox-input-south" class="form-control nhc-bbox" placeholder="-180" type="text" value="<%=nhcTrackBboxSouth%>">
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody></table>
+                                    </div></small>
+                                    <br/>
+                                    <small><div id="storm-nhc-wms" class="">
+                                        <label for="storm-nhc-wms-link">B). WMS URL</label>
+                                        <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-wms-link" name="storm-nhc-wms-link" value="<%=nhcTrackWmsUrl%>"/>
+                                        <br/>
+                                        <button class="btn" type="button" data-toggle="collapse" data-target="#storm-nhc-attrs" aria-expanded="false" aria-controls="storm-nhc-attrs">C). Children</button>
+                                        <div class="collapse" id="storm-nhc-attrs">
+                                            <label for="storm-nhc-child-attr">C-a). Child WMS Attributes</label>
+                                            <div class="storm-modal-nhc-text-desc">One child item will be made per specified attribute name. Attributes should be separated by |.</div>
+                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-child-attr" name="storm-nhc-child-attr" value="<%=nhcTrackAttrs%>"/>
+                                            <br/>
+                                            <label for="storm-nhc-child-param">C-b). Child WMS Attribute Parameters</label>
+                                            <div class="storm-modal-nhc-text-desc">The list of WMS parameters to provide for each child attribute. Multiple parameters may be provided per attribute, separated by commas. Attributes should be separated by |. The number of groups here should be equal to the number of attributes specified above.</div>
+                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-child-param" name="storm-nhc-child-param" value="<%=nhcTrackAttrParams%>"/>
+                                        </div>
+                                        <br/>
+                                        <br/>
+                                        <button class="btn" type="button" data-toggle="collapse" data-target="#storm-nhc-summary" aria-expanded="false" aria-controls="storm-nhc-summary">D). Summary</button>
+                                        <div class="collapse" id="storm-nhc-summary">
+                                            <label for="storm-nhc-sum-tiny-text">D-a). Summary - Tiny Text</label>
+                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-sum-tiny-text" rows="1" maxlength="105" name="storm-nhc-sum-tiny-text"><%=nhcTrackTinyText%></textarea>
+                                            <br/>
+                                            <label for="storm-nhc-sum-med-title">D-b). Summary - Medium Title</label>
+                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-sum-med-title" rows="1" maxlength="1024" name="storm-nhc-sum-med-title"><%=nhcTrackMedTitle%></textarea>
+                                            <br/>
+                                            <label for="storm-nhc-sum-med-text">D-c). Summary - Medium Text</label>
+                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-sum-med-text" rows="2" maxlength="2048" name="storm-nhc-sum-med-text"><%=nhcTrackMedText%></textarea>
+                                            <br/>
+                                            <label for="storm-nhc-sum-full-title">D-d). Summary - Full Title</label>
+                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-sum-full-title" rows="1" maxlength="1024" name="storm-nhc-sum-full-title"><%=nhcTrackFullTitle%></textarea>
+                                            <br/>
+                                            <label for="storm-nhc-sum-full-text">D-e). Summary - Full Text</label>
+                                            <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-sum-full-text" rows="4" maxlength="64000" name="storm-nhc-sum-full-text"><%=nhcTrackFullText%></textarea>
+                                        </div>
+                                        <br/>
+                                        <br/>
+                                        <button class="btn" type="button" data-toggle="collapse" data-target="#storm-nhc-resources-data" aria-expanded="false" aria-controls="storm-nhc-resources-data">E). Resources - Data</button>
+                                        <div class="collapse" id="storm-nhc-resources-data">
+                                            <label for="storm-nhc-child-attr">E-a). Resources - Data Titles</label>
+                                            <div class="storm-modal-nhc-text-desc">One Data Resource will be created per title. Titles should be separated by |.</div>
+                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-data-titles" name="storm-nhc-data-titles" value="<%=nhcTrackDataTitles%>"/>
+                                            <br/>
+                                            <label for="storm-nhc-child-param">E-b). Resoruces - Data Links</label>
+                                            <div class="storm-modal-nhc-text-desc">Data Links will match up with the associated Data title defined above. Links should be separated by |. The number of links should be equal to the number of titles defined above.</div>
+                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-data-links" name="storm-nhc-data-links" value="<%=nhcTrackDataLinks%>"/>    
+                                        </div>
+                                        <br/>
+                                        <br/>
+                                        <button class="btn" type="button" data-toggle="collapse" data-target="#storm-nhc-resources-pub" aria-expanded="false" aria-controls="storm-nhc-resources-pub">F). Resources - Publications</button>
+                                        <div class="collapse" id="storm-nhc-resources-pub">
+                                            <label for="storm-nhc-child-attr">F-a). Resources - Publication Titles</label>
+                                            <div class="storm-modal-nhc-text-desc">One Publication Resource will be created per title. Titles should be separated by |.</div>
+                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-pub-titles" name="storm-nhc-pub-titles" value="<%=nhcTrackPubTitles%>"/>
+                                            <br/>
+                                            <label for="storm-nhc-child-param">F-b). Resources - Publication Links</label>
+                                            <div class="storm-modal-nhc-text-desc">Publication Links will match up with the associated Publication title defined above. Links should be separated by |. The number of links should be equal to the number of titles defined above.</div>
+                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-pub-links" name="storm-nhc-pub-links" value="<%=nhcTrackPubLinks%>"/>
+                                        </div>
+                                        <br/>
+                                        <br/>
+                                        <button class="btn" type="button" data-toggle="collapse" data-target="#storm-nhc-resources-res" aria-expanded="false" aria-controls="storm-nhc-resources-res">G). Resources - Resources</button>
+                                        <div class="collapse" id="storm-nhc-resources-res">
+                                            <label for="storm-nhc-child-attr">G-a). Resrouces - Resource Titles</label>
+                                            <div class="storm-modal-nhc-text-desc">One Resource will be created per title. Titles should be separated by |.</div>
+                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-res-titles" name="storm-nhc-res-titles" value="<%=nhcTrackResTitles%>"/>
+                                            <br/>
+                                            <label for="storm-nhc-child-param">G-b). Resources - Resource Links</label>
+                                            <div class="storm-modal-nhc-text-desc">Resource Links will match up with the associated Resource title defined above. Links should be separated by |. The number of links should be equal to the number of titles defined above.</div>
+                                            <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-res-links" name="storm-nhc-res-links" value="<%=nhcTrackResLinks%>"/>        
+                                        </div>
+                                        <br/>
+                                    </div></small>
+                                </form>
+                            </div>
+                        </div>
+                        <br/>
+                        <div>
+                            <label for="inherit-alias">3. Alias to Use [optional]</label>
+                            <span>If the provided Alias is already in-use by another Item it will be removed from that Item and assigned to the newly created Storm.</span>
+                            <br/>
+                            <input type="text" id="inherit-alias" name="inherit-alias"/>
+                        </div>
+                        <br/>
+                        <div>
+                            <label for="copy-type">4. Copy Existing Summary [optional]</label>
+                            <span>The Summary includes the data from the Titles/Descriptions, Keywords, and Resources (Data, Publications, and Resource entires) sections of the publish item page.</span>
+                            <br/>
+                            <label for="copy-none">None <input type="radio" name="copy-type" id="copy-none" value="none" checked/></label>
+                            <label for="copy-item">From Item <input type="radio" name="copy-type" id="copy-item" value="item"/></label>
+                            <label for="copy-alias">From Alias <input type="radio" name="copy-type" id="copy-alias" value="alias"/></label>
+                            <label for="copy-input"><span></span><input type="text" name="copy-input" hidden/></label>
+                        </div>
                         <br/>
                         <p id="storm-modal-result"></p>
                         <br/>
