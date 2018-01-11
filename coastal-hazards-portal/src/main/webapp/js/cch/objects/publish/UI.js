@@ -117,6 +117,10 @@ CCH.Objects.Publish.UI = function () {
 		$titlesPanel = $('#titles-panel'),
 		$resourcesPanel = $('#Resources-panel'),
 		$metaDataPanel = $('#metadata-panel'),
+		$newStormResult = $('#storm-modal-result'),
+		$newStormForm = $('#storm-form'),
+		$newStormCloseButton = $('#storm-modal-close-button'),
+		$newStormCancelButton = $('#storm-modal-cancel-button'),
 		$newStormLayerId = null,
 		$stormTrackItemId = null,
 		$newVectorLayerId = null,
@@ -128,6 +132,7 @@ CCH.Objects.Publish.UI = function () {
 	me.visibleAliasList = [];
 	me.templateNames = ["publication_row", "item_list", "alias_row", "alias_modal_list_row"];
 	me.templates = {};
+	me.newTrackChildIds = [];
 	
 	me.createHelpPopover = function ($content, $element) {
 		$element.popover('destroy');
@@ -2468,21 +2473,41 @@ CCH.Objects.Publish.UI = function () {
 	});
 
 	$newStormModalSubmitButton.on(CCH.CONFIG.strings.click, function(e) {
+		e.preventDefault();
+		me.validateStormData();
+	});
+
+	me.validateStormData = function() {
 		var $result = $('#storm-modal-result');
 		var errorString = "";
+		var nhcTrackFormData = null;
+		var nhcTrackBbox = null;
 
-		e.preventDefault();
-		
-		//Clear Result Text
 		$result.empty();
-		$result.append('Working... (Step 1/3)<br/><br/>');
+		$result.append('Working... (Step 1/5)<br/><br/>');
 
-		//Validate NHC Track Item, if modified
+		//Validate Alias (If Present)
+		var alias = $newStormModalInheritAlias.val().trim().toLowerCase();
+
+		if(alias != null && alias !== "") {
+			var invalidParts = alias.match(ALIAS_NAME_REGEX);
+		
+			if(invalidParts != null && invalidParts.length > 0){
+				errorString = "Alias to use contains invalid characters.";
+				$result.append(errorString);
+				return;
+			}
+		}
+		
+		//Validate Copy Summary Item (If Present)
+		var copyType = $("input[name='copy-type']:checked").val();
+		var copyText = $newStormModalCopyFromText.val().trim();
+
+		//Validate NHC Track Item, if applicable
 		if($newStormModalActiveBox.is(":checked")) {
 			var nhcTrackFormArr = $newStormTrackForm.serializeArray();
-			var nhcTrackFormData = {};
-			var nhcTrackJson;
-			var nhcTrackBbox = [];
+			nhcTrackBbox = [];
+			nhcTrackFormData = {};
 			
 			//Build JSON from serialized array
 			for(var i in nhcTrackFormArr) {
@@ -2544,37 +2569,17 @@ CCH.Objects.Publish.UI = function () {
 				errorString = "NHC Track Resources don't have correctly matching Titles and Links.";
 				$result.append(errorString);
 				return;
-			}
+			}	
+		}	
 
-			var fullNhcJson = [];
-			fullNhcJson.push(me.buildTrackItem(nhcTrackFormData, nhcTrackBbox));
-			fullNhcJson.push(me.buildTrackChildren(nhcTrackFormData, nhcTrackBbox))
-		}
-
-		//Validate Alias (If Present)
-		var alias = $newStormModalInheritAlias.val().trim().toLowerCase();
-
-		if(alias != null && alias !== "") {
-			var invalidParts = alias.match(ALIAS_NAME_REGEX);
-		
-			if(invalidParts != null && invalidParts.length > 0){
-				errorString = "Alias to use contains invalid characters.";
-				$result.append(errorString);
-				return;
-			}
-		}
-		
-		//Validate Copy Summary Item (If Present)
-		var copyType = $("input[name='copy-type']:checked").val();
-		var copyText = $newStormModalCopyFromText.val().trim();
-
+		//Start Storm Creation
 		if(copyType == "item") {
 			if(copyText != null && copyText != "") {
 				$.ajax({
 					url: CCH.baseUrl + "/data/item/" + copyText.trim(),
 					type: 'GET',
 					success: function() {
-						me.createNewStorm(alias, copyType, copyText);
+						me.createNewStorm(alias, copyType, copyText, nhcTrackFormData, nhcTrackBbox);
 					},
 					error: function() {
 						errorString = "No Item could be retrieved using the provided copy from Item ID.";
@@ -2601,7 +2606,7 @@ CCH.Objects.Publish.UI = function () {
 					url: CCH.baseUrl + "/data/alias/" + copyText.toLowerCase() + "/item",
 					type: 'GET',
 					success: function() {
-						me.createNewStorm(alias, copyType, copyText);
+						me.createNewStorm(alias, copyType, copyText, nhcTrackFormData, nhcTrackBbox);
 					},
 					error: function() {
 						errorString = "No Item could be retrieved using the provided copy from Alias.";
@@ -2615,12 +2620,195 @@ CCH.Objects.Publish.UI = function () {
 				return;
 			}
 		} else {
-			me.createNewStorm(alias, copyType, copyText);
+			me.createNewStorm(alias, copyType, copyText, nhcTrackFormData, nhcTrackBbox);
 		}
-	});
+	}
+
+	me.createNewStorm = function(newAlias, copyType, copyText, trackFormData, trackBbox) {		
+		$newStormLayerId = null;
+		$stormTrackItemId = null;
+
+		//Disable buttons
+		me.clearForm();
+		$newStormCloseButton.prop("disabled",true);
+		$newStormCancelButton.prop("disabled",true);
+		$newStormModalSubmitButton.prop("disabled",true);
+
+		//Post Layer
+		me.postStormLayer($newStormResult, newAlias, copyType, copyText, trackFormData, trackBbox);
+	}
+
+	me.postStormLayer = function($result, newAlias, copyType, copyText, trackFormData, trackBbox) {
+		var formData = new FormData($newStormForm[0]);
+
+		$result.empty();
+		$result.append('Working... (Step 2/5)<br/><br/>');
+		$.ajax({
+			url: CCH.baseUrl + "/data/layer/",
+			type: 'POST',
+			data: formData,
+			contentType: false,
+			processData: false
+		})
+		.done(function(data, textStatus, jqXHR){
+			$result.empty();
+			var status = jqXHR.status;
+			var layerUrl = jqXHR.getResponseHeader('Location');
+			var layerId = getLayerIdFromUrl(layerUrl);
+
+			if (201 === status){				
+				$newStormLayerId = layerId;
+
+				if(trackFormData != null) {
+					//Create Track Children
+					me.buildTrackData($result, newAlias, copyType, copyText, trackFormData, trackBbox, layerId);
+				} else {
+					//Post Storm Data
+					me.postStormTemplate($result, layerId, newAlias, copyType, copyText, null);
+				}
+			} else {
+				$result.append("Received unexpected response during layer creation: '" + data + 
+					"'. Layer might not have been created correctly. Storm creation aborted.");
+				$newStormLayerId = null;
+				me.enableNewStormButtons();
+			}
+		})
+		.fail(function(jqXHR, textStatus, errorThrown){
+			$result.append("Error creating layer using selected file.");
+			$newStormLayerId = null;
+			me.enableNewStormButtons();
+		});
+	}
+
+	me.postTrackChild = function($result, layerId, newAlias, copyType, copyText, trackJson, childJson, currentChild, childIds) {
+		$result.empty();
+		$result.append('Working... (Step 3/5)<br/><br/>');
+
+		var curChildJson = childJson[currentChild];
+
+		$.ajax({
+			url: CCH.CONFIG.contextPath + '/data/item/',
+			data: JSON.stringify(curChildJson),
+			method: "POST",
+			contentType: "application/json; charset=utf-8",
+			success: function(data) {
+				var id = data.id;
+				childIds.push(id);
+
+				//Continue posting children until all have posted
+				if(childIds.length == childJson.length) {
+					me.postTrackAggregate($result, layerId, newAlias, copyType, copyText, trackJson, childIds);
+				} else {
+					me.postTrackChild($result, layerId, newAlias, copyType, copyText, trackJson, childJson, currentChild+1, childIds);
+				}
+			},
+			error: function(data) {
+				$result.append("Failed to post an NHC Track Child Item. Storm creation aborted. Error code: " + data.status);
+				$newStormLayerId = null;
+				me.enableNewStormButtons();
+			}
+		});
+	}
+
+	me.postTrackAggregate = function($result, layerId, newAlias, copyType, copyText, trackJson, childIds) {
+		$result.empty();
+		$result.append('Working... (Step 4/5)<br/><br/>');
+
+		//Populate Track JSON with child IDs
+		trackJson.children = childIds;
+		trackJson.displayedChildren = childIds;
+
+		$.ajax({
+			url: CCH.CONFIG.contextPath + '/data/item/',
+			data: JSON.stringify(trackJson),
+			method: "POST",
+			contentType: "application/json; charset=utf-8",
+			success: function(data) {
+				var id = data.id;
+				me.postStormTemplate($result, layerId, newAlias, copyType, copyText, id);
+			},
+			error: function(data) {
+				$result.append("Failed to post NHC Track Aggregate Item. Storm creation aborted. Error code: " + data.status);
+				$newStormLayerId = null;
+				me.enableNewStormButtons();
+			}
+		});
+	}
+
+	me.postStormTemplate = function($result, layerId, newAlias, copyType, copyText, trackId) {
+		$result.empty();
+		$result.append('Working... (Step 5/5)<br/><br/>');
+		$.ajax({
+			url: CCH.CONFIG.contextPath + '/data/template/storm/',
+			data: {
+				layerId: layerId,
+				activeStorm: $newStormModalActiveBox.is(':checked'),
+				alias: newAlias,
+				copyType: copyType,
+				copyVal: copyText,
+				trackId: trackId
+			},
+			method: "GET",
+			success: function(data) {
+				var id = data.id;
+
+				if(id != null) {
+					$(window).on('generate.image.complete', function (evt, id) {
+						window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
+					});
+
+					// Do not image gen if no bbox
+					if ([$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()].join('')) {
+						CCH.ui.generateImage(id);
+					} else {
+						window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
+					}
+				} else {
+					$result.append('An unkown error occurred while saving the storm. It may not have been created successfully.');
+					$newStormLayerId = null;
+					me.enableNewStormButtons();
+				}
+			},
+			error: function(data) {
+				$result.append('Failed to create storm item and associated child items. Storm creation aborted.');
+				$newStormLayerId = null;
+				me.enableNewStormButtons();
+			}
+		});
+	}
+
+	me.buildTrackData = function($result, newAlias, copyType, copyText, trackFormData, trackBbox, layerId) {
+		var trackJson = {};
+		var trackChildren = {};
+
+		//Use provided bbox or get layer bbox
+		if(trackBbox != null && trackBbox.length == 4) {
+			trackJson = me.buildTrackItem(trackFormData, trackBbox);
+			trackChildren = me.buildTrackChildren(trackFormData, trackBbox);
+			me.postTrackChild($result, layerId, newAlias, copyType, copyText, trackJson, trackChildren, 0, []);
+		} else {
+			//Get Layer BBOX
+			$.ajax({
+				url: CCH.baseUrl + "/data/layer/" + layerId,
+				type: 'GET',
+				success: function(data) {
+					var layerBbox = data.bbox;
+					trackJson = me.buildTrackItem(trackFormData, layerBbox);
+					trackChildren = me.buildTrackChildren(trackFormData, layerBbox);
+					me.postTrackChild($result, layerId, newAlias, copyType, copyText, trackJson, trackChildren, 0, []);
+				},
+				error: function(data) {
+					$result.empty();
+					$result.append("Failed to retireve storm layer BBOX");
+					$newStormLayerId = null;
+					me.enableNewStormButtons();
+				}
+			});
+		}
+	}
 
 	me.buildTrackItem = function(nhcTrackFormData, nhcTrackBbox) {
-		var baseJson = buildBasicTrackJson(nhcTrackJson, nhcTrackBbox);
+		var baseJson = me.buildBasicTrackJson(nhcTrackFormData, nhcTrackBbox);
 		baseJson.itemType = "aggregation";
 		baseJson.children = [];
 		baseJson.displayedChildren = [];
@@ -2630,12 +2818,12 @@ CCH.Objects.Publish.UI = function () {
 
 	me.buildTrackChildren = function(nhcTrackFormData, nhcTrackBbox) {
 		var children = [];
-		var wmsAttrs = nhcTrackFormData["storm-nhc-wms-attr"].split('|');
-		var wmsParams = nhcTrackFormData["storm-nhc-wms-param"].split('|');
+		var wmsAttrs = nhcTrackFormData["storm-nhc-child-attr"].split('|');
+		var wmsParams = nhcTrackFormData["storm-nhc-child-param"].split('|');
 
 		wmsAttrs.forEach(function(attr, index) {
 			if(attr.length > 0) {
-				var baseJson = buildBasicTrackJson(nhcTrackFormData, nhcTrackBbox);
+				var baseJson = me.buildBasicTrackJson(nhcTrackFormData, nhcTrackBbox);
 				var params = wmsParams[index];
 				var services = [
 					{
@@ -2726,102 +2914,17 @@ CCH.Objects.Publish.UI = function () {
 		return nhcJson;
 	}
 
-	me.createNewStorm = function(newAlias, copyType, copyText) {
-		var $result = $('#storm-modal-result');
-		var $form = $('#storm-form');
-		var $closeButton = $('#storm-modal-close-button');
-		var $cancelButton = $('#storm-modal-cancel-button');
-		var formData = new FormData($form[0]);
-		$newStormLayerId = null;
-		$stormTrackItemId = null;
-
-		//Disable buttons
-		me.clearForm();
-		$closeButton.prop("disabled",true);
-		$cancelButton.prop("disabled",true);
-		$newStormModalSubmitButton.prop("disabled",true);
-
-		//Step 1 - Create Layer
-		$result.empty();
-		$result.append('Working... (Step 2/3)<br/><br/>');
-		$.ajax({
-			url: CCH.baseUrl + "/data/layer/",
-			type: 'POST',
-			data: formData,
-			contentType: false,
-			processData: false
-		})
-		.done(function(data, textStatus, jqXHR){
-			$result.empty();
-			var status = jqXHR.status;
-			var layerUrl = jqXHR.getResponseHeader('Location');
-			var layerId = getLayerIdFromUrl(layerUrl);
-
-			if (201 === status){				
-				$newStormLayerId = layerId;
-
-				//Step 2 - Create Storm
-				$result.append('Working... (Step 3/3)<br/><br/>');
-				$.ajax({
-					url: CCH.CONFIG.contextPath + '/data/template/storm/',
-					data: {
-						layerId: layerId,
-						activeStorm: $newStormModalActiveBox.is(':checked'),
-						alias: newAlias,
-						copyType: copyType,
-						copyVal: copyText
-					},
-					method: "GET",
-					success: function(data) {
-						var id = data.id;
-
-						if(id != null) {
-							$(window).on('generate.image.complete', function (evt, id) {
-								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
-							});
-	
-							// Do not image gen if no bbox
-							if ([$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()].join('')) {
-								CCH.ui.generateImage(id);
-							} else {
-								window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
-							}
-						} else {
-							$result.append('An unkown error occurred while saving the storm. It may not have been created successfully.');
-							$closeButton.prop("disabled",false);
-							$cancelButton.prop("disabled",false);
-							$newStormModalSubmitButton.prop("disabled",false);
-						}
-					},
-					error: function(data) {
-						$result.append('Failed to create storm item and associated child items. Storm creation aborted.');
-						$closeButton.prop("disabled",false);
-						$cancelButton.prop("disabled",false);
-						$newStormModalSubmitButton.prop("disabled",false);
-					}
-				});
-			} else {
-				$result.append("Received unexpected response during layer creation: '" + data + 
-					"'. Layer might not have been created correctly. Storm creation aborted.");
-				$closeButton.prop("disabled",false);
-				$cancelButton.prop("disabled",false);
-				$newStormModalSubmitButton.prop("disabled",false);
-			}
-		})
-		.fail(function(jqXHR, textStatus, errorThrown){
-			$result.append("Error creating layer using selected file.");
-			$newStormLayerId = null;
-			$closeButton.prop("disabled",false);
-			$cancelButton.prop("disabled",false);
-			$newStormModalSubmitButton.prop("disabled",false);
-		});
-	}
-
 	me.populateStormTemplateForm = function() {
 		$popFromLayerInput.val($newStormLayerId);
 		me.loadLayerInfo($popFromLayerInput.val());
 		me.unlockItemTypeFeatures();
 		$typeSb.val('storms');
+	}
+
+	me.enableNewStormButtons = function() {
+		$newStormCloseButton.prop("disabled",false);
+		$newStormCancelButton.prop("disabled",false);
+		$newStormModalSubmitButton.prop("disabled",false);
 	}
 	
 	//Filtering for aliases

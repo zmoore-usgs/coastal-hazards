@@ -161,12 +161,14 @@ public class TemplateResource {
 	@Path("/storm")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-	public Response instantiateStormTemplate(@Context HttpServletRequest request, @QueryParam("layerId") String layerId, @QueryParam("activeStorm") String active, @QueryParam("alias") String alias, @QueryParam("copyType") String copyType, @QueryParam("copyVal") String copyVal) {
+	public Response instantiateStormTemplate(@Context HttpServletRequest request, @QueryParam("layerId") String layerId, @QueryParam("activeStorm") String active, @QueryParam("alias") String alias, @QueryParam("copyType") String copyType, @QueryParam("copyVal") String copyVal, @QueryParam("trackId") String trackId) {
 		Response response;
 
 		if(layerId != null && active != null) {
 			Gson gson = GsonUtil.getDefault();
-			String childJson = gson.toJson(StormUtil.createStormChildMap(layerId));
+			String childJson = null;
+			
+			childJson = gson.toJson(StormUtil.createStormChildMap(layerId, Boolean.parseBoolean(active), trackId));
 
 			if(childJson != null && childJson.length() > 0) {
 				try(ItemManager itemMan = new ItemManager(); LayerManager layerMan = new LayerManager(); AliasManager aliasMan = new AliasManager()) {
@@ -182,23 +184,13 @@ public class TemplateResource {
 						}
 	
 						if(summary != null) {
-							Item baseTemplate = new Item();
-							baseTemplate.setType(Type.storms);
-							baseTemplate.setRibbonable(true);
-							baseTemplate.setShowChildren(true);
-							baseTemplate.setName("storm_" + (new SimpleDateFormat("yyyyMMddHHmm").format(Date.from(Instant.now()))));
-							baseTemplate.setActiveStorm(Boolean.parseBoolean(active));
-							baseTemplate.setItemType(ItemType.template);
-							baseTemplate.setBbox(Bbox.copyValues(layer.getBbox(), new Bbox()));
 							List<Service> services = layer.getServices();
 							List<Service> serviceCopies = new LinkedList<>();
 							for (Service service : services) {
 								serviceCopies.add(Service.copyValues(service, new Service()));
 							}
-							baseTemplate.setServices(serviceCopies);
-							baseTemplate.setSummary(summary);
-							baseTemplate.setId(IdGenerator.generate());
-	
+							
+							Item baseTemplate = baseTemplateItem(Boolean.parseBoolean(active), layer.getBbox(), serviceCopies, summary);
 							String templateId = itemMan.persist(baseTemplate);
 	
 							if(templateId != null && templateId.length() > 0) {
@@ -243,14 +235,29 @@ public class TemplateResource {
 					response = Response.status(500).build();
 				}
 			} else {
-				log.error("Failed to save storm track item.");
-				response = Response.status(500).build();
+				response = Response.status(400).build();
 			}
 		} else {
 			response = Response.status(400).build();
 		}
 
 		return response;
+	}
+
+	private Item baseTemplateItem(boolean active, Bbox bbox, List<Service> serviceCopies, Summary summary) {
+		Item baseTemplate = new Item();
+		baseTemplate.setType(Type.storms);
+		baseTemplate.setRibbonable(true);
+		baseTemplate.setShowChildren(true);
+		baseTemplate.setName("storm_" + (new SimpleDateFormat("yyyyMMddHHmm").format(Date.from(Instant.now()))));
+		baseTemplate.setId(IdGenerator.generate());
+		baseTemplate.setItemType(ItemType.template);
+		baseTemplate.setActiveStorm(active);
+		baseTemplate.setBbox(Bbox.copyValues(bbox, new Bbox()));
+		baseTemplate.setServices(serviceCopies);
+		baseTemplate.setSummary(summary);
+
+		return baseTemplate;
 	}
 
 	private Summary copyExistingSummary(String copyType, String copyVal, ItemManager itemMan, AliasManager aliasMan) {
