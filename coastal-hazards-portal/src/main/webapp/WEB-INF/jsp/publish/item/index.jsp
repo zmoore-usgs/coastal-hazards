@@ -47,10 +47,10 @@
     String baseUrl = props.getProperty("coastal-hazards.base.secure.url");
     baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
 
-    double nhcTrackBboxNorth = Double.parseDouble(getProp("coastal-hazards.nhc.track.bbox.north"));
-    double nhcTrackBboxWest = Double.parseDouble(getProp("coastal-hazards.nhc.track.bbox.west"));
-    double nhcTrackBboxEast = Double.parseDouble(getProp("coastal-hazards.nhc.track.bbox.east"));
-    double nhcTrackBboxSouth = Double.parseDouble(getProp("coastal-hazards.nhc.track.bbox.south"));
+    String nhcTrackBboxNorth = getProp("coastal-hazards.nhc.track.bbox.north");
+    String nhcTrackBboxWest = getProp("coastal-hazards.nhc.track.bbox.west");
+    String nhcTrackBboxEast = getProp("coastal-hazards.nhc.track.bbox.east");
+    String nhcTrackBboxSouth = getProp("coastal-hazards.nhc.track.bbox.south");
     String nhcTrackWmsUrl = getProp("coastal-hazards.nhc.track.wms");
     String nhcTrackAttrs = getProp("coastal-hazards.nhc.track.attrs");
     String nhcTrackAttrParams = getProp("coastal-hazards.nhc.track.attr.params");

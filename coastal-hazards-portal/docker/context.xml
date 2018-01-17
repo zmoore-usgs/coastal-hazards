@@ -55,10 +55,10 @@
     <Environment name="coastal-hazards.portal.geoserver.cache.name" type="java.lang.String" value="${cch_geoserver_cache_name}" />
 
     <!-- NHC Track Item Defauls -->
-    <Environment name="coastal-hazards.nhc.track.bbox.north" type="java.lang.Double" value="45.95"/>
-    <Environment name="coastal-hazards.nhc.track.bbox.west" type="java.lang.Double" value="-101.84"/>
-    <Environment name="coastal-hazards.nhc.track.bbox.east" type="java.lang.Double" value="-62.4"/>
-    <Environment name="coastal-hazards.nhc.track.bbox.south" type="java.lang.Double" value="17.64"/>
+    <Environment name="coastal-hazards.nhc.track.bbox.north" type="java.lang.String" value="45.95"/>
+    <Environment name="coastal-hazards.nhc.track.bbox.west" type="java.lang.String" value="-101.84"/>
+    <Environment name="coastal-hazards.nhc.track.bbox.east" type="java.lang.String" value="-62.4"/>
+    <Environment name="coastal-hazards.nhc.track.bbox.south" type="java.lang.String" value="17.64"/>
     <Environment name="coastal-hazards.nhc.track.wms" type="java.lang.String" value="http://nowcoast.noaa.gov/arcgis/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/WmsServer?"/>
     <Environment name="coastal-hazards.nhc.track.attrs" type="java.lang.String" value="NHC_TRACK_POLY|NHC_TRACK_LIN|NHC_TRACK_PT"/>
     <Environment name="coastal-hazards.nhc.track.attr.params" type="java.lang.String" value="6|3|8,7,4"/>
