@@ -467,7 +467,14 @@
                                                 <label>
                                                     <input type="checkbox" id="checkbox-isactive"> Is Active?
                                                 </label>
-
+                                                <div>
+                                                    <small>
+                                                        <div id="active-to-inactive-warning">
+                                                            Note: Changing a Storm item from Active to Inactive will automatically delete the NHC Storm Track item nested underneath it (if present).
+                                                        </div>
+                                                        <br/>
+                                                    </small>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -881,6 +888,7 @@
                                             <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-sum-full-text" rows="4" maxlength="64000" name="storm-nhc-sum-full-text"><%=nhcTrackFullText%></textarea>
                                             <br/>
                                             <label for="storm-nhc-sum-keywords">D-f). Summary - Keywords</label>
+                                            <div class="storm-modal-nhc-text-desc">Keywords should be separated by |.</div>
                                             <textarea class="form-control storm-modal-nhc-text" id="storm-nhc-sum-keywords" rows="4" maxlength="64000" name="storm-nhc-sum-keywords"><%=nhcTrackKeywords%></textarea>
                                         </div>
                                         <br/>
@@ -939,6 +947,7 @@
                             <label for="copy-none">None <input type="radio" name="copy-type" id="copy-none" value="none" checked/></label>
                             <label for="copy-item">From Item <input type="radio" name="copy-type" id="copy-item" value="item"/></label>
                             <label for="copy-alias">From Alias <input type="radio" name="copy-type" id="copy-alias" value="alias"/></label>
+                            <br/>
                             <label for="copy-input"><span></span><input type="text" name="copy-input" hidden/></label>
                         </div>
                         <br/>
