@@ -75,8 +75,14 @@
 			</div>
 			<div class="row">
 				<div class="col-md-6">
-					<i class="fa fa-search"></i><input type="text" id="search-input" /><button id="search-button" class="btn btn-success">Search</button>
-					&nbsp;&nbsp;<button id="clear-search" class="btn btn-warning">Clear Search</button>&nbsp;&nbsp;&nbsp;<button id="collapse-all" class="btn">Collapse All</button>	
+					<i class="fa fa-search"></i><input type="text" id="search-input" />
+					<label for="search-title">Title <input type="radio" name="search-type" id="search-title" value="title" checked/></label>
+                    &nbsp;<label for="search-id">ID <input type="radio" name="search-type" id="search-id" value="id"/></label>
+                    &nbsp;<label for="search-alias">Alias <input type="radio" name="search-type" id="search-alias" value="alias"/></label>
+                    &nbsp;<label for="search-alias">Any <input type="radio" name="search-type" id="search-any" value="any"/></label>
+					&nbsp;&nbsp;<button id="search-button" class="btn btn-success">Search</button>
+					&nbsp;&nbsp;<button id="clear-search" class="btn btn-warning">Clear Search</button>
+					&nbsp;&nbsp;&nbsp;<button id="collapse-all" class="btn">Collapse All</button>
 				</div>
 
 				<div id="save-button-container" class="col-md-6">

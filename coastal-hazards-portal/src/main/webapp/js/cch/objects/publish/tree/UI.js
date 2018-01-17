@@ -18,7 +18,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 
 
 	// The individual tree node.
-	me.createTreeNode = function (item) {
+	me.createTreeNode = function (item, aliases) {
 		var id = item.id,
 			randomId = id === 'uber' || id === 'orphans' ? id : CCH.Util.Util.generateUUID(),
 			text = item.title,
@@ -26,6 +26,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			title = item.title,
 			displayedChildren = item.displayedChildren || [],
 			state = {
+				'aliases': aliases,
 				'opened': false,
 				'itemType': itemType,
 				'new-copy': false,
@@ -35,6 +36,17 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 				'displayed': false,
 				'displayedChildren': displayedChildren
 			};
+		
+		//Add additional information to node text
+		if(id !== 'uber' && id !== 'orphans' && id !== 'root') {
+			text += " - <small>( Item ID: " + item.id;
+
+			if(aliases != null && aliases.length > 0) {
+				text += " | Aliases: " + aliases.join(', ');
+			}
+
+			text += " )</small>";
+		}
 
 		return {
 			id: randomId,
@@ -49,9 +61,19 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	// process where I have to dive into each of the child items to fully build out 
 	// items. The process will call itself many times until I have a fully built out
 	// data set ready to go into the tree UI
-	me.buildAdjacencyListFromData = function (item) {
+	me.buildAdjacencyListFromData = function (item, aliases) {
+		var itemAliases = [];
+
+		if(aliases != null) {
+			aliases.forEach(function(alias) {
+				if(alias.item_id == item.id) {
+					itemAliases.push(alias.id);
+				}
+			});
+		}
+
 		var children = item.children || [],
-				node = this.createTreeNode(item),
+				node = this.createTreeNode(item, itemAliases),
 				referer = CCH.config.referer;
 
 		if (referer && referer === item.id) {
@@ -61,7 +83,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 		if (children.length) {
 			for (var childIndex = 0; childIndex < children.length; childIndex++) {
 				var child = children[childIndex];
-				var childNode = this.buildAdjacencyListFromData(child);
+				var childNode = this.buildAdjacencyListFromData(child, aliases);
 
 				if (item.displayedChildren && item.displayedChildren.indexOf(child.id) !== -1) {
 					childNode.state.displayed = true;
@@ -102,6 +124,25 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			'contextmenu': {
 				'items': function ($node) {
 					return me.createNodeContextMenu($node);
+				}
+			},
+			'search': {
+				'search_callback': function (str, node) {
+					var searchMode = $("input[name='search-type']:checked").val();
+
+					if ((searchMode == "id" || searchMode == "any") && node.state['original-id'] != null && node.state['original-id'].toLowerCase().includes(str.toLowerCase())) {
+						return true;
+					} else if ((searchMode == "title" || searchMode == "any") && node.state['title'] != null && node.state['title'].toLowerCase().includes(str.toLowerCase())) {
+						return true;
+					} else if ((searchMode == "alias" || searchMode == "any") && node.state['aliases'] != null) {
+						for (var i = 0; i < node.state['aliases'].length; i++) {
+							if(node.state['aliases'][i].toLowerCase().includes(str.toLowerCase())) {
+								return true;
+							}
+						}
+					}
+
+					return false;
 				}
 			},
 			'types': {
@@ -551,14 +592,25 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	}
 
 	me.findNodesByItemId = function(itemId) {
+		return me.findNodesByItemIdFuzzy(itemId, false);
+	}
+
+	me.findNodesByItemIdFuzzy = function(itemId, fuzzy) {
 		var tree = CCH.ui.getTree(),
 			allChildren = tree.get_node('root').children_d,
 			nodes = [];
 
 		for (var i = 0; i < allChildren.length; i++){
 			var childNode = tree.get_node(allChildren[i]);
-			if (childNode.state['original-id'] === itemId) {
-				nodes.push(childNode);
+
+			if(!fuzzy) {
+				if (childNode.state['original-id'] === itemId) {
+					nodes.push(childNode);
+				}
+			} else {
+				if (childNode.state['original-id'].includes(itemId)) {
+					nodes.push(childNode);
+				}
 			}
 		}
 
@@ -762,7 +814,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	// User wants to perform a search in the tree
 	me.performTreeSearch = function (evt) {
 		var searchCriteria = me.$searchInput.val(),
-				tree = CCH.ui.getTree();
+			tree = CCH.ui.getTree();
 
 		if (searchCriteria) {
 			tree.search(searchCriteria);
@@ -770,35 +822,42 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	};
 
 	me.init = function () {
-		$.ajax(CCH.config.baseUrl + '/data/tree/item/' + this.id, {
+		//Load all Aliases
+		$.ajax(CCH.config.baseUrl + '/data/alias', {
 			context: this,
-			success: function (item) {
-				var parentItem = {
-					'id': 'root',
-					'itemType': 'root',
-					'text': 'Items',
-					'children': []
-				};
-
-				// First create a data node for the top level item with all children
-				parentItem.children.push(this.buildAdjacencyListFromData(item));
-
-				//Load Orphans
-				$.ajax(CCH.config.baseUrl + '/data/tree/item/orphans/', {
+			success: function (aliases) {
+				//Load Uber and Children
+				$.ajax(CCH.config.baseUrl + '/data/tree/item/' + this.id, {
 					context: this,
 					success: function (item) {
-						var orphanItem = {
-							'id': 'orphans',
-							'itemType': 'aggregation',
-							'title': 'Orphans',
-							'children': item.items
-						}
+						var parentItem = {
+							'id': 'root',
+							'itemType': 'root',
+							'text': 'Items',
+							'children': []
+						};
 
-						// Create a data node for the top level orphan item with all of its children
-						parentItem.children.push(this.buildAdjacencyListFromData(orphanItem));
+						// First create a data node for the top level item with all children
+						parentItem.children.push(this.buildAdjacencyListFromData(item, aliases));
 
-						//Use the retrieved data to create the tree
-						me.createTree([parentItem]);
+						//Load Orphans
+						$.ajax(CCH.config.baseUrl + '/data/tree/item/orphans/', {
+							context: this,
+							success: function (item) {
+								var orphanItem = {
+									'id': 'orphans',
+									'itemType': 'aggregation',
+									'title': 'Orphans',
+									'children': item.items
+								}
+
+								// Create a data node for the top level orphan item with all of its children
+								parentItem.children.push(this.buildAdjacencyListFromData(orphanItem, aliases));
+
+								//Use the retrieved data to create the tree
+								me.createTree([parentItem]);
+							}
+						});
 					}
 				});
 			}
