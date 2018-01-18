@@ -919,7 +919,7 @@
                                         <br/>
                                         <button class="btn" type="button" data-toggle="collapse" data-target="#storm-nhc-resources-res" aria-expanded="false" aria-controls="storm-nhc-resources-res">G). Resources - Resources</button>
                                         <div class="collapse" id="storm-nhc-resources-res">
-                                            <label for="storm-nhc-child-attr">G-a). Resrouces - Resource Titles</label>
+                                            <label for="storm-nhc-child-attr">G-a). Resources - Resource Titles</label>
                                             <div class="storm-modal-nhc-text-desc">One Resource will be created per title. Titles should be separated by |.</div>
                                             <input type="text" class="form-control storm-modal-nhc-text" id="storm-nhc-res-titles" name="storm-nhc-res-titles" value="<%=nhcTrackResTitles%>"/>
                                             <br/>
