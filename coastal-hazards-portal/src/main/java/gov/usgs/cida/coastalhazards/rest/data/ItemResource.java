@@ -190,14 +190,41 @@ public class ItemResource {
 		try (ItemManager itemManager = new ItemManager()) {
 			Item dbItem = itemManager.load(id);
 			Item updatedItem = Item.fromJSON(content);
+			String trackId = null;
+
+			//If this is a storm going from active to inactive then remove the track item
+			if(dbItem.getType() == Item.Type.storms && !updatedItem.isActiveStorm() && dbItem.isActiveStorm()) {
+				Integer trackIndex = null;
+
+				//Find Track Child
+				for(Item child : updatedItem.getChildren()) {
+					if(child.getName().equals("track")) {
+						trackId = child.getId();
+						trackIndex = updatedItem.getChildren().indexOf(child);
+						break;
+					}
+				}
+
+				//Remove Track Child
+				if(trackId != null && trackIndex != null) {
+					updatedItem.getChildren().remove(trackIndex.intValue());
+				}
+			}
+
 			Item mergedItem = Item.copyValues(updatedItem, dbItem);
 			String mergedId = null;
+
 			if (dbItem == null) {
 				mergedId = itemManager.persist(mergedItem);
 			} else {
 				mergedId = itemManager.merge(mergedItem);
 			}
 			if (null != mergedId) {
+				//Delete the storm track item once the storm has been successfully saved
+				if(trackId != null) {
+					itemManager.delete(trackId, true);
+				}
+
 				response = Response.ok().build();
 			} else {
 				throw new BadRequestException();
