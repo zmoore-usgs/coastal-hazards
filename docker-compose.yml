@@ -22,7 +22,7 @@ volumes:
 services:
   cch_rserve:
     build:
-      context: ./docker/rserve
+      context: ./Docker/rserve
       args:
         - doi_network=$doi_network
     image: cch_rserve
@@ -90,7 +90,7 @@ services:
 
   cch_pycsw:
     build:
-        context: ./docker/pycsw
+        context: ./Docker/pycsw
         args:
           - doi_network=$doi_network
     image: cch_pycsw
