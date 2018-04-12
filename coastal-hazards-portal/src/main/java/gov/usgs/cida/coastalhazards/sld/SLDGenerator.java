@@ -99,7 +99,8 @@ public class SLDGenerator {
         }
 		
 		if (null == generator) {
-			throw new IllegalArgumentException("Type not found");
+			String message = String.format("No generator available for Type %s and ItemType %s.", itemType, itemDotType);
+			throw new IllegalArgumentException(message);
 		}
 		
 		return generator;

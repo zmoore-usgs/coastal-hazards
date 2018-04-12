@@ -12,6 +12,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -20,7 +22,7 @@ import javax.ws.rs.core.Response;
 @Path(DataURI.SLD_PATH)
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class SLDResource {
-
+	private static transient final Logger LOG = LoggerFactory.getLogger(SLDResource.class);
 	/**
 	 * XML representation of the SLD document related to a specific item ;qs=1
 	 * is required to make this the default response when no accepts header is
@@ -61,7 +63,8 @@ public class SLDResource {
 			}
 		    }
 		} catch(Exception e){
-		    response = Response.status(500).build();
+			LOG.error("Error while getting SLD.", e);
+			response = Response.status(500).build();
 		}
 		PerformanceProfiler.stopDebug("SLDResource.getSLD - " + id);
 		return response;
@@ -110,7 +113,8 @@ public class SLDResource {
 			}
 		}
 	    } catch(Exception e){
-		    response = Response.status(500).build();
+		LOG.error("Error while getting SLD info", e);
+		response = Response.status(500).build();
 	    }
 	    PerformanceProfiler.stopDebug("SLDResource.getSLDInfo - " + id);
 	    return response;
