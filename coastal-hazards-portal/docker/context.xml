@@ -1,4 +1,4 @@
-<Context>
+<Context autoDeploy="true" reloadable="true">
 	<WatchedResource>WEB-INF/web.xml</WatchedResource>
 	<Manager pathname="" />
 

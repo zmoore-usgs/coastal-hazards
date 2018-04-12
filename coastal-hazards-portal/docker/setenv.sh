@@ -44,6 +44,7 @@ export CATALINA_OPTS="$CATALINA_OPTS -Dcch_geoserver_workspace_permanent=publish
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_geoserver_cache_name=cchGeoserverCache"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_fetch_and_unzip_token=${FETCH_AND_UNZIP_TOKEN}"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_keystore_password=${KEY_STORE_PASSWORD}"
+export CATALINA_OPTS="$CATALINA_OPTS -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8900,suspend=n"
 
 if [ "${PORTAL_ALLOW_ANONYMOUS_LOGIN}" = "true" ]; then
     export CATALINA_OPTS="$CATALINA_OPTS -Dcch_null_role=CCH_ADMIN"

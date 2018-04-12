@@ -308,8 +308,7 @@
 					<outputDirectory>${project.basedir}/src/main/webapp/css</outputDirectory>
 					<excludes>
 						<exclude>
-							
-							webjars/META-INF/resources/webjars/bootstrap/${version.bootstrap}/less/*.less
+							**/bootstrap/**/*.less
 						</exclude>
 					</excludes>
 					<compress>false</compress>

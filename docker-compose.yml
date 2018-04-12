@@ -67,8 +67,9 @@ services:
         - cch_geoserver_data:/heapdumps
         - cch_geoserver_data:/data
     ports:
-      - "8080:8080"
-      - "8443:8443"
+      - "8080:8080" #http
+      - "8443:8443" #https
+      - "8900:8900" #java remote debugging
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
 
