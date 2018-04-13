@@ -2663,8 +2663,7 @@ CCH.Objects.Publish.UI = function () {
 					//Create Track Children
 					me.buildTrackData($result, newAlias, copyType, copyText, trackFormData, trackBbox, layerId);
 				} else {
-					//Post Storm Data
-					me.postStormTemplate($result, layerId, newAlias, copyType, copyText, null);
+					me.createStormTemplate($result, layerId, newAlias, copyType, copyText, null);
 				}
 			} else {
 				$result.append("Received unexpected response during layer creation: '" + data + 
@@ -2725,7 +2724,7 @@ CCH.Objects.Publish.UI = function () {
 			contentType: "application/json; charset=utf-8",
 			success: function(data) {
 				var id = data.id;
-				me.postStormTemplate($result, layerId, newAlias, copyType, copyText, id);
+				me.createStormTemplate($result, layerId, newAlias, copyType, copyText, id);
 			},
 			error: function(data) {
 				$result.append("Failed to post NHC Track Aggregate Item. Storm creation aborted. Error code: " + data.status);
@@ -2733,23 +2732,38 @@ CCH.Objects.Publish.UI = function () {
 				me.enableNewStormButtons();
 			}
 		});
-	}
+	};
+	
+	me.hoistActiveStormToTopLevel = function(stormTemplate) {
+		//if storm is active
+			//get uber item
+			//lowestDisplayIndex = find lowest display index of uber's children
+			//if storm template is the lowest display index, do nothing
+			//else
+			////	if storm template is not in uber
+			//		add it to uber
+			//	set the display index of storm template to lowestDisplayIndex - 1
+			//	post uber
 
-	me.postStormTemplate = function($result, layerId, newAlias, copyType, copyText, trackId) {
+		//else, it's not active so do nothing
+	};
+	
+	me.createStormTemplate = function($result, layerId, newAlias, copyType, copyText, trackId) {
 		$result.empty();
 		$result.append('Working... (Step 5/5)<br/><br/>');
 		$.ajax({
-			url: CCH.CONFIG.contextPath + '/data/template/storm/',
-			data: {
-				layerId: layerId,
-				activeStorm: $newStormModalActiveBox.is(':checked'),
-				alias: newAlias,
-				copyType: copyType,
-				copyVal: copyText,
-				trackId: trackId
-			},
-			method: "GET",
-			success: function(data) {
+				url: CCH.CONFIG.contextPath + '/data/template/storm/',
+				data: {
+					layerId: layerId,
+					activeStorm: $newStormModalActiveBox.is(':checked'),
+					alias: newAlias,
+					copyType: copyType,
+					copyVal: copyText,
+					trackId: trackId
+				},
+				method: "GET"
+			})
+			.done(function(data) {
 				var id = data.id;
 
 				if(id != null) {
@@ -2764,18 +2778,18 @@ CCH.Objects.Publish.UI = function () {
 						window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
 					}
 				} else {
-					$result.append('An unkown error occurred while saving the storm. It may not have been created successfully.');
+					$result.append('An unknown error occurred while saving the storm. It may not have been created successfully.');
 					$newStormLayerId = null;
 					me.enableNewStormButtons();
 				}
-			},
-			error: function(data) {
+			})
+			.fail(function(data) {
 				$result.append('Failed to create storm item and associated child items. Storm creation aborted.');
 				$newStormLayerId = null;
 				me.enableNewStormButtons();
-			}
-		});
-	}
+				console.error(data);
+			});
+	};
 
 	me.buildTrackData = function($result, newAlias, copyType, copyText, trackFormData, trackBbox, layerId) {
 		var trackJson = {};
