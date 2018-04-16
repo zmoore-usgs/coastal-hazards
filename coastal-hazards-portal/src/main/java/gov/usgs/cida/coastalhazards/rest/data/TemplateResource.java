@@ -152,11 +152,21 @@ public class TemplateResource {
 		return response;
 	}
 
-	protected void updateStormAlias(String alias, AliasManager aliasMan, String templateId) {
-		if (alias != null && alias.length() > 0) {
+	/**
+	 * 
+	 * @param alias
+	 * @param aliasMan
+	 * @param templateId the new templateId to associate the Alias with
+	 * @return the original templateId, or null if no Alias existed
+	 */
+	protected String updateStormAlias(String alias, AliasManager aliasMan, String templateId) {
+		if (StringUtils.isEmpty(alias)) {
+			throw new IllegalArgumentException(String.format("Alias cannot be empty. Got %s", alias));
+		} else {
 			Alias fullAlias = aliasMan.load(alias);
-
+			String originalTemplateId = null;
 			if (fullAlias != null) {
+				originalTemplateId = fullAlias.getItemId();
 				fullAlias.setItemId(templateId);
 				aliasMan.update(fullAlias);
 			} else {
@@ -165,10 +175,11 @@ public class TemplateResource {
 				fullAlias.setItemId(templateId);
 				aliasMan.save(fullAlias);
 			}
+			return originalTemplateId;
 		}
 	}
 	
-	protected Response instantiateStormAndHandleResponse(String templateId, String childJson, String alias, AliasManager aliasMan){
+	protected Response instantiateStormAndHandleResponse(String templateId, String childJson, String alias, AliasManager aliasMan, ItemManager itemMan){
 		Response response;
 		if (StringUtils.isEmpty(templateId)) {
 			//this is the server's fault rather than the client's
@@ -184,8 +195,16 @@ public class TemplateResource {
 						put("id", templateId);
 					}
 				};
-
-				updateStormAlias(alias, aliasMan, templateId);
+				
+				String originalTemplateId = updateStormAlias(alias, aliasMan, templateId);
+				if (!StringUtils.isEmpty(originalTemplateId)) {
+					Item originalTemplate = itemMan.load(originalTemplateId);
+					if (null == originalTemplate) {
+						throw new RuntimeException(String.format("Could not find template with ID '%s'", originalTemplateId));
+					} else {
+						itemMan.orphan(originalTemplate);
+					}
+				}
 				String responseText = GsonUtil.getDefault().toJson(ok, HashMap.class);
 				response = Response.ok(responseText, MediaType.APPLICATION_JSON_TYPE).build();
 			}
@@ -240,7 +259,7 @@ public class TemplateResource {
 						List<Service> serviceCopies = getCopyOfServices(layer);
 						Item baseTemplate = baseTemplateItem(Boolean.parseBoolean(active), layer.getBbox(), serviceCopies, summary);
 						String templateId = itemMan.persist(baseTemplate);
-						response = instantiateStormAndHandleResponse(templateId, childJson, alias, aliasMan);
+						response = instantiateStormAndHandleResponse(templateId, childJson, alias, aliasMan, itemMan);
 					}
 				}
 			} catch (Exception e) {

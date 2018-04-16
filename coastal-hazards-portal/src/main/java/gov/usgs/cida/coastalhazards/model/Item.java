@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -426,5 +427,90 @@ public class Item implements Serializable, Cacheable {
 	private OGCService fetchOgcService(ServiceType type) {
 		OGCService ogc = Service.ogcHelper(type, services);
 		return ogc;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 97 * hash + Objects.hashCode(this.id);
+		hash = 97 * hash + Objects.hashCode(this.itemType);
+		hash = 97 * hash + Objects.hashCode(this.name);
+		hash = 97 * hash + Objects.hashCode(this.bbox);
+		hash = 97 * hash + Objects.hashCode(this.type);
+		hash = 97 * hash + Objects.hashCode(this.attr);
+		hash = 97 * hash + (this.ribbonable ? 1 : 0);
+		hash = 97 * hash + (this.showChildren ? 1 : 0);
+		hash = 97 * hash + (this.enabled ? 1 : 0);
+		hash = 97 * hash + Objects.hashCode(this.summary);
+		hash = 97 * hash + Objects.hashCode(this.services);
+		hash = 97 * hash + Objects.hashCode(this.children);
+		hash = 97 * hash + Objects.hashCode(this.displayedChildren);
+		hash = 97 * hash + Objects.hashCode(this.lastUpdate);
+		hash = 97 * hash + (this.activeStorm ? 1 : 0);
+		hash = 97 * hash + (this.featured ? 1 : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Item other = (Item) obj;
+		if (this.ribbonable != other.ribbonable) {
+			return false;
+		}
+		if (this.showChildren != other.showChildren) {
+			return false;
+		}
+		if (this.enabled != other.enabled) {
+			return false;
+		}
+		if (this.activeStorm != other.activeStorm) {
+			return false;
+		}
+		if (this.featured != other.featured) {
+			return false;
+		}
+		if (!Objects.equals(this.id, other.id)) {
+			return false;
+		}
+		if (!Objects.equals(this.name, other.name)) {
+			return false;
+		}
+		if (!Objects.equals(this.attr, other.attr)) {
+			return false;
+		}
+		if (this.itemType != other.itemType) {
+			return false;
+		}
+		if (!Objects.equals(this.bbox, other.bbox)) {
+			return false;
+		}
+		if (this.type != other.type) {
+			return false;
+		}
+		if (!Objects.equals(this.summary, other.summary)) {
+			return false;
+		}
+		if (!Objects.equals(this.services, other.services)) {
+			return false;
+		}
+		if (!Objects.equals(this.children, other.children)) {
+			return false;
+		}
+		if (!Objects.equals(this.displayedChildren, other.displayedChildren)) {
+			return false;
+		}
+		if (!Objects.equals(this.lastUpdate, other.lastUpdate)) {
+			return false;
+		}
+		return true;
 	}
 }

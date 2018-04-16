@@ -7,11 +7,14 @@ import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.service.data.DownloadService;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
@@ -576,6 +579,51 @@ public class ItemManager implements AutoCloseable {
 			}
 		}
 		return items;
+	}
+	
+	/**
+	 * Orphans an item.
+	 * 
+	 * Finds all of this item's ancestors, removes the item from their
+	 * children and merges 
+	 * 
+	 * Risk:
+	 * An item might become the child of additional item
+	 * between the time that the item's children are read from the database
+	 * and the time that the parents have the orphan item removed from them.
+	 * This is acceptable because we have very few users interacting with 
+	 * this portion of the app and because users can easily recover by
+	 * manually orphaning anything that was missed in the UI.
+	 * 
+	 * TODO: transactionalize
+	 * 
+	 * @param itemToOrphan
+	 * @return true if the changes persisted successfully, false otherwise
+	 */
+	public boolean orphan(Item itemToOrphan) {
+		
+		List<Item> ancestors = findAncestors(itemToOrphan);
+		List<Item> ancestorsWithoutOrphan = stripOrphanFromAncestors(itemToOrphan, ancestors);
+		boolean success = this.mergeAll(ancestorsWithoutOrphan);
+		return success;
+	}
+	
+	/**
+	 * Strips orphans from ancestors in memory without persisting.
+	 * @param itemToOrphan
+	 * @param ancestors
+	 * @return List of ancestors that no longer have itemToOrphan as a child
+	 */
+	protected List<Item> stripOrphanFromAncestors(Item itemToOrphan, List<Item> ancestors) {
+		List<Item> ancestorsWithoutOrphan = ancestors.stream().map((ancestor) -> {
+			List<Item> children = ancestor.getChildren();
+			if (null != children) {
+				children.removeAll(Arrays.asList(itemToOrphan));
+				ancestor.setChildren(children);
+			}
+			return ancestor;
+		}).collect(Collectors.toList());
+		return ancestorsWithoutOrphan;
 	}
 	
 	private List<Item> findVisibleAncestors(Item item) {
