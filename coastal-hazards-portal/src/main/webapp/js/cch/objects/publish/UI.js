@@ -2734,20 +2734,6 @@ CCH.Objects.Publish.UI = function () {
 		});
 	};
 	
-	me.hoistActiveStormToTopLevel = function(stormTemplate) {
-		//if storm is active
-			//get uber item
-			//lowestDisplayIndex = find lowest display index of uber's children
-			//if storm template is the lowest display index, do nothing
-			//else
-			////	if storm template is not in uber
-			//		add it to uber
-			//	set the display index of storm template to lowestDisplayIndex - 1
-			//	post uber
-
-		//else, it's not active so do nothing
-	};
-	
 	me.createStormTemplate = function($result, layerId, newAlias, copyType, copyText, trackId) {
 		$result.empty();
 		$result.append('Working... (Step 5/5)<br/><br/>');
