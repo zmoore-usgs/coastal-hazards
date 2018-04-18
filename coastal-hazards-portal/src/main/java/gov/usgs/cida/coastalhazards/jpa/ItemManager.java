@@ -599,9 +599,9 @@ public class ItemManager implements AutoCloseable {
 			transaction.begin();
 			List<Item> ancestors = findAncestors(itemToOrphan);
 			List<Item> ancestorsWithoutOrphan = ItemUtil.stripOrphanFromAncestors(itemToOrphan, ancestors);
-			boolean mergeWorked = mergeAll(ancestorsWithoutOrphan);
+			ancestorsWithoutOrphan.stream().forEach(this::persistItem);
 			transaction.commit();
-			orphanWorked = mergeWorked;
+			orphanWorked = true;
 		} catch (Exception ex) {
 			log.error("Exception during save.", ex);
 			if (transaction.isActive()) {

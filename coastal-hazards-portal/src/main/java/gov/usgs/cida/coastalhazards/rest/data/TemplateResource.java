@@ -180,7 +180,7 @@ public class TemplateResource {
 		}
 	}
 	
-	protected Response instantiateStormAndHandleResponse(String templateId, String childJson, String alias, AliasManager aliasMan, ItemManager itemMan){
+	protected Response instantiateStormAndHandleResponse(String templateId, String childJson, String alias, boolean active, AliasManager aliasMan, ItemManager itemMan){
 		Response response;
 		if (StringUtils.isEmpty(templateId)) {
 			//this is the server's fault rather than the client's
@@ -189,9 +189,13 @@ public class TemplateResource {
 			response = instantiateTemplate(templateId, childJson);
 
 			if (response.getStatus() == HttpStatus.SC_OK) {
-				hoistNewTemplateToTopLevel(templateId, itemMan);
-				String originalTemplateId = updateStormAlias(alias, aliasMan, templateId);
-				orphanOriginalTemplate(originalTemplateId, itemMan);
+				if (active) {
+					hoistNewTemplateToTopLevel(templateId, itemMan);
+				}
+				if (!StringUtils.isEmpty(alias)) {
+					String originalTemplateId = updateStormAlias(alias, aliasMan, templateId);
+					orphanOriginalTemplate(originalTemplateId, itemMan);
+				}
 				
 				Map<String, Object> ok = new HashMap<String, Object>() {
 					private static final long serialVersionUID = 2398472L;
@@ -263,9 +267,10 @@ public class TemplateResource {
 				LayerManager layerMan = new LayerManager();
 				AliasManager aliasMan = new AliasManager()
 			) {
+				boolean isActive = Boolean.parseBoolean(active);
 				Layer layer = layerMan.load(layerId);
 				Gson gson = GsonUtil.getDefault();
-				String childJson = gson.toJson(StormUtil.createStormChildMap(layerId, Boolean.parseBoolean(active), trackId));
+				String childJson = gson.toJson(StormUtil.createStormChildMap(layerId, isActive, trackId));
 				
 				//validate that objects could be loaded/constructed based on the parameters to the web service
 				if (null == layer || StringUtils.isEmpty(childJson)) {
@@ -286,7 +291,7 @@ public class TemplateResource {
 						List<Service> serviceCopies = getCopyOfServices(layer);
 						Item baseTemplate = baseTemplateItem(Boolean.parseBoolean(active), layer.getBbox(), serviceCopies, summary);
 						String templateId = itemMan.persist(baseTemplate);
-						response = instantiateStormAndHandleResponse(templateId, childJson, alias, aliasMan, itemMan);
+						response = instantiateStormAndHandleResponse(templateId, childJson, alias, isActive, aliasMan, itemMan);
 					}
 				}
 			} catch (Exception e) {
