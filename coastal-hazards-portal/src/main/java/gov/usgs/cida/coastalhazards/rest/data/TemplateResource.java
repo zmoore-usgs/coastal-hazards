@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.security.RolesAllowed;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
@@ -154,7 +155,8 @@ public class TemplateResource {
 	}
 
 	/**
-	 * 
+	 * Update an alias to point to an item. If the Alias did not exist,
+	 * create it and point it to the item.
 	 * @param alias
 	 * @param aliasMan
 	 * @param templateId the new templateId to associate the Alias with
@@ -225,7 +227,7 @@ public class TemplateResource {
 		if (!StringUtils.isEmpty(originalTemplateId)) {
 			Item originalTemplate = itemMan.load(originalTemplateId);
 			if (null == originalTemplate) {
-				throw new RuntimeException(String.format(
+				throw new EntityNotFoundException(String.format(
 					"Could not find template with ID '%s'. "
 					+ "Perhaps the template Item was deleted "
 					+ "between the time it was persisted and the time it was read?",
@@ -322,18 +324,18 @@ public class TemplateResource {
 		Summary newSummary = null;
 		Item summaryItem = null;
 
-		if(copyType.equalsIgnoreCase("item")) {
+		if ("item".equalsIgnoreCase(copyType)) {
 			summaryItem = itemMan.load(copyVal);
-		} else if(copyType.equalsIgnoreCase("alias")) {
+		} else if ("alias".contains(copyType)) {
 			summaryItem = itemMan.load(aliasMan.load(copyVal).getItemId());
 		} else {
 			log.error("Attempted to copy existing summary from invalid copy type: " + copyType);
 		}
 
-		if(summaryItem != null) {
-			newSummary = Summary.copyValues(summaryItem.getSummary(), new Summary());
-		} else {
+		if(summaryItem == null) {
 			log.error("Item provided to copy summary from (" + copyType + " | " + copyVal + ") could not be loaded.");
+		} else {
+			newSummary = Summary.copyValues(summaryItem.getSummary(), new Summary());
 		}
 
 		return newSummary;
