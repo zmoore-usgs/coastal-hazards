@@ -85,4 +85,18 @@ public class ItemTest {
         Item.ItemType type4 = Item.ItemType.valueOf("foo");
         assertThat(type4, is(not(equalTo(Item.ItemType.aggregation))));
     }
+    
+    @Test
+    public void testTwoBlankItemsAreEqual() {
+        Item i1 = new Item();
+        Item i2 = new Item();
+        assertEquals(i1, i2);
+    }
+    
+    @Test
+    public void testThatACloneEqualsTheOriginal() {
+        Item i1 = new Item();
+        Item i2 = Item.copyValues(i1, null);
+        assertEquals(i1, i2);
+    }
 }

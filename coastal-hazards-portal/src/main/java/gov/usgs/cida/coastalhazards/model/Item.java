@@ -96,7 +96,7 @@ public class Item implements Serializable, Cacheable {
 	/* Whether to show this item at all, used in mediation */
 	private transient boolean enabled;
 	private Summary summary;
-	private List<Service> services;
+	private List<Service> services = new ArrayList<>();
 	private transient List<Item> children;
 	/* Show only a subset of children */
 	private List<String> displayedChildren;
@@ -211,7 +211,7 @@ public class Item implements Serializable, Cacheable {
 	public List<Service> getServices() {
 		return services;
 	}
-
+	
 	public void setServices(List<Service> services) {
 		this.services = (services == null) ? new LinkedList<Service>() : services;
 	}
@@ -342,19 +342,30 @@ public class Item implements Serializable, Cacheable {
 		}
 		String id = from.getId();
 		Bbox toBbox = null;
+		
 		Summary toSummary = null;
 		if (to != null) {
 			id = to.getId();
 			toBbox = to.getBbox();
 			toSummary = to.getSummary();
 		}
+		
+		Summary fromSummary = from.getSummary();
+		
+		Summary newSummary;
+		if (null == fromSummary) {
+			newSummary = null;
+		} else {
+			newSummary = Summary.copyValues(from.getSummary(), toSummary);
+		}
+		
 		item.setId(id);
 		item.setItemType(from.getItemType());
 		item.setType(from.getType());
 		item.setName(from.getName());
 		item.setAttr(from.getAttr());
 		item.setBbox(Bbox.copyValues(from.getBbox(), toBbox));
-		item.setSummary(Summary.copyValues(from.getSummary(), toSummary));
+		item.setSummary(newSummary);
 		item.setRibbonable(from.isRibbonable());
 		item.setShowChildren(from.isShowChildren());
 		item.setEnabled(from.isEnabled());
@@ -427,6 +438,11 @@ public class Item implements Serializable, Cacheable {
 	private OGCService fetchOgcService(ServiceType type) {
 		OGCService ogc = Service.ogcHelper(type, services);
 		return ogc;
+	}
+
+	@Override
+	public String toString() {
+		return "Item{" + "id=" + id + ", itemType=" + itemType + ", name=" + name + ", bbox=" + bbox + ", type=" + type + ", attr=" + attr + ", ribbonable=" + ribbonable + ", showChildren=" + showChildren + ", enabled=" + enabled + ", summary=" + summary + ", services=" + services + ", children=" + children + ", displayedChildren=" + displayedChildren + ", lastUpdate=" + lastUpdate + ", activeStorm=" + activeStorm + ", featured=" + featured + '}';
 	}
 
 	@Override

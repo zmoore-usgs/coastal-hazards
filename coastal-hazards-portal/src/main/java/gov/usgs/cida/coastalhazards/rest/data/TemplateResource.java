@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.security.RolesAllowed;
+import javax.persistence.PersistenceException;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -137,7 +138,9 @@ public class TemplateResource {
 			template.setDisplayedChildren(displayed);
 			template.setSummary(gatherTemplateSummary(template.getSummary(), newItemList));
 			String mergeId = itemMan.merge(template);
-			if (mergeId != null) {
+			if (mergeId == null) {
+				response = Response.serverError().build();
+			} else {
 				response = Response.ok().build();
 				
 				try (StatusManager statusMan = new StatusManager();) {
@@ -145,8 +148,6 @@ public class TemplateResource {
 					status.setStatusName(Status.StatusName.ITEM_UPDATE);
 					statusMan.save(status);
 				}
-			} else {
-				response = Response.serverError().build();
 			}
 		}
 		return response;
@@ -165,15 +166,15 @@ public class TemplateResource {
 		} else {
 			Alias fullAlias = aliasMan.load(alias);
 			String originalTemplateId = null;
-			if (fullAlias != null) {
-				originalTemplateId = fullAlias.getItemId();
-				fullAlias.setItemId(templateId);
-				aliasMan.update(fullAlias);
-			} else {
+			if (fullAlias == null) {
 				fullAlias = new Alias();
 				fullAlias.setId(alias);
 				fullAlias.setItemId(templateId);
 				aliasMan.save(fullAlias);
+			} else {
+				originalTemplateId = fullAlias.getItemId();
+				fullAlias.setItemId(templateId);
+				aliasMan.update(fullAlias);
 			}
 			return originalTemplateId;
 		}
@@ -188,28 +189,55 @@ public class TemplateResource {
 			response = instantiateTemplate(templateId, childJson);
 
 			if (response.getStatus() == HttpStatus.SC_OK) {
+				hoistNewTemplateToTopLevel(templateId, itemMan);
+				String originalTemplateId = updateStormAlias(alias, aliasMan, templateId);
+				orphanOriginalTemplate(originalTemplateId, itemMan);
+				
 				Map<String, Object> ok = new HashMap<String, Object>() {
 					private static final long serialVersionUID = 2398472L;
-
 					{
 						put("id", templateId);
 					}
 				};
-				
-				String originalTemplateId = updateStormAlias(alias, aliasMan, templateId);
-				if (!StringUtils.isEmpty(originalTemplateId)) {
-					Item originalTemplate = itemMan.load(originalTemplateId);
-					if (null == originalTemplate) {
-						throw new RuntimeException(String.format("Could not find template with ID '%s'", originalTemplateId));
-					} else {
-						itemMan.orphan(originalTemplate);
-					}
-				}
 				String responseText = GsonUtil.getDefault().toJson(ok, HashMap.class);
 				response = Response.ok(responseText, MediaType.APPLICATION_JSON_TYPE).build();
 			}
 		}
 		return response;
+	}
+	
+	protected void hoistNewTemplateToTopLevel(String newTemplateId, ItemManager itemMan) {
+		boolean success = itemMan.hoistItemToTopLevel(newTemplateId);
+		if (!success) {
+			throw new PersistenceException(String.format(
+				"Could not hoist item with ID '%s'",
+				newTemplateId
+			));
+		}
+	}
+	
+	protected void orphanOriginalTemplate(String originalTemplateId, ItemManager itemMan) {
+		//can only orphan the original if there was an original
+		if (!StringUtils.isEmpty(originalTemplateId)) {
+			Item originalTemplate = itemMan.load(originalTemplateId);
+			if (null == originalTemplate) {
+				throw new RuntimeException(String.format(
+					"Could not find template with ID '%s'. "
+					+ "Perhaps the template Item was deleted "
+					+ "between the time it was persisted and the time it was read?",
+					originalTemplateId));
+			} else {
+				boolean success = itemMan.orphan(originalTemplate);
+				if (!success) {
+					throw new PersistenceException(
+						String.format(
+							"Could not orphan template with ID '%s'",
+							originalTemplateId
+						)
+					);
+				}
+			}
+		}
 	}
 	
 	protected List<Service> getCopyOfServices(Layer layer) {
@@ -225,8 +253,7 @@ public class TemplateResource {
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response instantiateStormTemplate(@QueryParam("layerId") String layerId, @QueryParam("activeStorm") String active, @QueryParam("alias") String alias, @QueryParam("copyType") String copyType, @QueryParam("copyVal") String copyVal, @QueryParam("trackId") String trackId) {
 		Response response;
-		StringUtils.isEmpty("");
-		//validate parmeters
+		//validate parameters
 		if (StringUtils.isEmpty(layerId) || StringUtils.isEmpty(active)) {
 			response = Response.status(400).build();
 			log.error("The client failed to specify values for layerId ({}) or active ({}).", layerId, active);
@@ -241,13 +268,13 @@ public class TemplateResource {
 				String childJson = gson.toJson(StormUtil.createStormChildMap(layerId, Boolean.parseBoolean(active), trackId));
 				
 				//validate that objects could be loaded/constructed based on the parameters to the web service
-				if ( null == layer || StringUtils.isEmpty(childJson)) {
+				if (null == layer || StringUtils.isEmpty(childJson)) {
 					//probably the client's fault
 					response = Response.status(400).build();
 				} else {
 					Summary summary;
 
-					if (copyType.equalsIgnoreCase("item") || copyType.equalsIgnoreCase("alias")) {
+					if ("item".equalsIgnoreCase(copyType) || "alias".equalsIgnoreCase(copyType)) {
 						summary = copyExistingSummary(copyType, copyVal, itemMan, aliasMan);
 					} else {
 						summary = StormUtil.buildStormTemplateSummary(layer);

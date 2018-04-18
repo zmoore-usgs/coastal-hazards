@@ -106,21 +106,24 @@ public class Summary implements Serializable {
 	}
 
 	public static Summary copyValues(final Summary from, final Summary to) {
-		Summary summary = new Summary();
-		if (to != null) {
-			summary.setId(to.getId());
+		Summary summary = null;
+		if (null != from) {
+			summary = new Summary();
+			if (to != null) {
+				summary.setId(to.getId());
+			}
+			summary.setVersion(from.getVersion());
+			summary.setTiny(from.getTiny());
+			summary.setLegend(from.getLegend());
+			summary.setMedium(from.getMedium());
+			summary.setDownload(from.getDownload());
+			Full toFull = new Full();
+			if (to != null && to.getFull() != null) {
+				toFull = to.getFull();
+			}
+			summary.setFull(Full.copyValues(from.getFull(), toFull));
+			summary.setKeywords(from.getKeywords());
 		}
-		summary.setVersion(from.getVersion());
-		summary.setTiny(from.getTiny());
-		summary.setLegend(from.getLegend());
-		summary.setMedium(from.getMedium());
-		summary.setDownload(from.getDownload());
-		Full toFull = new Full();
-		if (to != null && to.getFull() != null) {
-			toFull = to.getFull();
-		}
-		summary.setFull(Full.copyValues(from.getFull(), toFull));
-		summary.setKeywords(from.getKeywords());
 		return summary;
 	}
 }

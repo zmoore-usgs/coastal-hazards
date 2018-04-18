@@ -2,9 +2,11 @@ package gov.usgs.cida.coastalhazards.rest.data.util;
 
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.ItemLastUpdateComparator;
+import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -83,4 +85,21 @@ public class ItemUtil {
 		return newest;
 	}
 
+	/**
+	 * Removes the orphan from the children of the ancestors
+	 * @param itemToOrphan
+	 * @param ancestors
+	 * @return List of ancestors that no longer have itemToOrphan as a child
+	 */
+	public static List<Item> stripOrphanFromAncestors(Item itemToOrphan, List<Item> ancestors) {
+		List<Item> ancestorsWithoutOrphan = ancestors.stream().map((ancestor) -> {
+			List<Item> children = ancestor.getChildren();
+			if (null != children) {
+				children.removeAll(Arrays.asList(itemToOrphan));
+				ancestor.setChildren(children);
+			}
+			return ancestor;
+		}).collect(Collectors.toList());
+		return ancestorsWithoutOrphan;
+	}
 }
