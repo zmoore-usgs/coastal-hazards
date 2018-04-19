@@ -139,7 +139,7 @@ public class TemplateResourceTest {
 	}
 	
 	@Test
-	public void testThatUpdatingExistentAliasWorks() {
+	public void testThatUpdatingExistingAliasWorks() {
 		String aliasId = "foo";
 		String existingTemplateId = "bar";
 		String newTemplateId = "baz";
@@ -149,10 +149,10 @@ public class TemplateResourceTest {
 		existingAlias.setItemId(existingTemplateId);
 
 		Alias updatedAlias = new Alias();
-		existingAlias.setId(aliasId);
-		existingAlias.setItemId(newTemplateId);
+		updatedAlias.setId(aliasId);
+		updatedAlias.setItemId(newTemplateId);
 		
-		//simulate record being missing from DB
+		//simulate record being present in DB
 		when(mockAliasMan.load(aliasId)).thenReturn(existingAlias);
 		
 		String aliasOriginalTemplateId = instance.updateStormAlias(aliasId, mockAliasMan, newTemplateId);
