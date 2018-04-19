@@ -196,7 +196,10 @@ public class TemplateResource {
 				}
 				if (!StringUtils.isEmpty(alias)) {
 					String originalTemplateId = updateStormAlias(alias, aliasMan, templateId);
-					orphanOriginalStormTemplate(originalTemplateId, itemMan);
+					if (active) {
+						//only orphan the item the alias initially pointed to if the new storm is active
+						orphanOriginalStormTemplate(originalTemplateId, itemMan);
+					}
 				}
 				
 				Map<String, Object> ok = new HashMap<String, Object>() {
