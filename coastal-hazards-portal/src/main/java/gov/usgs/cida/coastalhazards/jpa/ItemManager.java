@@ -5,14 +5,19 @@ import gov.usgs.cida.coastalhazards.exception.CycleIntroductionException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
 import gov.usgs.cida.coastalhazards.service.data.DownloadService;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
@@ -578,6 +583,80 @@ public class ItemManager implements AutoCloseable {
 		return items;
 	}
 	
+	/**
+	 * Orphans an item.
+	 * 
+	 * Transactionally finds all of this item's ancestors, removes the 
+	 * item from the ancestors' children and merges them back into the DB.
+	 * 
+	 * @param itemToOrphan
+	 * @return true if the changes persisted successfully, false otherwise
+	 */
+	public synchronized boolean orphan(Item itemToOrphan) {
+		boolean orphanWorked = false;
+		EntityTransaction transaction = em.getTransaction();
+		try {
+			transaction.begin();
+			List<Item> ancestors = findAncestors(itemToOrphan);
+			List<Item> ancestorsWithoutOrphan = ItemUtil.stripOrphanFromAncestors(itemToOrphan, ancestors);
+			ancestorsWithoutOrphan.stream().forEach(this::persistItem);
+			transaction.commit();
+			orphanWorked = true;
+		} catch (Exception ex) {
+			log.error("Exception during save.", ex);
+			if (transaction.isActive()) {
+				log.info("Attempting rollback");
+				//rollback throws an Exception if it fails
+				transaction.rollback();
+				log.info("Rollback succeded");
+			}
+		}
+		fixEnabledStatus();
+		return orphanWorked;
+	}
+	
+	public synchronized boolean hoistItemToTopLevel(String itemIdToHoist) {
+		boolean hoistWorked = false;
+		EntityTransaction transaction = em.getTransaction();
+		try {
+			transaction.begin();
+			Item uber = this.load(Item.UBER_ID);
+			boolean itemIsAlreadyHoisted;
+			List<Item> topLevelItems = uber.getChildren();
+			itemIsAlreadyHoisted = topLevelItems.stream().anyMatch(
+				(Item i) -> Objects.equals(i.getId(), itemIdToHoist)
+			);
+			if (itemIsAlreadyHoisted) {
+				hoistWorked = true;
+			} else {
+				Item itemToHoist = this.load(itemIdToHoist);
+				if (null == itemToHoist) {
+					throw new EntityNotFoundException(itemIdToHoist);
+				} else {
+					topLevelItems.add(itemToHoist);
+					uber.setChildren(topLevelItems);
+					String mergedId = this.mergeItem(uber);
+					boolean mergeWorked = null != mergedId;
+					if (mergeWorked) {
+						transaction.commit();
+						hoistWorked = true;
+					}
+				}
+			}
+			
+		} catch (Exception ex) {
+			log.error("Exception during save.", ex);
+			if (transaction.isActive()) {
+				log.info("Attempting rollback");
+				//rollback throws an Exception if it fails
+				transaction.rollback();
+				log.info("Rollback succeded");
+			}
+		}
+		fixEnabledStatus();
+		return hoistWorked;
+	}
+
 	private List<Item> findVisibleAncestors(Item item) {
 		List<Item> items = new ArrayList<>();
 	    List<String> idList = findVisibleAncestorIds(item);
