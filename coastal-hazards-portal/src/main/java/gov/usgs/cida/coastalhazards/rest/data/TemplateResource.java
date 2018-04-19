@@ -326,7 +326,7 @@ public class TemplateResource {
 
 		if ("item".equalsIgnoreCase(copyType)) {
 			summaryItem = itemMan.load(copyVal);
-		} else if ("alias".contains(copyType)) {
+		} else if ("alias".equalsIgnoreCase(copyType)) {
 			summaryItem = itemMan.load(aliasMan.load(copyVal).getItemId());
 		} else {
 			log.error("Attempted to copy existing summary from invalid copy type: " + copyType);
