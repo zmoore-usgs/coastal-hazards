@@ -196,7 +196,7 @@ public class TemplateResource {
 				}
 				if (!StringUtils.isEmpty(alias)) {
 					String originalTemplateId = updateStormAlias(alias, aliasMan, templateId);
-					orphanOriginalTemplate(originalTemplateId, itemMan);
+					orphanOriginalStormTemplate(originalTemplateId, itemMan);
 				}
 				
 				Map<String, Object> ok = new HashMap<String, Object>() {
@@ -222,7 +222,7 @@ public class TemplateResource {
 		}
 	}
 	
-	protected void orphanOriginalTemplate(String originalTemplateId, ItemManager itemMan) {
+	protected void orphanOriginalStormTemplate(String originalTemplateId, ItemManager itemMan) {
 		//can only orphan the original if there was an original
 		if (!StringUtils.isEmpty(originalTemplateId)) {
 			Item originalTemplate = itemMan.load(originalTemplateId);
@@ -233,14 +233,17 @@ public class TemplateResource {
 					+ "between the time it was persisted and the time it was read?",
 					originalTemplateId));
 			} else {
-				boolean success = itemMan.orphan(originalTemplate);
-				if (!success) {
-					throw new PersistenceException(
-						String.format(
-							"Could not orphan template with ID '%s'",
-							originalTemplateId
-						)
-					);
+				//only orphan original template if it was a storm template
+				if (Type.storms.equals(originalTemplate.getType())) {
+					boolean success = itemMan.orphan(originalTemplate);
+					if (!success) {
+						throw new PersistenceException(
+							String.format(
+								"Could not orphan template with ID '%s'",
+								originalTemplateId
+							)
+						);
+					}
 				}
 			}
 		}

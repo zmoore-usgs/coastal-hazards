@@ -4,6 +4,7 @@ import gov.usgs.cida.coastalhazards.jpa.AliasManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Alias;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.Item.Type;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import java.util.List;
 import java.util.Set;
@@ -52,13 +53,13 @@ public class TemplateResourceTest {
 
 	@Test
 	public void testNoExceptionsThrownWhileOrphaningNullTemplateId() {
-		instance.orphanOriginalTemplate(null, mockItemMan);
+		instance.orphanOriginalStormTemplate(null, mockItemMan);
 		verifyZeroInteractions(mockItemMan);
 	}
 
 	@Test
 	public void testNoExceptionsThrownWhileOrphaningBlankTemplateId() {
-		instance.orphanOriginalTemplate("", mockItemMan);
+		instance.orphanOriginalStormTemplate("", mockItemMan);
 		verifyZeroInteractions(mockItemMan);
 	}
 	
@@ -67,30 +68,47 @@ public class TemplateResourceTest {
 		String id = "foo";
 		//simulate Item being missing from DB
 		when(mockItemMan.load(id)).thenReturn(null);
-		instance.orphanOriginalTemplate(id, mockItemMan);
+		instance.orphanOriginalStormTemplate(id, mockItemMan);
 	}
 	
 	@Test(expected = PersistenceException.class)
 	public void testThatItemManagerOrphanFailureThrowsException() {
 		String id = "foo";
-		Item item = mock(Item.class);
+		Item item = new Item();
+		item.setType(Type.storms);
 		
 		//simulate Item being present in DB
 		when(mockItemMan.load(id)).thenReturn(item);
 		//simulate failure orphaning item
 		when(mockItemMan.orphan(item)).thenReturn(false);
-		instance.orphanOriginalTemplate(id, mockItemMan);
+		instance.orphanOriginalStormTemplate(id, mockItemMan);
 	}
 	
+	@Test
 	public void testThatSuccessfulItemManagerOrphaningThrowsNoException() {
 		String id = "foo";
-		Item item = mock(Item.class);
+		Item item = new Item();
+		item.setType(Type.storms);
 		
 		//simulate Item being present in DB
 		when(mockItemMan.load(id)).thenReturn(item);
 		//simulate success orphaning item
 		when(mockItemMan.orphan(item)).thenReturn(true);
-		instance.orphanOriginalTemplate(id, mockItemMan);
+		instance.orphanOriginalStormTemplate(id, mockItemMan);
+		verify(mockItemMan).orphan(eq(item));
+	}
+	
+	@Test
+	public void testThatOnlyStormsAreOrphaned() {
+		String id = "foo";
+		Item item = new Item();
+		item.setType(Type.vulnerability);
+		
+		//simulate Item being present in DB
+		when(mockItemMan.load(id)).thenReturn(item);
+		
+		instance.orphanOriginalStormTemplate(id, mockItemMan);
+		verify(mockItemMan, never()).orphan(any());
 	}
 
 	@Test(expected = PersistenceException.class)
