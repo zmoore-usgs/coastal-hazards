@@ -134,7 +134,7 @@
 				<input type="checkbox" name="link" value="link" id="more-info-cb" checked> More Information Link<br>
 			</div>
 			<header id="header">
-				<img id="app-navbar-coop-logo-img" alt="CIDA/CMGP" src="<%=baseUrl%>/images/banner/cida-cmgp.svg" />
+				<img id="app-navbar-coop-logo-img" alt="USGS" src="<%=baseUrl%>/images/banner/usgslogo.png" />
 
 				<h1>USGS Coastal Change Hazards Portal</h1>
 
