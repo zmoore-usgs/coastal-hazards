@@ -20,11 +20,8 @@ import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.Item.ItemType;
 import gov.usgs.cida.coastalhazards.model.Item.Type;
 import gov.usgs.cida.coastalhazards.model.summary.Full;
-import gov.usgs.cida.coastalhazards.model.summary.Legend;
-import gov.usgs.cida.coastalhazards.model.summary.Medium;
 import gov.usgs.cida.coastalhazards.model.summary.Publication;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
-import gov.usgs.cida.coastalhazards.model.summary.Tiny;
 import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.StormUtil;
@@ -37,7 +34,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,9 +44,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.security.RolesAllowed;
-import javax.inject.Qualifier;
-import javax.servlet.http.HttpServletRequest;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceException;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -91,7 +88,7 @@ public class TemplateResource {
 	@Path("/item/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-	public Response instantiateTemplate(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
+	public Response instantiateTemplate(@PathParam("id") String id, String content) {
 		Response response = null;
 		try (ItemManager itemMan = new ItemManager(); LayerManager layerMan = new LayerManager()) {
 			Item template = itemMan.load(id);
@@ -142,7 +139,9 @@ public class TemplateResource {
 			template.setDisplayedChildren(displayed);
 			template.setSummary(gatherTemplateSummary(template.getSummary(), newItemList));
 			String mergeId = itemMan.merge(template);
-			if (mergeId != null) {
+			if (mergeId == null) {
+				response = Response.serverError().build();
+			} else {
 				response = Response.ok().build();
 				
 				try (StatusManager statusMan = new StatusManager();) {
@@ -150,97 +149,164 @@ public class TemplateResource {
 					status.setStatusName(Status.StatusName.ITEM_UPDATE);
 					statusMan.save(status);
 				}
-			} else {
-				response = Response.serverError().build();
 			}
 		}
 		return response;
 	}
 
+	/**
+	 * Update an alias to point to an item. If the Alias did not exist,
+	 * create it and point it to the item.
+	 * @param alias
+	 * @param aliasMan
+	 * @param templateId the new templateId to associate the Alias with
+	 * @return the original templateId, or null if no Alias existed
+	 */
+	protected String updateStormAlias(String alias, AliasManager aliasMan, String templateId) {
+		if (StringUtils.isEmpty(alias)) {
+			throw new IllegalArgumentException(String.format("Alias cannot be empty. Got %s", alias));
+		} else {
+			Alias fullAlias = aliasMan.load(alias);
+			String originalTemplateId = null;
+			if (fullAlias == null) {
+				fullAlias = new Alias();
+				fullAlias.setId(alias);
+				fullAlias.setItemId(templateId);
+				aliasMan.save(fullAlias);
+			} else {
+				originalTemplateId = fullAlias.getItemId();
+				fullAlias.setItemId(templateId);
+				aliasMan.update(fullAlias);
+			}
+			return originalTemplateId;
+		}
+	}
+	
+	protected Response instantiateStormAndHandleResponse(String templateId, String childJson, String alias, boolean active, AliasManager aliasMan, ItemManager itemMan){
+		Response response;
+		if (StringUtils.isEmpty(templateId)) {
+			//this is the server's fault rather than the client's
+			response = Response.status(500).build();
+		} else {
+			response = instantiateTemplate(templateId, childJson);
+
+			if (response.getStatus() == HttpStatus.SC_OK) {
+				if (active) {
+					hoistNewTemplateToTopLevel(templateId, itemMan);
+				}
+				if (!StringUtils.isEmpty(alias)) {
+					String originalTemplateId = updateStormAlias(alias, aliasMan, templateId);
+					if (active) {
+						//only orphan the item the alias initially pointed to if the new storm is active
+						orphanOriginalStormTemplate(originalTemplateId, itemMan);
+					}
+				}
+				
+				Map<String, Object> ok = new HashMap<String, Object>() {
+					private static final long serialVersionUID = 2398472L;
+					{
+						put("id", templateId);
+					}
+				};
+				String responseText = GsonUtil.getDefault().toJson(ok, HashMap.class);
+				response = Response.ok(responseText, MediaType.APPLICATION_JSON_TYPE).build();
+			}
+		}
+		return response;
+	}
+	
+	protected void hoistNewTemplateToTopLevel(String newTemplateId, ItemManager itemMan) {
+		boolean success = itemMan.hoistItemToTopLevel(newTemplateId);
+		if (!success) {
+			throw new PersistenceException(String.format(
+				"Could not hoist item with ID '%s'",
+				newTemplateId
+			));
+		}
+	}
+	
+	protected void orphanOriginalStormTemplate(String originalTemplateId, ItemManager itemMan) {
+		//can only orphan the original if there was an original
+		if (!StringUtils.isEmpty(originalTemplateId)) {
+			Item originalTemplate = itemMan.load(originalTemplateId);
+			if (null == originalTemplate) {
+				throw new EntityNotFoundException(String.format(
+					"Could not find template with ID '%s'. "
+					+ "Perhaps the template Item was deleted "
+					+ "between the time it was persisted and the time it was read?",
+					originalTemplateId));
+			} else {
+				//only orphan original template if it was a storm template
+				if (Type.storms.equals(originalTemplate.getType())) {
+					boolean success = itemMan.orphan(originalTemplate);
+					if (!success) {
+						throw new PersistenceException(
+							String.format(
+								"Could not orphan template with ID '%s'",
+								originalTemplateId
+							)
+						);
+					}
+				}
+			}
+		}
+	}
+	
+	protected List<Service> getCopyOfServices(Layer layer) {
+		List<Service> copies = layer.getServices().stream().map(
+			(s) -> Service.copyValues(s, new Service())
+		).collect(Collectors.toList());
+		return copies;
+	}
+	
 	@GET
 	@Path("/storm")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-	public Response instantiateStormTemplate(@Context HttpServletRequest request, @QueryParam("layerId") String layerId, @QueryParam("activeStorm") String active, @QueryParam("alias") String alias, @QueryParam("copyType") String copyType, @QueryParam("copyVal") String copyVal, @QueryParam("trackId") String trackId) {
+	public Response instantiateStormTemplate(@QueryParam("layerId") String layerId, @QueryParam("activeStorm") String active, @QueryParam("alias") String alias, @QueryParam("copyType") String copyType, @QueryParam("copyVal") String copyVal, @QueryParam("trackId") String trackId) {
 		Response response;
-
-		if(layerId != null && active != null) {
-			Gson gson = GsonUtil.getDefault();
-			String childJson = null;
-			
-			childJson = gson.toJson(StormUtil.createStormChildMap(layerId, Boolean.parseBoolean(active), trackId));
-
-			if(childJson != null && childJson.length() > 0) {
-				try(ItemManager itemMan = new ItemManager(); LayerManager layerMan = new LayerManager(); AliasManager aliasMan = new AliasManager()) {
-					Layer layer = layerMan.load(layerId);
-	
-					if(layer != null) {
-						Summary summary = null;
-	
-						if(copyType.equalsIgnoreCase("item") || copyType.equalsIgnoreCase("alias")){
-							summary = copyExistingSummary(copyType, copyVal, itemMan, aliasMan);
-						} else {
-							summary = StormUtil.buildStormTemplateSummary(layer);
-						}
-	
-						if(summary != null) {
-							List<Service> services = layer.getServices();
-							List<Service> serviceCopies = new LinkedList<>();
-							for (Service service : services) {
-								serviceCopies.add(Service.copyValues(service, new Service()));
-							}
-							
-							Item baseTemplate = baseTemplateItem(Boolean.parseBoolean(active), layer.getBbox(), serviceCopies, summary);
-							String templateId = itemMan.persist(baseTemplate);
-	
-							if(templateId != null && templateId.length() > 0) {
-								response = instantiateTemplate(request, templateId, childJson);
-								
-								if(response.getStatus() == HttpStatus.SC_OK) {
-									Map<String, Object> ok = new HashMap<String, Object>() {
-										private static final long serialVersionUID = 2398472L;
-	
-										{
-											put("id", templateId);
-										}
-									};
-	
-									if(alias != null && alias.length() > 0) {
-										Alias fullAlias = aliasMan.load(alias);
-		
-										if(fullAlias != null) {
-											fullAlias.setItemId(templateId);
-											aliasMan.update(fullAlias);
-										} else {
-											fullAlias = new Alias();
-											fullAlias.setId(alias);
-											fullAlias.setItemId(templateId);
-											aliasMan.save(fullAlias);
-										}
-									}
-	
-									response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
-								}
-							} else {
-								response = Response.status(500).build();
-							}
-						} else {
-							response = Response.status(400).build();
-						}
-					} else {
-						response = Response.status(400).build();
-					}
-				} catch (Exception e) {
-					log.error(e.toString());
-					response = Response.status(500).build();
-				}
-			} else {
-				response = Response.status(400).build();
-			}
-		} else {
+		//validate parameters
+		if (StringUtils.isEmpty(layerId) || StringUtils.isEmpty(active)) {
 			response = Response.status(400).build();
-		}
+			log.error("The client failed to specify values for layerId ({}) or active ({}).", layerId, active);
+		} else {
+			try (
+				ItemManager itemMan = new ItemManager();
+				LayerManager layerMan = new LayerManager();
+				AliasManager aliasMan = new AliasManager()
+			) {
+				boolean isActive = Boolean.parseBoolean(active);
+				Layer layer = layerMan.load(layerId);
+				Gson gson = GsonUtil.getDefault();
+				String childJson = gson.toJson(StormUtil.createStormChildMap(layerId, isActive, trackId));
+				
+				//validate that objects could be loaded/constructed based on the parameters to the web service
+				if (null == layer || StringUtils.isEmpty(childJson)) {
+					//probably the client's fault
+					response = Response.status(400).build();
+				} else {
+					Summary summary;
 
+					if ("item".equalsIgnoreCase(copyType) || "alias".equalsIgnoreCase(copyType)) {
+						summary = copyExistingSummary(copyType, copyVal, itemMan, aliasMan);
+					} else {
+						summary = StormUtil.buildStormTemplateSummary(layer);
+					}
+
+					if (null == summary) {
+						response = Response.status(400).build();
+					} else {
+						List<Service> serviceCopies = getCopyOfServices(layer);
+						Item baseTemplate = baseTemplateItem(Boolean.parseBoolean(active), layer.getBbox(), serviceCopies, summary);
+						String templateId = itemMan.persist(baseTemplate);
+						response = instantiateStormAndHandleResponse(templateId, childJson, alias, isActive, aliasMan, itemMan);
+					}
+				}
+			} catch (Exception e) {
+				log.error(e.toString());
+				response = Response.status(500).build();
+			}
+		}
 		return response;
 	}
 
@@ -264,18 +330,18 @@ public class TemplateResource {
 		Summary newSummary = null;
 		Item summaryItem = null;
 
-		if(copyType.equalsIgnoreCase("item")) {
+		if ("item".equalsIgnoreCase(copyType)) {
 			summaryItem = itemMan.load(copyVal);
-		} else if(copyType.equalsIgnoreCase("alias")) {
+		} else if ("alias".equalsIgnoreCase(copyType)) {
 			summaryItem = itemMan.load(aliasMan.load(copyVal).getItemId());
 		} else {
 			log.error("Attempted to copy existing summary from invalid copy type: " + copyType);
 		}
 
-		if(summaryItem != null) {
-			newSummary = Summary.copyValues(summaryItem.getSummary(), new Summary());
-		} else {
+		if(summaryItem == null) {
 			log.error("Item provided to copy summary from (" + copyType + " | " + copyVal + ") could not be loaded.");
+		} else {
+			newSummary = Summary.copyValues(summaryItem.getSummary(), new Summary());
 		}
 
 		return newSummary;

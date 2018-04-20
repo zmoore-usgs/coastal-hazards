@@ -60,7 +60,7 @@
     </head>
     <body>
         <header>
-			<h1>CIDA/CMGP - Coastal Change Hazards Portal - Site Map</h1>
+			<h1>USGS Coastal Change Hazards Portal - Site Map</h1>
 		</header>
 
 		<section>

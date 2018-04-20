@@ -38,7 +38,7 @@
 %>
 
 <header>
-	<h1>CIDA/CMGP - Coastal Change Hazards Portal</h1>
+	<h1>USGS Coastal Change Hazards Portal</h1>
 </header>
 
 <section>

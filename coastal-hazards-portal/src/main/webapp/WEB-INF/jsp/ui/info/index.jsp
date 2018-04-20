@@ -155,7 +155,6 @@
 					</p>
 
 					<a href="https://marine.usgs.gov/coastalchangehazards/" target="_blank">USGS National Assessment of Coastal Change Hazards</a>
-					<a href="https://cida.usgs.gov/" target="_blank">USGS Center for Integrated Data Analytics</a>
 					<a href="https://github.com/USGS-CIDA/coastal-hazards" target="_blank">Review the open source software behind the Portal available on Github</a>
 					<a href="mailto:cch_help@usgs.gov">Contact us at cch_help@usgs.gov</a>
 				</div> 
