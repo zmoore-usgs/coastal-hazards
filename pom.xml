@@ -16,7 +16,6 @@
 		<module>coastal-hazards-liquibase</module>
 		<module>coastal-hazards-export</module>
 		<module>ehcache-shaded</module>
-	 <module>aggregatecoverage</module>
 	</modules>
   
 	<issueManagement>
