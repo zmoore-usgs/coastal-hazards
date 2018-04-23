@@ -633,8 +633,17 @@ public class ItemManager implements AutoCloseable {
 				if (null == itemToHoist) {
 					throw new EntityNotFoundException(itemIdToHoist);
 				} else {
-					topLevelItems.add(itemToHoist);
-					uber.setChildren(topLevelItems);
+					//We want the hoisted item to preceed all other Items
+					//in the display order. The display order mirrors the
+					//order of the Items in the children List, so we 
+					//construct a new list...
+					ArrayList<Item> newChildren = new ArrayList<>();
+					///...we add the hoisted item first ...
+					newChildren.add(itemToHoist);
+					//...and we append the rest of the items.
+					newChildren.addAll(topLevelItems);
+					
+					uber.setChildren(newChildren);
 					String mergedId = this.mergeItem(uber);
 					boolean mergeWorked = null != mergedId;
 					if (mergeWorked) {
