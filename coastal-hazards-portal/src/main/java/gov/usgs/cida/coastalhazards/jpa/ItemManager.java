@@ -636,14 +636,10 @@ public class ItemManager implements AutoCloseable {
 					//We want the hoisted Item to preceed all other Items
 					//in the display order. The display order mirrors the
 					//order of the Items in the children List, so we 
-					//construct a new List...
-					ArrayList<Item> newChildren = new ArrayList<>();
-					///...we add the hoisted Item first ...
-					newChildren.add(itemToHoist);
-					//...and we append the rest of the Items.
-					newChildren.addAll(topLevelItems);
+					//insert the hoisted Item at the front.
+					topLevelItems.add(0, itemToHoist);
 					
-					uber.setChildren(newChildren);
+					uber.setChildren(topLevelItems);
 					String mergedId = this.mergeItem(uber);
 					boolean mergeWorked = null != mergedId;
 					if (mergeWorked) {
