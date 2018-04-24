@@ -68,8 +68,6 @@ public class LayerResource {
 	private static final String geoserverEndpoint;
 	private static final String geoserverUser;
 	private static final String geoserverPass;
-        private static final String RASTER_METADATA_FORM_FIELD_NAME = "metadata";
-        private static final String RASTER_FILE_FORM_FIELD_NAME = "data";
 	private static final DynamicReadOnlyProperties props;
 
 	static {

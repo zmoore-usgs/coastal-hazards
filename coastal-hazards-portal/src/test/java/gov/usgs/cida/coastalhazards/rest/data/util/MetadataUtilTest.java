@@ -47,7 +47,6 @@ public class MetadataUtilTest {
     private static File workDir; // place to copy
     private static final String tempDir = System.getProperty("java.io.tmpdir");
     private static String AExml = "ne_AEmeta.xml";
-    private static String PAExml = "ne_PAEmeta.xml";
     private static String CRxml = "ne_CRmeta.xml";
 
     @BeforeClass
