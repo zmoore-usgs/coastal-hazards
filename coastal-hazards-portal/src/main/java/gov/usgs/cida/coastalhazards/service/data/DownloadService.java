@@ -3,7 +3,6 @@ package gov.usgs.cida.coastalhazards.service.data;
 import gov.usgs.cida.coastalhazards.jpa.DownloadManager;
 import gov.usgs.cida.coastalhazards.model.util.Download;
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.List;
 import javax.persistence.EntityTransaction;
 import javax.ws.rs.NotFoundException;

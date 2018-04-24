@@ -5,8 +5,6 @@ import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Alias;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Item.Type;
-import gov.usgs.cida.coastalhazards.model.summary.Summary;
-import java.util.List;
 import java.util.Set;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;

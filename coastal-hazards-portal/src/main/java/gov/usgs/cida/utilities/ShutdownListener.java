@@ -1,6 +1,5 @@
 package gov.usgs.cida.utilities;
 
-import gov.usgs.cida.coastalhazards.jpa.DownloadManager;
 import gov.usgs.cida.coastalhazards.jpa.JPAHelper;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

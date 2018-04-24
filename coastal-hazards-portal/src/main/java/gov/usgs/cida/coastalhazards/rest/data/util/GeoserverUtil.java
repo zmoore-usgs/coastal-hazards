@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.core.UriBuilder;
-import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
