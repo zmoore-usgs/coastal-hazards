@@ -11,10 +11,13 @@ then
 		#if a copy of the code reporter has not already been cached
 		if [ ! -f ~/codacy/coverage-reporter-assembly-latest.jar ]
 		then
-			#install a tool for parsing a REST API response from GitHub
-			sudo apt-get install jq
-			#install the latest release from GitHub
-			wget -O ~/codacy/coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
+			echo "no cached coverage reporter jar found"
+			JAR_URL="https://github.com/codacy/codacy-coverage-reporter/releases/download/4.0.0/codacy-coverage-reporter-4.0.0-assembly.jar"
+			#download the latest release from GitHub
+			echo "downloading the latest release of the coverage jar from $JAR_URL"
+			wget -O ~/codacy/coverage-reporter-assembly-latest.jar "$JAR_URL"
+		else
+			echo "using cached coverage reporter jar"
 		fi
 		
 		#find all coverage report files produced during the build, report them to Codacy
