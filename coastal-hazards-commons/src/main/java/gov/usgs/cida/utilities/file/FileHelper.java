@@ -494,7 +494,7 @@ public class FileHelper {
                 byte data[] = new byte[BUFFER];
                 // Get the final filename (even if it's within directories in the ZIP file)
                 String destinationFileName = entry.getName().contains(File.pathSeparator) ? entry.getName().substring(entry.getName().lastIndexOf(File.pathSeparator)) : entry.getName();
-                String destinationPath = outputDirectory + java.io.File.separator + destinationFileName;
+                String destinationPath = outputDirectory + File.separator + destinationFileName;
                 FileOutputStream fos = new FileOutputStream(destinationPath);
                 dest = new BufferedOutputStream(fos, BUFFER);
                 log.debug(new StringBuilder("Unzipping: ").append(fileName).append(" to ").append(destinationPath).toString());
