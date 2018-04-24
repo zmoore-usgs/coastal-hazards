@@ -12,8 +12,6 @@ then
 		if [ ! -f ~/codacy/coverage-reporter-assembly-latest.jar ]
 		then
 			echo "no cached coverage reporter jar found"
-			#install a tool for parsing a REST API response from GitHub
-			sudo apt-get install jq
 			#determine URL of latest jar release
 			JAR_URL="$(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)"
 			#download the latest release from GitHub
