@@ -5,11 +5,6 @@ jdk:
 
 sudo: false
 
-addons:
-  apt:
-    packages:
-    - jq
-
 after_success:
   - ./reportCoverageToCodacy.sh
 

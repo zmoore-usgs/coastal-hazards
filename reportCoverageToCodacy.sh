@@ -12,8 +12,7 @@ then
 		if [ ! -f ~/codacy/coverage-reporter-assembly-latest.jar ]
 		then
 			echo "no cached coverage reporter jar found"
-			#determine URL of latest jar release
-			JAR_URL="$(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)"
+			JAR_URL="https://github.com/codacy/codacy-coverage-reporter/releases/download/4.0.0/codacy-coverage-reporter-4.0.0-assembly.jar"
 			#download the latest release from GitHub
 			echo "downloading the latest release of the coverage jar from $JAR_URL"
 			wget -O ~/codacy/coverage-reporter-assembly-latest.jar "$JAR_URL"
