@@ -12,7 +12,7 @@ then
 		if [ ! -f ~/codacy/coverage-reporter-assembly-latest.jar ]
 		then
 			#install a tool for parsing a REST API response from GitHub
-			sudo apt-get install jq
+			sudo apt-get install jq curl
 			#install the latest release from GitHub
 			wget -O ~/codacy/coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
 		fi
