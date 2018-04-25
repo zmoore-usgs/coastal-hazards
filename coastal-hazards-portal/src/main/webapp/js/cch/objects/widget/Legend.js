@@ -483,9 +483,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				item = args.item,
 				attr = item.attr,
 				index = args.index || null,
-				$legendTable,
-				$legendTableTBody,
-				$yearRows;
+				$legendTable;
 		
 		var legendRenderer = null;
 
@@ -791,7 +789,6 @@ CCH.Objects.Widget.Legend = function (args) {
 		args = args || {};
 		var total = args.total,
 			legendTables = args.legendTables,
-			item = args.item || null,
 			ribboned = me.item.ribboned || false,
 			legendGroups,
 			legendGroup,

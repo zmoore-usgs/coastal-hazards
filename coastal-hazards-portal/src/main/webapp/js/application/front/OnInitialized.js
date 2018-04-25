@@ -62,7 +62,7 @@ CCH.CONFIG = CCH.CONFIG || {};
 							};
 							
 							//Load aliases and assign them to items
-							var aliasSearch = CCH.Util.Search().getAllAliases({
+							CCH.Util.Search().getAllAliases({
 								callbacks: {
 									success: [function(data) {
 										data.each(function(alias, index) {

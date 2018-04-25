@@ -1,7 +1,6 @@
 /*jslint browser: true */
 /*jslint plusplus: true */
 /*global $*/
-/*global LOG*/
 /*global CCH*/
 /*global OpenLayers*/
 CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFeatureInfo, 
