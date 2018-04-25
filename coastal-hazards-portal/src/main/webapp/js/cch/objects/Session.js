@@ -1,7 +1,6 @@
 /*jslint browser: true */
 /*jslint plusplus: true */
 /*global $*/
-/*global LOG*/
 /*global CCH*/
 /*global localStorage*/
 CCH.Objects.Session = function (args) {

@@ -1,10 +1,7 @@
 /*jslint browser: true*/
 /*jslint plusplus: true */
 /*global $*/
-/*global LOG*/
-/*global OpenLayers*/
 /*global CCH*/
-/*global alertify*/
 
 /**
  * Top level JS container for product items

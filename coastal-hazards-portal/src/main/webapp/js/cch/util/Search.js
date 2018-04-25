@@ -96,7 +96,7 @@ CCH.Util.Search = function (args) {
 		
 		var url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.alias.endpoint + '/' + id;
 		
-		var search = $.ajax({
+		$.ajax({
 			url: url,
 			dataType: 'json',
 			context: this,
@@ -112,7 +112,7 @@ CCH.Util.Search = function (args) {
 				});
 			}
 		});
-	}
+	};
 	
 	me.getAliasListForItem = function (args) {
 		if (!args || !args.itemId) {
@@ -127,7 +127,7 @@ CCH.Util.Search = function (args) {
 		
 		var url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.alias.endpoint + '/item/' + itemId;
 		
-		var search = $.ajax({
+		$.ajax({
 			url: url,
 			dataType: 'json',
 			context: this,
@@ -143,7 +143,7 @@ CCH.Util.Search = function (args) {
 				});
 			}
 		});
-	}
+	};
 	
 	me.getAllAliases = function (args) {
 		var callbacks = args.callbacks || {
@@ -153,7 +153,7 @@ CCH.Util.Search = function (args) {
 		
 		var url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.alias.endpoint;
 		
-		var search = $.ajax({
+		$.ajax({
 			url: url,
 			dataType: 'json',
 			context: this,
@@ -169,7 +169,7 @@ CCH.Util.Search = function (args) {
 				});
 			}
 		});
-	}
+	};
 
 	me.submitItemSearch = function (args) {
 		if (!args) {

@@ -2,7 +2,6 @@
 /*jslint plusplus: true */
 /*global $*/
 /*global CCH*/
-/*global qq*/
 /*global Handlebars*/
 window.CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
@@ -207,8 +206,6 @@ CCH.Objects.Publish.UI = function () {
 	};
 
 	me.enableNewItemForm = function () {
-		var gsBaseUrl = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources[CCH.CONFIG.strings.cidaGeoserver].proxy + 'proxied/';
-				
 		$itemType.val('data');
                 [$servicePanel.find('input, button'), $buttonSave, $buttonDelete]
                         .each(function ($item) {

@@ -4,10 +4,6 @@
 /*global LOG*/
 /*global CCH*/
 /*global initializeLogging*/
-/*global contextPath*/
-/*global vulnAttributes*/
-/*global stormAttributes*/
-/*global historicAttributes*/
 $(document).ready(function () {
 	"use strict";
 

@@ -1,6 +1,3 @@
-/*global vulnAttributes*/
-/*global stormAttributes*/
-/*global historicAttributes*/
 /*global CCH */
 
 (function () {

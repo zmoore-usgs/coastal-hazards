@@ -29,9 +29,7 @@ CCH.Objects.Front.Map = function (args) {
 	me.layerSwitcher = new OpenLayers.Control.LayerSwitcher({
 		roundedCorner: true
 	});
-	//me.attributionControl = new OpenLayers.Control.Attribution({
-	//	'template': '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="' + me.attributionSource + '" /></a>'
-	//});
+
 	me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
 	me.zoomToCurrentLocationControl = new CCH.Objects.Widget.OLZoomToIcon();
 	me.drawBoxControl =  new CCH.Objects.Widget.OLDrawBoxControl(CCH.CONFIG.map.layers.drawBoxLayer);

@@ -200,9 +200,6 @@ CCH.Objects.Widget.Accordion = function (args) {
 				$(window).trigger('cch.accordion.show', evt);
 			},
 			'shown.bs.collapse': function (evt) {
-				var $this = $(this),
-						abId = $this.data('id');
-				
 				$(window).trigger('cch.accordion.shown', evt);
 				ga('send', 'event', {
 					'eventCategory': 'accordion',

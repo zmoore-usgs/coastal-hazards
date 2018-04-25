@@ -202,8 +202,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					showDelete = true;
 
 				for (var i = 0; i < selectedIds.length; i++){
-					var selectedId = selectedIds[i],
-						checkNode = tree.get_node(selectedIds[i]);
+					var checkNode = tree.get_node(selectedIds[i]);
 					
 					//Show orphan row if all selected nodes can show it
 					if (showOrphan) {
