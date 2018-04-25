@@ -7,7 +7,6 @@ package gov.usgs.cida.coastalhazards.rest.data.util;
 
 import gov.usgs.cida.coastalhazards.metadata.CRSParameters;
 import gov.usgs.cida.coastalhazards.model.Bbox;
-import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.xml.model.Bounding;
 import gov.usgs.cida.coastalhazards.xml.model.Horizsys;
 import gov.usgs.cida.coastalhazards.xml.model.Idinfo;
@@ -35,7 +34,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.LoggerFactory;
@@ -49,7 +47,6 @@ public class MetadataUtilTest {
     private static File workDir; // place to copy
     private static final String tempDir = System.getProperty("java.io.tmpdir");
     private static String AExml = "ne_AEmeta.xml";
-    private static String PAExml = "ne_PAEmeta.xml";
     private static String CRxml = "ne_CRmeta.xml";
 
     @BeforeClass
@@ -292,13 +289,6 @@ public class MetadataUtilTest {
         String replaceMe = "REPLACEME";
         final String lineSep = System.getProperty("line.separator", "\n");
 
-        String wktExample = "GEOGCS[" + "\"GRS 1980\"," + "  DATUM[" + "    \"WGS_1984\","
-                + "    SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],"
-                + "    TOWGS84[0,0,0,0,0,0,0]," + "    AUTHORITY[\"EPSG\",\"6326\"]],"
-                + "  PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],"
-                + "  UNIT[\"DMSH\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9108\"]],"
-                + "  AXIS[\"Lat\",NORTH]," + "  AXIS[\"Long\",EAST],"
-                + "  AUTHORITY[\"EPSG\",\"4326\"]]";
 
         /*    PROJCRS["NAD83 / Conus Albers",
   BASEGEODCRS["NAD83",

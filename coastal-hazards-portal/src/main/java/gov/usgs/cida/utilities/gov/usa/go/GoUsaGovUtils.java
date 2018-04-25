@@ -1,6 +1,5 @@
 package gov.usgs.cida.utilities.gov.usa.go;
 
-import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.HttpClientSingleton;

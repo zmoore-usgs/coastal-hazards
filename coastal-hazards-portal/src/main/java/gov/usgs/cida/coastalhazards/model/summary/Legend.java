@@ -1,6 +1,5 @@
 package gov.usgs.cida.coastalhazards.model.summary;
 
-import gov.usgs.cida.utilities.StringPrecondition;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

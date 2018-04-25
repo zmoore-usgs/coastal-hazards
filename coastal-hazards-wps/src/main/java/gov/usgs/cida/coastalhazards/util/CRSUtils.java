@@ -227,7 +227,7 @@ public class CRSUtils {
 							lines.add(buildLineString(currentLine));
 						} else {
 							//DO nothing right now, signifies a single point segnment
-							LOGGER.warn("Single point feature found and is being ignored, segment_id" + getter.getValue(Constants.SEGMENT_ID_ATTR, current));
+							LOGGER.warn("Single point feature found and is being ignored, segment_id" + getter.getValue(SEGMENT_ID_ATTR, current));
 						}
 						currentLine = new LinkedList<>();
 					}

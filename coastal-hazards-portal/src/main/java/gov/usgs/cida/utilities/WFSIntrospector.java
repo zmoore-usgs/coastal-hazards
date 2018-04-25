@@ -1,12 +1,10 @@
 package gov.usgs.cida.utilities;
 
-import gov.usgs.cida.coastalhazards.Attributes;
 import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;

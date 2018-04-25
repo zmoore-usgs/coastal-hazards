@@ -3,7 +3,6 @@ package gov.usgs.cida.coastalhazards.gson.adapter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Center;
 import org.junit.Test;
 

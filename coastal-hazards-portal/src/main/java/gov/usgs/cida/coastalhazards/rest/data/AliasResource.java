@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
-import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.AliasManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;

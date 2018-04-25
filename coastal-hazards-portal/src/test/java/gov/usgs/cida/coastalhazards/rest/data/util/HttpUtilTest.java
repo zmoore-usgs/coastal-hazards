@@ -7,8 +7,6 @@ package gov.usgs.cida.coastalhazards.rest.data.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

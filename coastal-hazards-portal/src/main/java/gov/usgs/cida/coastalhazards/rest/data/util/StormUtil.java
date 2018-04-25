@@ -31,8 +31,6 @@ public class StormUtil {
         if(cswDoc != null) {
             String title = MetadataUtil.extractFirstStringFromCswDoc(cswDoc, "/*/metadata/idinfo/citation/citeinfo/title");
             Map<String, String> titleParts = parseTitleParts(title);
-            String cswAbstract =  MetadataUtil.extractFirstStringFromCswDoc(cswDoc, "/*/metadata/idinfo/descript/abstract");
-            List<String> dataSrcList = MetadataUtil.extractStringsFromCswDoc(cswDoc, "/*/metadata/dataqual/lineage/srcinfo/srccite/citeinfo/title");
             String surgeDescription = buildSurgeDescription(cswDoc);
 
             Tiny tiny = buildTinyText(titleParts);
@@ -126,7 +124,6 @@ public class StormUtil {
 
     private static Map<String, String> parseTitleParts(String title) {
         Map<String, String> parts = new HashMap<>();
-        List<String> partList = new ArrayList<>();
 
         String regex = "((Hurricane|[A-Za-z-]*[Tt]ropical \\w+|Extratropical Storm) \\w+).*:\\s*((NHC Advisory (\\d+), )?(.*))";
         Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);

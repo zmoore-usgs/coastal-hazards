@@ -1,6 +1,5 @@
 package gov.usgs.cida.coastalhazards.model.summary;
 
-import gov.usgs.cida.utilities.StringPrecondition;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
