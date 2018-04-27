@@ -1,7 +1,7 @@
 import requests
 from geoserver.catalog import Catalog
 
-def get_cch_items(cch_url, cch_geoserver_url):
+def get_cch_items(cch_url):
 	"""
 	returns an iterable of dicts representing items that CCH is aware of
 	"""
@@ -10,26 +10,26 @@ def get_cch_items(cch_url, cch_geoserver_url):
 	all_items_response = requests.get(all_items_url)
 	items = handle_cch_items_response(all_items_response)
 	print "total cch items retrieved: {}".format(len(items))
-	item_filter = lambda(i): _item_filter(i, cch_geoserver_url)
 	filtered_items = filter(item_filter, items)
 	print "cch data items that have cch geoserver services: {}".format(len(filtered_items))
 	#return filtered_items
 	return items
 
-def _item_filter(item, cch_geoserver_url):
+def item_filter(item):
 	"""
 	returns true if `item` has 'itemType' == 'data' and has some service endpoints that point to the CCH geoserver
 	"""
-	cch_geoserver_services = get_only_cch_geoserver_services(item['services'], cch_geoserver_url)
+	cch_geoserver_services = get_only_cch_geoserver_services(item['services'])
 	has_cch_geoserver_services = 0 != len(cch_geoserver_services)
 	is_data = 'data' == item['itemType']
 	return is_data and has_cch_geoserver_services;
 
-def get_only_cch_geoserver_services(services, cch_geoserver_url):
+def get_only_cch_geoserver_services(services):
 	"""
-	Filters the parameterized list of services (dicts). The returned list should only contain services (dicts) that have the cch_geoserver_url in their 'endpoint' attributes.
+	Filters the parameterized list of services (dicts). The returned list should only contain services (dicts) that have `endpoint`s that look like they are from a cch geoserver.
 	"""
-	return [ service for service in services if cch_geoserver_url in service['endpoint'] ]
+	cch_geoserver_url_marker = 'coastalchangehazardsportal/geoserver'
+	return [ service for service in services if cch_geoserver_url_marker in service['endpoint'] ]
 
 def handle_cch_items_response(response):
 	"""
@@ -73,7 +73,7 @@ def find_orphaned_layers(geoserver_url, geoserver_username, geoserver_password, 
 	gs_layers = get_geoserver_layers(geoserver_url, geoserver_username, geoserver_password)
 	gs_names_to_layers = map_names_to_gs_layers(gs_layers)
 	
-	cch_items = get_cch_items(cch_url, geoserver_url)
+	cch_items = get_cch_items(cch_url)
 	
 	return cch_items
 	
