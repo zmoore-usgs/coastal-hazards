@@ -80,16 +80,17 @@
                     &nbsp;<label for="search-id">ID <input type="radio" name="search-type" id="search-id" value="id"/></label>
                     &nbsp;<label for="search-alias">Alias <input type="radio" name="search-type" id="search-alias" value="alias"/></label>
                     &nbsp;<label for="search-alias">Any <input type="radio" name="search-type" id="search-any" value="any"/></label>
-					&nbsp;&nbsp;<button id="search-button" class="btn btn-success">Search</button>
+                    <div class="btn-group">
+                        &nbsp;&nbsp;<button id="search-button" class="btn btn-primary">Search</button>
 					&nbsp;&nbsp;<button id="clear-search" class="btn btn-warning">Clear Search</button>
-					&nbsp;&nbsp;&nbsp;<button id="collapse-all" class="btn">Collapse All</button>
+                                        &nbsp;&nbsp;&nbsp;<button id="collapse-all" class="btn">Collapse All</button></div>
 				</div>
 
 				<div id="save-button-container" class="col-md-6">
-					<button type="button" id="save-button" class="btn btn-default btn-success pull-right"><i class="fa fa-floppy-o"></i> Save</button>
+					<button type="button" id="save-button" class="btn btn-default btn-success btn-lg pull-right"><i class="fa fa-floppy-o"></i> Save</button>
 				</div>
 			</div>
-
+                        <br><br>
 			<div id="tree-container" class="col-md-12 well"></div>
 
 		</div>
