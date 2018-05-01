@@ -27,17 +27,6 @@ def item_filter(item):
 	is_data = 'data' == item['itemType']
 	return is_data and has_cch_geoserver_services;
 
-def _exclude_known_non_cch_endpoints_from_items(items):
-	"""
-	This function is not called during the normal execution of this script. It was used to analyze the cch item objects' "endpoint" properties on all three tiers so that reasonable filter critiera could be created for the `get_only_cch_geoserver_services` function.
-	Example usage:
-	```
-	items = get_cch_items(cch_url)
-	print(_exclude_known_non_cch_endpoints_from_items(items))
-	```
-	"""
-	return set([ service['endpoint'].replace('https', 'http') for item in items for service in item['services'] if 'noaa.gov' not in service['endpoint'] and 'service=CSW' not in service['endpoint'] and 'olga.er.usgs.gov' not in service['endpoint'] and 'coastalmap.marine.usgs.gov' not in service['endpoint']])
-
 def get_only_cch_geoserver_services(services):
 	"""
 	Filters the parameterized list of services (dicts). The returned list should only contain services (dicts) that have `endpoint`s that look like they are from a cch geoserver.
@@ -85,16 +74,6 @@ def get_geoserver_layers(geoserver_url, geoserver_username, geoserver_password):
 	all_layers = cat.get_layers()
 	print("total GeoServer layers retrieved: {}".format(len(all_layers)))
 	return all_layers
-
-#def map_names_to_gs_layers(layers):
-#	"""
-#	return a dict whose keys are layer names and whose values are the associated GeoServer layer objects
-#	"""
-#	names_to_layers = {}
-#	for layer in layers:
-#		names_to_layers[layer.name] = layer
-#
-#	return names_to_layers
 
 def find_gs_layers_missing_from_cch_items(gs_layers, cch_items):
 	"""
