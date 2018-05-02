@@ -63,7 +63,8 @@ def get_only_cch_geoserver_services(services):
 
 def strip_workspace_from_layer_name(layer_name):
 	if ':' in layer_name:
-		workspace, name = layer_name.split(':')
+		#layer name is in the format "workspace:name"
+		name = layer_name.split(':')[1]
 		return name
 	else:
 		return layer_name
