@@ -122,7 +122,7 @@ def filter_out_geoserver_layers_that_are_registered(all_gs_layers, registered_ge
 def find_orphaned_layers(geoserver_url, geoserver_username, geoserver_password, cch_url):
 	"""
 	returns an iterable of geoserver.layer.Layer objects that are present
-	in GeoServer, but absent from CCH.
+	in CCH's GeoServer, but absent from CCH's Portal.
 	"""
 	all_gs_layers = get_geoserver_layers(geoserver_url, geoserver_username, geoserver_password)
 
@@ -132,7 +132,7 @@ def find_orphaned_layers(geoserver_url, geoserver_username, geoserver_password, 
 	eprint(
 		("\nTotal Layers Retrieved From GeoServer: {}\n" +
 		"Total Items Retrieved From CCH Portal: {}\n" +
-		"Total Orphaned Items: {}\n").format(
+		"Total Orphaned Layers: {}\n").format(
 			len(all_gs_layers),
 			len(cch_items),
 			len(orphaned_gs_layers)
