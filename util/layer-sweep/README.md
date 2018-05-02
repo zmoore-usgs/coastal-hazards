@@ -17,12 +17,6 @@ Required: use pip to install the dependencies
 pip install -r requirements.txt
 ```
 
-If you created and activated the optional virtualenv, you can get out of it by running
-
-```
-deactivate
-```
-
 # Usage
 
 ```
@@ -36,4 +30,9 @@ The script has difficulty passing credentials to GeoServer via publicly-mapped u
 ```bash
 python find_orphaned_layers.py http://my-internal-server.usgs.gov:8081/geoserver/ ralph t0pS3crEt https://marine.usgs.gov/coastalchangehazardsportal/
 ```
+
+
+# Tear-Down
+If you created and activated the optional virtualenv, you can get out of it by running `deactivate` once you are finished using the script.
+
 
