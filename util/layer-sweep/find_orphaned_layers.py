@@ -165,5 +165,4 @@ def main(argv):
 	return orphaned_layer_names
 
 if '__main__' == __name__ :
-	import sys
 	print(main(sys.argv))
