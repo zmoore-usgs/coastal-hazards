@@ -47,3 +47,11 @@ dependency-reduced-pom.xml
 
 Docker/compose*.env
 .vscode/
+
+### Python ###
+*.pyc
+/util/layer-sweep/env
+
+### vim ###
+*.swp
+*.swo
