@@ -2,6 +2,27 @@
 
 This script retrieves all the items from the CCH Portal, retrieves all layers from a CCH GeoServer, and then prints out the names of GeoServer layers that do not have an item in the CCH Portal.
 
+# Setup
+
+Optionally, create and activate a virtualenv to ensure isolation from other pojects.
+
+```
+virtualenv --python python2.7 env
+. env/bin/activate
+```
+
+Required: use pip to install the dependencies
+
+```
+pip install -r requirements.txt
+```
+
+If you created and activated the optional virtualenv, you can get out of it by running
+
+```
+deactivate
+```
+
 # Usage
 
 ```
