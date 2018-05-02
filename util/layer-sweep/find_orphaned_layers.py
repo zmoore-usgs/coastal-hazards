@@ -25,7 +25,7 @@ def get_cch_items(cch_url):
 
 def item_filter(item):
 	"""
-	returns true if `item` has 'itemType' == 'data' and has some service 
+	returns true if `item` has 'itemType' == 'data' and has some service
 	endpoints that point to the CCH geoserver
 	"""
 	cch_geoserver_services = get_only_cch_geoserver_services(item['services'])
@@ -35,7 +35,7 @@ def item_filter(item):
 
 def get_only_cch_geoserver_services(services):
 	"""
-	Filters the parameterized list of services (dicts). The returned list 
+	Filters the parameterized list of services (dicts). The returned list
 	should only contain services (dicts) that have `endpoint`s that look
 	like they are from a cch geoserver.
 	"""
@@ -47,13 +47,13 @@ def get_only_cch_geoserver_services(services):
 	#
 	#This pattern matches either http or https
 	cida_pattern = re.compile('//cida.*usgs\.gov')
-	
+
 	#Also match CCH-specific urls on marine.usgs.gov.
 	#This string matches either http or https.
 	marine_string = '://marine.usgs.gov/coastalchangehazardsportal/geoserver'
 
-	return [ 
-		service for service in services 
+	return [
+		service for service in services
 			if 'csw' != service['type']
 			and (
 				marine_string in service['endpoint']
@@ -75,13 +75,13 @@ def convert_cch_items_to_cch_geoserver_layer_names(cch_items):
 		for service in cch_geoserver_services:
 			layer_name = strip_workspace_from_layer_name(service['serviceParameter'])
 			layer_names.add(layer_name)
-			
+
 	return layer_names
 
 def handle_cch_items_response(response):
 	"""
-	given a response from a 'request' library request, return a list of 
-	dicts. Each dict is a cch item. Raises an Exception if the 
+	given a response from a 'request' library request, return a list of
+	dicts. Each dict is a cch item. Raises an Exception if the
 	HTTP response is bad.
 	"""
 	if 200 != response.status_code:
@@ -105,8 +105,8 @@ def filter_out_geoserver_layers_that_are_registered(all_gs_layers, registered_ge
 	"""
 	all_gs_layers - an iterable of geoserver.layer.Layer
 	registered_geoserver_layer_names - a set of the string layer names
-		that are referenced in items in the CCH portal. The names 
-		should not contain workspaces. In other words they should be 
+		that are referenced in items in the CCH portal. The names
+		should not contain workspaces. In other words they should be
 		'ABCD' rather than 'proxied:ABCD'
 
 	returns a list of geoserver.layer.Layer objects that are not registered
@@ -120,11 +120,11 @@ def filter_out_geoserver_layers_that_are_registered(all_gs_layers, registered_ge
 
 def find_orphaned_layers(geoserver_url, geoserver_username, geoserver_password, cch_url):
 	"""
-	returns an iterable of geoserver.layer.Layer objects that are present 
+	returns an iterable of geoserver.layer.Layer objects that are present
 	in GeoServer, but absent from CCH.
 	"""
 	all_gs_layers = get_geoserver_layers(geoserver_url, geoserver_username, geoserver_password)
-	
+
 	cch_items = get_cch_items(cch_url)
 	registered_geoserver_layer_names = convert_cch_items_to_cch_geoserver_layer_names(cch_items)
 	orphaned_gs_layers = filter_out_geoserver_layers_that_are_registered(all_gs_layers, registered_geoserver_layer_names)
@@ -136,9 +136,9 @@ def find_orphaned_layers(geoserver_url, geoserver_username, geoserver_password, 
 			len(cch_items),
 			len(orphaned_gs_layers)
 		)
-	)	
+	)
 	return orphaned_gs_layers
-	
+
 def parse_cmd_args(argv):
 	"""
 	Takes sys.argv, validates, and extracts params, returning them in a dict
