@@ -146,9 +146,9 @@ def parse_cmd_args(argv):
 	"""
 	if len(argv) != 5:
 		raise Exception(
-			'Usage: find_orphaned_layers.py $GEOSERVER_URL $GEOSERVER_USERNAME $GEOSERVER_PASSWORD $CCH_URL'
+			'Usage: find_orphaned_layers.py $INTERNAL_GEOSERVER_URL $GEOSERVER_USERNAME $GEOSERVER_PASSWORD $CCH_URL'
 			+ '\nExample:\n' +
-			'find_orphaned_layers.py https://marine.usgs.gov/coastalchangehazardsportal/geoserver/ ralph t0pS3crEt https://marine.usgs.gov/coastalchangehazardsportal/'
+			'find_orphaned_layers.py http://my-internal-geoserver-host.usgs.gov:8081/geoserver/ ralph t0pS3crEt https://marine.usgs.gov/coastalchangehazardsportal/'
 		)
 	else:
 		args = {
