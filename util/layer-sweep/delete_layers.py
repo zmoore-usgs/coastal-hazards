@@ -30,7 +30,7 @@ def get_names_of_layers_to_delete(layers_to_delete_filename):
 			if '' != stripped_line:
 				layer_names.append(stripped_line)
 
-	return layer_names 
+	return layer_names
 
 def delete_layers(layers):
 	"""
@@ -86,8 +86,8 @@ def delete_all_gs_layers_specified_in_file(geoserver_url, geoserver_username, ge
 	layers_that_will_be_deleted = [ layer for layer in all_gs_layers if layer.name in names_of_layers_to_delete ]
 	successes, failures = delete_layers(layers_that_will_be_deleted)
 
-	return (successes, failures)	
-	
+	return (successes, failures)
+
 
 def parse_cmd_args(argv):
 	"""
@@ -122,7 +122,7 @@ def main(argv):
 	if failures:
 		exit(1)
 	else:
-		exit(0)	
+		exit(0)
 
 if '__main__' == __name__ :
 	main(sys.argv)
