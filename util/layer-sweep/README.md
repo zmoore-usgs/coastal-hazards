@@ -2,7 +2,7 @@
 
 CCH does not always clean up after itself. Sometimes CCH Items that are deleted in the Portal UI are not removed from GeoServer. This directory contains two scripts to help clean up.
 
- 1. find_orphaned_layers.py
+ 1. find_dangling_layers.py
  1. delete_layers.py 
 
 # Setup
@@ -26,12 +26,12 @@ $> pip install -r requirements.txt
 
 ## Description
 
-`find_orphaned_layers.py` retrieves all the items from the CCH Portal, retrieves all layers from a CCH GeoServer, and then writes to stdout out the names of GeoServer layers that do not have an item in the CCH Portal. Summary information is written to stderr.
+`find_dangling_layers.py` retrieves all the items from the CCH Portal, retrieves all layers from a CCH GeoServer, and then writes to stdout out the names of GeoServer layers that do not have an item in the CCH Portal. Summary information is written to stderr.
 
 ## Usage
 
 ```bash
-$> python find_orphaned_layers.py $GEOSERVER_URL $GEOSERVER_USERNAME $GEOSERVER_PASSWORD $CCH_URL
+$> python find_dangling_layers.py $GEOSERVER_URL $GEOSERVER_USERNAME $GEOSERVER_PASSWORD $CCH_URL
 ```
 
 The script has difficulty passing credentials to GeoServer via publicly-mapped urls. Use an internal url for the GeoServer instead.
@@ -39,7 +39,7 @@ The script has difficulty passing credentials to GeoServer via publicly-mapped u
 ## Example
 
 ```bash
-$> python find_orphaned_layers.py http://my-internal-server.usgs.gov:8081/geoserver/ ralph t0pS3crEt https://marine.usgs.gov/coastalchangehazardsportal/ > orphaned_layers.txt
+$> python find_dangling_layers.py http://my-internal-server.usgs.gov:8081/geoserver/ ralph t0pS3crEt https://marine.usgs.gov/coastalchangehazardsportal/ > dangling_layers.txt
 ```
 
 # Deleting Layers
@@ -61,7 +61,7 @@ The script has difficulty passing credentials to GeoServer via publicly-mapped u
 ### Success
 
 ```bash
-$> python delete_layers.py http://my-internal-server.usgs.gov:8081/geoserver/ admin $GEOSERVER_PASSWORD local_orphans.txt
+$> python delete_layers.py http://my-internal-server.usgs.gov:8081/geoserver/ admin $GEOSERVER_PASSWORD dangling_layers.txt
 retrieving GeoServer layer info via http://my-internal-server.usgs.gov:8081/geoserver/rest
 Successfully Deleted 1 Layers:
 G57Sz1h5
@@ -74,7 +74,7 @@ $> echo $?
 ### Failure
 
 ```bash
-$> python delete_layers.py http://my-internal-server.usgs.gov:8081/geoserver/ admin $GEOSERVER_PASSWORD local_orphans.txt
+$> python delete_layers.py http://my-internal-server.usgs.gov:8081/geoserver/ admin $GEOSERVER_PASSWORD dangling_layers.txt
 retrieving GeoServer layer info via http://my-internal-server.usgs.gov:8081/geoserver/rest
 Successfully Deleted 0 Layers:
 
@@ -89,17 +89,17 @@ $> echo $?
 # Putting It All Together
 
 ```bash
-$> python find_orphaned_layers.py http://my-internal-server.usgs.gov:8081/geoserver/ ralph t0pS3crEt https://marine.usgs.gov/coastalchangehazardsportal/ > orphaned_layers.txt
+$> python find_dangling_layers.py http://my-internal-server.usgs.gov:8081/geoserver/ ralph t0pS3crEt https://marine.usgs.gov/coastalchangehazardsportal/ > dangling_layers.txt
 retrieving GeoServer layer info via http://192.168.99.100:8081/geoserver/rest
 retrieving CCH items from http://192.168.99.100:8080/coastal-hazards-portal/data/item?subtree=false&showDisabled=true
 
 Total Layers Retrieved From GeoServer: 43
 Total Items Retrieved From CCH Portal: 4
-Total Orphaned Layers: 43
+Total Dangling Layers: 43
 
 $> #now manually inspect and modify the list of layers to delete
-$> vim orphaned_layers.txt
-$> python delete_layers.py http://my-internal-server.usgs.gov:8081/geoserver/ admin $GEOSERVER_PASSWORD orphaned_layers.txt
+$> vim dangling_layers.txt
+$> python delete_layers.py http://my-internal-server.usgs.gov:8081/geoserver/ admin $GEOSERVER_PASSWORD dangling_layers.txt
 retrieving GeoServer layer info via http://192.168.99.100:8081/geoserver/rest
 Successfully Deleted 1 Layers:G57Sz1h5
 

@@ -1,6 +1,6 @@
 from __future__ import print_function
 from geoserver.catalog import Catalog
-from find_orphaned_layers import get_geoserver_layers
+from find_dangling_layers import get_geoserver_layers
 import sys
 
 def eprint(*args, **kwargs):
@@ -97,7 +97,7 @@ def parse_cmd_args(argv):
 		raise Exception(
 			'Usage: delete_layers.py $INTERNAL_GEOSERVER_URL $GEOSERVER_USERNAME $GEOSERVER_PASSWORD $FILE_WITH_LAYERS_TO_DELETE'
 			+ '\nExample:\n' +
-			'delete_layers.py http://my-internal-geoserver-host.usgs.gov:8081/geoserver/ ralph t0pS3crEt orphaned_layers.txt'
+			'delete_layers.py http://my-internal-geoserver-host.usgs.gov:8081/geoserver/ ralph t0pS3crEt dangling_layers.txt'
 			+ '\nThe file should contain a newline-delimited list of layer names to delete.'
 		)
 	else:
