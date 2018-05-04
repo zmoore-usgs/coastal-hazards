@@ -1,5 +1,4 @@
 from __future__ import print_function
-from geoserver.catalog import Catalog
 from find_dangling_layers import get_geoserver_layers
 import sys
 
