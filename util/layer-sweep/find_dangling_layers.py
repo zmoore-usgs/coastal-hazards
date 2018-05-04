@@ -112,14 +112,14 @@ def filter_out_geoserver_layers_that_are_registered(all_gs_layers, registered_ge
 
 	returns a list of geoserver.layer.Layer objects that are not registered
 	"""
-	orphaned_gs_layers = []
+	dangling_gs_layers = []
 	for layer in all_gs_layers:
 		if layer.name not in registered_geoserver_layer_names:
-			orphaned_gs_layers.append(layer)
+			dangling_gs_layers.append(layer)
 
-	return orphaned_gs_layers
+	return dangling_gs_layers
 
-def find_orphaned_layers(geoserver_url, geoserver_username, geoserver_password, cch_url):
+def find_dangling_layers(geoserver_url, geoserver_username, geoserver_password, cch_url):
 	"""
 	returns an iterable of geoserver.layer.Layer objects that are present
 	in CCH's GeoServer, but absent from CCH's Portal.
@@ -128,17 +128,17 @@ def find_orphaned_layers(geoserver_url, geoserver_username, geoserver_password, 
 
 	cch_items = get_cch_items(cch_url)
 	registered_geoserver_layer_names = convert_cch_items_to_cch_geoserver_layer_names(cch_items)
-	orphaned_gs_layers = filter_out_geoserver_layers_that_are_registered(all_gs_layers, registered_geoserver_layer_names)
+	dangling_gs_layers = filter_out_geoserver_layers_that_are_registered(all_gs_layers, registered_geoserver_layer_names)
 	eprint(
 		("\nTotal Layers Retrieved From GeoServer: {}\n" +
 		"Total Items Retrieved From CCH Portal: {}\n" +
-		"Total Orphaned Layers: {}\n").format(
+		"Total Dangling Layers: {}\n").format(
 			len(all_gs_layers),
 			len(cch_items),
-			len(orphaned_gs_layers)
+			len(dangling_gs_layers)
 		)
 	)
-	return orphaned_gs_layers
+	return dangling_gs_layers
 
 def parse_cmd_args(argv):
 	"""
@@ -146,9 +146,9 @@ def parse_cmd_args(argv):
 	"""
 	if len(argv) != 5:
 		raise Exception(
-			'Usage: find_orphaned_layers.py $GEOSERVER_URL $GEOSERVER_USERNAME $GEOSERVER_PASSWORD $CCH_URL'
+			'Usage: find_dangling_layers.py $INTERNAL_GEOSERVER_URL $GEOSERVER_USERNAME $GEOSERVER_PASSWORD $CCH_URL'
 			+ '\nExample:\n' +
-			'find_orphaned_layers.py https://marine.usgs.gov/coastalchangehazardsportal/geoserver/ ralph t0pS3crEt https://marine.usgs.gov/coastalchangehazardsportal/'
+			'find_dangling_layers.py http://my-internal-geoserver-host.usgs.gov:8081/geoserver/ ralph t0pS3crEt https://marine.usgs.gov/coastalchangehazardsportal/'
 		)
 	else:
 		args = {
@@ -161,9 +161,9 @@ def parse_cmd_args(argv):
 
 def main(argv):
 	parsed_args = parse_cmd_args(argv)
-	orphaned_layers = find_orphaned_layers(**parsed_args)
-	orphaned_layer_names = '\n'.join([ l.name for l in orphaned_layers ])
-	return orphaned_layer_names
+	dangling_layers = find_dangling_layers(**parsed_args)
+	dangling_layer_names = '\n'.join([ l.name for l in dangling_layers ])
+	return dangling_layer_names
 
 if '__main__' == __name__ :
 	print(main(sys.argv))
