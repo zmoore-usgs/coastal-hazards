@@ -137,7 +137,7 @@ CCH.Objects.Session = function (args) {
 			data: me.toString(),
 			success: function (json, textStatus, jqXHR) {
 				if (callbacks.success && callbacks.success.length > 0) {
-					callbacks.success.each(function (callback) {
+					callbacks.success.forEach(function (callback) {
 						callback.call(null, json, textStatus, jqXHR);
 					});
 				}
@@ -149,7 +149,7 @@ CCH.Objects.Session = function (args) {
 			},
 			error: function (data, textStatus, jqXHR) {
 				if (callbacks.error && callbacks.error.length > 0) {
-					callbacks.error.each(function (callback) {
+					callbacks.error.forEach(function (callback) {
 						callback.call(null, data, textStatus, jqXHR);
 					});
 				}
@@ -279,7 +279,7 @@ CCH.Objects.Session = function (args) {
 		var index = me.getItemIndex(item);
 
 		if (index !== -1) {
-			me.session.items.removeAt(index);
+			me.session.items.splice(index, 1);
 		}
 
 		me.persistSession();

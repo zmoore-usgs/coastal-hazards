@@ -456,7 +456,7 @@ CCH.intro = (function () {
 			updateForMobile = function () {
 
 				//Removing Steps that don't exist on mobile
-				steps.removeAt(4);
+				steps.splice(4, 1);
 
 				//Changing position of text to fit on mobile
 				steps[0].position = 'bottom';

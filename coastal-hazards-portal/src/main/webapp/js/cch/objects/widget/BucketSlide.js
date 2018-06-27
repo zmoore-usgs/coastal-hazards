@@ -192,7 +192,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			$(me.LABEL_ORDER_CLASS).css('visibility', '');
 		}
 
-		me.cards.each(function ($cardClone) {
+		me.cards.forEach(function ($cardClone) {
 			id = $cardClone.data('id');
 			item = CCH.items.getById({id: id});
 			layerNames = item.getLayerList().layers;
@@ -200,7 +200,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			sortedSessionItems.push(sessionItem);
 			layer = CCH.map.getLayersByName(id);
 
-			layerNames.each(function (layerName) {
+			layerNames.forEach(function (layerName) {
 				layer = CCH.map.getLayersByName(layerName);
 				if (layer.length) {
 					layer = layer[0];
@@ -217,7 +217,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		CCH.session.getSession().items = sortedSessionItems;
 		CCH.session.update();
 
-		layers.reverse().each(function (layer) {
+		layers.reverse().forEach(function (layer) {
 			CCH.map.getMap().setLayerIndex(layer, CCH.map.getMap().layers.length - 1);
 		});
 
@@ -241,13 +241,13 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			$myCard = me.getCard({id: layer.itemid});
 			if (evtType === 'remove') {
 				setTimeout(function () {
-					[$card, $myCard].each(function (card) {
+					[$card, $myCard].forEach(function (card) {
 						findImage(card).removeClass('fa-eye').addClass('fa-eye-slash');
 					});
 				}, 50);
 			} else if (evtType === 'add') {
 				setTimeout(function () {
-					[$card, $myCard].each(function (card) {
+					[$card, $myCard].forEach(function (card) {
 						findImage(card).removeClass('fa-eye-slash').addClass('fa-eye');
 					});
 				}, 50);
@@ -401,7 +401,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		if (id) {
 			childIdArray = args.children.slice(0);
 			$card = me.getCard({id: id});
-			me.cards.removeAt(me.getCardIndex(id));
+			me.cards.splice(me.getCardIndex(id), 1);
 
 			// I have no children, so I'm just going to remove myself from the map
 			if (childIdArray.length === 0) {
@@ -409,10 +409,14 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			}
 
 			// Remove all children from the map
-			childIdArray.each(function (childId, i, children) {
+			childIdArray.forEach(function (childId, i, children) {
 				// If this ID appears elsewhere in the card stack, don't remove 
 				// it from the map
-				if (children.findAll(childId).length > 1) {
+				var numOccurrances = children.filter(function(el) {
+					return children === childId;
+				}).length;
+
+				if (numOccurrances > 1) {
 					CCH.map.hideLayersByName(childId);
 				}
 			});
@@ -437,7 +441,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			// the bucket class will actually call this function with a proper
 			// id. It's a long way around removing the item but it does hit 
 			// multiple components
-			me.cards.reverse().each(function ($card) {
+			me.cards.reverse().forEach(function ($card) {
 				$(window).trigger('cch.slide.bucket.remove', {
 					id: $card.data('id')
 				});
@@ -453,7 +457,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		var $container = me.getContainer();
 
 		$container.find('>div:not(:first-child())').remove();
-		me.cards.each(function ($card) {
+		me.cards.forEach(function ($card) {
 			me.append($card);
 		});
 		me.redrawArrows();
@@ -519,7 +523,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			// Make sure I'm not trying to move out of bounds
 			if ((direction === -1 && cardIndex !== 0) ||
 				(direction === 1 && cardIndex !== me.cards.length - 1)) {
-				me.cards.removeAt(cardIndex).splice(cardIndex + direction, 0, card);
+				me.cards.splice(cardIndex, 1);
+				me.cards.splice(cardIndex + direction, 0, card);
 			}
 		}
 		me.rebuild();

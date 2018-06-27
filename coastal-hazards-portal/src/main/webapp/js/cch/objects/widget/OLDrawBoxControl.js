@@ -32,7 +32,7 @@
 				
 			if (items) {
 				items.forEach(function (i) {
-					CCH.ui.bucket.add({item: i});
+					CCH.ui.bucket.push({item: i});
 				}); 
 			}
 		}

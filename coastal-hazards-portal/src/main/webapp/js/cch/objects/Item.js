@@ -93,7 +93,7 @@ CCH.Objects.Item = function (args) {
 							childItems = [],
 							allLoaded;
 					if (loadedItemIsChild) {
-						me.children.each(function (childId) {
+						me.children.forEach(function (childId) {
 							var childItem = CCH.items.getById({id: childId});
 							if (childItem) {
 								childItems.push(childItem);
@@ -154,7 +154,7 @@ CCH.Objects.Item = function (args) {
 				loadDataToItem(me, null);
 			} else {
 				// The child still needs to be loaded
-				me.children.each(function (child) {
+				me.children.forEach(function (child) {
 					new CCH.Objects.Item({
 						id: child,
 						parent: me
@@ -379,7 +379,7 @@ CCH.Objects.Item = function (args) {
 	};
 
 	me.hideLayer = function () {
-		me.getLayerList().layers.each(function (layerName) {
+		me.getLayerList().layers.forEach(function (layerName) {
 			CCH.map.hideLayersByName(layerName);
 		});
 
@@ -471,14 +471,16 @@ CCH.Objects.Item = function (args) {
 		var children = args.children || [],
 				item = args.item || me,
 				itemChildren = item.children;
-				children.add(item);
+				children.push(item);
 				
 		if (itemChildren.length) {
 			for (var cIdx = 0; cIdx < itemChildren.length; cIdx++) {
 				var child = CCH.items.getById({ id : itemChildren[cIdx] });
-				children.union(me.getChildren({
+				children = children.concat(me.getChildren({
 					children : children,
 					item : child
+				}).filter(function(childItem) {
+					return children.indexOf(childItem) < 0;
 				}));
 			}
 		}

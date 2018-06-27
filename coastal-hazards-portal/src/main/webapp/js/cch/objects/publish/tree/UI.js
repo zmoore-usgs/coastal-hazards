@@ -6,7 +6,7 @@ CCH.Objects.Publish = CCH.Objects.Publish || {};
 CCH.Objects.Publish.Tree = CCH.Objects.Publish.Tree || {};
 CCH.Objects.Publish.Tree.UI = function (args) {
 	"use strict";
-	var me = Object.extended();
+	var me = {};
 
 	$.extend(me, args);
 
@@ -491,10 +491,14 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			if (displayed) {
 				node.state.displayed = false;
 				$('#' + selectedId + '_anchor');
-				parent.state.displayedChildren.remove(originalId);
+				parent.state.displayedChildren = parent.state.displayedChildren.filter(function(el) {
+					el !== originalId
+				});
 			} else {
 				node.state.displayed = true;
-				parent.state.displayedChildren = parent.state.displayedChildren.union(originalId);
+				if(!parent.state.displayedChildren.includes(originalId)) {
+					parent.state.displayedChildren.push(originalId);
+				}
 			}
 
 			tree.save_state();
@@ -529,7 +533,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					}
 
 					//Update parents
-					[oldParent, newParent].each(function (itemId) {
+					[oldParent, newParent].forEach(function (itemId) {
 						me.itemUpdated(itemId);
 					});
 				}

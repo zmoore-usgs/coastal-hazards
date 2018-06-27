@@ -29,7 +29,7 @@ CCH.CONFIG = CCH.CONFIG || {};
 						// fully hydrated, so I can now add sub items to the accordion and remove the overlay.
 						// I can also now load and attach item aliases
 						if (obj.id === 'uber') {
-							data.children.each(function (id, index) {
+							data.children.forEach(function (id, index) {
 								var item = CCH.items.getById({id: id});
 
 								// Add it to the accordion...
@@ -65,7 +65,7 @@ CCH.CONFIG = CCH.CONFIG || {};
 							CCH.Util.Search().getAllAliases({
 								callbacks: {
 									success: [function(data) {
-										data.each(function(alias, index) {
+										data.forEach(function(alias, index) {
 											if(alias.item_id != null && CCH.items.getById({id: alias.item_id}) != null){
 												CCH.items.getById({id: alias.item_id}).aliases.push(alias.id);
 											}

@@ -289,7 +289,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 			// I remove the first index here because the first item is the bellow.
 			// There's a check that's done in the 'pathToItem()' function that does
 			// a similar check for id equality but I just short cut it here
-			path = path.removeAt(0);
+			path = path.splice(0, 1);
 
 			// The action begins by opening a bellow. I check here to see if the 
 			// bellow I want to open is already open. If not, bind openPath() to

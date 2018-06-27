@@ -174,7 +174,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		$theadTr.append($('<td />'), $theadUOM);
 		$thead.append($theadTr);
 		$table.append($caption, $thead);
-		bins.each(function (bin) {
+		bins.forEach(function (bin) {
 			$tr = $('<tr />');
 			$colorTd = $('<td />');
 			$colorTd.addClass('discrete_legend_color_entry');
@@ -582,7 +582,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		
 		var aggergateBins = [];
 		
-		items.each(function (childId, index, allItems) {
+		items.forEach(function (childId, index, allItems) {
 			if (!me.destroyed) {
 				xhrRequest = CCH.Util.Util.getSLD({
 					contextPath: CCH.CONFIG.contextPath,
@@ -678,7 +678,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				generateLegendTable = args.generateLegendTable,
 				tableAddedCallback = args.tableAddedCallback;
 		
-		items.each(function (childId, index, allItems) {
+		items.forEach(function (childId, index, allItems) {
 			if (!me.destroyed) {
 				xhrRequest = CCH.Util.Util.getSLD({
 					contextPath: CCH.CONFIG.contextPath,
@@ -765,7 +765,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		var item = CCH.items.getById({id: itemId}),
 				childLayers = item.getLayerList(),
 				items = [];
-		childLayers.layers.each(function (layerName) {
+		childLayers.layers.forEach(function (layerName) {
 			// Possible formats:
 			// aggregationId_itemId_r_ribbonIndexInteger (Ribboned, example: C68abcd_C67pzz9_r_1)
 			// aggregationId_itemId (Unribboned, example: C68abcd_C67pzz9)
@@ -811,21 +811,33 @@ CCH.Objects.Widget.Legend = function (args) {
 			// item in the legendTables array will be -1 (in order to satisfy matching
 			// the total). The call to groupBy will fail if those are still in 
 			// the legendTables array, so remove them before moving on. 
-			legendTables = legendTables.exclude(function (i) { 
-				return i === -1;
+			legendTables = legendTables.filter(function (table) { // Remove any array items that are -1
+				return table !== -1;
 			});
+
 			
 			// If I am ribboned, I want to group my legends if they're the same 
 			// color range/measures
-			legendGroups = legendTables.groupBy(function (lt) {
-				return $(lt).find('tbody').html().hashCode();
+			legendGroups = {};
+			legendTables.forEach(function(lt) {
+				var group = $(lt).find('tbody').html().hashCode();
+				legendGroups.group === undefined ? legendGroups.group = [lt] : legendGroups.group.push(lt);
 			});
 
 			for (hashKey in legendGroups) {
 				if (legendGroups.hasOwnProperty(hashKey)) {
 					// Sort the legend group by the table's legend index attribtue
-					legendGroup = legendGroups[hashKey].sortBy(function (table) {
-						return parseInt($(table).attr('legend-index'), 10);
+					legendGroup = legendGroups[hashKey].sort(function (a, b) {
+						var aVal = parseInt($(a).attr('legend-index'), 10);
+						var bVal = parseInt($(b).attr('legend-index'), 10);
+						
+						if(aVal < bVal) {
+							return -1;
+						} else if(aVal > bVal) {
+							return 1;
+						} else {
+							return 0;
+						}
 					});
 
 					captionSpan = $('<span />').attr('id', 'cch-legend-caption-container');
@@ -871,10 +883,19 @@ CCH.Objects.Widget.Legend = function (args) {
 			// When all the tables are created, I want to sort them, append them to a  wrapper and throw that wrapper 
 			// into the final container
 			// There are no more legends to be built, filter and add the legend to the document
+			var legendAttrs = [];
 			legendTables = legendTables.filter(function (table) { // Remove any array items that are -1
-				return table !== -1;
-			}).unique(function (table) {
-				return $(table).attr('legend-attribute');
+				var newAttr = true;
+				if(table !== -1) {
+					newAttr = !legendAttrs.includes($(table).attr('legend-attribute'));
+					
+					if(newAttr) {
+						legendAttrs.push($(table).attr('legend-attribute'));
+					}
+					
+				}
+				
+				return table !== -1 && newAttr;
 			});
 
 			if (legendTables.length === 0) {
@@ -931,7 +952,7 @@ CCH.Objects.Widget.Legend = function (args) {
 	 */
 	me.destroy = function () {
 		me.destroyed = true;
-		me.ajaxRequests.each(function (req) {
+		me.ajaxRequests.forEach(function (req) {
 			req.abort();
 		});
 		me.$legendDiv.remove();
