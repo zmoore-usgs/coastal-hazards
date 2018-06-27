@@ -70,7 +70,6 @@
 	String version = props.getProperty("application.version");
 	String resourceSuffix = development ? "" : "-" + version + "-min";
 	String vJquery = getProp("version.jquery");
-	String vSugarJs = getProp("version.sugarjs");
 	String vFontAwesome = getProp("version.fontawesome");
 
 	pageContext.setAttribute("textOnlyClient", isTextOnlyClient(userAgent));
@@ -200,7 +199,7 @@
 			</div>
 		</div>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= resourceSuffix%>.js"></script>
 		<script type="text/javascript">
 			$(document).on('ready', function () {

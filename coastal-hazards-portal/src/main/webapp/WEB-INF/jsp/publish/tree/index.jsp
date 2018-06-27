@@ -25,7 +25,6 @@
 	String vJqueryUI = getProp("version.jqueryui");
 	String vBootstrap = getProp("version.bootstrap");
 	String vFontAwesome = getProp("version.fontawesome");
-	String vSugarJs = getProp("version.sugarjs");
 	String vJsTree = getProp("version.jstree");
 	String vJquery = getProp("version.jquery");
 %>
@@ -97,7 +96,7 @@
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jstree/<%=vJsTree%>/jstree<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/<%=vJqueryUI%>/ui<%= development ? "" : "/minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+
 
 		<script type="text/javascript">
 			window.CCH = Object.extended();
