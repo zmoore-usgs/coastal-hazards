@@ -579,15 +579,18 @@ CCH.Objects.Publish.UI = function () {
 
 	me.addKeywordGroup = function (keyword) {
 		var keywordExists,
+			keywordCount = 0,
 				$keywordGroupLocal;
 		// Figure out if this keyword would be doubled by adding it
-		keywordExists = $form
-				.find('.form-group-keyword input')
-				.not(':first')
-				.toArray()
-				.count(function (input) {
-					return $(input).val().trim() === keyword.trim();
-				}) > 0;
+		$form.find('.form-group-keyword input')
+			.not(':first')
+			.toArray()
+			.forEach(function (input) {
+				if($(input).val().trim() === keyword.trim()) {
+					keywordCount++;
+				}
+			});
+		keywordExists = keywordCount > 0;
 
 		if (!keywordExists) {
 			$keywordGroupLocal = $keywordGroupClone.clone();
@@ -1409,7 +1412,7 @@ CCH.Objects.Publish.UI = function () {
 
 			// Publications
 			$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-			Object.keys(item.summary.full.publications, function (type) {
+			Object.keys(item.summary.full.publications).forEach(function (type) {
 				item.summary.full.publications[type].forEach(function (publication) {
 					me.createPublicationRow(publication.link, publication.title, type);
 				});
@@ -1781,7 +1784,7 @@ CCH.Objects.Publish.UI = function () {
 					function (response) {
 						$('.resource-list-container-sortable').empty();
 						$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-						Object.keys(response.full.publications, function (type) {
+						Object.keys(response.full.publications).forEach(function (type) {
 							response.full.publications[type].forEach(function (publication) {
 								me.createPublicationRow(publication.link, publication.title, type);
 							});
@@ -2277,7 +2280,7 @@ CCH.Objects.Publish.UI = function () {
 	});
 	
 	var getLayerIdFromUrl = function(layerUrl){
-		return layerUrl.from(layerUrl.lastIndexOf('/') + 1);
+		return layerUrl.substring(layerUrl.lastIndexOf('/') + 1);
 	};
 		
 	$vectorModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){

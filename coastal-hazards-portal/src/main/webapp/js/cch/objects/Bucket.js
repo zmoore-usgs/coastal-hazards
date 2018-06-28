@@ -52,6 +52,7 @@ CCH.Objects.Bucket = function (args) {
 	};
 	me.bucketRemoveClickHandler = function (evt, args) {
 		args = args || {};
+		console.log("Remove handler for " + args.id);
 		var id = args.id,
 			item = id ? CCH.items.getById({id: id}) : args.item;
 
@@ -169,8 +170,8 @@ CCH.Objects.Bucket = function (args) {
 				id = item.id;
 
 				// Take the item out of my personal bucket array
-				me.bucket = me.bucket.filter(function (item) {
-					return item.id !== id;
+				me.bucket = me.bucket.filter(function (itm) {
+					return itm.id !== id;
 				});
 
 				// Remove the item from the slide

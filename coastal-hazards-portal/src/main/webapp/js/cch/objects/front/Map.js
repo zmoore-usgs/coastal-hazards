@@ -102,7 +102,7 @@ CCH.Objects.Front.Map = function (args) {
 			markerLayer = new OpenLayers.Layer.Markers(me.markerLayerName);
 			me.getMap().addLayer(markerLayer);
 			
-			while (markerLayer !== me.getMap().layers.last()) {
+			while (markerLayer !== me.getMap().layers[me.getMap().layers.length-1]) {
 				me.getMap().raiseLayer(markerLayer, 1);
 			}
 		}

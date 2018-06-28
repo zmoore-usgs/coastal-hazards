@@ -94,7 +94,7 @@ return {
 				} else if (splitName.length > 2) {
 					return splitName[0];
 				}
-				return splitName.last();
+				return splitName.slice(-1);
 			};
 
 		$(window).trigger('cch.map.control.layerid.responded');
@@ -170,8 +170,8 @@ return {
 						layerObject = layer;
 					    }
 					});
-					
-					layerId = layerObject.params.SLD.split('/').last();
+					layetIdParts = layerObject.params.SLD.split('/');
+					layerId = layerIdParts[layerIdParts.length-1];
 					layerId = layerId.substr(0, layerId.indexOf('?')).length > 0 ? layerId.substr(0, layerId.indexOf('?')) : layerId;
 					if (featuresByName.hasOwnProperty(layerName)) {
 						features = featuresByName[layerName];
@@ -267,10 +267,12 @@ return {
 					height;
 				
 				if (layerName.indexOf('_r_') !== -1) {
-					ribbonIndex = parseInt(layerName.split('_').last(), 10);
+					layerParts = layerName.split('_');
+					layerPart = layerParts[layerParts.length-1];
+					ribbonIndex = parseInt(layerPart, 10);
 				}
 
-				if (displayPoints.count() === 0) {
+				if (displayPoints.length === 0) {
 					$titleContainer.html(title);
 					// Data unavailable, insert two dashes for color and for value
 					$legendRow.append($titleContainer, $colorContainer.empty().html('--'), $valueContainer.append(naAttrText));
@@ -327,14 +329,14 @@ return {
 				
 				} else {
 					//Limit ribbon data to only creating a row for the first features
-					if(ribbonIndex >= 0 && displayPoints.count() > 0){
+					if(ribbonIndex >= 0 && displayPoints.length > 0){
 						var point = displayPoints[0];
 						displayPoints = new Array();
 						displayPoints.push(point);
 					}
 					
 					//Create rows for each point to be displayed in this table
-					for(i = 0; i < displayPoints.count(); i++){
+					for(i = 0; i < displayPoints.length; i++){
 						//Reset Contents
 						$legendRow = $('<tr>').addClass('legend-row');
 						$titleContainer = $('<td />');
@@ -384,8 +386,12 @@ return {
 
 							$table.append($legendRow);
 							sortedRows = $table.find('tbody > tr').toArray().sort(function (a, b) {
-								var aVal = parseInt($(a).attr('id').split('-').last(), 10);
-								var bVal = parseInt($(b).attr('id').split('-').last(), 10);
+								var aParts = $(a).attr('id').split('-');
+								var aPart = aParts[aParts.length-1];
+								var aVal = parseInt(aPart, 10);
+								var bParts = $(b).attr('id').split('-');
+								var bPart = bParts[bParts.length-1];
+								var bVal = parseInt(bPart, 10);
 
 								if(aVal < bVal) {
 									return -1;
@@ -438,7 +444,7 @@ return {
 								
 				$popupHtml.empty().append($tableContainer);
 								
-				if(displayPoints.count() > 1 || CCH.map.getMap().getZoom() < 12){
+				if(displayPoints.length > 1 || CCH.map.getMap().getZoom() < 12){
 					var $noteContainer = $('<small id="zoomNotice">Zoom in further for more accurate results.</small>').css('color', 'black');
 					$popupHtml.append($noteContainer);
 				}
@@ -506,7 +512,7 @@ return {
 		}
 		
 		if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK", "AE"].indexOf(item.attr.toUpperCase()) !== -1) {
-			for(var i = 0; i < displayPoints.count(); i++){
+			for(var i = 0; i < displayPoints.length; i++){
 				displayColors.push(sld.bins[Math.ceil(displayPoints[i]) - 1].color);
 
 				var category = sld.bins[Math.ceil(displayPoints[i]) - 1].category;

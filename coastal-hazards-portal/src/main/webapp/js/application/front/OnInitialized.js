@@ -184,7 +184,7 @@ CCH.CONFIG = CCH.CONFIG || {};
 						} else {
 							// The item could not be found. Show an error and wait for the app to resize
 							// (happens on loading completetion). When it happens, zoom to the bounding
-							// box of the map's initial extent (the continentat US) and then unbind the handler
+							// box of the map's initial extent (the continental US) and then unbind the handler
 							alertify.error('The item you\'re looking for could not be found.', 6000);
 							var resizeHandler = function () {
 								$(window).off('cch.ui.resized', resizeHandler);

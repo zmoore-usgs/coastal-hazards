@@ -146,7 +146,7 @@ CCH.Objects.Back.UI = function (args) {
 			me.$publist = $('<ul />').attr('id', 'info-container-publications-list');
 			
 			//Publications list (data, resources, and pubs)
-			Object.keys(me.item.summary.full.publications, function (type) {
+			Object.keys(me.item.summary.full.publications).forEach(function (type) {
 				var pubTypeArray = me.item.summary.full.publications[type],
 						pubTypeListHeader = $('<li />')
 						.addClass('publist-header')

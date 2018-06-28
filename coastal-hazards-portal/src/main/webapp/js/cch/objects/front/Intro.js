@@ -547,9 +547,14 @@ CCH.intro = (function () {
 			if (startingStep) {
 				if (isNaN(startingStep)) {
 					// Find the index of the step with a given name
-					var idx = steps.findIndex(function (s) {
-						return s.name === startingStep;
+					var idx = -1;
+					steps.some(function(s, index) {
+						if(s.name === startingStep) {
+							idx = index;
+							return true;
+						}
 					});
+					
 					// If the name matches a step, start at that step
 					if (idx !== -1) {
 						var step = steps[idx];

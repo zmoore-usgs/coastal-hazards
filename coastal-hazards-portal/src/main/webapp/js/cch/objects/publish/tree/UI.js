@@ -746,19 +746,19 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	}
 
 	me.updateRandomIdToOriginalId = function (data) {
-		var dataClone = Object.clone(data, true);
-		Object.keys(dataClone, function (k, v) {
-			var children = v.children.map(function (id) {
+		var dataClone = JSON.parse(JSON.stringify(data));
+		Object.keys(dataClone).forEach(function (key) {
+			var children = dataClone[key].children.map(function (id) {
 				return CCH.ui.getTree().get_node(id).state['original-id'];
 			});
-			dataClone[k] = {
+			dataClone[key] = {
 				children: children,
-				displayedChildren: v.displayedChildren
+				displayedChildren: dataClone[key].displayedChildren
 			};
 
-			if (k !== 'uber') {
-				dataClone[CCH.ui.getTree().get_node(k).state['original-id']] = dataClone[k];
-				delete dataClone[k];
+			if (key !== 'uber') {
+				dataClone[CCH.ui.getTree().get_node(key).state['original-id']] = dataClone[key];
+				delete dataClone[key];
 			}
 
 		});

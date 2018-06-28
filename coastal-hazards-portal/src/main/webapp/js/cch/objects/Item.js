@@ -87,11 +87,17 @@ CCH.Objects.Item = function (args) {
 			// If I have children, load those as well
 			var setLoaded = function (evt, args) {
 				if (!me.loaded) {
-					var loadedItemIsChild = me.children.findIndex(function (childId) {
-						return childId === args.id;
-					}) !== -1,
-							childItems = [],
-							allLoaded;
+					var loadedItemChildIndex = -1;
+					me.children.some(function (childId, index) {
+						if(childId === args.id) {
+							loadedItemChildIndex = index;
+							return true;
+						}
+					});
+
+					var loadedItemIsChild = loadedItemChildIndex !== -1, 
+						childItems = [],
+						allLoaded;
 					if (loadedItemIsChild) {
 						me.children.forEach(function (childId) {
 							var childItem = CCH.items.getById({id: childId});
@@ -101,9 +107,14 @@ CCH.Objects.Item = function (args) {
 						});
 
 						if (childItems.length === me.children.length) {
-							allLoaded = childItems.findIndex(function (childItem) {
-								return !childItem.loaded;
-							}) === -1;
+							var unloadedIndex = -1;
+							childItems.some(function (childItem, index) {
+								if(!childItem.loaded) {
+									unloadedIndex = index;
+									return true;
+								}
+							});
+							allLoaded = unloadedIndex === -1;
 							if (allLoaded) {
 								me.loaded = true;
 								CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
@@ -251,8 +262,12 @@ CCH.Objects.Item = function (args) {
 			}
 		} else {
 			if (me.ribboned && me.parent && me.parent.ribboned) {
-				index = me.parent.children.findIndex(function (childId) {
-					return me.id === childId;
+				index = -1;
+				me.parent.children.some(function (childId, indx) {
+					if(me.id === childId) {
+						index = indx;
+						return true;
+					}
 				});
 				index += 1;
 				if (index > layers.length + 1) {
@@ -339,8 +354,12 @@ CCH.Objects.Item = function (args) {
 			layerName = aggregationName + this.id;
 
 			if (me.ribboned && me.parent && me.parent.ribboned) {
-				index = me.parent.children.findIndex(function (childId) {
-					return me.id === childId;
+				index = -1;
+				me.parent.children.some(function (childId, indx) {
+					if(me.id === childId) {
+						index = indx;
+						return true;
+					}
 				});
 				index += 1;
 

@@ -369,7 +369,8 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 				parentListEl = target.parentElement,
 				allItems = $('.' + me.DD_TOGGLE_MENU_ITEMS_CLASS),
 				// The id has the type as the last word
-				type = evt.target.id.split('-').last(),
+				typeParts = evt.target.id.split('-'),
+				type = typeParts[typeParts.length-1],
 				isDisabled = $(target).parent().hasClass('disabled');
 
 		ga('send', 'event', {

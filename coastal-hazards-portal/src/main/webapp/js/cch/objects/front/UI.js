@@ -320,11 +320,17 @@ CCH.Objects.Front.UI = function (args) {
 		items.forEach(function (item) {
 			var loadedHandler = function (evt, args) {
 				var loadedItemId = args.id,
-					sessionItems = CCH.session.getSession().items,
-					addIndex = sessionItems.findIndex(function (i) {
-						return i.itemId === args.id;
-					}),
-					sessionItem = sessionItems[addIndex],
+					sessionItems = CCH.session.getSession().items;
+					
+				var addIndex = -1;
+					sessionItems.some(function(i, index) {
+						if(i.itemId === args.id) {
+							addIndex = index;
+							return true;
+						}
+					});
+
+				var sessionItem = sessionItems[addIndex],
 					itemById = CCH.items.getById({
 						id: loadedItemId
 					});

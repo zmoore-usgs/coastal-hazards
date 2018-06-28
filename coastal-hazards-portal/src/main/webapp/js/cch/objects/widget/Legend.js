@@ -799,8 +799,11 @@ CCH.Objects.Widget.Legend = function (args) {
 			hashKey,
 			tableIndex,
 			lIdx,
-			indexCompare = function (t) {
-				return $(t).attr('legend-index') === currentLegend.attr('legend-index');
+			indexCompare = function (t, index) {
+				if($(t).attr('legend-index') === currentLegend.attr('legend-index')) {
+					tableIndex = index;
+					return true;
+				}
 			};
 
 		// All legend tables have been attained so now I need to actually slice and dice the collection of tables into
@@ -857,7 +860,7 @@ CCH.Objects.Widget.Legend = function (args) {
 									.html(currentLegendCaptionText), $('<br />'));
 						}
 
-						tableIndex = legendTables.findIndex(indexCompare);
+						legendTables.some(indexCompare);
 
 						// I only want to display the first table in this group, so don't kill the first table
 						if (lIdx !== 0) {

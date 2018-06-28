@@ -352,9 +352,14 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 	};
 
 	me.getCardIndex = function (id) {
-		return me.cards.findIndex(function (i) {
-			return i.data('id') === id;
+		var cIndex = -1;
+		me.cards.some(function (i, index) {
+			if(i.data('id') === id) {
+				cIndex = index;
+				return true;
+			}
 		});
+		return cIndex;
 	};
 
 	me.add = function (args) {
@@ -413,7 +418,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				// If this ID appears elsewhere in the card stack, don't remove 
 				// it from the map
 				var numOccurrances = children.filter(function(el) {
-					return children === childId;
+					return el === childId;
 				}).length;
 
 				if (numOccurrances > 1) {
@@ -441,9 +446,13 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			// the bucket class will actually call this function with a proper
 			// id. It's a long way around removing the item but it does hit 
 			// multiple components
+			var deleteList = [];
 			me.cards.reverse().forEach(function ($card) {
+				deleteList.push($card.data('id'));
+			});
+			deleteList.forEach(function(id) {
 				$(window).trigger('cch.slide.bucket.remove', {
-					id: $card.data('id')
+					id: id
 				});
 			});
 			CCH.session.getSession().items = [];
@@ -589,10 +598,15 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			$imageContainer = $cardHtml.find('.application-slide-bucket-container-card-image');
 
 		// Test if the layer is currently visible. If not, set view button to off 
-		layerCurrentlyInMap = item.getLayerList().layers.every(function (id) {
+		layerCurrentlyInMap = true;
+		item.getLayerList().layers.some(function (id) {
 			var layerArray = CCH.map.getLayersBy('name', id);
-			return layerArray.length > 0 && layerArray[0].getVisibility();
+			if(!(layerArray.length > 0 && layerArray[0].getVisibility())) {
+				layerCurrentlyInMap = false;
+				return true;
+			}
 		});
+		
 		// This is probably the wrong location to be doing this functionality.
 		if (visibility === true && !layerCurrentlyInMap) {
 			item.showLayer({
@@ -675,9 +689,13 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				var isAggregation = item.itemType === 'aggregation' || item.itemType === 'template',
 					isLayerInMap = false;
 
-				isLayerInMap = item.getLayerList().layers.every(function (id) {
+				isLayerInMap = true;
+				item.getLayerList().layers.some(function (id) {
 					var layerArray = CCH.map.getLayersBy('name', id);
-					return layerArray.length > 0 && layerArray[0].getVisibility();
+					if(!(layerArray.length > 0 && layerArray[0].getVisibility())) {
+						isLayerInMap = false;
+						return true;
+					}
 				});
 
 				if (isLayerInMap) {
