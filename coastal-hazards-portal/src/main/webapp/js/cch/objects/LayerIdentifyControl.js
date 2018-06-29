@@ -364,7 +364,7 @@ return {
 							} else if ('%' === units) {
 								$valueContainer.append(displayPoints[i].toFixed(0));
 							} else {
-								if ((displayPoints[i]).isInteger()) {
+								if (Number.isInteger(displayPoints[i])) {
 									$valueContainer.append(displayPoints[i].toFixed(0));
 								}
 								else {
