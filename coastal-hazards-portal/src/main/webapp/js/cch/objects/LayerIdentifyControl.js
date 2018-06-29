@@ -170,7 +170,7 @@ return {
 						layerObject = layer;
 					    }
 					});
-					layetIdParts = layerObject.params.SLD.split('/');
+					var layerIdParts = layerObject.params.SLD.split('/');
 					layerId = layerIdParts[layerIdParts.length-1];
 					layerId = layerId.substr(0, layerId.indexOf('?')).length > 0 ? layerId.substr(0, layerId.indexOf('?')) : layerId;
 					if (featuresByName.hasOwnProperty(layerName)) {
@@ -267,8 +267,8 @@ return {
 					height;
 				
 				if (layerName.indexOf('_r_') !== -1) {
-					layerParts = layerName.split('_');
-					layerPart = layerParts[layerParts.length-1];
+					var layerParts = layerName.split('_'),
+						layerPart = layerParts[layerParts.length-1];
 					ribbonIndex = parseInt(layerPart, 10);
 				}
 
@@ -386,12 +386,12 @@ return {
 
 							$table.append($legendRow);
 							sortedRows = $table.find('tbody > tr').toArray().sort(function (a, b) {
-								var aParts = $(a).attr('id').split('-');
-								var aPart = aParts[aParts.length-1];
-								var aVal = parseInt(aPart, 10);
-								var bParts = $(b).attr('id').split('-');
-								var bPart = bParts[bParts.length-1];
-								var bVal = parseInt(bPart, 10);
+								var aParts = $(a).attr('id').split('-'),
+									aPart = aParts[aParts.length-1],
+									aVal = parseInt(aPart, 10),
+									bParts = $(b).attr('id').split('-'),
+									bPart = bParts[bParts.length-1],
+									bVal = parseInt(bPart, 10);
 
 								if(aVal < bVal) {
 									return -1;
