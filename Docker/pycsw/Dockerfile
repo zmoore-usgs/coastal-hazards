@@ -5,7 +5,7 @@ ARG doi_network=false
 ENV PYCSW_VERSION="1.10.0"
 
 RUN apt-get update && \
-	apt-get install -y git libgeos-c1 gettext postgresql-client
+	apt-get install -y git libgeos-c1v5 gettext postgresql-client
 
 RUN if [ "${doi_network}" = true ]; then \
 		mkdir -p /usr/lib/ssl/certs/ && \
