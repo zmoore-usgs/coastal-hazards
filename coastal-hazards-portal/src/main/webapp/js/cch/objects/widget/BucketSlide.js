@@ -353,12 +353,12 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 
 	me.getCardIndex = function (id) {
 		var cIndex = -1;
-		me.cards.some(function (i, index) {
-			if(i.data('id') === id) {
-				cIndex = index;
-				return true;
+		for(var i = 0; i < cards.length; i++) {
+			if(cards[i].data('id') === id) {
+				cIndex = i;
+				break;
 			}
-		});
+		}
 		return cIndex;
 	};
 
@@ -446,9 +446,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			// the bucket class will actually call this function with a proper
 			// id. It's a long way around removing the item but it does hit 
 			// multiple components
-			var deleteList = [];
-			me.cards.reverse().forEach(function ($card) {
-				deleteList.push($card.data('id'));
+			var deleteList = me.cards.reverse().map(function(card) {
+				return card.data('id');
 			});
 			deleteList.forEach(function(id) {
 				$(window).trigger('cch.slide.bucket.remove', {
@@ -598,11 +597,9 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 			$imageContainer = $cardHtml.find('.application-slide-bucket-container-card-image');
 
 		// Test if the layer is currently visible. If not, set view button to off 
-		layerCurrentlyInMap = true;
-		item.getLayerList().layers.some(function (id) {
+		layerCurrentlyInMap = !item.getLayerList().layers.some(function (id) {
 			var layerArray = CCH.map.getLayersBy('name', id);
 			if(!(layerArray.length > 0 && layerArray[0].getVisibility())) {
-				layerCurrentlyInMap = false;
 				return true;
 			}
 		});

@@ -579,6 +579,7 @@ CCH.Objects.Publish.UI = function () {
 
 	me.addKeywordGroup = function (keyword) {
 		var keywordExists,
+			trimmed = keyword.trim(),
 			keywordCount = 0,
 				$keywordGroupLocal;
 		// Figure out if this keyword would be doubled by adding it
@@ -586,7 +587,7 @@ CCH.Objects.Publish.UI = function () {
 			.not(':first')
 			.toArray()
 			.forEach(function (input) {
-				if($(input).val().trim() === keyword.trim()) {
+				if($(input).val().trim() === trimmed) {
 					keywordCount++;
 				}
 			});

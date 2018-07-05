@@ -343,13 +343,7 @@ CCH.Objects.Front.UI = function (args) {
 					visibility: sessionItem.visible
 				});
 				me.bucket.bucket = me.bucket.getItems().sort(function (a, b) {
-					if(a.addAtIndex < b.addAtIndex) {
-						return -1;
-					} else if(a.addAtIndex > b.addAtIndex) {
-						return 1;
-					} else {
-						return 0;
-					}
+					return a.addAtIndex - b.addAtIndex;
 				});
 				me.bucketSlide.cards = me.bucketSlide.cards.sort(function (card) {
 					return me.bucket.getItemById($(card).data('id')).addAtIndex || -1;
@@ -357,7 +351,7 @@ CCH.Objects.Front.UI = function (args) {
 				me.bucketSlide.rebuild();
 			};
 			$(window).on('cch.item.loaded', function (evt, args) {
-				if (args.id === item.itemId) {
+				if (item !== null && args.id === item.itemId) {
 					$(window).off('cch.item.loaded', loadedHandler);
 					loadedHandler(evt, args);
 				}
@@ -467,13 +461,7 @@ CCH.Objects.Front.UI = function (args) {
 								// I am the final card that will be loaded. I need to organize my container to 
 								// be indexed in the same way that the bucket is
 								var sortedLegends = this.$container.find('>div').toArray().sort(function (a,b) {
-									if($(a).attr('card-index') < $(b).attr('card-index')) {
-										return -1;
-									} else if($(a).attr('card-index') > $(b).attr('card-index')) {
-										return 1;
-									} else {
-										return 0;
-									}
+									return $(a).attr('card-index') - $(b).attr('card-index');
 								});
 
 								this.$container.empty().append(sortedLegends);

@@ -87,15 +87,9 @@ CCH.Objects.Item = function (args) {
 			// If I have children, load those as well
 			var setLoaded = function (evt, args) {
 				if (!me.loaded) {
-					var loadedItemChildIndex = -1;
-					me.children.some(function (childId, index) {
-						if(childId === args.id) {
-							loadedItemChildIndex = index;
-							return true;
-						}
-					});
-
-					var loadedItemIsChild = loadedItemChildIndex !== -1, 
+					var loadedItemIsChild = me.children.some(function (childId) {
+							return childId === args.id
+						}),
 						childItems = [],
 						allLoaded;
 					if (loadedItemIsChild) {
@@ -107,14 +101,9 @@ CCH.Objects.Item = function (args) {
 						});
 
 						if (childItems.length === me.children.length) {
-							var unloadedIndex = -1;
-							childItems.some(function (childItem, index) {
-								if(!childItem.loaded) {
-									unloadedIndex = index;
-									return true;
-								}
+							var allLoaded =	childItems.every(function (childItem) {
+								return childItem.loaded;
 							});
-							allLoaded = unloadedIndex === -1;
 							if (allLoaded) {
 								me.loaded = true;
 								CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
@@ -262,18 +251,6 @@ CCH.Objects.Item = function (args) {
 			}
 		} else {
 			if (me.ribboned && me.parent && me.parent.ribboned) {
-				index = -1;
-				me.parent.children.some(function (childId, indx) {
-					if(me.id === childId) {
-						index = indx;
-						return true;
-					}
-				});
-				index += 1;
-				if (index > layers.length + 1) {
-					index = layers.length + 1;
-				}
-
 				if (bboxObject[stringifiedBbox]) {
 					index = bboxObject[stringifiedBbox].length + 1;
 					bboxObject[stringifiedBbox].push(me.id);
@@ -354,19 +331,6 @@ CCH.Objects.Item = function (args) {
 			layerName = aggregationName + this.id;
 
 			if (me.ribboned && me.parent && me.parent.ribboned) {
-				index = -1;
-				me.parent.children.some(function (childId, indx) {
-					if(me.id === childId) {
-						index = indx;
-						return true;
-					}
-				});
-				index += 1;
-
-				if (index > layers.length + 1) {
-					index = layers.length + 1;
-				}
-
 				if (bboxObject[stringifiedBbox]) {
 					index = bboxObject[stringifiedBbox].length + 1;
 					bboxObject[stringifiedBbox].push(me.id);
@@ -498,9 +462,9 @@ CCH.Objects.Item = function (args) {
 				children = children.concat(me.getChildren({
 					children : children,
 					item : child
-				}).filter(function(childItem) {
-					return children.indexOf(childItem) < 0;
-				}));
+				})).filter(function(childItem, index, self) {
+					return index == self.indexOf(childItem);
+				});
 			}
 		}
 		

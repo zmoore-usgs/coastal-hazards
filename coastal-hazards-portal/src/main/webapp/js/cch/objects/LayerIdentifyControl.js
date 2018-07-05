@@ -267,8 +267,8 @@ return {
 					height;
 				
 				if (layerName.indexOf('_r_') !== -1) {
-					var layerParts = layerName.split('_'),
-						layerPart = layerParts[layerParts.length-1];
+					var layerParts = layerName.split('_');
+					var	layerPart = layerParts[layerParts.length-1];
 					ribbonIndex = parseInt(layerPart, 10);
 				}
 

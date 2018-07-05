@@ -350,14 +350,15 @@ CCH.Objects.Back.UI = function (args) {
 				if (item.children.length !== 0) {
 					for (var cIdx = 0; cIdx < item.children.length; cIdx++) {
 						var childId = item.children[cIdx];
-						services = services.concat(deepDiveToFindAnyServices(CCH.items.getById({id: childId}), services).filter(function(service) {
-							return services.indexOf(service) < 0;
-						}));
+						services = services.concat(deepDiveToFindAnyServices(CCH.items.getById({id: childId}), services)
+							.filter(function(service, index, self) {
+								return index == self.indexOf(service);
+							}));
 					}
 				}
-				services = services.concat(item.services.filter(function(service) {
-					return services.indexOf(service) < 0;
-				}));
+				services = services.concat(item.services).filter(function(service, index, self) {
+					return index == self.indexOf(service);
+				});
 			}
 			return services;
 		};
