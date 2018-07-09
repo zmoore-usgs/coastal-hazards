@@ -6,7 +6,7 @@ CCH.Objects.Publish = CCH.Objects.Publish || {};
 CCH.Objects.Publish.Tree = CCH.Objects.Publish.Tree || {};
 CCH.Objects.Publish.Tree.UI = function (args) {
 	"use strict";
-	var me = Object.extended();
+	var me = {};
 
 	$.extend(me, args);
 
@@ -491,10 +491,14 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 			if (displayed) {
 				node.state.displayed = false;
 				$('#' + selectedId + '_anchor');
-				parent.state.displayedChildren.remove(originalId);
+				parent.state.displayedChildren = parent.state.displayedChildren.filter(function(el) {
+					el !== originalId
+				});
 			} else {
 				node.state.displayed = true;
-				parent.state.displayedChildren = parent.state.displayedChildren.union(originalId);
+				if(!parent.state.displayedChildren.includes(originalId)) {
+					parent.state.displayedChildren.push(originalId);
+				}
 			}
 
 			tree.save_state();
@@ -529,7 +533,7 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 					}
 
 					//Update parents
-					[oldParent, newParent].each(function (itemId) {
+					[oldParent, newParent].forEach(function (itemId) {
 						me.itemUpdated(itemId);
 					});
 				}
@@ -742,19 +746,19 @@ CCH.Objects.Publish.Tree.UI = function (args) {
 	}
 
 	me.updateRandomIdToOriginalId = function (data) {
-		var dataClone = Object.clone(data, true);
-		Object.keys(dataClone, function (k, v) {
-			var children = v.children.map(function (id) {
+		var dataClone = JSON.parse(JSON.stringify(data));
+		Object.keys(dataClone).forEach(function (key) {
+			var children = dataClone[key].children.map(function (id) {
 				return CCH.ui.getTree().get_node(id).state['original-id'];
 			});
-			dataClone[k] = {
+			dataClone[key] = {
 				children: children,
-				displayedChildren: v.displayedChildren
+				displayedChildren: dataClone[key].displayedChildren
 			};
 
-			if (k !== 'uber') {
-				dataClone[CCH.ui.getTree().get_node(k).state['original-id']] = dataClone[k];
-				delete dataClone[k];
+			if (key !== 'uber') {
+				dataClone[CCH.ui.getTree().get_node(key).state['original-id']] = dataClone[key];
+				delete dataClone[key];
 			}
 
 		});

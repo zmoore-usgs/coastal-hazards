@@ -102,7 +102,7 @@ CCH.Objects.Front.Map = function (args) {
 			markerLayer = new OpenLayers.Layer.Markers(me.markerLayerName);
 			me.getMap().addLayer(markerLayer);
 			
-			while (markerLayer !== me.getMap().layers.last()) {
+			while (markerLayer !== me.getMap().layers[me.getMap().layers.length-1]) {
 				me.getMap().raiseLayer(markerLayer, 1);
 			}
 		}
@@ -174,7 +174,7 @@ CCH.Objects.Front.Map = function (args) {
 	me.hideAllLayers = function () {
 		var hiddenLayerNames = [];
 
-		me.getLayersBy('type', 'cch').each(function (layer) {
+		me.getLayersBy('type', 'cch').forEach(function (layer) {
 			me.hideLayer(layer);
 			hiddenLayerNames.push(layer.name);
 		});
@@ -208,7 +208,7 @@ CCH.Objects.Front.Map = function (args) {
 
 	me.removeAllPopups = function () {
 		if (CCH.map.getMap().popups.length) {
-			CCH.map.getMap().popups.each(function (popup) {
+			CCH.map.getMap().popups.forEach(function (popup) {
 				popup.closeDiv.click();
 			});
 		}
@@ -348,7 +348,7 @@ CCH.Objects.Front.Map = function (args) {
 				}
 			} else {
 				// No pinned cards, zoom to the collective bbox of all cards
-				CCH.cards.getCards().each(function (card) {
+				CCH.cards.getCards().forEach(function (card) {
 					bounds.extend(OpenLayers.Bounds.fromArray(card.bbox).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection));
 				});
 			}
@@ -431,7 +431,7 @@ CCH.Objects.Front.Map = function (args) {
 		hideLayersByName: function (name) {
 			CCH.LOG.trace('Map.js::hideLayersByName: Trying to hide a layer. Layer name: ' + name);
 			var layers = me.map.getLayersByName(name) || [];
-			layers.each(function (layer) {
+			layers.forEach(function (layer) {
 				me.hideLayer(layer);
 			});
 			return layers;
@@ -513,12 +513,12 @@ CCH.Objects.Front.Map = function (args) {
 				$(body).css(cursor, 'wait');
 			});
 			layer.events.register('loadend', layer, function () {
-				var layers = CCH.map.getMap().layers.findAll(function (l) {
+				var layers = CCH.map.getMap().layers.filter(function (l) {
 					return l.type === 'cch';
 				}),
 					layersStillLoading = 0;
 
-				layers.each(function (l) {
+				layers.forEach(function (l) {
 					layersStillLoading += l.numLoadingTiles;
 				});
 

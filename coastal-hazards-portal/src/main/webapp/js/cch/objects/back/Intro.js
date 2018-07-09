@@ -64,10 +64,10 @@ CCH.intro = (function () {
 			updateForMobile = function () {
 				CCH.ui.toggleControlCenterVisibility(true);
 				CCH.ui.rotateArrow('down');
-				[0, 1, 2, 3, 4, 5, 6].each(function (e) {
+				[0, 1, 2, 3, 4, 5, 6].forEach(function (e) {
 					steps[e].position = 'bottom';
 				});
-				[7, 8].each(function (e) {
+				[7, 8].forEach(function (e) {
 					steps[e].position = 'top';
 				});
 
@@ -78,9 +78,9 @@ CCH.intro = (function () {
 				
 				// Because a user can get a tutorial going on any item, I need to 
 				// check to figure out if the item has had buttons removed
-				[5,3,2].each(function (e) {
+				[5,3,2].forEach(function (e) {
 					if ($(steps[e].element).hasClass('hidden')) {
-						steps.removeAt(e);
+						steps.splice(e, 1);
 					}
 				});
 			};

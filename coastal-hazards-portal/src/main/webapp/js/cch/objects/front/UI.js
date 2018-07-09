@@ -317,14 +317,20 @@ CCH.Objects.Front.UI = function (args) {
 		items = items || [];
 		// Wait for each item in the session to be loaded 
 		// before adding it to the bucket
-		items.each(function (item) {
+		items.forEach(function (item) {
 			var loadedHandler = function (evt, args) {
 				var loadedItemId = args.id,
-					sessionItems = CCH.session.getSession().items,
-					addIndex = sessionItems.findIndex(function (i) {
-						return i.itemId === args.id;
-					}),
-					sessionItem = sessionItems[addIndex],
+					sessionItems = CCH.session.getSession().items;
+					
+				var addIndex = -1;
+					sessionItems.some(function(i, index) {
+						if(i.itemId === args.id) {
+							addIndex = index;
+							return true;
+						}
+					});
+
+				var sessionItem = sessionItems[addIndex],
 					itemById = CCH.items.getById({
 						id: loadedItemId
 					});
@@ -336,8 +342,8 @@ CCH.Objects.Front.UI = function (args) {
 					item: itemById,
 					visibility: sessionItem.visible
 				});
-				me.bucket.bucket = me.bucket.getItems().sortBy(function (i) {
-					return i.addAtIndex;
+				me.bucket.bucket = me.bucket.getItems().sort(function (a, b) {
+					return a.addAtIndex - b.addAtIndex;
 				});
 				me.bucketSlide.cards = me.bucketSlide.cards.sort(function (card) {
 					return me.bucket.getItemById($(card).data('id')).addAtIndex || -1;
@@ -345,7 +351,7 @@ CCH.Objects.Front.UI = function (args) {
 				me.bucketSlide.rebuild();
 			};
 			$(window).on('cch.item.loaded', function (evt, args) {
-				if (args.id === item.itemId) {
+				if (item !== null && args.id === item.itemId) {
 					$(window).off('cch.item.loaded', loadedHandler);
 					loadedHandler(evt, args);
 				}
@@ -427,7 +433,7 @@ CCH.Objects.Front.UI = function (args) {
 		}
 
 		// I'm going to build a legend per card
-		cards.each(function (card, index) {
+		cards.forEach(function (card, index) {
 			// Every card in the bucket has an associated id referencing the item it belongs to
 			id = card.data('id');
 			
@@ -454,8 +460,8 @@ CCH.Objects.Front.UI = function (args) {
 							if (Object.keys(bucketLegends).length === this.$container.children().length) {
 								// I am the final card that will be loaded. I need to organize my container to 
 								// be indexed in the same way that the bucket is
-								var sortedLegends = this.$container.find('>div').toArray().sortBy(function ($div) {
-									return parseInt($($div).attr('card-index'));
+								var sortedLegends = this.$container.find('>div').toArray().sort(function (a,b) {
+									return $(a).attr('card-index') - $(b).attr('card-index');
 								});
 
 								this.$container.empty().append(sortedLegends);

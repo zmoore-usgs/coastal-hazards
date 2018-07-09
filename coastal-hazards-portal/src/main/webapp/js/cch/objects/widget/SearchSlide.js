@@ -69,7 +69,7 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 		var $locationSlide = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
 				$productSlide = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID);
 
-		[$locationSlide, $productSlide].each(function ($slide, ind) {
+		[$locationSlide, $productSlide].forEach(function ($slide, ind) {
 			$slide.find('>div:nth-child(1)').empty();
 			$slide.find('>div:nth-child(' + (ind + 2) + ')')
 				.empty()

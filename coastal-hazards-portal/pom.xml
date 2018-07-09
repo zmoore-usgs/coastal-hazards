@@ -218,10 +218,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
-			<artifactId>sugar</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars</groupId>
 			<artifactId>openlayers</artifactId>
 		</dependency>
 		<dependency>
