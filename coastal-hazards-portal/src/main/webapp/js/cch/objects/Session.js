@@ -244,12 +244,14 @@ CCH.Objects.Session = function (args) {
 
 	me.getItemIndex = function (item) {
 		var idx = -1;
-		me.session.items.some(function(i, index) {
-			if((i == null && item == null) || (i != null && i.itemId === item.id)) {
-				idx = index;
-				return true;
-			}
-		});
+		if(item != null) {
+			me.session.items.some(function(i, index) {
+					if(i != null && i.itemId === item.id) {
+					idx = index;
+					return true;
+				}
+			});
+		}
 		return idx;
 	};
 

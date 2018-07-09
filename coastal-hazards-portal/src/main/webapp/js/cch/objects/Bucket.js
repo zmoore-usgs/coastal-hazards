@@ -52,7 +52,6 @@ CCH.Objects.Bucket = function (args) {
 	};
 	me.bucketRemoveClickHandler = function (evt, args) {
 		args = args || {};
-		console.log("Remove handler for " + args.id);
 		var id = args.id,
 			item = id ? CCH.items.getById({id: id}) : args.item;
 

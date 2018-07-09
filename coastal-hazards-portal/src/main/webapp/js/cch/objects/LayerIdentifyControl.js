@@ -170,7 +170,7 @@ return {
 						layerObject = layer;
 					    }
 					});
-					var layerIdParts = layerObject.params.SLD.split('/');
+					var layerIdParts = layerObject.params.SLD.split("/");
 					layerId = layerIdParts[layerIdParts.length-1];
 					layerId = layerId.substr(0, layerId.indexOf('?')).length > 0 ? layerId.substr(0, layerId.indexOf('?')) : layerId;
 					if (featuresByName.hasOwnProperty(layerName)) {
@@ -414,7 +414,7 @@ return {
 				
 				var tables = $popupHtml.find('table').toArray().sort(function (a,b) {
 					var aVal = parseInt($(a).attr('data-attr'));
-					var bVal = parseInt($(a).attr('data-attr'));
+					var bVal = parseInt($(b).attr('data-attr'));
 					
 					if(aVal < bVal) {
 						return -1;
