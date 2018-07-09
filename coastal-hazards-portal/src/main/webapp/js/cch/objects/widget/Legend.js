@@ -824,7 +824,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			legendGroups = {};
 			legendTables.forEach(function(lt) {
 				var group = $(lt).find('tbody').html().hashCode();
-				legendGroups[group] === undefined ? legendGroups[group] = [lt] : legendGroups.group.push(lt);
+				legendGroups[group] === undefined ? legendGroups[group] = [lt] : legendGroups[group].push(lt);
 			});
 
 			for (hashKey in legendGroups) {
