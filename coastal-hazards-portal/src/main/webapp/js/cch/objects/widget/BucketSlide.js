@@ -353,8 +353,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 
 	me.getCardIndex = function (id) {
 		var cIndex = -1;
-		for(var i = 0; i < cards.length; i++) {
-			if(cards[i].data('id') === id) {
+		for(var i = 0; i < me.cards.length; i++) {
+			if(me.cards[i].data('id') === id) {
 				cIndex = i;
 				break;
 			}
