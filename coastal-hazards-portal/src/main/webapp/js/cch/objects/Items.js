@@ -73,7 +73,7 @@ CCH.Objects.Items = function (args) {
 		},
 		getByAlias: function (args) {
 			var alias = args.alias;
-			var itemIds = Object.keys(CCH.items.getItems())
+			var itemIds = Object.keys(CCH.items.getItems());
 			
 			for(var i = 0; i < itemIds.length; i++){
 				if(me.items[itemIds[i]].aliases.indexOf(alias) >= 0){

@@ -49,7 +49,7 @@ CCH.Util.Search = function (args) {
 			contentType: 'application/json',
 			dataType: 'jsonp',
 			success: function (data, statusText, xhrResponse) {
-				callbacks.success.each(function (cb) {
+				callbacks.success.forEach(function (cb) {
 					cb.apply(this, [data, statusText, xhrResponse]);
 				});
 				ga('send', 'event', {
@@ -59,7 +59,7 @@ CCH.Util.Search = function (args) {
 				});
 			},
 			error: function (xhr, status, error) {
-				callbacks.error.each(function (cb) {
+				callbacks.error.forEach(function (cb) {
 					cb.apply(this, [xhr, status, error]);
 				});
 				ga('send', 'exception', {
@@ -102,12 +102,12 @@ CCH.Util.Search = function (args) {
 			context: this,
 			traditional: true,
 			success: function (data, statusText, xhrResponse) {
-				callbacks.success.each(function (cb) {
+				callbacks.success.forEach(function (cb) {
 					cb.apply(this, [data, statusText, xhrResponse]);
 				});
 			},
 			error: function (xhr, status, error) {
-				callbacks.error.each(function (cb) {
+				callbacks.error.forEach(function (cb) {
 					cb.apply(this, [xhr, status, error]);
 				});
 			}
@@ -133,12 +133,12 @@ CCH.Util.Search = function (args) {
 			context: this,
 			traditional: true,
 			success: function (data, statusText, xhrResponse) {
-				callbacks.success.each(function (cb) {
+				callbacks.success.forEach(function (cb) {
 					cb.apply(this, [data, statusText, xhrResponse]);
 				});
 			},
 			error: function (xhr, status, error) {
-				callbacks.error.each(function (cb) {
+				callbacks.error.forEach(function (cb) {
 					cb.apply(this, [xhr, status, error]);
 				});
 			}
@@ -159,12 +159,12 @@ CCH.Util.Search = function (args) {
 			context: this,
 			traditional: true,
 			success: function (data, statusText, xhrResponse) {
-				callbacks.success.each(function (cb) {
+				callbacks.success.forEach(function (cb) {
 					cb.apply(this, [data, statusText, xhrResponse]);
 				});
 			},
 			error: function (xhr, status, error) {
-				callbacks.error.each(function (cb) {
+				callbacks.error.forEach(function (cb) {
 					cb.apply(this, [xhr, status, error]);
 				});
 			}
@@ -222,12 +222,12 @@ CCH.Util.Search = function (args) {
 			context: scope,
 			traditional: true,
 			success: function (data, statusText, xhrResponse) {
-				callbacks.success.each(function (cb) {
+				callbacks.success.forEach(function (cb) {
 					cb.apply(this, [data, statusText, xhrResponse]);
 				});
 			},
 			error: function (xhr, status, error) {
-				callbacks.error.each(function (cb) {
+				callbacks.error.forEach(function (cb) {
 					cb.apply(this, [xhr, status, error]);
 				});
 			}

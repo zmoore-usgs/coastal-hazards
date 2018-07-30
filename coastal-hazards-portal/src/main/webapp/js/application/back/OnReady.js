@@ -34,7 +34,7 @@ $(document).ready(function () {
 				itemId: item.id,
 				callbacks: {
 					success: [function(data) {
-						data.each(function(alias, index) {
+						data.forEach(function(alias, index) {
 							if(alias.id != null){
 								item.aliases.push(alias.id);
 							}

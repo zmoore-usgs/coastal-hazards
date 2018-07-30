@@ -46,7 +46,7 @@ CCH.Objects.ClickControl = OpenLayers.Class(OpenLayers.Control, {
 		var markerLayer = CCH.map.getMap().getLayersByName('Markers')[0];
 
 		// Remove the marker on the map since the ajax call is no longer out
-		markerLayer.markers.each(function (marker) {
+		markerLayer.markers.forEach(function (marker) {
 			markerLayer.removeMarker(marker);
 			marker.destroy();
 		});
@@ -74,7 +74,7 @@ CCH.Objects.ClickControl = OpenLayers.Class(OpenLayers.Control, {
 				// If markers exist, remove them
 				var markerLayer = marker.map.getLayersByName('Markers')[0];
 				
-				markerLayer.markers.each(function (marker) {
+				markerLayer.markers.forEach(function (marker) {
 					markerLayer.removeMarker(marker);
 					marker.destroy();
 				});

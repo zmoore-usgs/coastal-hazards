@@ -42,7 +42,6 @@
     String vBootstrap = getProp("version.bootstrap");
     String vFontAwesome = getProp("version.fontawesome");
     String vOpenlayers = getProp("version.openlayers");
-    String vSugarJs = getProp("version.sugarjs");
     String vHandlebars = getProp("version.handlebars");
     String baseUrl = props.getProperty("coastal-hazards.base.secure.url");
     baseUrl = StringUtils.isNotBlank(baseUrl) ? baseUrl : request.getContextPath();
@@ -92,7 +91,7 @@
         <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/<%=vJqueryUI%>/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/<%=vOpenlayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+
 
         <jsp:include page="../../../../js/third-party/jsuri/jsuri.jsp">
             <jsp:param name="baseUrl" value="<%=baseUrl + '/'%>" /> 

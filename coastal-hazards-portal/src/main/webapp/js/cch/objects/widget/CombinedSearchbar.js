@@ -67,8 +67,9 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 			// Get all visible, non-modal children of the parent that are also not my container
 			$parentContainerVisibleItems = $parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])');
 			// Get the width of child containers
-			childrenCombinedWidth = $parentContainerVisibleItems.toArray().sum(function (el) {
-				return $(el).outerWidth(true);
+			childrenCombinedWidth = 0;
+			$parentContainerVisibleItems.toArray().forEach(function(el) {
+				childrenCombinedWidth += $(el).outerWidth(true);
 			});
 			containerMarginRight = 15; // TODO- This is problematic between IE9 and others
 			idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
@@ -368,7 +369,8 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 				parentListEl = target.parentElement,
 				allItems = $('.' + me.DD_TOGGLE_MENU_ITEMS_CLASS),
 				// The id has the type as the last word
-				type = evt.target.id.split('-').last(),
+				typeParts = evt.target.id.split('-'),
+				type = typeParts[typeParts.length-1],
 				isDisabled = $(target).parent().hasClass('disabled');
 
 		ga('send', 'event', {
