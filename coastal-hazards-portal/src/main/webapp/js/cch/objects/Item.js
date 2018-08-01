@@ -87,13 +87,13 @@ CCH.Objects.Item = function (args) {
 			// If I have children, load those as well
 			var setLoaded = function (evt, args) {
 				if (!me.loaded) {
-					var loadedItemIsChild = me.children.findIndex(function (childId) {
-						return childId === args.id;
-					}) !== -1,
-							childItems = [],
-							allLoaded;
+					var loadedItemIsChild = me.children.some(function (childId) {
+							return childId === args.id
+						}),
+						childItems = [],
+						allLoaded;
 					if (loadedItemIsChild) {
-						me.children.each(function (childId) {
+						me.children.forEach(function (childId) {
 							var childItem = CCH.items.getById({id: childId});
 							if (childItem) {
 								childItems.push(childItem);
@@ -101,9 +101,9 @@ CCH.Objects.Item = function (args) {
 						});
 
 						if (childItems.length === me.children.length) {
-							allLoaded = childItems.findIndex(function (childItem) {
-								return !childItem.loaded;
-							}) === -1;
+							var allLoaded =	childItems.every(function (childItem) {
+								return childItem.loaded;
+							});
 							if (allLoaded) {
 								me.loaded = true;
 								CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
@@ -154,7 +154,7 @@ CCH.Objects.Item = function (args) {
 				loadDataToItem(me, null);
 			} else {
 				// The child still needs to be loaded
-				me.children.each(function (child) {
+				me.children.forEach(function (child) {
 					new CCH.Objects.Item({
 						id: child,
 						parent: me
@@ -251,14 +251,6 @@ CCH.Objects.Item = function (args) {
 			}
 		} else {
 			if (me.ribboned && me.parent && me.parent.ribboned) {
-				index = me.parent.children.findIndex(function (childId) {
-					return me.id === childId;
-				});
-				index += 1;
-				if (index > layers.length + 1) {
-					index = layers.length + 1;
-				}
-
 				if (bboxObject[stringifiedBbox]) {
 					index = bboxObject[stringifiedBbox].length + 1;
 					bboxObject[stringifiedBbox].push(me.id);
@@ -339,15 +331,6 @@ CCH.Objects.Item = function (args) {
 			layerName = aggregationName + this.id;
 
 			if (me.ribboned && me.parent && me.parent.ribboned) {
-				index = me.parent.children.findIndex(function (childId) {
-					return me.id === childId;
-				});
-				index += 1;
-
-				if (index > layers.length + 1) {
-					index = layers.length + 1;
-				}
-
 				if (bboxObject[stringifiedBbox]) {
 					index = bboxObject[stringifiedBbox].length + 1;
 					bboxObject[stringifiedBbox].push(me.id);
@@ -379,7 +362,7 @@ CCH.Objects.Item = function (args) {
 	};
 
 	me.hideLayer = function () {
-		me.getLayerList().layers.each(function (layerName) {
+		me.getLayerList().layers.forEach(function (layerName) {
 			CCH.map.hideLayersByName(layerName);
 		});
 
@@ -471,15 +454,17 @@ CCH.Objects.Item = function (args) {
 		var children = args.children || [],
 				item = args.item || me,
 				itemChildren = item.children;
-				children.add(item);
+				children.push(item);
 				
 		if (itemChildren.length) {
 			for (var cIdx = 0; cIdx < itemChildren.length; cIdx++) {
 				var child = CCH.items.getById({ id : itemChildren[cIdx] });
-				children.union(me.getChildren({
+				children = children.concat(me.getChildren({
 					children : children,
 					item : child
-				}));
+				})).filter(function(childItem, index, self) {
+					return index == self.indexOf(childItem);
+				});
 			}
 		}
 		

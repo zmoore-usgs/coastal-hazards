@@ -59,12 +59,12 @@ CCH.Util.Util = {
 		    },
 		    dataType: 'json',
 		    success: function (data, status, jqXHR) {
-			    args.callbacks.success.each(function (cb) {
+			    args.callbacks.success.forEach(function (cb) {
 				    cb.apply(args.context, [data, status, jqXHR]);
 			    });
 		    },
 		    error: function (jqXHR, textStatus, errorThrown) {
-			    args.callbacks.error.each(function (cb) {
+			    args.callbacks.error.forEach(function (cb) {
 				    cb.apply(args.context, [jqXHR, textStatus, errorThrown]);
 			    });
 		    }

@@ -170,7 +170,7 @@ CCH.Objects.Publish.UI = function () {
 			$resourcesPanel.find('.form-publish-info-item-panel-button-add')]
 				.concat($('.form-group-keyword input'))
 				.concat($bboxes)
-				.each(function ($item) {
+				.forEach(function ($item) {
 					$item.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 				});
 
@@ -183,11 +183,11 @@ CCH.Objects.Publish.UI = function () {
 			$proxyWmsServiceParamInput, $metadataSummaryField, $itemType, $name]
 				.concat($('.form-group-keyword input'))
 				.concat($bboxes)
-				.each(function ($item) {
+				.forEach(function ($item) {
 					$item.val('');
 				});
 		
-		[$ribbonableCb, $showChildrenCb, $isActiveStormChecbox, $isFeaturedCB].each(function ($i) {
+		[$ribbonableCb, $showChildrenCb, $isActiveStormChecbox, $isFeaturedCB].forEach(function ($i) {
 			$i.prop(CCH.CONFIG.strings.checked, false);
 		});
 		$editingEnabled = false;
@@ -208,7 +208,7 @@ CCH.Objects.Publish.UI = function () {
 	me.enableNewItemForm = function () {
 		$itemType.val('data');
                 [$servicePanel.find('input, button'), $buttonSave, $buttonDelete]
-                        .each(function ($item) {
+                        .forEach(function ($item) {
                             $item.removeAttr(CCH.CONFIG.strings.disabled);
 			});
 		$editingEnabled = true;
@@ -244,7 +244,7 @@ CCH.Objects.Publish.UI = function () {
 			$publicationsPanel.find('#form-publish-info-item-panel-publications-button-add')]
 				.concat($('.form-group-keyword input'))
 				.concat($bboxes)
-				.each(function ($item) {
+				.forEach(function ($item) {
 					$item.removeAttr(CCH.CONFIG.strings.disabled);
 				});
 		$editingEnabled = true;
@@ -579,15 +579,19 @@ CCH.Objects.Publish.UI = function () {
 
 	me.addKeywordGroup = function (keyword) {
 		var keywordExists,
+			trimmed = keyword.trim(),
+			keywordCount = 0,
 				$keywordGroupLocal;
 		// Figure out if this keyword would be doubled by adding it
-		keywordExists = $form
-				.find('.form-group-keyword input')
-				.not(':first')
-				.toArray()
-				.count(function (input) {
-					return $(input).val().trim() === keyword.trim();
-				}) > 0;
+		$form.find('.form-group-keyword input')
+			.not(':first')
+			.toArray()
+			.forEach(function (input) {
+				if($(input).val().trim() === trimmed) {
+					keywordCount++;
+				}
+			});
+		keywordExists = keywordCount > 0;
 
 		if (!keywordExists) {
 			$keywordGroupLocal = $keywordGroupClone.clone();
@@ -609,25 +613,25 @@ CCH.Objects.Publish.UI = function () {
 		    //PYCSW 1.x Support -- Remove After Server pycsw Upgrades Complete
 		    var cswNodes = responseObject.children;
 		    var tag;
-		    cswNodes[0].children.each(function (node) {
+		    cswNodes[0].children.forEach(function (node) {
 			    tag = node.tag;
 
 			    if (tag === 'idinfo') {
-				    node.children.each(function (childNode) {
+				    node.children.forEach(function (childNode) {
 					    tag = childNode.tag;
 					    switch (tag) {
 					    case 'spdom':
 						    if (childNode.children) {
-							    childNode.children[0].children.each(function (spdom) {
+							    childNode.children[0].children.forEach(function (spdom) {
 								    var direction = spdom.tag.substring(0, spdom.tag.length - 2);
 								    $('#form-publish-item-bbox-input-' + direction).val(spdom.text);
 							    });
 						    }
 						    break;
 					    case 'keywords':
-						    childNode.children.each(function (kwNode) {
+						    childNode.children.forEach(function (kwNode) {
 							    var keywords = kwNode.children;
-							    keywords.splice(1).each(function (kwObject) {
+							    keywords.splice(1).forEach(function (kwObject) {
 								    var keyword = kwObject.text;
 								    me.addKeywordGroup(keyword);
 							    });
@@ -673,7 +677,7 @@ CCH.Objects.Publish.UI = function () {
 	
 	me.parseJsonKeywords = function (keywords) {
 	    if(Array.isArray(keywords)){
-		keywords.each(function(keyword) {
+		keywords.forEach(function(keyword) {
 		    me.addKeywordGroup(keyword);
 		})
 	    } else {
@@ -725,12 +729,12 @@ CCH.Objects.Publish.UI = function () {
 			dataType: 'json',
 			contentType: "application/json; charset=utf-8",
 			success: function (json, textStatus, jqXHR) {
-				callbacks.success.each(function (cb) {
+				callbacks.success.forEach(function (cb) {
 					cb(json, textStatus, jqXHR);
 				});
 			},
 			error: function () {
-				callbacks.error.each(function (cb) {
+				callbacks.error.forEach(function (cb) {
 					cb();
 				});
 			}
@@ -751,14 +755,14 @@ CCH.Objects.Publish.UI = function () {
 			dataType: 'json',
 			success: function (json, textStatus, jqXHR) {
 				if (callbacks.success && callbacks.success.length > 0) {
-					callbacks.success.each(function (callback) {
+					callbacks.success.forEach(function (callback) {
 						callback.call(null, json, textStatus, jqXHR);
 					});
 				}
 			},
 			error: function (xhr, status, error) {
 				if (callbacks.error && callbacks.error.length > 0) {
-					callbacks.error.each(function (callback) {
+					callbacks.error.forEach(function (callback) {
 						callback.call(null, xhr, status, error);
 					});
 				}
@@ -790,7 +794,7 @@ CCH.Objects.Publish.UI = function () {
                 
 		if (featureTypes) {
 			featureTypes = featureTypes[0];
-			featureTypes.properties.each(function (ft) {
+			featureTypes.properties.forEach(function (ft) {
 				ftName = ft.name;
 				ftNameLower = ftName.toLowerCase();
 				if ($.inArray(ftNameLower, ['objectid','shape','shape.len', 'the_geom', 'descriptio','name']) === -1) {
@@ -816,7 +820,7 @@ CCH.Objects.Publish.UI = function () {
 	//Unlocks item type and features panel
 	me.unlockItemTypeFeatures = function () {
 	    [$typeSb, $attributeSelect,$featuresPanel.find('button, input')]
-		.each(function ($item) {
+		.forEach(function ($item) {
 		    $item.removeAttr(CCH.CONFIG.strings.disabled);
 		});
 	};
@@ -824,7 +828,7 @@ CCH.Objects.Publish.UI = function () {
 	//Unlocks Titles, Resources, and Metadata Panels
 	me.unlockTitlesResourcesMetadata = function () {
 	    [$titlesPanel.find('button, textarea'), $resourcesPanel.find('button'), $metaDataPanel.find('button, input')]
-		.each(function ($item) {
+		.forEach(function ($item) {
 		    $item.removeAttr(CCH.CONFIG.strings.disabled);
 		});
 	};
@@ -832,7 +836,7 @@ CCH.Objects.Publish.UI = function () {
 	//Locks Titles, Resources, and Metadata Panels
  	me.lockTitlesResourcesMetadata = function () {
 	    [$titlesPanel.find('button, textarea'), $resourcesPanel.find('button'), $metaDataPanel.find('button, input')]
-                .each(function ($item) {
+                .forEach(function ($item) {
                     $item.prop("disabled", true);
                 });
 	};
@@ -977,7 +981,7 @@ CCH.Objects.Publish.UI = function () {
 			
 			//Uniqueness
 			if(errorString == ""){
-				me.allAliasList.each(function(entry) {
+				me.allAliasList.forEach(function(entry) {
 					if(newAlias.id == entry.id && alias.item_id != entry.item_id){
 						errorString = "There is already an alias using this name.";
 					}
@@ -1252,7 +1256,7 @@ CCH.Objects.Publish.UI = function () {
 				url: CCH.CONFIG.contextPath + '/data/alias/item/' + id,
 				method: "GET",
 				success: function(data){
-					data.each(function(alias) {
+					data.forEach(function(alias) {
 						me.createAliasRow(alias.id);
 					});
 				},
@@ -1304,7 +1308,7 @@ CCH.Objects.Publish.UI = function () {
 						.attr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 
 				// Fill out services array
-				item.services.each(function (service) {
+				item.services.forEach(function (service) {
 					services[service.type] = {};
 					services[service.type].endpoint = service.endpoint;
 					services[service.type].serviceParameter = service.serviceParameter;
@@ -1369,7 +1373,7 @@ CCH.Objects.Publish.UI = function () {
 						.concat($bboxes)
 						.concat($keywordGroup.find('input'))
 						.concat($keywordGroup.find('button'))
-						.each(function ($item) {
+						.forEach(function ($item) {
 					$item.removeAttr(CCH.CONFIG.strings.disabled);
 				});
 			
@@ -1384,7 +1388,7 @@ CCH.Objects.Publish.UI = function () {
 			$metadataSummaryField.val(summary.version || 'unknown');
 			
 			// Add keywords
-			keywords.each(function (keyword) {
+			keywords.forEach(function (keyword) {
 				me.addKeywordGroup(keyword);
 			});
 			
@@ -1409,8 +1413,8 @@ CCH.Objects.Publish.UI = function () {
 
 			// Publications
 			$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-			Object.keys(item.summary.full.publications, function (type) {
-				item.summary.full.publications[type].each(function (publication) {
+			Object.keys(item.summary.full.publications).forEach(function (type) {
+				item.summary.full.publications[type].forEach(function (publication) {
 					me.createPublicationRow(publication.link, publication.title, type);
 				});
 			});
@@ -1471,12 +1475,12 @@ CCH.Objects.Publish.UI = function () {
 			data: JSON.stringify(item),
 			contentType: "application/json; charset=utf-8",
 			success: function (obj) {
-				callbacks.success.each(function (cb) {
+				callbacks.success.forEach(function (cb) {
 					cb(obj);
 				});
 			},
 			error: function (obj) {
-				callbacks.error.each(function (cb) {
+				callbacks.error.forEach(function (cb) {
 					cb(obj);
 				});
 			}
@@ -1500,12 +1504,12 @@ CCH.Objects.Publish.UI = function () {
 			data: JSON.stringify(alias),
 			contentType: "application/json; charset=utf-8",
 			success: function (obj) {
-				callbacks.success.each(function (cb) {
+				callbacks.success.forEach(function (cb) {
 					cb(obj);
 				});
 			},
 			error: function (obj) {
-				callbacks.error.each(function (cb) {
+				callbacks.error.forEach(function (cb) {
 					cb(obj);
 				});
 			}
@@ -1529,14 +1533,14 @@ CCH.Objects.Publish.UI = function () {
 				callbacks: {
 					success: [
 						function (featureDescription) {
-							callbacks.success.each(function (cb) {
+							callbacks.success.forEach(function (cb) {
 								cb(featureDescription);
 							});
 						}
 					],
 					error: [
 						function (error) {
-							callbacks.error.each(function (cb) {
+							callbacks.error.forEach(function (cb) {
 								cb(error);
 							});
 						}
@@ -1781,13 +1785,13 @@ CCH.Objects.Publish.UI = function () {
 					function (response) {
 						$('.resource-list-container-sortable').empty();
 						$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-						Object.keys(response.full.publications, function (type) {
-							response.full.publications[type].each(function (publication) {
+						Object.keys(response.full.publications).forEach(function (type) {
+							response.full.publications[type].forEach(function (publication) {
 								me.createPublicationRow(publication.link, publication.title, type);
 							});
 						});
                                                 
-						response.keywords.split('|').each(function (keyword) {
+						response.keywords.split('|').forEach(function (keyword) {
 							me.addKeywordGroup(keyword);
 						});
 					}
@@ -1903,7 +1907,7 @@ CCH.Objects.Publish.UI = function () {
 		if (errors.length === 0) {
 			performSave();
 		} else {
-			errors.each(function (error) {
+			errors.forEach(function (error) {
 				$li = $('<li />').html(error);
 				$ul.append($li);
 			});
@@ -2035,7 +2039,7 @@ CCH.Objects.Publish.UI = function () {
 									svcName;
 
 							if (jsonResponse.services) {
-								jsonResponse.services.each(function (svc) {
+								jsonResponse.services.forEach(function (svc) {
 									if (svc.type === 'MapServer') {
 										svcName = svc.name.substring(svc.name.indexOf('/') + 1);
 										$li = $('<li />');
@@ -2121,7 +2125,7 @@ CCH.Objects.Publish.UI = function () {
 					'namespace': namespace,
 					'callbacks': {
 						success: [function () {
-								CCH.ows.servers[serverName].data.wms.capabilities.object.capability.layers.each(function (layer) {
+								CCH.ows.servers[serverName].data.wms.capabilities.object.capability.layers.forEach(function (layer) {
 									$li = $('<li />');
 									$a = $('<a />').attr({
 										'href': '#',
@@ -2156,7 +2160,7 @@ CCH.Objects.Publish.UI = function () {
 					'namespace': namespace,
 					'callbacks': {
 						success: [function () {
-								CCH.ows.servers[serverName].data.wms.capabilities.object.capability.layers.each(function (layer) {
+								CCH.ows.servers[serverName].data.wms.capabilities.object.capability.layers.forEach(function (layer) {
 									$li = $('<li />');
 									$a = $('<a />').attr({
 										'href': '#',
@@ -2190,7 +2194,7 @@ CCH.Objects.Publish.UI = function () {
 			'namespace': 'proxied',
 			'callbacks': {
 				success: [function (args) {
-						args.wfsCapabilities.featureTypeList.featureTypes.each(function (layer) {
+						args.wfsCapabilities.featureTypeList.featureTypes.forEach(function (layer) {
 							$li = $('<li />');
 							$a = $('<a />').attr({
 								'href': '#',
@@ -2253,7 +2257,7 @@ CCH.Objects.Publish.UI = function () {
 			'namespace': 'proxied',
 			'callbacks': {
 				success: [function () {
-						CCH.ows.servers[CCH.CONFIG.strings.cidaGeoserver].data.wms.capabilities.object.capability.layers.each(function (layer) {
+						CCH.ows.servers[CCH.CONFIG.strings.cidaGeoserver].data.wms.capabilities.object.capability.layers.forEach(function (layer) {
 							$li = $('<li />');
 							$a = $('<a />').attr({
 								'href': '#',
@@ -2277,7 +2281,7 @@ CCH.Objects.Publish.UI = function () {
 	});
 	
 	var getLayerIdFromUrl = function(layerUrl){
-		return layerUrl.from(layerUrl.lastIndexOf('/') + 1);
+		return layerUrl.substring(layerUrl.lastIndexOf('/') + 1);
 	};
 		
 	$vectorModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
@@ -2429,7 +2433,7 @@ CCH.Objects.Publish.UI = function () {
 				url: CCH.CONFIG.contextPath + '/data/alias/item/' + $itemIdInput.val(),
 				method: "GET",
 				success: function(data){
-					data.each(function(alias) {
+					data.forEach(function(alias) {
 						me.createAliasRow(alias.id);
 					});
 				},
@@ -2931,7 +2935,7 @@ CCH.Objects.Publish.UI = function () {
 		
 		$aliasModalList.empty();
 		
-		me.allAliasList.each(function(alias) {
+		me.allAliasList.forEach(function(alias) {
 			var fitName = false, fitItem = false;
 			
 			if($nameFilter.val().trim() == "" || alias.id.toLowerCase().includes($nameFilter.val().trim().toLowerCase())){
@@ -2953,7 +2957,7 @@ CCH.Objects.Publish.UI = function () {
 		var callbacks = args.callbacks;
 		var success = callbacks ? callbacks.success : {};
 		var error = callbacks ? callbacks.error : {};
-		me.templateNames.each(function (templateName) {
+		me.templateNames.forEach(function (templateName) {
 			$.ajax({
 				url: CCH.CONFIG.contextPath + '/resource/template/handlebars/publish/' + templateName + '.html',
 				context: {
@@ -2963,7 +2967,7 @@ CCH.Objects.Publish.UI = function () {
 					CCH.ui.templates[this.templateName] = Handlebars.compile(data);
 					
 					if(success){
-						success.each(function(func) {
+						success.forEach(function(func) {
 							func(data);
 						});
 					}
@@ -2972,7 +2976,7 @@ CCH.Objects.Publish.UI = function () {
 					window.alert('Unable to load resources required for a functional publication page. Please contact CCH admin team.');
 					
 					if(error){
-						error.each(function(func) {
+						error.forEach(function(func) {
 							func(data);
 						});
 					}
@@ -3003,7 +3007,7 @@ CCH.Objects.Publish.UI = function () {
 				me.visibleAliasList = data;
 				$buttonManageAliases.removeAttr(CCH.CONFIG.strings.disabled);
 				$aliasModalList.empty();
-				me.allAliasList.each(function(alias){
+				me.allAliasList.forEach(function(alias){
 					me.createModalAliasRow(alias, false);
 				});
 			},

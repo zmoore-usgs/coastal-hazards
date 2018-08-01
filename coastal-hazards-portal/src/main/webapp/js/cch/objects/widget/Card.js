@@ -337,7 +337,7 @@ CCH.Objects.Widget.Card = function (args) {
 					return $listItem;
 				};
 
-		me.children.each(function (child) {
+		me.children.forEach(function (child) {
 			if (typeof child === 'string') {
 				item = CCH.items.getById({
 					id: child

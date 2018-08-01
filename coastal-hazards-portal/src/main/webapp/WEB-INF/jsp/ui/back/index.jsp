@@ -76,7 +76,6 @@
 	String resourceSuffix = development ? "" : "-" + version + "-min";
 	String vJquery = getProp("version.jquery");
 	String vBootstrap = getProp("version.bootstrap");
-	String vSugarJs = getProp("version.sugarjs");
 	String vJsTree = getProp("version.jstree");
 	String vHandlebars = getProp("version.handlebars");
 	String referer = request.getHeader("referer");
@@ -285,7 +284,7 @@
                 </div>
                 <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
                 <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
-                <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+
                 <script type="text/javascript">
 			var CCH = {
 				Objects: {},
