@@ -170,11 +170,11 @@ CCH.Util.OWS = function () {
 					var trimmedResponse = response.responseText.trim();
 					if (trimmedResponse.indexOf('ExceptionText') !== -1) {
 						var errorText = $(trimmedResponse).find('ows\\:ExceptionText');
-						callbacks.error.each(function (cb) {
+						callbacks.error.forEach(function (cb) {
 							cb(errorText.text());
 						});
 					} else {
-						callbacks.success.each(function (cb) {
+						callbacks.success.forEach(function (cb) {
 							cb(trimmedResponse);
 						});
 					}
@@ -198,11 +198,11 @@ CCH.Util.OWS = function () {
 					var trimmedResponse = response.responseText.trim();
 					if (trimmedResponse.indexOf('ExceptionText') !== -1) {
 						var errorText = $(trimmedResponse).find('ows\\:ExceptionText');
-						callbacks.error.each(function (cb) {
+						callbacks.error.forEach(function (cb) {
 							cb(errorText.text());
 						});
 					} else {
-						callbacks.success.each(function (cb) {
+						callbacks.success.forEach(function (cb) {
 							cb(response);
 						});
 					}
@@ -253,7 +253,7 @@ CCH.Util.OWS = function () {
 
 			if ((server === 'dsas-geoserver' || server === 'cida-geoserver') && namespace !== 'ows') {
 				url = CCH.CONFIG.contextPath + me.servers[server].endpoints.wfsGetCapsUrl;
-				url = url.add(namespace + '/', url.indexOf('ows'));
+				url = url.substr(0, url.indexOf('ows')) + namespace + '/' + url.substr(url.indexOf('ows'));
 			} else if (server === 'stpete-arcserver') {
 				url = CCH.CONFIG.contextPath + me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WFSServer?service=wfs&version=1.1.0&request=GetCapabilities';
 			} else if (server === 'marine-arcserver') {
@@ -266,14 +266,14 @@ CCH.Util.OWS = function () {
 				success: function (data, textStatus, jqXHR) {
 					var response = new OpenLayers.Format.WFSCapabilities.v1_1_0().read(data);
 
-					response.featureTypeList.featureTypes.each(function (ft) {
+					response.featureTypeList.featureTypes.forEach(function (ft) {
 						ft.prefix = namespace;
 					});
 
 					me.servers[server].data.wfs.capabilities.object = response;
 					me.servers[server].data.wfs.capabilities.xml = data;
 
-					sucessCallbacks.each(function (callback) {
+					sucessCallbacks.forEach(function (callback) {
 						callback({
 							wfsCapabilities: response,
 							data: data,
@@ -320,13 +320,13 @@ CCH.Util.OWS = function () {
 					var response = new OpenLayers.Format.WMSCapabilities.v1_3_0().read(data);
 
 					// Fixes an issue with prefixes not being parsed correctly from response
-					response.capability.layers.each(function (n, i) {
+					response.capability.layers.forEach(function (n, i) {
 						n.prefix = namespace;
 					});
 					me.servers[server].data.wms.capabilities.object = response;
 					me.servers[server].data.wms.capabilities.xml = data;
 
-					sucessCallbacks.each(function (callback) {
+					sucessCallbacks.forEach(function (callback) {
 						callback({
 							wmsCapabilities: response,
 							data: data,
@@ -371,7 +371,7 @@ CCH.Util.OWS = function () {
 
 					CCH.LOG.debug('OWS.js::getFilteredFeature: WFS GetFeature parsed .');
 					if (!me.featureTypeDescription[layerPrefix]) {
-						me.featureTypeDescription[layerPrefix] = Object.extended();
+						me.featureTypeDescription[layerPrefix] = {};
 					}
 					me.featureTypeDescription[layerPrefix][layerTitle] = getFeatureResponse;
 
@@ -430,11 +430,11 @@ CCH.Util.OWS = function () {
 				success: function (response) {
 					var responseText = response.responseText;
 					if (responseText.charAt(0) === '{') {
-						callbacks.success.each(function (cb) {
+						callbacks.success.forEach(function (cb) {
 							cb(JSON.parse(responseText));
 						});
 					} else {
-						callbacks.error.each(function (cb) {
+						callbacks.error.forEach(function (cb) {
 							cb(responseText);
 						});
 					}
@@ -489,12 +489,12 @@ CCH.Util.OWS = function () {
 					'outputFormat': 'application/json'
 				},
 				success: function (response) {
-					callbacks.success.each(function (cb) {
+					callbacks.success.forEach(function (cb) {
 						cb(response);
 					});
 				},
 				error: function (response) {
-					callbacks.error.each(function (cb) {
+					callbacks.error.forEach(function (cb) {
 						cb(response);
 					});
 				}

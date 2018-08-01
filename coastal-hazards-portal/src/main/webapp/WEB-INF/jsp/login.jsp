@@ -27,7 +27,6 @@
 	String vBootstrap = getProp("version.bootstrap");
 	String vFontAwesome = getProp("version.fontawesome");
 	String vOpenlayers = getProp("version.openlayers");
-	String vSugarJs = getProp("version.sugarjs");
 	String vHandlebars = getProp("version.handlebars");
 
 %>

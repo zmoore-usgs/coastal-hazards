@@ -30,7 +30,6 @@
 	String vBootstrap = getProp("version.bootstrap");
 	String vFontAwesome = getProp("version.fontawesome");
 	String vOpenlayers = getProp("version.openlayers");
-	String vSugarJs = getProp("version.sugarjs");
 	String vHandlebars = getProp("version.handlebars");
 	String vIntroJs = getProp("version.introjs");
 	String resourceSuffix = development ? "" : "-" + version + "-min";
@@ -189,7 +188,7 @@
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Legend<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/application/front/OnInitialized<%= resourceSuffix %>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/application/front/OnReady<%= resourceSuffix %>.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+
 		<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/intro.js/<%=vIntroJs%>/intro<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/front/Intro<%= resourceSuffix %>.js"></script>

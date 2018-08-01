@@ -94,7 +94,7 @@ return {
 				} else if (splitName.length > 2) {
 					return splitName[0];
 				}
-				return splitName.last();
+				return splitName.slice(-1);
 			};
 
 		$(window).trigger('cch.map.control.layerid.responded');
@@ -104,7 +104,7 @@ return {
 		// spot
 		if (features.length) {
 			// Get just the displayed layers on the map 
-			cchLayers = CCH.map.getMap().layers.findAll(function (l) {
+			cchLayers = CCH.map.getMap().layers.filter(function (l) {
 				// Having geoserver as part of the url tells me that it's a
 				// CCH layer and not anything else.
 				// Even though the control itself filters by visible layer, I
@@ -118,7 +118,7 @@ return {
 			// over with a different SLD for each layer. In order to handle
 			// that, I need to make an array for the layer name (item.id) 
 			// to be able to process this going forward
-			cchLayers.each(function (l) {
+			cchLayers.forEach(function (l) {
 				var lName = trimLayerName(l.name);
 
 				if (!layerUrlToId[l.params.LAYERS]) {
@@ -137,9 +137,9 @@ return {
 			// This function could probably be rewritten to use only the evt.features
 			// array and not have to duplicate it over and over if multiple layers
 			// are using the same features
-			features.each(function (feature) {
+			features.forEach(function (feature) {
 				ids = layerUrlToId[feature.gml.featureNSPrefix + ':' + feature.gml.featureType];
-				ids.each(function (id) {
+				ids.forEach(function (id) {
 					featuresByName[id].push(feature.attributes);
 				});
 			});
@@ -170,8 +170,8 @@ return {
 						layerObject = layer;
 					    }
 					});
-					
-					layerId = layerObject.params.SLD.split('/').last();
+					var layerIdParts = layerObject.params.SLD.split("/");
+					layerId = layerIdParts[layerIdParts.length-1];
 					layerId = layerId.substr(0, layerId.indexOf('?')).length > 0 ? layerId.substr(0, layerId.indexOf('?')) : layerId;
 					if (featuresByName.hasOwnProperty(layerName)) {
 						features = featuresByName[layerName];
@@ -267,10 +267,12 @@ return {
 					height;
 				
 				if (layerName.indexOf('_r_') !== -1) {
-					ribbonIndex = parseInt(layerName.split('_').last(), 10);
+					var layerParts = layerName.split('_');
+					var	layerPart = layerParts[layerParts.length-1];
+					ribbonIndex = parseInt(layerPart, 10);
 				}
 
-				if (displayPoints.count() === 0) {
+				if (displayPoints.length === 0) {
 					$titleContainer.html(title);
 					// Data unavailable, insert two dashes for color and for value
 					$legendRow.append($titleContainer, $colorContainer.empty().html('--'), $valueContainer.append(naAttrText));
@@ -297,8 +299,10 @@ return {
 						dates.push(date);
 					}
 
-					// Reverse sort the dates
-					dates = dates.unique().sort(function (a, b) {
+					// Reverse sort and de-dupe the dates
+					dates = dates.filter(function(item, pos) {
+						return dates.indexOf(item) == pos;
+					}).sort(function (a, b) {
 						return b - a;
 					});
 
@@ -325,14 +329,14 @@ return {
 				
 				} else {
 					//Limit ribbon data to only creating a row for the first features
-					if(ribbonIndex >= 0 && displayPoints.count() > 0){
+					if(ribbonIndex >= 0 && displayPoints.length > 0){
 						var point = displayPoints[0];
 						displayPoints = new Array();
-						displayPoints.add(point);
+						displayPoints.push(point);
 					}
 					
 					//Create rows for each point to be displayed in this table
-					for(i = 0; i < displayPoints.count(); i++){
+					for(i = 0; i < displayPoints.length; i++){
 						//Reset Contents
 						$legendRow = $('<tr>').addClass('legend-row');
 						$titleContainer = $('<td />');
@@ -360,7 +364,7 @@ return {
 							} else if ('%' === units) {
 								$valueContainer.append(displayPoints[i].toFixed(0));
 							} else {
-								if ((displayPoints[i]).isInteger()) {
+								if (Number.isInteger(displayPoints[i])) {
 									$valueContainer.append(displayPoints[i].toFixed(0));
 								}
 								else {
@@ -381,8 +385,21 @@ return {
 							var sortedRows;
 
 							$table.append($legendRow);
-							sortedRows = $table.find('tbody > tr').toArray().sortBy(function (row) {
-								return parseInt($(row).attr('id').split('-').last(), 10);
+							sortedRows = $table.find('tbody > tr').toArray().sort(function (a, b) {
+								var aParts = $(a).attr('id').split('-'),
+									aPart = aParts[aParts.length-1],
+									aVal = parseInt(aPart, 10),
+									bParts = $(b).attr('id').split('-'),
+									bPart = bParts[bParts.length-1],
+									bVal = parseInt(bPart, 10);
+
+								if(aVal < bVal) {
+									return -1;
+								} else if(aVal > bVal) {
+									return 1;
+								} else {
+									return 0;
+								}
 							});
 							$table.empty().append(sortedRows);
 						} else {
@@ -395,10 +412,19 @@ return {
 				CCH.map.getMap().getLayerIndex(CCH.map.getMap().getLayersBy('itemid', layerId)[0]);
 				$popupHtml.append($table);
 				
-				var tables = $popupHtml.find('table').toArray().sortBy(function (tbl) {
-					return parseInt($(tbl).attr('data-attr'));
+				var tables = $popupHtml.find('table').toArray().sort(function (a,b) {
+					var aVal = parseInt($(a).attr('data-attr'));
+					var bVal = parseInt($(b).attr('data-attr'));
+					
+					if(aVal < bVal) {
+						return -1;
+					} else if(aVal > bVal) {
+						return 1;
+					} else {
+						return 0;
+					}
 				});
-				tables.each(function (tbl, ind) {
+				tables.forEach(function (tbl, ind) {
 					var $tbl = $(tbl);
 					if (ind === 0) {
 						if ($tbl.find('thead').length === 0) {
@@ -418,7 +444,7 @@ return {
 								
 				$popupHtml.empty().append($tableContainer);
 								
-				if(displayPoints.count() > 1 || CCH.map.getMap().getZoom() < 12){
+				if(displayPoints.length > 1 || CCH.map.getMap().getZoom() < 12){
 					var $noteContainer = $('<small id="zoomNotice">Zoom in further for more accurate results.</small>').css('color', 'black');
 					$popupHtml.append($noteContainer);
 				}
@@ -475,7 +501,7 @@ return {
 				
 				//Don't display the point if it is missing the display column
 				if(!isMissing(pFl)){
-					displayPoints.add(pFl);
+					displayPoints.push(pFl);
 					
 					//If we have added a 3rd value stop trying to add more
 					if(displayPoints.length === 3){
@@ -486,8 +512,8 @@ return {
 		}
 		
 		if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK", "AE"].indexOf(item.attr.toUpperCase()) !== -1) {
-			for(var i = 0; i < displayPoints.count(); i++){
-				displayColors.add(sld.bins[Math.ceil(displayPoints[i]) - 1].color);
+			for(var i = 0; i < displayPoints.length; i++){
+				displayColors.push(sld.bins[Math.ceil(displayPoints[i]) - 1].color);
 
 				var category = sld.bins[Math.ceil(displayPoints[i]) - 1].category;
 				
@@ -495,7 +521,7 @@ return {
 					category += "&nbsp;" + units;
 				}
 				
-				displayCategories.add(category);
+				displayCategories.push(category);
 			}	
 		}
 

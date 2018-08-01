@@ -169,8 +169,8 @@ CCH.Objects.Bucket = function (args) {
 				id = item.id;
 
 				// Take the item out of my personal bucket array
-				me.bucket.remove(function (item) {
-					return item.id === id;
+				me.bucket = me.bucket.filter(function (itm) {
+					return itm.id !== id;
 				});
 
 				// Remove the item from the slide
@@ -189,7 +189,7 @@ CCH.Objects.Bucket = function (args) {
 			}
 		},
 		removeAll: function () {
-			me.bucket.each(function (item) {
+			me.bucket.forEach(function (item) {
 				me.remove({
 					item: item
 				});

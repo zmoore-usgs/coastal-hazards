@@ -146,7 +146,7 @@ CCH.Objects.Back.UI = function (args) {
 			me.$publist = $('<ul />').attr('id', 'info-container-publications-list');
 			
 			//Publications list (data, resources, and pubs)
-			Object.keys(me.item.summary.full.publications, function (type) {
+			Object.keys(me.item.summary.full.publications).forEach(function (type) {
 				var pubTypeArray = me.item.summary.full.publications[type],
 						pubTypeListHeader = $('<li />')
 						.addClass('publist-header')
@@ -156,7 +156,7 @@ CCH.Objects.Back.UI = function (args) {
 				if (pubTypeArray.length) {
 					pubTypeListHeader.append(subList);
 					me.$publist.append(pubTypeListHeader);
-					me.item.summary.full.publications[type].each(function (publication) {
+					me.item.summary.full.publications[type].forEach(function (publication) {
 						pubLink = $('<a />').attr({
 							'href': publication.link,
 							'target': 'portal_publication_window'
@@ -326,7 +326,7 @@ CCH.Objects.Back.UI = function (args) {
 						'item_data': {
 							'services': (function (s) {
 								var svcs = [];
-								s.each(function (svc) {
+								s.forEach(function (svc) {
 									svcs.push(svc);
 								});
 								return svcs;
@@ -350,16 +350,21 @@ CCH.Objects.Back.UI = function (args) {
 				if (item.children.length !== 0) {
 					for (var cIdx = 0; cIdx < item.children.length; cIdx++) {
 						var childId = item.children[cIdx];
-						services = services.union(deepDiveToFindAnyServices(CCH.items.getById({id: childId}), services));
+						services = services.concat(deepDiveToFindAnyServices(CCH.items.getById({id: childId}), services)
+							.filter(function(service, index, self) {
+								return index == self.indexOf(service);
+							}));
 					}
 				}
-				services = services.union(item.services);
+				services = services.concat(item.services).filter(function(service, index, self) {
+					return index == self.indexOf(service);
+				});
 			}
 			return services;
 		};
 		
 		if (deepDiveToFindAnyServices(CCH.CONFIG.item, []).length === 0) {
-			[this.$mapServicesButton, this.$printFormWrapper, this.$downloadDataButton].each(function ($i) {
+			[this.$mapServicesButton, this.$printFormWrapper, this.$downloadDataButton].forEach(function ($i) {
 				$i.addClass('hidden');
 			});
 		}
