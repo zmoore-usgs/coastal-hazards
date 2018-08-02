@@ -9,15 +9,15 @@ RUN if [ "${doi_network}" = true ]; then \
 		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0; \
 	fi
 
-RUN apt-get update
-RUN apt-get install --no-install-recommends -y \
-	telnet \
-	libcurl4-openssl-dev \
-	libssl1.0-dev \
-	zlib1g-dev \
-	libssh2-1-dev \
-	libpng-dev \
-	libxml2-dev && \
+RUN apt-get update && \
+	apt-get install --no-install-recommends -y \
+	telnet=0.17-41 \
+	libcurl4-openssl-dev=7.52.1-5+deb9u6 \
+	libssl1.0-dev=1.0.2l-2+deb9u3 \
+	zlib1g-dev=1:1.2.8.dfsg-5 \
+	libssh2-1-dev=1.7.0-1 \
+	libpng-dev=1.6.28-1 \
+	libxml2-dev=2.9.4+dfsg1-2.2+deb9u2 && \
 	rm -rf /var/lib/apt/lists/* && \
 	apt-get clean
 
