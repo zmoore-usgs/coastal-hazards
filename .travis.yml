@@ -26,7 +26,7 @@ before_install:
   - git clone https://github.com/docker/docker-bench-security.git
 
 install:
-  - docker-compose $DOCKER_IMAGE_BUILD
+  - docker-compose build $DOCKER_IMAGE_BUILD
 
 script:
   - cd docker-bench-security
