@@ -50,10 +50,10 @@ RUN tar -xzf liquibase-bin.tar.gz -C "${LIQUIBASE_HOME}/" && \
 	rm liquibase-bin.tar.gz
 RUN curl -o $LIQUIBASE_HOME/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar
 
-RUN git clone https://github.com/USGS-CIDA/coastal-hazards.git coastal-hazards && \
- cd coastal-hazards && \
- git checkout ${PORTAL_LIQUIBASE_TAG} && \
- cd /
+RUN git clone https://github.com/USGS-CIDA/coastal-hazards.git coastal-hazards
+WORKDIR coastal-hazards
+RUN git checkout ${PORTAL_LIQUIBASE_TAG}
+WORKDIR /
 
 RUN cp -r /coastal-hazards/coastal-hazards-liquibase/src/main/resources/bootstrap .
 COPY docker/dbInit/setup_db.sh /docker-entrypoint-initdb.d/z_setup_db.sh
