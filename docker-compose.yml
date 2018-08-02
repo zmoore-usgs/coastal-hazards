@@ -1,5 +1,5 @@
 ---
-version: '2'
+version: '3.5'
 
 # Environment variables for building containers
 #
@@ -19,17 +19,39 @@ version: '2'
 volumes:
   cch_geoserver_data:
 
+networks:
+  cch-net:
+
+secrets:
+  rserve_password:
+    file: Docker/rserve/rserve.pwd
+  rserve_conf:
+    file: Docker/rserve/rserve.conf
+  rserve_profile:
+    file: Docker/rserve/profile.conf
+
 services:
   cch_rserve:
     build:
       context: ./Docker/rserve
       args:
         - doi_network=$doi_network
+    networks:
+      cch-net:
+        aliases:
+          - rserve
     image: cch_rserve
     ports:
       - "6311:6311"
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
+    secrets:
+      - source: rserve_password
+        target: /rserve.pwd
+      - source: rserve_conf
+        target: /rserve.conf
+      - source: rserve_profile
+        target: /profile.conf
 
   cch_n52_wps:
     build:
@@ -37,6 +59,10 @@ services:
       args:
         - doi_network=$doi_network
         - KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD
+    networks:
+      cch-net:
+        aliases:
+          - n52wps
     image: cch_n52_wps
     ports:
       - "8082:8080"
@@ -50,6 +76,10 @@ services:
       context: ./coastal-hazards-liquibase
       args:
         - doi_network=$doi_network
+    networks:
+      cch-net:
+        aliases:
+          - postgres
     image: cch_postgres
     ports:
       - "5432:5432"
@@ -62,6 +92,10 @@ services:
         args:
           - doi_network=$doi_network
           - KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD
+    networks:
+      cch-net:
+        aliases:
+          - portal
     image: cch_portal
     volumes:
         - cch_geoserver_data:/heapdumps
@@ -79,6 +113,10 @@ services:
         args:
           - doi_network=$doi_network
           - KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD
+    networks:
+      cch-net:
+        aliases:
+          - geoserver
     image: cch_geoserver
     volumes:
         - cch_geoserver_data:/heapdumps
@@ -94,6 +132,10 @@ services:
         context: ./Docker/pycsw
         args:
           - doi_network=$doi_network
+    networks:
+      cch-net:
+        aliases:
+          - pycsw
     image: cch_pycsw
     ports:
       - "8000:8000"
