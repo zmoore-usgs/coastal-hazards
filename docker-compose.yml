@@ -1,5 +1,5 @@
 ---
-version: '3'
+version: '3.5'
 
 # Environment variables for building containers
 #
@@ -22,6 +22,14 @@ volumes:
 networks:
   cch-net:
 
+secrets:
+  rserve_password:
+    file: Docker/rserve/rserve.pwd
+  rserve_conf:
+    file: Docker/rserve/rserve.conf
+  rserve_profile:
+    file: Docker/rserve/profile.conf
+
 services:
   cch_rserve:
     build:
@@ -37,6 +45,13 @@ services:
       - "6311:6311"
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
+    secrets:
+      - source: rserve_password
+        target: /rserve.pwd
+      - source: rserve_conf
+        target: /rserve.conf
+      - source: rserve_profile
+        target: /profile.conf
 
   cch_n52_wps:
     build:
