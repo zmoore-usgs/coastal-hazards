@@ -3,8 +3,9 @@ language: java
 env:
   matrix:
     - DOCKER_IMAGE_BUILD=cch_rserve
+    - DOCKER_IMAGE_BUILD=cch_postgres
   global:
-     - DOCKER_COMPOSE_VERSION=1.21.1
+     - DOCKER_COMPOSE_VERSION=1.22.0
 
 services:
   - docker
