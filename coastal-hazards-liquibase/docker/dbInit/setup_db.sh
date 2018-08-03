@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/ash
 set -e
 
 # create pycsw DB
@@ -20,28 +20,32 @@ psql -v ON_ERROR_STOP=1 --dbname "pycsw" --username "${POSTGRES_USER}" -c "
 	ALTER LANGUAGE plpythonu OWNER TO pycsw;
 "
 
-# do base database update
+# https://github.com/docker-library/postgres/pull/440#commitcomment-29328454
+# This allows us to connect to the database from localhost
+pg_ctl -o "-c listen_addresses='localhost'" -w restart
+
+# do base database
 ${LIQUIBASE_HOME}/liquibase \
---classpath="${LIQUIBASE_HOME}/lib/postgresql-${POSTGRES_JDBC_VERSION}.jar" \
+--classpath="${LIQUIBASE_HOME}/lib/postgresql.jar" \
 --changeLogFile=coastal-hazards/coastal-hazards-liquibase/src/main/liquibase/changeLog.xml \
 --username=cchportal \
 --password=${POSTGRES_CCH_PASSWORD} \
 --driver=org.postgresql.Driver \
---url=jdbc:postgresql://127.0.0.1:5432/${POSTGRES_DB} \
+--url=jdbc:postgresql://localhost:5432/${POSTGRES_DB} \
 --logLevel=warning \
 update \
 > ${LIQUIBASE_HOME}/liquibase-cch.log
 
 # do bootstrap data load
 if [ "${POSTGRES_LOAD_BOOTSTRAP}" = true ]; then \
-${LIQUIBASE_HOME}/liquibase \
---classpath="${LIQUIBASE_HOME}/lib/postgresql-${POSTGRES_JDBC_VERSION}.jar" \
---changeLogFile=coastal-hazards/coastal-hazards-liquibase/src/main/liquibase/bootstrap.xml \
---username=cchportal \
---password=${POSTGRES_CCH_PASSWORD} \
---driver=org.postgresql.Driver \
---url=jdbc:postgresql://127.0.0.1:5432/${POSTGRES_DB} \
---logLevel=warning \
-update \
-> ${LIQUIBASE_HOME}/liquibase-cch-bootstrap.log; \
+	${LIQUIBASE_HOME}/liquibase \
+	--classpath="${LIQUIBASE_HOME}/lib/postgresql.jar" \
+	--changeLogFile=coastal-hazards/coastal-hazards-liquibase/src/main/liquibase/bootstrap.xml \
+	--username=cchportal \
+	--password=${POSTGRES_CCH_PASSWORD} \
+	--driver=org.postgresql.Driver \
+	--url=jdbc:postgresql://localhost:5432/${POSTGRES_DB} \
+	--logLevel=warning \
+	update \
+	> ${LIQUIBASE_HOME}/liquibase-cch-bootstrap.log; \
 fi
