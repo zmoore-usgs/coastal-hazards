@@ -10,7 +10,6 @@ RUN if [ "${doi_network}" = true ]; then \
 	fi
 
 # Required for JRE 8 - Java 8 is required to run the Liquibase JAR - lifted from https://github.com/docker-library/openjdk
-
 RUN { \
 		echo '#!/bin/sh'; \
 		echo 'set -e'; \
@@ -21,15 +20,15 @@ RUN { \
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV PATH $PATH:$JAVA_HOME/bin
 
-# Upgrade Alpine to 3.6 to get access to plpython
-RUN sed -i -e 's/v3\.5/v3\.6/g' /etc/apk/repositories
+# Add the Alpine 3.6 repo to get access to plpython designed for postgres 9.6
+RUN echo "@v3.6 http://dl-cdn.alpinelinux.org/alpine/v3.6/main/" >> /etc/apk/repositories
 
 RUN set -x \
     && apk update && apk upgrade \
 	&& apk add --no-cache python \
 	&& apk add --no-cache python-dev \
-	&& apk add --no-cache postgresql-plpython2 \
-	&& apk add --no-cache postgresql-plpython2-contrib \
+	&& apk add --no-cache postgresql-plpython2@v3.6 \
+	&& apk add --no-cache postgresql-plpython2-contrib@v3.6 \
 	&& apk add --no-cache git \
     && apk add --no-cache bash \
     && apk add --no-cache curl\
@@ -38,6 +37,11 @@ RUN set -x \
 
 # Copy plpython libs to the mdillion/postgis image postgres lib directory
 RUN cp /usr/lib/postgresql/*.so /usr/local/lib/postgresql/
+
+# Because of this change in the upstream Postgres image: https://github.com/docker-library/postgres/pull/440/files
+# During the init phase, postgres is only listening on local socket.
+# That’s why psql works and liquibase, which requires tcp/ip, does not.
+RUN sed -i -e "s/listen_addresses=''/listen_addresses='localhost'/g" /usr/local/bin/docker-entrypoint.sh
 
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_DB=cchportal
