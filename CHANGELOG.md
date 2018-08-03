@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- isuftin@usgs.gov - n52 - healthcheck
+- isuftin@usgs.gov - n52 - maintainer label in dockerfile
+- isuftin@usgs.gov - wildcard jks certs
 - isuftin@usgs.gov - pycsw - ability to configure port
 - isuftin@usgs.gov - pycsw - ability to configure gzip encoding ability
 - isuftin@usgs.gov - pycsw - direct config file mounting
@@ -20,6 +23,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - isuftin@usgs.gov - this changelog
 
 ### Changed
+ - isuftin@usgs.gov - n52 - Dockerfile pulls latest release of n52
+ - isuftin@usgs.gov - n52 - hardcoded rserve user/pass into wps_config
  - isuftin@usgs.gov - pycsw - took out commented options in config file
  - isuftin@usgs.gov - pycsw - changed Dockerfile to use debian stretch specifically
  - isuftin@usgs.gov - postgres init script now using ash instead of bash
@@ -29,6 +34,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   changes in base container
 
 ### Removed
+ - isuftin@usgs.gov - n52 - run file no longer manipulates wps_config
  - isuftin@usgs.gov - pycsw - runtime sed replacement for config file
  - isuftin@usgs.gov - processing to change the rserve password file inline
  - isuftin@usgs.gov - bash installation for postgres init script
+ - isuftin@usgs.gov - jks removed from gitignore

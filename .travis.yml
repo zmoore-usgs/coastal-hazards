@@ -5,6 +5,7 @@ env:
     - DOCKER_IMAGE_BUILD='cch_rserve'
     - DOCKER_IMAGE_BUILD='cch_postgres'
     - DOCKER_IMAGE_BUILD='cch_postgres cch_pycsw'
+    - DOCKER_IMAGE_BUILD='cch_rserve cch_n52_wps'
   global:
      - DOCKER_COMPOSE_VERSION=1.22.0
 

@@ -22,7 +22,7 @@ COPY docker/key-store.jks /usr/local/tomcat/ssl/trust-store.jks
 
 RUN wget -O /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.1.0/psi-probe-web-3.1.0.war"
 
-RUN wget -O /usr/local/tomcat/webapps/wps.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-n52/${N52_WPS_VERSION}/coastal-hazards-n52-${N52_WPS_VERSION}.war"
+COPY target/wps.war /usr/local/tomcat/webapps/wps.war
 
 RUN mkdir -p /data/coastal-hazards/uploaded-data
 
