@@ -2,9 +2,11 @@ language: java
 
 env:
   matrix:
-    - DOCKER_IMAGE_BUILD=cch_rserve
+    - DOCKER_IMAGE_BUILD='cch_rserve'
+    - DOCKER_IMAGE_BUILD='cch_postgres'
+    - DOCKER_IMAGE_BUILD='cch_postgres cch_pycsw'
   global:
-     - DOCKER_COMPOSE_VERSION=1.21.1
+     - DOCKER_COMPOSE_VERSION=1.22.0
 
 services:
   - docker
@@ -15,6 +17,7 @@ jdk:
 sudo: required
 
 before_install:
+  - sudo /etc/init.d/postgresql stop
   - sudo apt-get update
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
@@ -26,14 +29,14 @@ before_install:
   - git clone https://github.com/docker/docker-bench-security.git
 
 install:
-  - docker-compose up -d --build $DOCKER_IMAGE_BUILD
+  - for image in $DOCKER_IMAGE_BUILD; do docker-compose up -d --build $image; done
 
 script:
   - cd docker-bench-security
   - sudo sh docker-bench-security.sh -c container_images
   - docker run -d --name db arminc/clair-db
   - docker run -p 6060:6060 --link db:postgres -d --name clair arminc/clair-local-scan:v2.0.3
-  - clair-scanner -c "http://127.0.0.1:6060" --ip "$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')" $DOCKER_IMAGE_BUILD:latest || true
+  - for image in $DOCKER_IMAGE_BUILD; do clair-scanner -c "http://127.0.0.1:6060" --ip "$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')" $image:latest || true; done
 
 
 after_success:

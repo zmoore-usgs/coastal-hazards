@@ -25,12 +25,29 @@ networks:
 secrets:
   rserve_password:
     file: Docker/rserve/rserve.pwd
-  rserve_conf:
+  rserve_config:
     file: Docker/rserve/rserve.conf
   rserve_profile:
     file: Docker/rserve/profile.conf
+  pycsw_config:
+    file: Docker/pycsw/default.cfg
 
 services:
+  cch_postgres:
+    build:
+      context: ./coastal-hazards-liquibase
+      args:
+        - doi_network=$doi_network
+    networks:
+      cch-net:
+        aliases:
+          - postgres
+    image: cch_postgres
+    ports:
+      - "5432:5432"
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"
+
   cch_rserve:
     build:
       context: ./Docker/rserve
@@ -48,10 +65,30 @@ services:
     secrets:
       - source: rserve_password
         target: /rserve.pwd
-      - source: rserve_conf
+      - source: rserve_config
         target: /rserve.conf
       - source: rserve_profile
         target: /profile.conf
+        
+  cch_pycsw:
+    build:
+        context: ./Docker/pycsw
+        args:
+          - doi_network=$doi_network
+    networks:
+      cch-net:
+        aliases:
+          - pycsw
+    image: cch_pycsw
+    ports:
+      - "8000:8000"
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"
+    secrets:
+      - source: pycsw_config
+        target: /pycsw/default.cfg
+    depends_on:
+      - cch_postgres
 
   cch_n52_wps:
     build:
@@ -70,21 +107,6 @@ services:
       - "compose${CCH_ENV_LOCAL}.env"
     depends_on:
       - cch_rserve
-
-  cch_postgres:
-    build:
-      context: ./coastal-hazards-liquibase
-      args:
-        - doi_network=$doi_network
-    networks:
-      cch-net:
-        aliases:
-          - postgres
-    image: cch_postgres
-    ports:
-      - "5432:5432"
-    env_file:
-      - "compose${CCH_ENV_LOCAL}.env"
 
   cch_portal:
     build:
@@ -126,20 +148,3 @@ services:
       - "8444:8443"
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
-
-  cch_pycsw:
-    build:
-        context: ./Docker/pycsw
-        args:
-          - doi_network=$doi_network
-    networks:
-      cch-net:
-        aliases:
-          - pycsw
-    image: cch_pycsw
-    ports:
-      - "8000:8000"
-    env_file:
-      - "compose${CCH_ENV_LOCAL}.env"
-    depends_on:
-      - cch_postgres
