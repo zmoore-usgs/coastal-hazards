@@ -3,8 +3,9 @@ language: java
 env:
   matrix:
     - DOCKER_IMAGE_BUILD=cch_rserve
+    - DOCKER_IMAGE_BUILD=cch_postgres
   global:
-     - DOCKER_COMPOSE_VERSION=1.21.1
+     - DOCKER_COMPOSE_VERSION=1.22.0
 
 services:
   - docker
@@ -15,6 +16,7 @@ jdk:
 sudo: required
 
 before_install:
+  - sudo /etc/init.d/postgresql stop
   - sudo apt-get update
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose

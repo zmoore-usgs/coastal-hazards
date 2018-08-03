@@ -31,6 +31,21 @@ secrets:
     file: Docker/rserve/profile.conf
 
 services:
+  cch_postgres:
+    build:
+      context: ./coastal-hazards-liquibase
+      args:
+        - doi_network=$doi_network
+    networks:
+      cch-net:
+        aliases:
+          - postgres
+    image: cch_postgres
+    ports:
+      - "5432:5432"
+    env_file:
+      - "compose${CCH_ENV_LOCAL}.env"
+      
   cch_rserve:
     build:
       context: ./Docker/rserve
@@ -70,21 +85,6 @@ services:
       - "compose${CCH_ENV_LOCAL}.env"
     depends_on:
       - cch_rserve
-
-  cch_postgres:
-    build:
-      context: ./coastal-hazards-liquibase
-      args:
-        - doi_network=$doi_network
-    networks:
-      cch-net:
-        aliases:
-          - postgres
-    image: cch_postgres
-    ports:
-      - "5432:5432"
-    env_file:
-      - "compose${CCH_ENV_LOCAL}.env"
 
   cch_portal:
     build:
