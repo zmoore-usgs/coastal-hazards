@@ -15,8 +15,6 @@ RUN if [ "${doi_network}" = true ]; then \
 
 RUN apk add --update --no-cache \
 	openssl \
-	fontconfig \
-	ttf-dejavu \
 	curl && \
 	rm -rf /var/lib/apt/lists/* && \
   rm /var/cache/apk/*
@@ -44,7 +42,3 @@ COPY docker/server.xml /usr/local/tomcat/conf/server.xml
 RUN chmod +x /usr/local/tomcat/bin/setenv.sh
 
 CMD catalina.sh run
-
-HEALTHCHECK --interval=2s --timeout=3s \
- CMD curl -s 'https://localhost:8443/geoserver/web/wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage' -k | \
- grep -q '<span id="version">2.10.2</span>' || exit 1

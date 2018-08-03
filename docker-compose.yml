@@ -33,6 +33,8 @@ secrets:
     file: Docker/pycsw/default.cfg
   n52_wps_config:
     file: coastal-hazards-n52/docker/wps_config.xml
+  geoserver_serverxml_config:
+    file: coastal-hazards-geoserver/docker/server.xml
 
 services:
   cch_postgres:
@@ -138,15 +140,17 @@ services:
         context: ./coastal-hazards-geoserver
         args:
           - doi_network=$doi_network
-          - KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD
     networks:
       cch-net:
         aliases:
           - geoserver
     image: cch_geoserver
     volumes:
-        - cch_geoserver_data:/heapdumps
-        - cch_geoserver_data:/data
+      - cch_geoserver_data:/heapdumps
+      - cch_geoserver_data:/data/geoserver
+    secrets:
+      - source: geoserver_serverxml_config
+        target: /usr/local/tomcat/conf/server.xml
     ports:
       - "8081:8080"
       - "8444:8443"
