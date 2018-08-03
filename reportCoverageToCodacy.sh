@@ -12,14 +12,14 @@ then
 		if [ ! -f ~/codacy/coverage-reporter-assembly-latest.jar ]
 		then
 			echo "no cached coverage reporter jar found"
-			JAR_URL="https://github.com/codacy/codacy-coverage-reporter/releases/download/4.0.0/codacy-coverage-reporter-4.0.0-assembly.jar"
+			JAR_URL="https://github.com/codacy/codacy-coverage-reporter/releases/download/5.0.275/codacy-coverage-reporter-5.0.274-assembly.jar"
 			#download the latest release from GitHub
 			echo "downloading the latest release of the coverage jar from $JAR_URL"
 			wget -O ~/codacy/coverage-reporter-assembly-latest.jar "$JAR_URL"
 		else
 			echo "using cached coverage reporter jar"
 		fi
-		
+
 		#find all coverage report files produced during the build, report them to Codacy
 		#the jar implicitly looks for the API and project token env vars
 		find -iname 'jacoco.xml' -exec java -jar ~/codacy/coverage-reporter-assembly-latest.jar report -l Java -r {} --partial \;
