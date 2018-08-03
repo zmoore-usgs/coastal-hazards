@@ -40,3 +40,4 @@ HEALTHCHECK --interval=2s --timeout=3s \
  CMD sleep 1 | \
  		telnet localhost 6311 | \
 		grep -q Rsrv0103QAP1 || exit 1
+
