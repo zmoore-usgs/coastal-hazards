@@ -5,12 +5,7 @@ LABEL maintainer="gs-w_eto_eb_federal_employees@usgs.gov"
 ENV PYCSW_VERSION="1.10.0"
 ENV PYCSW_PORT=8000
 
-<<<<<<< HEAD
-RUN apt-get update && \
-	apt-get install -y git libgeos-c1v5 gettext postgresql-client
-=======
 ARG doi_network=false
->>>>>>> ea77b99b2b015e58daecba32380b410e58a6f505
 
 RUN if [ "${doi_network}" = true ]; then \
 		mkdir -p /usr/lib/ssl/certs/ && \

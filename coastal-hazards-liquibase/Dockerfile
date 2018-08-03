@@ -29,25 +29,11 @@ RUN { \
 	} > /usr/local/bin/docker-java-home \
 	&& chmod +x /usr/local/bin/docker-java-home
 
-<<<<<<< HEAD
 # Add the Alpine 3.6 repo to get access to plpython designed for postgres 9.6
-=======
-# Upgrade Alpine to 3.6 to get access to plpython
->>>>>>> ea77b99b2b015e58daecba32380b410e58a6f505
 RUN echo "@v3.6 http://dl-cdn.alpinelinux.org/alpine/v3.6/main/" >> /etc/apk/repositories
 
 RUN set -x \
     && apk update && apk upgrade \
-<<<<<<< HEAD
-	&& apk add --no-cache python \
-	&& apk add --no-cache python-dev \
-	&& apk add --no-cache postgresql-plpython2@v3.6 \
-	&& apk add --no-cache postgresql-plpython2-contrib@v3.6 \
-	&& apk add --no-cache git \
-    && apk add --no-cache bash \
-    && apk add --no-cache curl\
-    && apk add --no-cache openjdk8 \
-=======
 		&& apk add --no-cache python \
 			python-dev \
 			postgresql-plpython2@v3.6 \
@@ -55,28 +41,9 @@ RUN set -x \
 			git \
     	curl\
     	openjdk8 \
->>>>>>> ea77b99b2b015e58daecba32380b410e58a6f505
     && [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
 RUN cp /usr/lib/postgresql/*.so /usr/local/lib/postgresql/
-<<<<<<< HEAD
-
-# Because of this change in the upstream Postgres image: https://github.com/docker-library/postgres/pull/440/files
-# During the init phase, postgres is only listening on local socket.
-# That’s why psql works and liquibase, which requires tcp/ip, does not.
-RUN sed -i -e "s/listen_addresses=''/listen_addresses='localhost'/g" /usr/local/bin/docker-entrypoint.sh
-
-ENV POSTGRES_USER=postgres
-ENV POSTGRES_DB=cchportal
-
-# Install Liquibase
-
-ENV LIQUIBASE_HOME /opt/liquibase
-ENV LIQUIBASE_VERSION 3.4.1
-ENV POSTGRES_JDBC_VERSION 42.1.4
-
-=======
->>>>>>> ea77b99b2b015e58daecba32380b410e58a6f505
 RUN mkdir -p $LIQUIBASE_HOME
 RUN curl -Lk "https://github.com/liquibase/liquibase/releases/download/liquibase-parent-${LIQUIBASE_VERSION}/liquibase-${LIQUIBASE_VERSION}-bin.tar.gz" > liquibase-bin.tar.gz
 RUN tar -xzf liquibase-bin.tar.gz -C "${LIQUIBASE_HOME}/" && \
