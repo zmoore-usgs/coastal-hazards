@@ -1,2 +1,0 @@
-keytool -genkey -noprompt -keystore /usr/local/tomcat/ssl/.keystore -validity 999 -keysize 2048 -alias cch-geoserver -keyalg RSA -keypass changeit -storepass changeit -dname "CN=cch-docker, OU=owi, O=owi, L=middleton, S=WI, C=US" 
-keytool -selfcert -alias cch-geoserver -keypass changeit -dname "CN=cch-docker , OU=owi, O=owi, L=middleton, S=WI, C=US" -keystore /usr/local/tomcat/ssl/.keystore -storepass changeit -validity 999
