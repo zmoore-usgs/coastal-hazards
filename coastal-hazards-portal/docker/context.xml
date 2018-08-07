@@ -1,72 +1,81 @@
 <Context autoDeploy="true" reloadable="true">
 	<WatchedResource>WEB-INF/web.xml</WatchedResource>
-	<Manager pathname="" />
+	<Manager pathname=""/>
 
-	<Resource   name="jdbc/coastalhazards" auth="Container"
-	            type="javax.sql.DataSource"
-	            driverClassName="org.postgresql.Driver"
-	            url="jdbc:postgresql://${cch_db_hostname}:${cch_db_port}/cchportal"
-	            username="cchportal"
-	            password="${cch_db_password}"
-	            maxActive="200"
-	            maxIdle="60"
-	            maxWait="60"
-	            validationQuery="select version()"
-	            removeAbandoned="true"
-	            removeAbandonedTimeout="60"
-	            logAbandoned="true"
-	            description="{usedBy: ['coastalhazards']}"
-                />
+	<Resource
+		name="jdbc/coastalhazards"
+		auth="Container"
+		type="javax.sql.DataSource"
+		driverClassName="org.postgresql.Driver"
+		url="jdbc:postgresql://${cch_db_hostname}:${cch_db_port}/cchportal"
+		username="cchportal"
+		password="${cch_db_password}"
+		maxActive="200"
+		maxIdle="60"
+		maxWait="60"
+		validationQuery="select version()"
+		removeAbandoned="true"
+		removeAbandonedTimeout="60"
+		logAbandoned="true"
+		description="{usedBy: ['coastalhazards']}"/>
 
-    <Environment name="cida.auth.service.endpoint" override="true" type="java.lang.String" value="${cch_auth_service_endpoint}" />
-    <Environment name="coastal-hazards.public.url" type="java.lang.String" value="${cch_public_url}" />
-    <Environment name="coastal-hazards.base.url" type="java.lang.String" value="${cch_base_url}" />
-    <Environment name="coastal-hazards.base.secure.url" type="java.lang.String" value="${cch_base_secure_url}" override="false" />
-    <Environment name="coastal-hazards.go.usa.gov.login" type="java.lang.String" value="${cch_go_usa_login}" />
-    <Environment name="coastal-hazards.go.usa.gov.apikey" type="java.lang.String" value="${cch_go_usa_apikey}" />
-    <Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="${cch_go_usa_endpoint}" />
-    <Environment name="coastal-hazards.stpetearcserver.endpoint" type="java.lang.String" value="${cch_stpetearcserver_endpoint}" />
-    <Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="${cch_coastalmarine_endpoint}" />
-    <Environment name="coastal-hazards.cidags.endpoint" type="java.lang.String" value="${cch_cidags_endpoint}" />
-    <Environment name="coastal-hazards.portal.geoserver.endpoint" type="java.lang.String" value="${cch_portal_geoserver_endpoint}" />
-    <Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="${cch_n52_endpoint}" />
-    <Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="${cch_csw_endpoint}" />
-    <Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="${cch_csw_internal_endpoint}" />
-    <Environment name="coastal-hazards.csw.external.endpoint" type="java.lang.String" value="${cch_csw_external_endpoint}"/>
-    <Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="${cch_upload_max_size}" /> <!-- TODO: Is this used? -->
-    <Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="${cch_upload_filename_param}" /> <!-- TODO: Is this used? -->
-    <Environment name="coastal-hazards.files.directory.base" type="java.lang.String" value="${cch_files_directory_base}" /> <!-- TODO: Is this used? -->
-    <Environment name="coastal-hazards.files.directory.work" type="java.lang.String" value="${cch_files_directory_work}" /> <!-- TODO: Is this used? -->
-    <Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="${cch_files_directory_upload}" /> <!-- TODO: Is this used? -->
-    <Environment name="coastal-hazards.files.directory.download" type="java.lang.String" value="${cch_files_directory_download}" />
-    <Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.unzip.base" type="java.lang.String" value="${cch_files_directory_unzip}" override="false" />
-    <Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token" type="java.lang.String" value="${cch_fetch_and_unzip_token}" override="false" />
-    <Environment name="coastal-hazards.portal.geoserver.external.endpoint" type="java.lang.String" value="${cch_geoserver_endpoint}" />
-    <Environment name="coastal-hazards.portal.geoserver.internal.endpoint" type="java.lang.String" value="${cch_geoserver_endpoint}" />
-	<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="${cch_geoserver_username}" />
-    <Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="${cch_geoserver_password}" />
-    <Environment name="production" type="java.lang.String" value="${cch_is_production}" />
-    <Environment name="development" type="java.lang.String" value="${cch_is_development}" />
-    <Environment name="cida.auth.client.null.roles" override="false" type="java.lang.String" value="${cch_null_role}" />
-    <Environment name="coastal-hazards.geoserver.layer.age.maximum" type="java.lang.Integer" value="${cch_layer_age_max}"/>
-    <Environment name="coastal-hazards.geoserver.workspaces.permanent" type="java.lang.String" value="${cch_geoserver_workspace_permanent}"/>
-    <Environment name="coastal-hazards.workspace.published" type="java.lang.String" value="${cch_geoserver_workspace_published}"/>
-    <Environment name="coastal-hazards.portal.geoserver.cache.name" type="java.lang.String" value="${cch_geoserver_cache_name}" />
+	<Environment name="cida.auth.service.endpoint" override="true" type="java.lang.String" value="${cch_auth_service_endpoint}"/>
+	<Environment name="coastal-hazards.public.url" type="java.lang.String" value="${cch_public_url}"/>
+	<Environment name="coastal-hazards.base.url" type="java.lang.String" value="${cch_base_url}"/>
+	<Environment name="coastal-hazards.base.secure.url" type="java.lang.String" value="${cch_base_secure_url}" override="false"/>
+	<Environment name="coastal-hazards.go.usa.gov.login" type="java.lang.String" value="${cch_go_usa_login}"/>
+	<Environment name="coastal-hazards.go.usa.gov.apikey" type="java.lang.String" value="${cch_go_usa_apikey}"/>
+	<Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="${cch_go_usa_endpoint}"/>
+	<Environment name="coastal-hazards.stpetearcserver.endpoint" type="java.lang.String" value="${cch_stpetearcserver_endpoint}"/>
+	<Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="${cch_coastalmarine_endpoint}"/>
+	<Environment name="coastal-hazards.cidags.endpoint" type="java.lang.String" value="${cch_cidags_endpoint}"/>
+	<Environment name="coastal-hazards.portal.geoserver.endpoint" type="java.lang.String" value="${cch_portal_geoserver_endpoint}"/>
+	<Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="${cch_n52_endpoint}"/>
+	<Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="${cch_csw_endpoint}"/>
+	<Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="${cch_csw_internal_endpoint}"/>
+	<Environment name="coastal-hazards.csw.external.endpoint" type="java.lang.String" value="${cch_csw_external_endpoint}"/>
+	<Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="${cch_upload_max_size}"/>
+	<!-- TODO: Is this used? -->
+	<Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="${cch_upload_filename_param}"/>
+	<!-- TODO: Is this used? -->
+	<Environment name="coastal-hazards.files.directory.base" type="java.lang.String" value="${cch_files_directory_base}"/>
+	<!-- TODO: Is this used? -->
+	<Environment name="coastal-hazards.files.directory.work" type="java.lang.String" value="${cch_files_directory_work}"/>
+	<!-- TODO: Is this used? -->
+	<Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="${cch_files_directory_upload}"/>
+	<!-- TODO: Is this used? -->
+	<Environment name="coastal-hazards.files.directory.download" type="java.lang.String" value="${cch_files_directory_download}"/>
+	<Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.unzip.base" type="java.lang.String" value="${cch_files_directory_unzip}" override="false"/>
+	<Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token" type="java.lang.String" value="${cch_fetch_and_unzip_token}" override="false"/>
+	<Environment name="coastal-hazards.portal.geoserver.external.endpoint" type="java.lang.String" value="${cch_geoserver_endpoint}"/>
+	<Environment name="coastal-hazards.portal.geoserver.internal.endpoint" type="java.lang.String" value="${cch_geoserver_endpoint}"/>
+	<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="${cch_geoserver_username}"/>
+	<Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="${cch_geoserver_password}"/>
+	<Environment name="production" type="java.lang.String" value="${cch_is_production}"/>
+	<Environment name="development" type="java.lang.String" value="${cch_is_development}"/>
+	<Environment name="cida.auth.client.null.roles" override="false" type="java.lang.String" value="${cch_null_role}"/>
+	<Environment name="coastal-hazards.geoserver.layer.age.maximum" type="java.lang.Integer" value="${cch_layer_age_max}"/>
+	<Environment name="coastal-hazards.geoserver.workspaces.permanent" type="java.lang.String" value="${cch_geoserver_workspace_permanent}"/>
+	<Environment name="coastal-hazards.workspace.published" type="java.lang.String" value="${cch_geoserver_workspace_published}"/>
+	<Environment name="coastal-hazards.portal.geoserver.cache.name" type="java.lang.String" value="${cch_geoserver_cache_name}"/>
 
-    <!-- NHC Track Item Defauls -->
-    <Environment name="coastal-hazards.nhc.track.bbox.north" type="java.lang.String" value="45.95"/>
-    <Environment name="coastal-hazards.nhc.track.bbox.west" type="java.lang.String" value="-101.84"/>
-    <Environment name="coastal-hazards.nhc.track.bbox.east" type="java.lang.String" value="-62.4"/>
-    <Environment name="coastal-hazards.nhc.track.bbox.south" type="java.lang.String" value="17.64"/>
-    <Environment name="coastal-hazards.nhc.track.wms" type="java.lang.String" value="http://nowcoast.noaa.gov/arcgis/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/WmsServer?"/>
-    <Environment name="coastal-hazards.nhc.track.attrs" type="java.lang.String" value="NHC_TRACK_POLY|NHC_TRACK_LIN|NHC_TRACK_PT"/>
-    <Environment name="coastal-hazards.nhc.track.attr.params" type="java.lang.String" value="6|3|8,7,4"/>
-    <Environment name="coastal-hazards.nhc.track.tiny.text" type="java.lang.String" value="NWS NHC Forecasted Tropical Cyclone"/>
-    <Environment name="coastal-hazards.nhc.track.med.title" type="java.lang.String" value="NWS NHC Forecast"/>
-    <Environment name="coastal-hazards.nhc.track.med.text" type="java.lang.String" value="The latest Tropical Cyclone Forecast from the NWS National Hurricane Center (NHC), updated hourly."/>
-    <Environment name="coastal-hazards.nhc.track.full.title" type="java.lang.String" value="NWS NHC Forecasted Tropical Cyclone"/>
-    <Environment name="coastal-hazards.nhc.track.full.text" type="java.lang.String" value="The nowCOAST 'wwa' Web Map Service (WMS) provides layers containing near real-time watches, warnings and advisories from the National Weather Service (NWS).  This layer shows the latest Tropical Cyclone Track and Cone Forecast from the NWS National Hurricane Center (NHC), updated hourly. The 'wwa' WMS is one of several map services provided by NOAA's nowCOAST project (http://nowcoast.noaa.gov), a product of the NOAA/NOS/OCS Coast Survey Development Laboratory."/>
-    <Environment name="coastal-hazards.nhc.track.keywords" type="java.lang.String" value="Hurricane|Track|NOAA|nowCOAST"/>
-    <Environment name="coastal-hazards.nhc.track.res.titles" type="java.lang.String" value="NOAA's nowCOAST"/>
-    <Environment name="coastal-hazards.nhc.track.res.links" type="java.lang.String" value="https://nowcoast.noaa.gov/"/>
+	<!-- NHC Track Item Defauls -->
+	<Environment name="coastal-hazards.nhc.track.bbox.north" type="java.lang.String" value="45.95"/>
+	<Environment name="coastal-hazards.nhc.track.bbox.west" type="java.lang.String" value="-101.84"/>
+	<Environment name="coastal-hazards.nhc.track.bbox.east" type="java.lang.String" value="-62.4"/>
+	<Environment name="coastal-hazards.nhc.track.bbox.south" type="java.lang.String" value="17.64"/>
+	<Environment name="coastal-hazards.nhc.track.wms" type="java.lang.String" value="http://nowcoast.noaa.gov/arcgis/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/WmsServer?"/>
+	<Environment name="coastal-hazards.nhc.track.attrs" type="java.lang.String" value="NHC_TRACK_POLY|NHC_TRACK_LIN|NHC_TRACK_PT"/>
+	<Environment name="coastal-hazards.nhc.track.attr.params" type="java.lang.String" value="6|3|8,7,4"/>
+	<Environment name="coastal-hazards.nhc.track.tiny.text" type="java.lang.String" value="NWS NHC Forecasted Tropical Cyclone"/>
+	<Environment name="coastal-hazards.nhc.track.med.title" type="java.lang.String" value="NWS NHC Forecast"/>
+	<Environment name="coastal-hazards.nhc.track.med.text" type="java.lang.String" value="The latest Tropical Cyclone Forecast from the NWS National Hurricane Center (NHC), updated hourly."/>
+	<Environment name="coastal-hazards.nhc.track.full.title" type="java.lang.String" value="NWS NHC Forecasted Tropical Cyclone"/>
+	<Environment
+		name="coastal-hazards.nhc.track.full.text"
+		type="java.lang.String"
+		value="The nowCOAST 'wwa' Web Map Service (WMS) provides layers containing near real-time watches, warnings and advisories from the National Weather Service (NWS).  This layer shows the latest Tropical Cyclone Track and Cone Forecast from the NWS National Hurricane Center (NHC), updated hourly. The 'wwa' WMS is one of several map services provided by NOAA's nowCOAST project (http://nowcoast.noaa.gov), a product of the NOAA/NOS/OCS Coast Survey Development Laboratory."/>
+	<Environment name="coastal-hazards.nhc.track.keywords" type="java.lang.String" value="Hurricane|Track|NOAA|nowCOAST"/>
+	<Environment name="coastal-hazards.nhc.track.res.titles" type="java.lang.String" value="NOAA's nowCOAST"/>
+	<Environment name="coastal-hazards.nhc.track.res.links" type="java.lang.String" value="https://nowcoast.noaa.gov/"/>
 </Context>

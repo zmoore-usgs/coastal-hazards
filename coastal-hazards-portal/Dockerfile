@@ -28,25 +28,7 @@ COPY docker/key-store.jks /usr/local/tomcat/ssl/key-store.jks
 
 COPY docker/key-store.jks /usr/local/tomcat/ssl/trust-store.jks
 
-####################
-#  Artifact Build
-####################
-
 RUN wget -O /usr/local/tomcat/webapps/coastal-hazards-portal.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-portal/${PORTAL_VERSION}/coastal-hazards-portal-${PORTAL_VERSION}.war"
-
-####################
-# End Artifact Build
-####################
-
-#################
-#  Local Build
-#################
-
-#COPY target/coastal-hazards-portal.war /usr/local/tomcat/webapps/coastal-hazards-portal.war
-
-#################
-# End Local Build
-#################
 
 RUN curl -o /usr/local/tomcat/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar
 

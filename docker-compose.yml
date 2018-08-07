@@ -1,21 +1,6 @@
 ---
 version: '3.5'
 
-# Environment variables for building containers
-#
-# Building on the DOI network
-# ---------------------------
-# When building these containers on the DOI network, you must set your environment
-# variable "doi_network" to "true" so SSL certificates may be installed.
-#
-# Ex: $ doi_network="true" docker-compose build
-#
-# CCH WPS Artifact Version
-# ------------------------
-# By default, the latest 52N WPS version will be downloaded for CCH. If you wish
-# to change that, set  the environment variable "wps_version" to a valid version.
-#
-# Ex: $ wps_version="0.0.1" docker-compose build cch_n52_wps
 volumes:
   cch_geoserver_data:
 
