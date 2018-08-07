@@ -1,7 +1,6 @@
 FROM tomcat:8.0-jre8-alpine
 
 ARG doi_network=false
-ARG PORTAL_VERSION=1.1.63
 ARG POSTGRES_JDBC_VERSION=42.2.4
 ENV KEY_STORE_PASSWORD=changeit
 
@@ -28,7 +27,7 @@ COPY docker/key-store.jks /usr/local/tomcat/ssl/key-store.jks
 
 COPY docker/key-store.jks /usr/local/tomcat/ssl/trust-store.jks
 
-RUN wget -O /usr/local/tomcat/webapps/coastal-hazards-portal.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-portal/${PORTAL_VERSION}/coastal-hazards-portal-${PORTAL_VERSION}.war"
+COPY target/coastal-hazards-portal.war /usr/local/tomcat/webapps/coastal-hazards-portal.war
 
 RUN curl -o /usr/local/tomcat/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar
 

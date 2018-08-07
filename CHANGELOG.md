@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+-   isuftin@usgs.gov - Updates for Docker Compose to use Dockerfile specific for local artifacts
 -   isuftin@usgs.gov - portal - healthcheck in dockerfile
 -   isuftin@usgs.gov - portal - trust store password in setenv
 -   isuftin@usgs.gov - portal - setenv heapdump options set to java opts
@@ -34,6 +35,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+-   isuftin@usgs.gov - removed unused kvp in environments
+-   isuftin@usgs.gov - removed unused kvp in environments
 -   isuftin@usgs.gov - portal - hard coding keystore password in server.xml
 -   isuftin@usgs.gov - geoserver - hard-coding trust/keystore password into server.xml
 -   isuftin@usgs.gov - geoserver - creating secrets config for server.xml in compose
