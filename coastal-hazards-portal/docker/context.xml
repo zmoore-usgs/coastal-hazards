@@ -39,9 +39,8 @@
     <Environment name="coastal-hazards.files.directory.work" type="java.lang.String" value="${cch_files_directory_work}" /> <!-- TODO: Is this used? -->
     <Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="${cch_files_directory_upload}" /> <!-- TODO: Is this used? -->
     <Environment name="coastal-hazards.files.directory.download" type="java.lang.String" value="${cch_files_directory_download}" />
-    <Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.unzip.base" type="java.lang.String" value="${cch_files_directory_unzip}" override="false" /> 
+    <Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.unzip.base" type="java.lang.String" value="${cch_files_directory_unzip}" override="false" />
     <Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token" type="java.lang.String" value="${cch_fetch_and_unzip_token}" override="false" />
-    <Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="${cch_geoserver_endpoint}" />
     <Environment name="coastal-hazards.portal.geoserver.external.endpoint" type="java.lang.String" value="${cch_geoserver_endpoint}" />
     <Environment name="coastal-hazards.portal.geoserver.internal.endpoint" type="java.lang.String" value="${cch_geoserver_endpoint}" />
 	<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="${cch_geoserver_username}" />
