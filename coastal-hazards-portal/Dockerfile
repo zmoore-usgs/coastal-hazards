@@ -1,11 +1,9 @@
 FROM tomcat:8.0-jre8-alpine
 
 ARG doi_network=false
-ARG PORTAL_VERSION=1.1.58
-ARG PROBE_VERSION=3.0.0.M3
-ARG KEYSTORE_PASSWORD=changeit
-
-ENV KEY_STORE_PASSWORD=${KEYSTORE_PASSWORD}
+ARG PORTAL_VERSION=1.1.63
+ARG POSTGRES_JDBC_VERSION=42.2.4
+ENV KEY_STORE_PASSWORD=changeit
 
 RUN apk add --update openssl
 
@@ -16,17 +14,25 @@ RUN if [ "${doi_network}" = true ]; then \
 		echo "\\n\\nca-certificate = /usr/lib/ssl/certs/DOIRootCA.crt" >> /etc/wgetrc; \
 	fi
 
+RUN apk add --update --no-cache \
+	openssl \
+	curl && \
+	rm -rf /var/lib/apt/lists/* && \
+  rm /var/cache/apk/*
 
-RUN wget -O /usr/local/tomcat/webapps/probe.war "https://github.com/psi-probe/psi-probe/releases/download/${PROBE_VERSION}/probe.war"
+RUN wget -O /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.1.0/psi-probe-web-3.1.0.war"
 
 RUN mkdir -p /usr/local/tomcat/ssl
+
 COPY docker/key-store.jks /usr/local/tomcat/ssl/key-store.jks
+
+COPY docker/key-store.jks /usr/local/tomcat/ssl/trust-store.jks
 
 ####################
 #  Artifact Build
 ####################
 
-#RUN wget -O /usr/local/tomcat/webapps/coastal-hazards-portal.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-portal/${PORTAL_VERSION}/coastal-hazards-portal-${PORTAL_VERSION}.war"
+RUN wget -O /usr/local/tomcat/webapps/coastal-hazards-portal.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-portal/${PORTAL_VERSION}/coastal-hazards-portal-${PORTAL_VERSION}.war"
 
 ####################
 # End Artifact Build
@@ -36,22 +42,19 @@ COPY docker/key-store.jks /usr/local/tomcat/ssl/key-store.jks
 #  Local Build
 #################
 
-COPY target/coastal-hazards-portal.war /usr/local/tomcat/webapps/coastal-hazards-portal.war
+#COPY target/coastal-hazards-portal.war /usr/local/tomcat/webapps/coastal-hazards-portal.war
 
 #################
 # End Local Build
 #################
 
-
-ADD https://jdbc.postgresql.org/download/postgresql-9.3-1102.jdbc41.jar /usr/local/tomcat/lib
+RUN curl -o /usr/local/tomcat/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar
 
 COPY docker/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 COPY docker/server.xml /usr/local/tomcat/conf/server.xml
 COPY docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 COPY docker/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 COPY docker/context.xml /usr/local/tomcat/conf/context.xml
-
-RUN sed -i -e "s/%KEY_STORE_PASSWORD%/${KEY_STORE_PASSWORD}/g" /usr/local/tomcat/conf/server.xml
 
 RUN chmod +x /usr/local/tomcat/bin/setenv.sh
 
@@ -61,4 +64,5 @@ RUN rm -rf /usr/local/tomcat/bin/docs
 
 RUN rm -rf /usr/local/tomcat/bin/examples
 
-EXPOSE 8080 8443
+HEALTHCHECK --interval=10s --timeout=2s \
+	CMD curl -s -k "https://localhost:8443/coastal-hazards-portal/diagnostics" | grep -q '<div name="getServletPath">/diagnostics</div>' || exit 1

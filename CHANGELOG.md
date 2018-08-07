@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+-   isuftin@usgs.gov - portal - healthcheck in dockerfile
+-   isuftin@usgs.gov - portal - trust store password in setenv
+-   isuftin@usgs.gov - portal - setenv heapdump options set to java opts
+-   isuftin@usgs.gov - portal - internal port in compose.env
+-   isuftin@usgs.gov - portal - switched to using external addressing for containers
 -   isuftin@usgs.gov - geoserver - healthcheck
 -   isuftin@usgs.gov - geoserver - maintainer label in dockerfile
 -   isuftin@usgs.gov - n52 - healthcheck
@@ -29,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+-   isuftin@usgs.gov - portal - hard coding keystore password in server.xml
 -   isuftin@usgs.gov - geoserver - hard-coding trust/keystore password into server.xml
 -   isuftin@usgs.gov - geoserver - creating secrets config for server.xml in compose
 -   isuftin@usgs.gov - geoserver - setting heapdump path properly in setenv.xml
@@ -47,6 +53,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Removed
 
+-   isuftin@usgs.gov - portal - deprecated -XX:MaxPermSize from setenv
+-   isuftin@usgs.gov - portal - setenv uses internal addressing for cch_csw_internal_endpoint
+-   isuftin@usgs.gov - portal - coastal-hazards.geoserver.endpoint param from context.xml
 -   isuftin@usgs.gov - geoserver - keystore password arg in dockerfile
 -   isuftin@usgs.gov - geoserver - run.sh
 -   isuftin@usgs.gov - n52 - run file no longer manipulates wps_config
