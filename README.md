@@ -1,22 +1,23 @@
 coastal-hazards
 ===============
 
-With more than half of the American people living along our Nation's coasts, 
-extreme beach and cliff erosion can dramatically alter coastal ecosystems, cause 
-billions of dollars' worth of coastal development, and even threaten human life. 
+With more than half of the American people living along our Nation's coasts,
+extreme beach and cliff erosion can dramatically alter coastal ecosystems, cause
+billions of dollars' worth of coastal development, and even threaten human life.
 
-Through projects like the National Assessment of Coastal Change Hazards and 
-regional studies of nearshore processes, the US Geological Survey is uncovering 
-the science behind coastal change hazards and providing data, tools, and scientific 
-knowledge to help coastal planners, resource managers, and emergency operations 
+Through projects like the National Assessment of Coastal Change Hazards and
+regional studies of nearshore processes, the US Geological Survey is uncovering
+the science behind coastal change hazards and providing data, tools, and scientific
+knowledge to help coastal planners, resource managers, and emergency operations
 as they work to reduce risk along our coastlines.
 
 
-## Using Docker 
+## Using Docker
 
 This project has support for running locally via Docker. The first step in getting the projcet to run in docker is to create the SSL certificate keystore and trust store that the project needs.
 
 ### Setting up the Docker Containers
+REMOVE
 #### 1). Creating the keystore
 
 1. In the project `Docker` directory run the following command where `<your docker IP>` is replaced with the IP address of the docker container that your CCH Portal service will be deployed on.
@@ -25,13 +26,13 @@ This project has support for running locally via Docker. The first step in getti
 
     Note that the keystore password `-storepass` can be changed from `changeit` to another value of your choice.
 
-2. Copy `key-store.jks` into `coastal-hazards/coastal-hazards-portal/docker` directory. 
+2. Copy `key-store.jks` into `coastal-hazards/coastal-hazards-portal/docker` directory.
 
 3. Copy `key-store.jks` into `coastal-hazards/coastal-hazards-geoserver/docker` directory.
 
-4. Copy `key-store.jks` into `coastal-hazards/coastal-hazards-n52/docker` directory. 
+4. Copy `key-store.jks` into `coastal-hazards/coastal-hazards-n52/docker` directory.
 
-#### 2). Modifying configuration
+#### 1). Modifying configuration
 
 The `compose.env` file located in the project root directory contains example values for all of the necessary configuration variables when running the docker containers. If you launch CCH using `docker-compose` then this file will be automatically picked up and applied to the containers.
 
@@ -61,9 +62,9 @@ Several of the configuration values in `compose.env` may need to be changed if y
 
 In order to bring down the running cch stack run the following command:
 
-`docker-compose down` 
+`docker-compose down`
 
-This will bring down _all_ of the running CCH services defined in the `docker-compose.yml` file. Note that running this command will also __REMOVE__ the associated docker containers meaning all data stored in them will be lost. 
+This will bring down _all_ of the running CCH services defined in the `docker-compose.yml` file. Note that running this command will also __REMOVE__ the associated docker containers meaning all data stored in them will be lost.
 
 An alternative method for only brining down select services is to run `docker ps` to find the `container ID` of the service that you'd like to bring down. Once you've found the `container ID` run `docker stop <container ID>` to stop that service and then, if you'd like to also remove the container, run `docker rm <container ID>`.
 
@@ -71,7 +72,7 @@ An alternative method for only brining down select services is to run `docker ps
 
 When you launch a service using `docker-compose` it does _NOT_ always re-build the docker image for the service it is trying to launch. If there is already an existing image for the service you'd like to launch then it will use that rather than building a new one.
 
-In order to build a new docker image for a specific service you can either remove the existing image (which will force `docker-compose` to rebuild it), or you can overwrite it with a newer image using `docker build`. 
+In order to build a new docker image for a specific service you can either remove the existing image (which will force `docker-compose` to rebuild it), or you can overwrite it with a newer image using `docker build`.
 
 If you remove the existing image note that the _entire_ image building process will need to run again, but if you simply run `docker build` and overwrite the existing image Docker will re-use the parts of the existing image that have not been modified.
 
@@ -81,7 +82,7 @@ Any re-built services can then be brought up via the service-specific version of
 
 ### Building from local sources vs building from artifacts
 
-Several of the sub-project docker files support buildling from local sources instead of pulling a specific artifact version from the CIDA Nexus. The sub-projects that support this are `coastal-hazards-n52`, `coastal-hazards-liquibase`, `coastal-hazards-geoserver`, and `coastal-hazards-portal`. 
+Several of the sub-project docker files support buildling from local sources instead of pulling a specific artifact version from the CIDA Nexus. The sub-projects that support this are `coastal-hazards-n52`, `coastal-hazards-liquibase`, `coastal-hazards-geoserver`, and `coastal-hazards-portal`.
 
 These projects have local-source building enabled by default. In order to switch to building from a pre-built artifact open the `Dockerfile` in each project, comment out the `Local Build` section, and uncomment the `Artifact Build` section. Additionally, check that the desired artifact version is correctly specified in the `ARG` at the top of the `Dockerfile`.
 
