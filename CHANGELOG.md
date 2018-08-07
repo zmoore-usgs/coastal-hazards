@@ -41,8 +41,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 -   isuftin@usgs.gov - pycsw - changed Dockerfile to use debian stretch specifically
 -   isuftin@usgs.gov - postgres init script now using ash instead of bash
 -   isuftin@usgs.gov - clean up postgres dependency install
--   isuftin@usgs.gov - rserve package dependencies
--   isuftin@usgs.gov - Switched rserve container to use rocker/r-ver:3.4.3 to lock down
+-   isuftin@usgs.gov - rserve - package dependencies
+-   isuftin@usgs.gov - Switched rserve container to use rocker/r-ver:3.3.3 to lock down
     changes in base container
 
 ### Removed
