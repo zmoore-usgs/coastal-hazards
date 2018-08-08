@@ -29,7 +29,7 @@ RUN { \
 	} > /usr/local/bin/docker-java-home \
 	&& chmod +x /usr/local/bin/docker-java-home
 
-# Upgrade Alpine to 3.6 to get access to plpython
+# Add Alpine 3.6 repository to get access to plpython
 RUN echo "@v3.6 http://dl-cdn.alpinelinux.org/alpine/v3.6/main/" >> /etc/apk/repositories
 
 RUN set -x \
@@ -44,11 +44,11 @@ RUN set -x \
     && [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
 RUN cp /usr/lib/postgresql/*.so /usr/local/lib/postgresql/
-RUN mkdir -p $LIQUIBASE_HOME
+RUN mkdir -p ${LIQUIBASE_HOME}
 RUN curl -Lk "https://github.com/liquibase/liquibase/releases/download/liquibase-parent-${LIQUIBASE_VERSION}/liquibase-${LIQUIBASE_VERSION}-bin.tar.gz" > liquibase-bin.tar.gz
 RUN tar -xzf liquibase-bin.tar.gz -C "${LIQUIBASE_HOME}/" && \
 	rm liquibase-bin.tar.gz
-RUN curl -o $LIQUIBASE_HOME/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar
+RUN curl -o ${LIQUIBASE_HOME}/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-${POSTGRES_JDBC_VERSION}.jar
 
 RUN git clone https://github.com/USGS-CIDA/coastal-hazards.git coastal-hazards
 WORKDIR coastal-hazards
