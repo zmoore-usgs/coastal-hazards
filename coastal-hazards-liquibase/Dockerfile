@@ -55,9 +55,6 @@ WORKDIR coastal-hazards
 RUN git checkout ${PORTAL_LIQUIBASE_TAG}
 WORKDIR /
 
-RUN mkdir -p /coastal-hazards/coastal-hazards-liquibase/
-COPY src /coastal-hazards/coastal-hazards-liquibase/src
-
 RUN cp -r /coastal-hazards/coastal-hazards-liquibase/src/main/resources/bootstrap .
 COPY docker/dbInit/setup_db.sh /docker-entrypoint-initdb.d/z_setup_db.sh
 
