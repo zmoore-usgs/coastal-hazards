@@ -26,6 +26,7 @@ build.properties
 *.jar
 *.war
 *.ear
+*.key_store.jks
 
 ### Maven ###
 target/
