@@ -29,11 +29,7 @@ RUN { \
 	} > /usr/local/bin/docker-java-home \
 	&& chmod +x /usr/local/bin/docker-java-home
 
-<<<<<<< HEAD
-# Add the Alpine 3.6 repo to get access to plpython designed for postgres 9.6
-=======
 # Add Alpine 3.6 repository to get access to plpython
->>>>>>> 6e2e4fde20567c1e2f3b065292c60acc6a72858f
 RUN echo "@v3.6 http://dl-cdn.alpinelinux.org/alpine/v3.6/main/" >> /etc/apk/repositories
 
 RUN set -x \
