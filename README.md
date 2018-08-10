@@ -13,9 +13,7 @@ as they work to reduce risk along our coastlines.
 
 ## Using Docker
 
-This project has support for running locally via Docker. The first step in getting
-the projcet to run in docker is to create the SSL certificate keystore and trust
-store that the project needs.
+This project has support for running locally via Docker.
 
 ### Setting up the Docker Containers
 
@@ -32,14 +30,14 @@ for EXTERNAL_HOST. This is the IP address of your host.
 #### 2). Building and running the docker containers
 
 1. If building from local sources, prior to building the docker containers the CCH
-Maven project must first be built so that the WAR files are placed into the targe
+Maven project must first be built so that the WAR files are placed into the target
 directories. There should be a total of 3 WAR files created, 1 in each of
 `coastal-hazards-n52`, `coastal-hazards-geoserver`, and `coastal-hazards-portal`.
 
 2. There is a build argument that can be supplied which will modify the built containers.
 
     - `doi_network` - [_OPTIONAL_] Set this to true if you are having trouble
-    pulling the necessary files for the docker containres during build and you
+    pulling the necessary files for the docker containers during build and you
     are behind the DOI network. It's possible that the SSL inspection certificate
     is causing problems.
 
@@ -108,7 +106,7 @@ a terminal and run `docker build -t <image name> .` where `<image name>` matches
 the name of the image for that service as defined in the `docker-compose.yml` file.
 Build arguments can be passed into the `docker build` command in the same manner
 as the `docker-compose up` command (described above). Example:
-`KEYSTORE_PASSWORD=newpass docker build -t cch-portal .`
+`docker build -t cch-portal .`
 
 Any re-built services can then be brought up via the service-specific version of
 `docker-compose` described in point `1` under `Additional Important Notes` below.
