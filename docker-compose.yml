@@ -1,9 +1,6 @@
 ---
 version: '3.5'
 
-volumes:
-  cch_geoserver_data:
-
 networks:
   cch-net:
 
@@ -109,9 +106,6 @@ services:
         aliases:
           - portal
     image: cch_portal
-    volumes:
-        - cch_geoserver_data:/heapdumps
-        - cch_geoserver_data:/data
     ports:
       - "8080:8080"
       - "8443:8443"
@@ -134,10 +128,6 @@ services:
         aliases:
           - geoserver
     image: cch_geoserver
-    volumes:
-      - cch_geoserver_data:/heapdumps
-      - cch_geoserver_data:/data/geoserver
-      - ./coastal-hazards-geoserver/src/main/webapp/data:/data/geoserver/
     secrets:
       - source: geoserver_serverxml_config
         target: /usr/local/tomcat/conf/server.xml

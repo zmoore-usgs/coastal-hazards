@@ -1,73 +1,32 @@
 coastal-hazards
 ===============
 
-With more than half of the American people living along our Nation's coasts,
-extreme beach and cliff erosion can dramatically alter coastal ecosystems, cause
-billions of dollars' worth of coastal development, and even threaten human life.
+With more than half of the American people living along our Nation's coasts, extreme beach and cliff erosion can dramatically alter coastal ecosystems, cause billions of dollars' worth of coastal development, and even threaten human life.
 
-Through projects like the National Assessment of Coastal Change Hazards and
-regional studies of nearshore processes, the US Geological Survey is uncovering
-the science behind coastal change hazards and providing data, tools, and scientific
-knowledge to help coastal planners, resource managers, and emergency operations
-as they work to reduce risk along our coastlines.
+Through projects like the National Assessment of Coastal Change Hazards and regional studies of nearshore processes, the US Geological Survey is uncovering the science behind coastal change hazards and providing data, tools, and scientific knowledge to help coastal planners, resource managers, and emergency operations as they work to reduce risk along our coastlines.
 
-## Using Docker
+### Using Docker For Local Deployment
 
-This project has support for running locally via Docker.
+The `compose.env` file located in the project root directory contains example values for all of the necessary configuration variables when running the docker containers. If you launch CCH using `docker-compose` then this file will be automatically picked up and applied to the containers. The following instructions make the assumption they are executed from the coastal hazards project root directory.
 
-### Setting up the Docker Containers
+#### Setup
+1. Change `EXTERNAL_HOST` to have the value of your host machine's IP.
+    * using docker-machine: `docker-machine ip <machine name>`
+    * Ubuntu 18.04: `hostname -I`
 
-#### 1). Modifying configuration
+2. If building from local sources, run `mvn clean package`. There should be a total of 3 WAR files created, 1 in each of `coastal-hazards-n52`, `coastal-hazards-geoserver`, and `coastal-hazards-portal`.
 
-The `compose.env` file located in the project root directory contains example values
-for all of the necessary configuration variables when running the docker containers.
-If you launch CCH using `docker-compose` then this file will be automatically
-picked up and applied to the containers.
+#### Building and running the docker containers
 
-One of the only things you may need to change initially in this file is the value
-for EXTERNAL_HOST. This is the IP address of your host.   
+1. To build the images, execute `docker-compose -f docker-compose.yml -f docker-compose-local.yml build`
+    * This should begin the process of building. This process will take some time, possibly in upwards of 15 minutes.
+    * Note: If you want to build from remote sources, simply run `docker-compose build`
+    * Note: If you are having trouble pulling the necessary files for the docker containers during build and you are behind the DOI network, try adding `doi_network=true` to your command. It's possible that the SSL inspection certificate is causing problems.
 
-#### 2). Building and running the docker containers
+2. To launch the built images into containers, execute `docker-compose up`
+    * Note: To limit output, only include the containers you want to see. For example, `docker-compose up cch_portal` will   only show the output for `cch_portal`.
 
-1. If building from local sources, prior to building the docker containers the CCH
-Maven project must first be built so that the WAR files are placed into the target
-directories. There should be a total of 3 WAR files created, 1 in each of
-`coastal-hazards-n52`, `coastal-hazards-geoserver`, and `coastal-hazards-portal`.
-
-2. There is a build argument that can be supplied which will modify the built containers.
-
-    - `doi_network` - [_OPTIONAL_] Set this to true if you are having trouble
-    pulling the necessary files for the docker containers during build and you
-    are behind the DOI network. It's possible that the SSL inspection certificate
-    is causing problems.
-
-2. Navigate to the coastal hazards project root directory and exectue the following
-command.
-
-    `docker-compose build`
-
-    This should begin the process of building. This process will take some time,
-    possibly in upwards of 15 minutes.
-
-  Note that if you wish to build using local artifacts as mentioned at the top
-  of this document, you should run.
-
-    `docker-compose -f docker-compose.yml -f docker-compose-local.yml build`
-
-  This has to be done *after* you've built the project locally.
-
-3. Edit the compose.env file in the root of your project. Change `EXTERNAL_HOST`
-to have the value of your host's IP. If you are using docker-machine, it will
-need to be the ip of your docker machine's VM. You can find that out by using
-`docker-machine ip <machine name>`
-
-4. Once the containers have all been built, you should be able to launch the portal
-using the command:
-
-  `docker-compose up cch_portal`
-
-5. Once the portal has finished building and starting it should be accessible
-from `http://<your docker IP>:8080/coastal-hazards-portal/`
+3. Once the portal has finished building and starting it should be accessible from `http://<EXTERNAL_HOST>:8080/coastal-hazards-portal/`
 
 ### Stopping the docker containers
 
