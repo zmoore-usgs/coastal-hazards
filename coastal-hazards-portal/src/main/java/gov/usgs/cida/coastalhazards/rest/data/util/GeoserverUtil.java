@@ -319,7 +319,7 @@ public class GeoserverUtil {
                                             + "</wps:DataInputs>"
                                             + "<wps:ResponseForm>"
                                             + "<wps:RawDataOutput>"
-                                            + "<ows:Identifier>filePaths</ows:Identifier>"
+                                            + "<ows:Identifier>filePath</ows:Identifier>"
                                             + "</wps:RawDataOutput>"
                                             + "</wps:ResponseForm>"
                                             + "</wps:Execute>").getBytes());
