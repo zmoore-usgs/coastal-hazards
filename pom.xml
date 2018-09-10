@@ -119,7 +119,7 @@
 		<version.fontawesome>4.7.0</version.fontawesome>
 		<version.openlayers>2.13.1</version.openlayers>
 		<gs.version>2.13.2</gs.version>
-		<gt.version>16.2</gt.version>
+		<gt.version>19.2</gt.version>
 		<httpclient.version>4.5.1</httpclient.version>
 	</properties>
 	<scm>
