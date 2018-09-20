@@ -175,7 +175,6 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li><a id="publish-button-create-item-option" href="#">Item</a></li>
                                 <li><a id="publish-button-create-aggregation-option" href="#">Aggregation</a></li>
-                                <li><a id="publish-button-create-template-option" href="#">Template</a></li>
                                 <li><a id="publish-button-create-storm-option" href="#">Storm</a></li>
                             </ul>
                         </div>
@@ -247,16 +246,6 @@
                                                     <span class="input-group-btn">
                                                         <button id="form-publish-item-service-layer-button-pop" class="btn btn-default" type="button" disabled="disabled">Populate</button>
                                                     </span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <%-- CSW url --%>
-                                        <div id="form-publish-info-item-service-csw" class="row row-csw">
-                                            <div class="form-group">
-                                                <label for="form-publish-item-service-csw">CSW</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" id="form-publish-item-service-csw" disabled="disabled" maxlength="<%= Service.ENDPOINT_MAX_LENGTH%>" />
                                                 </div>
                                             </div>
                                         </div>
@@ -334,11 +323,6 @@
                                 <div id="Resources-panel" class="panel panel-default">
                                     <div class="panel-heading sideBySide">
                                         <h3 class="panel-title">Resources</h3>
-                                        <div class="input-group">
-                                            <div class="input-group-btn">
-                                                <button id="form-publish-item-attribute-button" class="btn btn-default" type="button" disabled="disabled">Populate Resources</button>
-                                            </div>
-                                        </div>
                                     </div>
                                     <div class="panel-body">
 
@@ -494,11 +478,6 @@
                                 <div id="titles-panel" class="panel panel-default">
                                     <div class="panel-heading sideBySide">
                                         <h3 class="panel-title">Titles/Descriptions</h3>
-                                        <div class="input-group">
-                                            <div class="input-group-btn">
-                                                <button id="form-publish-item-title-button" class="btn btn-default" type="button" disabled="disabled">Populate Fields</button>
-                                            </div>
-                                        </div>
                                     </div>
                                     <div class="panel-body">
                                         <%-- ITEM TITLE --%>
@@ -555,9 +534,6 @@
                                 <div id="metadata-panel" class="panel panel-default">
                                     <div class="panel-heading sideBySide">
                                         <h3 class="panel-title">Metadata</h3>
-                                        <span class="input-group-btn">
-                                            <button id="form-publish-item-service-csw-button-fetch" class="btn btn-default" type="button" disabled="disabled">Populate Fields</button>
-                                        </span>
                                     </div>
                                     <div class="panel-body">                            
                                         <%-- BBOX --%>
@@ -657,40 +633,6 @@
                 </div>
             </div>
         </div>
-        <div id="title-modal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title">Warning</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>This will overwrite any data currently in the title, description, and download link fields for this item.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="title-modal-continue-button" type="button" class="btn btn-default" data-dismiss="modal">Continue</button>
-                        <button id="title-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="resource-modal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title">Warning</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>This will overwrite any data currently in the Resources section for this item.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="resource-modal-continue-button" type="button" class="btn btn-default" data-dismiss="modal">Continue</button>
-                        <button id="resource-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div id="vector-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -699,21 +641,56 @@
                         <h4 class="modal-title">Upload Vector Data</h4>
                     </div>
                     <div class="modal-body">
-                        <form id="vector-form" enctype="multipart/form-data">
-                            <div>
-                                <label for="file">Zipped Shape File</label>
-                                <input type="file" name="file"/>
-                            </div>
+                        <div class="vector-modal-upload">
+                            <h4>Upload Layer Data</h4>
+                            <form id="vector-form-layer" enctype="multipart/form-data">
+                                <div>
+                                    <label for="file">Zipped Shape File</label>
+                                    <input type="file" name="file"/>
+                                </div>
+                            </form>
                             <br/>
-                            <button type="button" id="vector-modal-submit-btn">Create Layer</button>
-                        </form>
-                        <br/>
-                        <p id="vector-modal-result"></p>
-                        <br/>
-                        <p>Warning: Populating services while editing an item will overwrite the services of that item.</p>
+                            <form id="vector-form-metadata" enctype="multipart/form-data">
+                                <div>
+                                    <label for="file">Metadata XML</label>
+                                    <input type="file" name="file"/>
+                                </div>
+                            </form>
+                            <br/>
+                            <button type="button" class="btn btn-success" id="vector-modal-submit-btn">Create Layer</button>
+                            <br/>
+                            <p id="vector-modal-result"><br/></p>
+                        </div>
+                        <div class="upload-modal-actions">
+                            <div class="upload-modal-result-new-item">
+                                <h4>Create New Item</h4>
+                                <button id="vector-modal-create-button" type="button" class="btn btn-success" data-dismiss="modal" disabled="">Create New Item from Layer</button>
+                                <br/>
+                                <small>Warning: Creating a new Item will result in the loss of any unsaved changes to an Item you may be currently editing.</small>
+                            </div>
+                            <div class="upload-modal-result-current-item">
+                                <br>
+                                <h4>Update Current Item</h4>
+                                <div class="upload-modal-result-boxes">
+                                    <input type="checkbox" class="form-check-input" id="vector-services">
+                                    <label class="form-check-label" for="vector-services">Services - GeoServer Layer ID, WMS Links, WFS Links</label>
+                                    <br/>
+                                    <input type="checkbox" class="form-check-input" id="vector-resources">
+                                    <label class="form-check-label" for="vector-resources">Resources - Resources, Publications, and Data</label>
+                                    <br/>
+                                    <input type="checkbox" class="form-check-input" id="vector-titles">
+                                    <label class="form-check-label" for="vector-titles">Titles/Descriptions - Item Titles and Descriptions</label>
+                                    <br/>
+                                    <input type="checkbox" class="form-check-input" id="vector-metadata">
+                                    <label class="form-check-label" for="vector-metadata">Metadata - Bbox and Keywords</label>
+                                </div>
+                                <button id="vector-modal-update-button" type="button" class="btn btn-warning" data-dismiss="modal" disabled="">Updated Selected Sections from Layer</button>
+                                <br/>
+                                <small>Warning: Updating the selected sections of the current Item means completely replacing the existing cotent in those sections with data pulled from the uploaded layer.</small>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button id="vector-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Services From Layer</button>
                         <button id="vector-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -727,26 +704,56 @@
                         <h4 class="modal-title">Upload Raster Data</h4>
                     </div>
                     <div class="modal-body">
-                        <form id="raster-form" enctype="multipart/form-data">
-                            <div>
-                                <label for="metadata">Metadata XML</label>
-                                <input type="file" name="metadata"/>
-                            </div>
+                        <div class="upload-modal-upload">
+                            <h4>Upload Layer Data</h4>
+                            <form id="raster-form-layer" enctype="multipart/form-data">
+                                <div>
+                                    <label for="file">Zipped GeoTIFF</label>
+                                    <input type="file" name="file"/>
+                                </div>
+                            </form>
                             <br/>
-                            <div>
-                                <label for="file">Zipped GeoTIFF</label>
-                                <input type="file" name="file"/>
-                            </div>
+                            <form id="raster-form-metadata" enctype="multipart/form-data">
+                                <div>
+                                    <label for="metadata">Metadata XML</label>
+                                    <input type="file" name="file"/>
+                                </div>
+                            </form>
                             <br/>
-                            <button type="button" id="raster-modal-submit-btn">Create Layer</button>
-                        </form>
-                        <br/>
-                        <p id="raster-modal-result"></p>
-                        <br/>
-                        <p>Warning: Populating services while editing an item will overwrite the services of that item.</p>
+                            <button type="button" class="btn btn-success" id="raster-modal-submit-btn">Create Layer</button>
+                            <br/>
+                            <p id="raster-modal-result"><br/></p>
+                        </div>
+                        <div class="upload-modal-actions">
+                            <div class="upload-modal-result-new-item">
+                                <h4>Create New Item</h4>
+                                <button id="raster-modal-create-button" type="button" class="btn btn-success" data-dismiss="modal" disabled="">Create New Item from Layer</button>
+                                <br/>
+                                <small>Warning: Creating a new Item will result in the loss of any unsaved changes to an Item you may be currently editing.</small>
+                            </div>
+                            <br>
+                            <div class="upload-modal-result-current-item">
+                                <h4>Update Current Item</h4>
+                                <div class="upload-modal-result-boxes">
+                                    <input type="checkbox" class="form-check-input" id="raster-services">
+                                    <label class="form-check-label" for="raster-services">Services - GeoServer Layer ID, WMS Links, WFS Links</label>
+                                    <br/>
+                                    <input type="checkbox" class="form-check-input" id="raster-resources">
+                                    <label class="form-check-label" for="raster-resources">Resources - Resources, Publications, and Data</label>
+                                    <br/>
+                                    <input type="checkbox" class="form-check-input" id="raster-titles">
+                                    <label class="form-check-label" for="raster-titles">Titles/Descriptions - Item Titles and Descriptions</label>
+                                    <br/>
+                                    <input type="checkbox" class="form-check-input" id="raster-metadata">
+                                    <label class="form-check-label" for="raster-metadata">Metadata - Bbox and Keywords</label>
+                                </div>
+                                <button id="raster-modal-update-button" type="button" class="btn btn-warning" data-dismiss="modal" disabled="">Updated Selected Sections from Layer</button>
+                                <br>
+                                <small>Warning: Updating the selected sections of the current Item means completely replacing the existing cotent in those sections.</small>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button id="raster-modal-populate-button" type="button" class="btn btn-default" data-dismiss="modal" disabled="disabled">Populate Services From Layer</button>
                         <button id="raster-modal-cancel-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -807,7 +814,11 @@
                         <br/><br/>
                         <form id="storm-form" enctype="multipart/form-data">
                             <div>
-                                <label for="file">1. Zipped Shape File</label>
+                                <label for="file">1a. Metadata XML</label>
+                                <input type="file" name="metadata"/>
+                            </div>
+                            <div>
+                                <label for="file">1b. Zipped Shape File</label>
                                 <input type="file" name="file"/>
                             </div>
                             <br/>
@@ -817,7 +828,7 @@
                             <span>Only storms marked as being active will contain an NHC Storm Track child item.</span>
                             <div id="edit-new-track" style="/*! border: 1px solid black; */" hidden>
                                 <br>
-                                <label>2a).Modify NHC Storm Track</label>
+                                <label>2a.Modify NHC Storm Track</label>
                                 <form id="storm-modal-nhc-form">
                                     <small><div id="storm-nhc-bbox" class="">
                                         <label for="storm-nhc-bbox-table">A). Bounding Box</label>
