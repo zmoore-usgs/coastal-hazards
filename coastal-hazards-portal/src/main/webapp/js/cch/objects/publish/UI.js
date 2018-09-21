@@ -124,11 +124,11 @@ CCH.Objects.Publish.UI = function () {
 		$newStormCloseButton = $('#storm-modal-close-button'),
 		$newStormCancelButton = $('#storm-modal-cancel-button'),
 		$newStormLayerId = null,
-		$newVectorLayerId = null,
-		$newVectorLayerMetadata = null,
-		$newRasterLayerId = null,
-		$newRasterLayerMetadata = null,
-		$editingEnabled = false;
+		$editingEnabled = false,
+		newLayerId = null,
+		newLayerUrl = null,
+		newLayerIsRaster = false,
+		newLayerMetadata = null;
 
 	const ALIAS_NAME_REGEX = "(?!([A-Z|a-z|0-9|-])).";
 	me.allAliasList = [];
@@ -180,7 +180,7 @@ CCH.Objects.Publish.UI = function () {
 
 		[$itemIdInput, $titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $typeSb, 
-			$itemEnabledField, $attributeSelect, $attributeSelectHelper,
+			$itemEnabledField, $attributeSelect, $attributeSelectHelper, $popFromLayerInput,
 			$srcWfsServiceInput, $srcWfsServiceParamInput, $srcWmsServiceInput, $srcWmsServiceParamInput,
 			$proxyWfsServiceInput, $proxyWfsServiceParamInput, $proxyWmsServiceInput,
 			$proxyWmsServiceParamInput, $metadataSummaryField, $itemType, $name]
@@ -207,17 +207,15 @@ CCH.Objects.Publish.UI = function () {
 
 	me.enableNewItemForm = function () {
 		$itemType.val('data');
-                [$servicePanel.find('input, button'), $buttonSave, $buttonDelete]
-                        .forEach(function ($item) {
-                            $item.removeAttr(CCH.CONFIG.strings.disabled);
+				[$servicePanel.find('input, button'), $buttonSave, $buttonDelete]
+						.forEach(function ($item) {
+							$item.removeAttr(CCH.CONFIG.strings.disabled);
 			});
 		$editingEnabled = true;
 		
-		if($newVectorLayerId !== null){
+		if(newLayerId !== null && !newLayerIsRaster){
 			$vectorModalUpdateItemButton.prop("disabled", false);
-		}
-		
-		if($newRasterLayerId !== null){
+		} else if(newLayerId !== null && newLayerIsRaster){
 			$rasterModalUpdateItemButton.prop("disabled", false);
 		}
 
@@ -248,14 +246,13 @@ CCH.Objects.Publish.UI = function () {
 					$item.removeAttr(CCH.CONFIG.strings.disabled);
 				});
 		$editingEnabled = true;
-		
-		if($newVectorLayerId !== null){
+
+		if(newLayerId !== null && !newLayerIsRaster){
 			$vectorModalUpdateItemButton.prop("disabled", false);
-		}
-		
-		if($newRasterLayerId !== null){
+		} else if(newLayerId !== null && newLayerIsRaster){
 			$rasterModalUpdateItemButton.prop("disabled", false);
 		}
+
 		$itemEnabledField.val('false');
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
@@ -617,7 +614,7 @@ CCH.Objects.Publish.UI = function () {
 				.attr('value', '')
 				.html('');
 		$attributeSelectHelper.append(emptyOption);
-                
+				
 		if (featureTypes) {
 			featureTypes = featureTypes[0];
 			featureTypes.properties.forEach(function (ft) {
@@ -634,36 +631,32 @@ CCH.Objects.Publish.UI = function () {
 		$attributeSelectHelper.removeAttr(CCH.CONFIG.strings.disabled);
 	};
 	
-	me.updateSelectChange = function () {
+	me.updateSelectChange = function() {
 		if ($attributeSelectHelper.val() !== '') {
 			$attributeSelect.val($attributeSelectHelper.val());
-			me.unlockTitlesResourcesMetadata();
 		}
 	};
-        
+		
 	//Unlocks item type and features panel
 	me.unlockItemTypeFeatures = function () {
-	    [$typeSb, $attributeSelect,$featuresPanel.find('button, input')]
+		[$typeSb, $attributeSelect,$featuresPanel.find('button, input')]
 		.forEach(function ($item) {
-		    $item.removeAttr(CCH.CONFIG.strings.disabled);
+			$item.removeAttr(CCH.CONFIG.strings.disabled);
 		});
 	};
 
 	//Unlocks Titles, Resources, and Metadata Panels
-	me.unlockTitlesResourcesMetadata = function () {
-	    [$titlesPanel.find('button, textarea'), $resourcesPanel.find('button'), $metaDataPanel.find('button, input')]
+	me.unlockTitlesResourcesMetadata = function() {
+		[$titlesPanel.find('button, textarea'), $resourcesPanel.find('button'), $metaDataPanel.find('button, input')]
 		.forEach(function ($item) {
-		    $item.removeAttr(CCH.CONFIG.strings.disabled);
+			$item.removeAttr(CCH.CONFIG.strings.disabled);
 		});
 	};
-	
-	//Locks Titles, Resources, and Metadata Panels
- 	me.lockTitlesResourcesMetadata = function () {
-	    [$titlesPanel.find('button, textarea'), $resourcesPanel.find('button'), $metaDataPanel.find('button, input')]
-                .forEach(function ($item) {
-                    $item.prop("disabled", true);
-                });
-	};
+
+	me.unlockRestOfForm = function() {
+		me.unlockItemTypeFeatures();
+		me.unlockTitlesResourcesMetadata();
+	}
 	
 	me.createModalAliasRowListeners = function(alias, newAlias, aliasRowHtml){
 		var $rowObject = $(aliasRowHtml);
@@ -1119,7 +1112,7 @@ CCH.Objects.Publish.UI = function () {
 				
 				$attributeSelect.val(item.attr);
 				if (item.services.length > 0) {
-                                    
+									
 					// Fill out services panel
 					if (services.source_wfs) {
 						$srcWfsServiceInput
@@ -1221,8 +1214,7 @@ CCH.Objects.Publish.UI = function () {
 		} else {
 			CCH.LOG.warn('UI.js::addItemToForm: function was called with no item');
 		}
-		me.unlockItemTypeFeatures();
-		me.unlockTitlesResourcesMetadata();
+		me.unlockRestOfForm();
 	};
 
 	me.wfsInfoUpdated = function () {
@@ -1499,6 +1491,7 @@ CCH.Objects.Publish.UI = function () {
 			$.ajax({
 				url: layerurl,
 				success: function (data) {
+					me.unlockRestOfForm();
 					for (var i=0; i < data.services.length; i++) {
 						var service = data.services[i];
 						var serviceEndpoint = (service.hasOwnProperty("endpoint")) ? service.endpoint : "";
@@ -1573,7 +1566,7 @@ CCH.Objects.Publish.UI = function () {
 	// DEPRECATED
 	me.getDataForAttribute = function () {
 		var attribute = $attributeSelect.val();
-                
+				
 		CCH.ows.requestSummaryByAttribute({
 			url: $('#form-publish-item-service-csw').val(),
 			attribute: attribute,
@@ -1587,7 +1580,7 @@ CCH.Objects.Publish.UI = function () {
 								me.createPublicationRow(publication.link, publication.title, type);
 							});
 						});
-                                                
+												
 						response.keywords.split('|').forEach(function (keyword) {
 							me.addKeywordGroup(keyword);
 						});
@@ -1763,21 +1756,10 @@ CCH.Objects.Publish.UI = function () {
 		$srcWmsServiceInput.val($srcWfsServiceInput.val().replace('WFSServer', 'WMSServer'));
 	});
 	
-//	$titleModalContinueButton.on(CCH.CONFIG.strings.click, function() {
-//		me.getTitlesForAttribute();
-//	});
-
-        
-//  $resourceModalContinueButton.on(CCH.CONFIG.strings.click, function() {
-//		me.getDataForAttribute();
-//	});
-	
 	$attributeSelectHelper.on(CCH.CONFIG.strings.change, me.updateSelectChange);
-
 
 	$popFromLayerButton.on(CCH.CONFIG.strings.click, function() {
 		me.loadLayerInfo($popFromLayerInput.val());
-                me.unlockItemTypeFeatures();
 	});
 
 	$sourceWfsCheckButton.on(CCH.CONFIG.strings.click, function () {
@@ -2074,193 +2056,45 @@ CCH.Objects.Publish.UI = function () {
 	};
 		
 	$vectorModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
-		var $result = $('#vector-modal-result');
-		var $formLayer = $('#vector-form-layer');
-		var $formMetadata = $('#vector-form-metadata');
-		var $closeButton = $('#vector-modal-close-button');
-		var $cancelButton = $('#vector-modal-cancel-button');
-		var $createButton = $('#vector-modal-create-button');
-		var $updateButton = $('#vector-modal-update-button');
+		var currentUpload = {};
+		newLayerIsRaster = false;
+		currentUpload.$result = $('#vector-modal-result');
+		currentUpload.$closeButton = $('#vector-modal-close-button');
+		currentUpload.$cancelButton = $('#vector-modal-cancel-button');
+		currentUpload.$createButton = $('#vector-modal-create-button');
+		currentUpload.$updateButton = $('#vector-modal-update-button');
 		
-		$newVectorLayerId = null;
-		$newVectorLayerMetadata = null;
-		$result.empty();
-		$result.append('Working...');
-		$closeButton.prop("disabled",true);
-		$cancelButton.prop("disabled",true);
-		e.preventDefault();
-		var formData = new FormData($formLayer[0]);
-
-		$.ajax({
-			url: CCH.baseUrl + "/data/layer/",
-			type: 'POST',
-			data: formData,
-			contentType: false,
-			processData: false
-		})
-		.done(function(dataLayer, textStatus, jqXHR){
-			$result.empty();
-			var layerUrl = jqXHR.getResponseHeader('Location');
-			var layerId = getLayerIdFromUrl(layerUrl);
-			if(201 === jqXHR.status){
-				$newVectorLayerId = layerId;
-				formData = new FormData($formMetadata[0]);
-				$.ajax({
-					url: CCH.baseUrl + "/data/metadata",
-					type: 'POST',
-					data: formData,
-					contentType: false,
-					processData: false
-				})
-				.done(function(dataMetadata,textStatus,jqXHR){
-					$newVectorLayerMetadata = dataMetadata;
-					if(200 === jqXHR.status) {
-						$result.append("Successfully published layer " + layerId + ". Click ");
-						$result.append('<a href="' + layerUrl + '" target="_blank">here</a> to see the layer');
-						$closeButton.prop("disabled",false);
-						$cancelButton.prop("disabled",false);
-						$createButton.prop("disabled",false);
-
-						if($editingEnabled) {
-							$updateButton.prop("disabled",false);
-						}
-					} else {
-						$result.append("Received unexpected response: '" + data + "'. Layer might not have been created correctly.");
-						$newVectorLayerId = null;
-						$newVectorLayerMetadata = null;
-						$closeButton.prop("disabled",false);
-						$cancelButton.prop("disabled",false);
-					}					
-				})
-				.fail(function(jqXHR, textStatus, errorThrown){
-					$result.empty();
-					$result.append("Error");
-					$closeButton.prop("disabled",false);
-					$cancelButton.prop("disabled",false);
-					$newVectorLayerId = null;
-					$newVectorLayerMetadata = null;
-				});
-			} else {
-				$result.append("Received unexpected response: '" + data + "'. Layer might not have been created correctly.");
-				$newVectorLayerId = null;
-				$newVectorLayerMetadata = null;
-				$closeButton.prop("disabled",false);
-				$cancelButton.prop("disabled",false);
-			}
-		})
-		.fail(function(jqXHR, textStatus, errorThrown){
-			$result.empty();
-			$result.append("Error");
-			$closeButton.prop("disabled",false);
-			$cancelButton.prop("disabled",false);
-			$newVectorLayerId = null;
-			$newVectorLayerMetadata = null;
-		});
+		postLayer(new FormData($('#vector-form-layer')[0]), new FormData($('#vector-form-metadata')[0]), currentUpload);
 	});
 
 	$rasterModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
-		var $result = $('#raster-modal-result');
-		var $formLayer = $('#raster-form-layer');
-		var $formMetadata = $('#raster-form-metadata');
-		var $closeButton = $('#raster-modal-close-button');
-		var $cancelButton = $('#raster-modal-cancel-button');
-		var $createButton = $('#raster-modal-create-button');
-		var $updateButton = $('#raster-modal-update-button');
-		
-		$newRasterLayerId = null;
-		$newRasterLayerMetadata = null;
-		$result.empty();
-		$result.append('Working...');
-		$closeButton.prop("disabled",true);
-		$cancelButton.prop("disabled",true);
-		e.preventDefault();
-		var formData = new FormData($formLayer[0]);
+		var currentUpload = {};
+		newLayerIsRaster = true;
+		currentUpload.$result = $('#raster-modal-result');
+		currentUpload.$closeButton = $('#raster-modal-close-button');
+		currentUpload.$cancelButton = $('#raster-modal-cancel-button');
+		currentUpload.$createButton = $('#raster-modal-create-button');
+		currentUpload.$updateButton = $('#raster-modal-update-button');
 
-		$.ajax({
-			url: CCH.baseUrl + "/data/layer/raster",
-			type: 'POST',
-			data: formData,
-			contentType: false,
-			processData: false
-		})
-		.done(function(dataLayer, textStatus, jqXHR){
-			$result.empty();
-			var layerUrl = jqXHR.getResponseHeader('Location');
-			var layerId = getLayerIdFromUrl(layerUrl);
-			if(201 === jqXHR.status){
-				$newRasterLayerId = layerId;
-				formData = new FormData($formMetadata[0]);
-				$.ajax({
-					url: CCH.baseUrl + "/data/metadata",
-					type: 'POST',
-					data: formData,
-					contentType: false,
-					processData: false
-				})
-				.done(function(dataMetadata,textStatus,jqXHR){
-					$newRasterLayerMetadata = dataMetadata;
-					if(200 === jqXHR.status) {
-						$result.append("Successfully published layer " + layerId + ". Click ");
-						$result.append('<a href="' + layerUrl + '" target="_blank">here</a> to see the layer');
-						$closeButton.prop("disabled",false);
-						$cancelButton.prop("disabled",false);
-						$createButton.prop("disabled",false);
-
-						if($editingEnabled) {
-							$updateButton.prop("disabled",false);
-						}
-					} else {
-						$result.append("Received unexpected response: '" + data + "'. Layer might not have been created correctly.");
-						$newRasterLayerId = null;
-						$newRasterLayerMetadata = null;
-						$closeButton.prop("disabled",false);
-						$cancelButton.prop("disabled",false);
-					}					
-				})
-				.fail(function(jqXHR, textStatus, errorThrown){
-					$result.empty();
-					$result.append("Error");
-					$closeButton.prop("disabled",false);
-					$cancelButton.prop("disabled",false);
-					$newRasterLayerId = null;
-					$newRasterLayerMetadata = null;
-				});
-			} else {
-				$result.append("Received unexpected response: '" + data + "'. Layer might not have been created correctly.");
-				$newRasterLayerId = null;
-				$newRasterLayerMetadata = null;
-				$closeButton.prop("disabled",false);
-				$cancelButton.prop("disabled",false);
-			}
-		})
-		.fail(function(jqXHR, textStatus, errorThrown){
-			$result.empty();
-			$result.append("Error");
-			$closeButton.prop("disabled",false);
-			$cancelButton.prop("disabled",false);
-			$newRasterLayerId = null;
-			$newRasterLayerMetadata = null;
-		});
+		postLayer(new FormData($('#raster-form-layer')[0]), new FormData($('#raster-form-metadata')[0]), currentUpload);
 	});
 	
 	$vectorModalCreateItemButton.on(CCH.CONFIG.strings.click, function(){
 		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
 		me.clearForm();
 		me.enableNewItemForm();
-		applyLayerDataToForm($newVectorLayerId,$newVectorLayerMetadata,true,true,true,true);
+		applyLayerDataToForm(true,true,true,true);
 	});
 
 	$rasterModalCreateItemButton.on(CCH.CONFIG.strings.click, function(){
 		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
 		me.clearForm();
 		me.enableNewItemForm();
-		applyLayerDataToForm($newRasterLayerId,$newRasterLayerMetadata,true,true,true,true);
+		applyLayerDataToForm(true,true,true,true);
 	});
 
 	$vectorModalUpdateItemButton.on(CCH.CONFIG.strings.click, function(){
 		applyLayerDataToForm(
-			$newVectorLayerId,
-			$newVectorLayerMetadata,
 			$($vectorModalUpdateServicesBox).prop("checked"), 
 			$($vectorModalUpdateResourcesBox).prop("checked"),
 			$($vectorModalUpdateTitlesBox).prop("checked"),
@@ -2270,8 +2104,6 @@ CCH.Objects.Publish.UI = function () {
 
 	$rasterModalUpdateItemButton.on(CCH.CONFIG.strings.click, function(){
 		applyLayerDataToForm(
-			$newRasterLayerId,
-			$newRasterLayerMetadata,
 			$($rasterModalUpdateServicesBox).prop("checked"), 
 			$($rasterModalUpdateResourcesBox).prop("checked"),
 			$($rasterModalUpdateTitlesBox).prop("checked"),
@@ -2279,17 +2111,136 @@ CCH.Objects.Publish.UI = function () {
 		);
 	});
 
-	var applyLayerDataToForm = function(newLayerId, newMetadataJson, applyServices, applyResources, applyTitles, applyMetadata) {
+	var clearLayerUploadResults = function() {
+		$('#raster-modal-result').empty();
+		$('#vector-modal-result').empty();
+	}
+
+	var layerUploadButtonsEnabled = function(val) {
+		$rasterModalSubmitButton.prop("disabled", !val);
+		$vectorModalSubmitButton.prop("disabled", !val);
+	}
+
+	var layerItemButtonsEnabled = function(val) {
+		$('#vector-modal-create-button').prop("disabled", !val);
+		$('#vector-modal-update-button').prop("disabled", !val);
+		$('#raster-modal-create-button').prop("disabled", !val);
+		$('#raster-modal-update-button').prop("disabled", !val);
+	}
+
+	var handleUnexpectedResponse = function(currentUpload) {
+		currentUpload.$result.append("Received unexpected response: '" + data + "'. Layer might not have been created correctly.");
+		newLayerId = null;
+		newLayerUrl = null;
+		newLayerMetadata = null;
+		currentUpload.$closeButton.prop("disabled",false);
+		currentUpload.$cancelButton.prop("disabled",false);
+		layerUploadButtonsEnabled(true);
+	};
+
+	var postLayerSuccessCallback = function(metadataFormData, data, textStatus, jqXHR, currentUpload) {
+		currentUpload.$result.empty();
+		var layerUrl = jqXHR.getResponseHeader('Location');
+		var layerId = getLayerIdFromUrl(layerUrl);
+
+		if(201 === jqXHR.status){
+			newLayerId = layerId;
+			newLayerUrl = layerUrl;
+			postMetadata(metadataFormData, currentUpload);
+		} else {
+			handleUnexpectedResponse(currentUpload);
+		}
+	};
+
+	var postLayerErrorCallback = function(jqXHR, textStatus, errorThrown, currentUpload) {
+		currentUpload.$result.empty();
+		currentUpload.$result.append("Error");
+		currentUpload.$closeButton.prop("disabled",false);
+		currentUpload.$cancelButton.prop("disabled",false);
+		layerUploadButtonsEnabled(true);
+		newLayerId = null;
+		newLayerUrl = null;
+		newLayerMetadata = null;
+	};
+
+	var postMetadataSuccessCallback = function(data, textStatus, jqXHR, currentUpload) {
+		newLayerMetadata = data;
+		
+		if(200 === jqXHR.status) {
+			currentUpload.$result.append("Successfully published layer " + newLayerId + ". Click ");
+			currentUpload.$result.append('<a href="' + newLayerUrl + '" target="_blank">here</a> to see the layer');
+			currentUpload.$closeButton.prop("disabled",false);
+			currentUpload.$cancelButton.prop("disabled",false);
+			currentUpload.$createButton.prop("disabled",false);
+			layerUploadButtonsEnabled(true);
+
+			if($editingEnabled) {
+				currentUpload.$updateButton.prop("disabled",false);
+			}
+		} else {
+			handleUnexpectedResponse(currentUpload);
+		}					
+	};
+
+	var postMetadataErrorCallback = function(jqXHR, textStatus, errorThrown, currentUpload) {
+		currentUpload.$result.empty();
+		currentUpload.$result.append("Error");
+		currentUpload.$closeButton.prop("disabled",false);
+		currentUpload.$cancelButton.prop("disabled",false);
+		layerItemButtonsEnabled(false);
+		layerUploadButtonsEnabled(true);
+		newLayerId = null;
+		newLayerUrl = null;
+		newLayerMetadata = null;
+	};
+
+	var postLayer = function(layerFormData, metadataFormData, currentUpload) {
+		var postUrl = CCH.baseUrl + "/data/layer" + (newLayerIsRaster ? "/raster" : "");
+		clearLayerUploadResults();
+		layerItemButtonsEnabled(false);
+		layerUploadButtonsEnabled(false);
+
+		$.ajax({
+			url: postUrl,
+			type: 'POST',
+			data: layerFormData,
+			contentType: false,
+			processData: false
+		})
+		.done(function(data, textStatus, jqXHR) {
+			postLayerSuccessCallback(metadataFormData, data, textStatus, jqXHR, currentUpload);
+		})
+		.fail(function(jqXHR, textStatus, errorThrown){
+			postLayerErrorCallback(jqXHR, textStatus, errorThrown, currentUpload);
+		});
+	}
+
+	var postMetadata = function(formData, currentUpload) {
+		$.ajax({
+			url: CCH.baseUrl + "/data/metadata",
+			type: 'POST',
+			data: formData,
+			contentType: false,
+			processData: false
+		})
+		.done(function(data, textStatus, jqXHR) {
+			postMetadataSuccessCallback(data, textStatus, jqXHR, currentUpload);
+		})
+		.fail(function(jqXHR, textStatus, errorThrown){
+			postMetadataErrorCallback(jqXHR, textStatus, errorThrown, currentUpload);
+		});
+	};
+
+	var applyLayerDataToForm = function(applyServices, applyResources, applyTitles, applyMetadata) {
 		console.log("Values: " + applyServices, applyResources, applyTitles, applyMetadata);
 
 		// Apply Services
 		if(applyServices && newLayerId !== null) {
 			$popFromLayerInput.val(newLayerId);
 			me.loadLayerInfo($popFromLayerInput.val());
-			me.unlockItemTypeFeatures();
 		}
 
-		if(newMetadataJson != null) {
+		if(newLayerMetadata != null) {
 			// Apply Resources
 			if(applyResources) {
 
@@ -2316,16 +2267,7 @@ CCH.Objects.Publish.UI = function () {
 		} else {
 			$isActiveStormRow.addClass('hidden');
 		}
-        $itemAttributePanel.find('button').removeAttr(CCH.CONFIG.strings.disabled);
-	});
-        
-        //Checks to see if Attributes has a val and unlocks titles, Resources, and metdata for create new items
-	$attributeSelect.on('input', function () {
-	    if ($attributeSelect.val().length > 0) {
-		me.unlockTitlesResourcesMetadata();
-	    } else {
-		me.lockTitlesResourcesMetadata();
-	    }
+		$itemAttributePanel.find('button').removeAttr(CCH.CONFIG.strings.disabled);
 	});
 	
 	//When the alias modal is closed reload the item alias list
@@ -2815,13 +2757,6 @@ CCH.Objects.Publish.UI = function () {
 		});
 
 		return nhcJson;
-	}
-
-	me.populateStormTemplateForm = function() {
-		$popFromLayerInput.val($newStormLayerId);
-		me.loadLayerInfo($popFromLayerInput.val());
-		me.unlockItemTypeFeatures();
-		$typeSb.val('storms');
 	}
 
 	me.enableNewStormButtons = function() {
