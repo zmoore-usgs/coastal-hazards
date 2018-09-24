@@ -118,8 +118,8 @@
 		<version.bootstrap>3.3.4</version.bootstrap>
 		<version.fontawesome>4.7.0</version.fontawesome>
 		<version.openlayers>2.13.1</version.openlayers>
-		<gs.version>2.13.2</gs.version>
-		<gt.version>19.2</gt.version>
+		<gs.version>2.11.1</gs.version>
+		<gt.version>17.1</gt.version>
 		<httpclient.version>4.5.1</httpclient.version>
 	</properties>
 	<scm>
