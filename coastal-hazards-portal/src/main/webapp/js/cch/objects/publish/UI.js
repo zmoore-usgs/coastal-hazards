@@ -79,8 +79,6 @@ CCH.Objects.Publish.UI = function () {
 		$rasterModalUpdateTitlesBox = $('#raster-titles'),
 		$rasterModalUpdateMetadataBox = $('#raster-metadata'),
 		$rasterModalUpdateItemButton = $('#raster-modal-update-button'),
-//		$titleModalContinueButton = $('#title-modal-continue-button'),
-//		$resourceModalContinueButton = $('#resource-modal-continue-button'),
 		$metadataSummaryField = $('#form-publish-info-item-summary-version'),
 		$itemEnabledField = $('#form-publish-info-item-enabled'),
 		$itemImage = $form.find('#form-publish-info-item-image'),
@@ -123,7 +121,6 @@ CCH.Objects.Publish.UI = function () {
 		$newStormForm = $('#storm-form'),
 		$newStormCloseButton = $('#storm-modal-close-button'),
 		$newStormCancelButton = $('#storm-modal-cancel-button'),
-		$newStormLayerId = null,
 		$editingEnabled = false,
 		newLayerId = null,
 		newLayerUrl = null,
@@ -2470,9 +2467,7 @@ CCH.Objects.Publish.UI = function () {
 		}
 	}
 
-	me.createNewStorm = function(newAlias, copyType, copyText, trackFormData, trackBbox) {		
-		$newStormLayerId = null;
-
+	me.createNewStorm = function(newAlias, copyType, copyText, trackFormData, trackBbox) {
 		//Disable buttons
 		me.clearForm();
 		$newStormCloseButton.prop("disabled",true);
@@ -2501,9 +2496,7 @@ CCH.Objects.Publish.UI = function () {
 			var layerUrl = jqXHR.getResponseHeader('Location');
 			var layerId = getLayerIdFromUrl(layerUrl);
 
-			if (201 === status){				
-				$newStormLayerId = layerId;
-
+			if (201 === status){
 				if(trackFormData != null) {
 					//Create Track Children
 					me.buildTrackData($result, newAlias, copyType, copyText, trackFormData, trackBbox, layerId);
@@ -2513,13 +2506,11 @@ CCH.Objects.Publish.UI = function () {
 			} else {
 				$result.append("Received unexpected response during layer creation: '" + data + 
 					"'. Layer might not have been created correctly. Storm creation aborted.");
-				$newStormLayerId = null;
 				me.enableNewStormButtons();
 			}
 		})
 		.fail(function(jqXHR, textStatus, errorThrown){
 			$result.append("Error creating layer using selected file.");
-			$newStormLayerId = null;
 			me.enableNewStormButtons();
 		});
 	}
@@ -2548,7 +2539,6 @@ CCH.Objects.Publish.UI = function () {
 			},
 			error: function(data) {
 				$result.append("Failed to post an NHC Track Child Item. Storm creation aborted. Error code: " + data.status);
-				$newStormLayerId = null;
 				me.enableNewStormButtons();
 			}
 		});
@@ -2573,7 +2563,6 @@ CCH.Objects.Publish.UI = function () {
 			},
 			error: function(data) {
 				$result.append("Failed to post NHC Track Aggregate Item. Storm creation aborted. Error code: " + data.status);
-				$newStormLayerId = null;
 				me.enableNewStormButtons();
 			}
 		});
@@ -2610,13 +2599,11 @@ CCH.Objects.Publish.UI = function () {
 					}
 				} else {
 					$result.append('An unknown error occurred while saving the storm. It may not have been created successfully.');
-					$newStormLayerId = null;
 					me.enableNewStormButtons();
 				}
 			})
 			.fail(function(data) {
 				$result.append('Failed to create storm item and associated child items. Storm creation aborted.');
-				$newStormLayerId = null;
 				me.enableNewStormButtons();
 				console.error(data);
 			});
@@ -2645,7 +2632,6 @@ CCH.Objects.Publish.UI = function () {
 				error: function(data) {
 					$result.empty();
 					$result.append("Failed to retireve storm layer BBOX");
-					$newStormLayerId = null;
 					me.enableNewStormButtons();
 				}
 			});

@@ -817,6 +817,7 @@
                                 <label for="file">1a. Metadata XML</label>
                                 <input type="file" name="metadata"/>
                             </div>
+                            <br/>
                             <div>
                                 <label for="file">1b. Zipped Shape File</label>
                                 <input type="file" name="file"/>
