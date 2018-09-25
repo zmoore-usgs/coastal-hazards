@@ -38,6 +38,7 @@ target/
 /coastal-hazards-n52/src/main/webapp/META-INF/
 /coastal-hazards-portal/catalina.base_IS_UNDEFINED/
 /coastal-hazards-ui/catalina.base_IS_UNDEFINED/
+/coastal-hazards-geoserver/src/main/webapp/data/workspaces
 **/.project
 **/.settings
 **/.classpath

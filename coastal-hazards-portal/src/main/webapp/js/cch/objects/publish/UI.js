@@ -2125,7 +2125,7 @@ CCH.Objects.Publish.UI = function () {
 							$updateButton.prop("disabled",false);
 						}
 					} else {
-						$result.append("Received unexpected response: '" + data + "'. Layer might not have been created correctly.");
+						$result.append("Received unexpected response: '" + dataMetadata + "'. Layer might not have been created correctly.");
 						$newVectorLayerId = null;
 						$newVectorLayerMetadata = null;
 						$closeButton.prop("disabled",false);

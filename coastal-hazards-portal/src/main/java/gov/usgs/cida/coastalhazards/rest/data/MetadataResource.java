@@ -3,22 +3,22 @@ package gov.usgs.cida.coastalhazards.rest.data;
 import com.google.gson.JsonSyntaxException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
+import gov.usgs.cida.coastalhazards.model.summary.Publication;
+import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
-import gov.usgs.cida.utilities.communication.FormUploadHandler;
-import gov.usgs.cida.utilities.string.StringHelper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -30,10 +30,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -44,6 +50,8 @@ import org.xml.sax.SAXException;
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class MetadataResource {
 
+      	private static final Logger log = LoggerFactory.getLogger(MetadataResource.class);
+    
 	private static final int FILE_UPLOAD_MAX_SIZE = 15728640;
 	private static final String FILENAME_PARAM = "qqfile";
 	private static File UPLOAD_DIR;
@@ -52,59 +60,45 @@ public class MetadataResource {
 		super();
 		UPLOAD_DIR = new File(FileUtils.getTempDirectoryPath() + "/metadata-upload");
 	}
-
-	@POST
+        
+        @POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-	public Response acceptMetadata(@Context HttpServletRequest req) throws IOException {
-		int maxFileSize = FILE_UPLOAD_MAX_SIZE;
-		int fileSize = Integer.parseInt(req.getHeader("Content-Length"));
-		File tempFile = File.createTempFile(UUID.randomUUID().toString(), "temp");
-		Map<String, String> responseContent = new HashMap<>();
-		String fileName;
+        @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	public Response getMetadata(@Context HttpServletRequest req, @FormDataParam("file") String postBody) {
+            log.error("inside getMetadata");
+            Response response = Response.ok(postBody).build();
+            Document doc = null;
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            List<String> keywords = new ArrayList();
+            List<Publication> pubs = new ArrayList();
+            Bbox box = new Bbox();
+            
+            try {
+                doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(postBody)));
+                doc.getDocumentElement().normalize();
 
-		if (maxFileSize > 0 && fileSize > maxFileSize) {
-			responseContent.put("message", "File too large");
-			responseContent.put("success", "false");
-			return Response.notAcceptable(null).entity(responseContent).build();
-		}
+                
+                box = MetadataUtil.getBoundingBoxFromFgdcMetadata(postBody);
+                keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/placekey"));
+                keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/themekey"));
+                                
+                pubs = MetadataUtil.getResourcesFromDoc(doc);
+                
+                log.error("\n\n\n PUBS: " + pubs.toString() + "\n\n\n");
+                log.error("\n\n\n KEYWORDS:" + keywords.toString() + "\n\n\n");
+                
+                
+                Map<String, Object> grouped = new HashMap();
+                grouped.put("Box", box);
+                grouped.put("Keywords", keywords);
+                grouped.put("Resources", pubs);
+                
+                response = Response.ok(GsonUtil.getDefault().toJson(grouped, Map.class)).build();
+            } catch (Exception e) {
+                log.error("Failed to parse metadata xml document. Error: " + e.getMessage() + ". Stack Trace: " + e.getStackTrace());
+            }
 
-		try {
-			FileUtils.forceMkdir(UPLOAD_DIR);
-		}
-		catch (IOException ex) {
-			return Response.serverError().build();
-		}
-
-		try {
-			FormUploadHandler.saveFileFromRequest(req, FILENAME_PARAM, tempFile);
-		}
-		catch (FileUploadException | IOException ex) {
-			responseContent.put("message", ex.getMessage());
-			responseContent.put("success", "false");
-			return Response.serverError().entity(responseContent).build();
-		}
-
-		try {
-			fileName = StringHelper.makeSHA1Hash(IOUtils.toString(new FileInputStream(tempFile)));
-		}
-		catch (NoSuchAlgorithmException ex) {
-			responseContent.put("message", ex.getMessage());
-			responseContent.put("success", "false");
-			return Response.serverError().entity(responseContent).build();
-		}
-
-		File savedFile = new File(UPLOAD_DIR, fileName);
-		if (savedFile.exists()) {
-			responseContent.put("fid", fileName);
-		}
-		else {
-			FileUtils.moveFile(tempFile, savedFile);
-			responseContent.put("fid", fileName);
-		}
-		responseContent.put("success", "true");
-		return Response.ok(GsonUtil.getDefault().toJson(responseContent, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
-
+            return response;
 	}
 
 	@GET
