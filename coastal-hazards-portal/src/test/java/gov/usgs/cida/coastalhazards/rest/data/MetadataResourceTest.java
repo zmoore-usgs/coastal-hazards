@@ -6,7 +6,9 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
+import gov.usgs.cida.coastalhazards.model.Bbox;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import javax.ws.rs.core.Response;
@@ -22,7 +24,6 @@ public class MetadataResourceTest {
         
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(MetadataResourceTest.class);
     private static String BTxml = "Boston_transects.xml";
-    private static String AExml = "ne_AEmeta.xml";
     
     /**
      * Test of getBoundingBoxFromFgdcMetadataAE method, of class MetadataUtil.
@@ -40,7 +41,6 @@ public class MetadataResourceTest {
         String replaced = packageName.replaceAll("[.]", "/");
         String[] names = replaced.split("/MetadataResourceTest");
         String packageNameShort = names[0];
-        log.error(replaced + " " + packageName);
         
         String testFileFullName = packageNameShort + "/" + BTxml;
 
@@ -49,12 +49,9 @@ public class MetadataResourceTest {
         MetadataResource mr = new MetadataResource();
         Response resp = mr.getMetadata(null, metadataXml);
         
-        Map<String,String> gsonResp = GsonUtil.getDefault().fromJson((String) resp.getEntity(), Map.class);
+        Map<String,List> gsonResp = GsonUtil.getDefault().fromJson((String) resp.getEntity(), Map.class);
         
         assertEquals(gsonResp.size(),3);
-        assertEquals(gsonResp.get("Box").length(), 4);
-        assertEquals(gsonResp.get("Resources").length(), 8);
-        assertEquals(gsonResp.get("Keywords").length(), 33);
     }
     
     

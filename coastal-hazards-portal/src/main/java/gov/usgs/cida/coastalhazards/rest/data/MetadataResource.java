@@ -65,7 +65,6 @@ public class MetadataResource {
 	@Produces(MediaType.APPLICATION_JSON)
         @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response getMetadata(@Context HttpServletRequest req, @FormDataParam("file") String postBody) {
-            log.error("inside getMetadata");
             Response response = Response.ok(postBody).build();
             Document doc = null;
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -77,16 +76,11 @@ public class MetadataResource {
                 doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(postBody)));
                 doc.getDocumentElement().normalize();
 
-                
                 box = MetadataUtil.getBoundingBoxFromFgdcMetadata(postBody);
                 keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/placekey"));
                 keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/themekey"));
                                 
                 pubs = MetadataUtil.getResourcesFromDoc(doc);
-                
-                log.error("\n\n\n PUBS: " + pubs.toString() + "\n\n\n");
-                log.error("\n\n\n KEYWORDS:" + keywords.toString() + "\n\n\n");
-                
                 
                 Map<String, Object> grouped = new HashMap();
                 grouped.put("Box", box);
