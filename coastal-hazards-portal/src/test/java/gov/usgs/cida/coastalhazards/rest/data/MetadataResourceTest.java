@@ -51,7 +51,7 @@ public class MetadataResourceTest {
         
         Map<String,List> gsonResp = GsonUtil.getDefault().fromJson((String) resp.getEntity(), Map.class);
         
-        assertEquals(gsonResp.size(),3);
+        assertEquals(gsonResp.size(),5);
     }
     
     
