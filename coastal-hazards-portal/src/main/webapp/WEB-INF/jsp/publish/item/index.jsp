@@ -678,11 +678,11 @@
                                     <input type="checkbox" class="form-check-input" id="vector-resources">
                                     <label class="form-check-label" for="vector-resources">Resources - Resources, Publications, and Data</label>
                                     <br/>
-                                    <input type="checkbox" class="form-check-input" id="vector-titles">
-                                    <label class="form-check-label" for="vector-titles">Titles/Descriptions - Item Titles and Descriptions</label>
+                                    <input type="checkbox" class="form-check-input" id="vector-keywords">
+                                    <label class="form-check-label" for="vector-keywords">Keywords - Item Keywords</label>
                                     <br/>
-                                    <input type="checkbox" class="form-check-input" id="vector-metadata">
-                                    <label class="form-check-label" for="vector-metadata">Metadata - Bbox and Keywords</label>
+                                    <input type="checkbox" class="form-check-input" id="vector-bbox">
+                                    <label class="form-check-label" for="vector-bbox">Bbox - Item Bbox</label>
                                 </div>
                                 <button id="vector-modal-update-button" type="button" class="btn btn-warning" data-dismiss="modal" disabled="">Updated Selected Sections from Layer</button>
                                 <br/>
@@ -741,11 +741,11 @@
                                     <input type="checkbox" class="form-check-input" id="raster-resources">
                                     <label class="form-check-label" for="raster-resources">Resources - Resources, Publications, and Data</label>
                                     <br/>
-                                    <input type="checkbox" class="form-check-input" id="raster-titles">
-                                    <label class="form-check-label" for="raster-titles">Titles/Descriptions - Item Titles and Descriptions</label>
+                                    <input type="checkbox" class="form-check-input" id="raster-keywords">
+                                    <label class="form-check-label" for="raster-keywords">Keywords - Item Keywords</label>
                                     <br/>
-                                    <input type="checkbox" class="form-check-input" id="raster-metadata">
-                                    <label class="form-check-label" for="raster-metadata">Metadata - Bbox and Keywords</label>
+                                    <input type="checkbox" class="form-check-input" id="raster-bbox">
+                                    <label class="form-check-label" for="raster-bbox">Bbox - Item Bbox</label>
                                 </div>
                                 <button id="raster-modal-update-button" type="button" class="btn btn-warning" data-dismiss="modal" disabled="">Updated Selected Sections from Layer</button>
                                 <br>

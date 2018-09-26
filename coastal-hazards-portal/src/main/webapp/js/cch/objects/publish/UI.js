@@ -68,16 +68,16 @@ CCH.Objects.Publish.UI = function () {
 		$vectorModalCreateItemButton = $('#vector-modal-create-button'),
 		$vectorModalUpdateServicesBox = $('#vector-services'),
 		$vectorModalUpdateResourcesBox = $('#vector-resources'),
-		$vectorModalUpdateTitlesBox = $('#vector-titles'),
-		$vectorModalUpdateMetadataBox = $('#vector-metadata'),
+		$vectorModalUpdateKeywordsBox = $('#vector-keywords'),
+		$vectorModalUpdateBboxBox = $('#vector-bbox'),
 		$vectorModalUpdateItemButton = $('#vector-modal-update-button'),
 		$rasterModal = $('#raster-modal'),
 		$rasterModalSubmitButton = $('#raster-modal-submit-btn'),
 		$rasterModalCreateItemButton = $('#raster-modal-create-button'),
 		$rasterModalUpdateServicesBox = $('#raster-services'),
 		$rasterModalUpdateResourcesBox = $('#raster-resources'),
-		$rasterModalUpdateTitlesBox = $('#raster-titles'),
-		$rasterModalUpdateMetadataBox = $('#raster-metadata'),
+		$rasterModalUpdateKeywordsBox = $('#raster-keywords'),
+		$rasterModalUpdateBboxBox = $('#raster-bbox'),
 		$rasterModalUpdateItemButton = $('#raster-modal-update-button'),
 		$metadataSummaryField = $('#form-publish-info-item-summary-version'),
 		$itemEnabledField = $('#form-publish-info-item-enabled'),
@@ -2094,8 +2094,8 @@ CCH.Objects.Publish.UI = function () {
 		applyLayerDataToForm(
 			$($vectorModalUpdateServicesBox).prop("checked"), 
 			$($vectorModalUpdateResourcesBox).prop("checked"),
-			$($vectorModalUpdateTitlesBox).prop("checked"),
-			$($vectorModalUpdateMetadataBox).prop("checked")
+			$($vectorModalUpdateKeywordsBox).prop("checked"),
+			$($vectorModalUpdateBboxBox).prop("checked")
 		);
 	});
 
@@ -2103,8 +2103,8 @@ CCH.Objects.Publish.UI = function () {
 		applyLayerDataToForm(
 			$($rasterModalUpdateServicesBox).prop("checked"), 
 			$($rasterModalUpdateResourcesBox).prop("checked"),
-			$($rasterModalUpdateTitlesBox).prop("checked"),
-			$($rasterModalUpdateMetadataBox).prop("checked")
+			$($rasterModalUpdateKeywordsBox).prop("checked"),
+			$($rasterModalUpdateBboxBox).prop("checked")
 		);
 	});
 
@@ -2228,9 +2228,7 @@ CCH.Objects.Publish.UI = function () {
 		});
 	};
 
-	var applyLayerDataToForm = function(applyServices, applyResources, applyTitles, applyMetadata) {
-		console.log("Values: " + applyServices, applyResources, applyTitles, applyMetadata);
-
+	var applyLayerDataToForm = function(applyServices, applyResources, applyKeywords, applyBbox) {
 		// Apply Services
 		if(applyServices && newLayerId !== null) {
 			$popFromLayerInput.val(newLayerId);
@@ -2243,14 +2241,21 @@ CCH.Objects.Publish.UI = function () {
 
 			}
 
-			// Apply Titles
-			if(applyTitles) {
-
+			// Apply Keywords
+			if(applyKeywords && newLayerMetadata.hasOwnProperty("Keywords")) {
+				newLayerMetadata.Keywords.forEach(function (keyword) {
+					me.addKeywordGroup(keyword);
+				});
 			}
 
-			// Apply Metadata
-			if(applyMetadata) {
-
+			// Apply Bbox
+			if(applyBbox && newLayerMetadata.hasOwnProperty("Box")) {
+				//Bbox
+				var newBbox = newLayerMetadata.Box;
+				$bboxWest.val(newBbox[0]);
+				$bboxSouth.val(newBbox[1]);
+				$bboxEast.val(newBbox[2]);
+				$bboxNorth.val(newBbox[3]);
 			}
 		}
 	};
