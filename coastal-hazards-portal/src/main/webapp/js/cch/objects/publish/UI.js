@@ -2238,7 +2238,29 @@ CCH.Objects.Publish.UI = function () {
 		if(newLayerMetadata != null) {
 			// Apply Resources
 			if(applyResources) {
+				$('.resource-list-container-sortable').empty();
+				$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+				
+				//Publications
+				if(newLayerMetadata.hasOwnProperty("Publications")) {
+					newLayerMetadata.Publications.forEach(function (publication) {
+						me.createPublicationRow(publication.link, publication.title, "publications");
+					});
+				}
 
+				//Data
+				if(newLayerMetadata.hasOwnProperty("Data")) {
+					newLayerMetadata.Data.forEach(function (data) {
+						me.createPublicationRow(data.link, data.title, "data");
+					});
+				}
+
+				//Resources
+				if(newLayerMetadata.hasOwnProperty("Resources")) {
+					newLayerMetadata.Resources.forEach(function (resource) {
+						me.createPublicationRow(resource.link, resource.title, "resources");
+					});
+				}
 			}
 
 			// Apply Keywords
