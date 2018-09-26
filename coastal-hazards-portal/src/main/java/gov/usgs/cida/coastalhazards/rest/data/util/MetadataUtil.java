@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -492,24 +493,12 @@ public class MetadataUtil {
             return sb.toString();
         }
         
-        public static List<Publication> getResourcesFromDoc(Document metadataDoc){
-            
-            List<Publication> pubsToReturn = new ArrayList();
+        public static List<Publication> getResourcesFromXml(Document doc, String path){
             
             //data is /citation/citeinfo/onlink and /citation/citeinfo/title
             //publications is //lworkcit/citeinfo/onlink and //lworkcit/citeinfo/title
             //resources is //crossref/citeinfo/onlink and //crossref/citeinfo/title
             // and is //srccite/citeinfo/onlink and //srccite/citeinfo/title
-            
-            pubsToReturn.addAll(getPublicationsFromXml(metadataDoc, "citation"));
-            pubsToReturn.addAll(getPublicationsFromXml(metadataDoc, "lworkcit"));
-            pubsToReturn.addAll(getPublicationsFromXml(metadataDoc, "crossref"));
-            pubsToReturn.addAll(getPublicationsFromXml(metadataDoc, "srccite"));
-            
-            return pubsToReturn;
-        }
-        
-        private static List<Publication> getPublicationsFromXml(Document doc, String path){
             
             XPathFactory xPathfactory = XPathFactory.newInstance();
             XPath xpath = xPathfactory.newXPath();
@@ -550,4 +539,5 @@ public class MetadataUtil {
 
             return result;
 	}
+
 }

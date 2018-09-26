@@ -38,7 +38,6 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -69,7 +68,9 @@ public class MetadataResource {
             Document doc = null;
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             List<String> keywords = new ArrayList();
-            List<Publication> pubs = new ArrayList();
+            List<Publication> data = new ArrayList();
+            List<Publication> publication = new ArrayList();
+            List<Publication> resource = new ArrayList();
             Bbox box = new Bbox();
             
             try {
@@ -79,13 +80,18 @@ public class MetadataResource {
                 box = MetadataUtil.getBoundingBoxFromFgdcMetadata(postBody);
                 keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/placekey"));
                 keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/themekey"));
-                                
-                pubs = MetadataUtil.getResourcesFromDoc(doc);
+                
+                data.addAll(MetadataUtil.getResourcesFromXml(doc, "citation"));
+                publication.addAll(MetadataUtil.getResourcesFromXml(doc, "lworkcit"));
+                resource.addAll(MetadataUtil.getResourcesFromXml(doc, "crossref"));
+                resource.addAll(MetadataUtil.getResourcesFromXml(doc, "srccite"));
                 
                 Map<String, Object> grouped = new HashMap();
                 grouped.put("Box", box);
                 grouped.put("Keywords", keywords);
-                grouped.put("Resources", pubs);
+                grouped.put("Data", data);
+                grouped.put("Publications", publication);
+                grouped.put("Resources", resource);
                 
                 response = Response.ok(GsonUtil.getDefault().toJson(grouped, Map.class)).build();
             } catch (Exception e) {
