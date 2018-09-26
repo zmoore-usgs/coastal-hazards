@@ -3,6 +3,7 @@ package gov.usgs.cida.coastalhazards.rest.data.util;
 import gov.usgs.cida.coastalhazards.metadata.CRSParameters;
 import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Service;
+import gov.usgs.cida.coastalhazards.model.summary.Publication;
 import gov.usgs.cida.coastalhazards.rest.data.MetadataResource;
 import gov.usgs.cida.coastalhazards.xml.model.Bounding;
 import gov.usgs.cida.coastalhazards.xml.model.Horizsys;
@@ -155,11 +156,11 @@ public class MetadataUtil {
 		XPathFactory xPathfactory = XPathFactory.newInstance();
         XPath xpath = xPathfactory.newXPath();
         List<String> result = new ArrayList<>();
-
+        
         try {
             XPathExpression expr = xpath.compile(path);
 			NodeList nl = (NodeList) expr.evaluate(cswDoc, XPathConstants.NODESET);
-			
+                        
 			for(int i = 0; i < nl.getLength(); i++) {
 				result.add(nl.item(i).getTextContent());
 			}
@@ -490,4 +491,63 @@ public class MetadataUtil {
             
             return sb.toString();
         }
+        
+        public static List<Publication> getResourcesFromDoc(Document metadataDoc){
+            
+            List<Publication> pubsToReturn = new ArrayList();
+            
+            //data is /citation/citeinfo/onlink and /citation/citeinfo/title
+            //publications is //lworkcit/citeinfo/onlink and //lworkcit/citeinfo/title
+            //resources is //crossref/citeinfo/onlink and //crossref/citeinfo/title
+            // and is //srccite/citeinfo/onlink and //srccite/citeinfo/title
+            
+            pubsToReturn.addAll(getPublicationsFromXml(metadataDoc, "citation"));
+            pubsToReturn.addAll(getPublicationsFromXml(metadataDoc, "lworkcit"));
+            pubsToReturn.addAll(getPublicationsFromXml(metadataDoc, "crossref"));
+            pubsToReturn.addAll(getPublicationsFromXml(metadataDoc, "srccite"));
+            
+            return pubsToReturn;
+        }
+        
+        private static List<Publication> getPublicationsFromXml(Document doc, String path){
+            
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+            List<Publication> result = new ArrayList<>();
+            Publication.PublicationType pubType;
+            String fullPath = "//*/" + path + "/citeinfo/title";
+            
+            //Find correct publication type
+            if(path.equals("citation")){
+                pubType = Publication.PublicationType.data;
+            } else if(path.equals("lworkcit")){
+                pubType = Publication.PublicationType.publications;
+            } else{
+                pubType = Publication.PublicationType.resources;
+            }
+            
+            //Find titles, find related links to titles, then create and add pubs.
+            try {
+                XPathExpression expr = xpath.compile(fullPath);
+                NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+
+                for(int i = 0; i < nl.getLength(); i++) {
+                    NodeList siblingNodes = nl.item(i).getParentNode().getChildNodes();
+                    for(int j = 0; j < siblingNodes.getLength(); j++){ //iterate over sibling nodes to find all links
+                        if(siblingNodes.item(j).getNodeName().equals("onlink")){
+                            Publication toAdd = new Publication();
+                            toAdd.setLink(siblingNodes.item(j).getTextContent()); //link
+                            toAdd.setTitle(nl.item(i).getTextContent()); //Title
+                            toAdd.setType(pubType); //pubType
+                            result.add(toAdd);
+                        }
+                    }
+                }
+                
+            } catch (Exception e) {
+                log.error("Failed to link titles of publications with link: " + e);
+            }
+
+            return result;
+	}
 }

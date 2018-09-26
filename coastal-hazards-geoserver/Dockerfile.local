@@ -31,7 +31,7 @@ COPY docker/key-store.jks /usr/local/tomcat/ssl/trust-store.jks
 
 RUN wget -O /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.1.0/psi-probe-web-3.1.0.war"
 
-RUN wget -O /usr/local/tomcat/webapps/geoserver.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-geoserver/${GEOSERVER_VERSION}/coastal-hazards-geoserver-${GEOSERVER_VERSION}.war"
+COPY target/geoserver.war /usr/local/tomcat/webapps/geoserver.war
 
 COPY docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 

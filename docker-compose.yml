@@ -1,24 +1,6 @@
 ---
 version: '3.5'
 
-# Environment variables for building containers
-#
-# Building on the DOI network
-# ---------------------------
-# When building these containers on the DOI network, you must set your environment
-# variable "doi_network" to "true" so SSL certificates may be installed.
-#
-# Ex: $ doi_network="true" docker-compose build
-#
-# CCH WPS Artifact Version
-# ------------------------
-# By default, the latest 52N WPS version will be downloaded for CCH. If you wish
-# to change that, set  the environment variable "wps_version" to a valid version.
-#
-# Ex: $ wps_version="0.0.1" docker-compose build cch_n52_wps
-volumes:
-  cch_geoserver_data:
-
 networks:
   cch-net:
 
@@ -31,6 +13,10 @@ secrets:
     file: Docker/rserve/profile.conf
   pycsw_config:
     file: Docker/pycsw/default.cfg
+  n52_wps_config:
+    file: coastal-hazards-n52/docker/wps_config.xml
+  geoserver_serverxml_config:
+    file: coastal-hazards-geoserver/docker/server.xml
 
 services:
   cch_postgres:
@@ -69,7 +55,7 @@ services:
         target: /rserve.conf
       - source: rserve_profile
         target: /profile.conf
-        
+
   cch_pycsw:
     build:
         context: ./Docker/pycsw
@@ -95,7 +81,6 @@ services:
       context: ./coastal-hazards-n52
       args:
         - doi_network=$doi_network
-        - KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD
     networks:
       cch-net:
         aliases:
@@ -105,6 +90,9 @@ services:
       - "8082:8080"
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
+    secrets:
+      - source: n52_wps_config
+        target: /wps_config.xml
     depends_on:
       - cch_rserve
 
@@ -113,36 +101,36 @@ services:
         context: ./coastal-hazards-portal
         args:
           - doi_network=$doi_network
-          - KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD
     networks:
       cch-net:
         aliases:
           - portal
     image: cch_portal
-    volumes:
-        - cch_geoserver_data:/heapdumps
-        - cch_geoserver_data:/data
     ports:
-      - "8080:8080" #http
-      - "8443:8443" #https
-      - "8900:8900" #java remote debugging
+      - "8080:8080"
+      - "8443:8443"
+      - "8900:8900"
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
+    depends_on:
+      - cch_n52_wps
+      - cch_postgres
+      - cch_geoserver
+      - cch_pycsw
 
   cch_geoserver:
     build:
         context: ./coastal-hazards-geoserver
         args:
           - doi_network=$doi_network
-          - KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD
     networks:
       cch-net:
         aliases:
           - geoserver
     image: cch_geoserver
-    volumes:
-        - cch_geoserver_data:/heapdumps
-        - cch_geoserver_data:/data
+    secrets:
+      - source: geoserver_serverxml_config
+        target: /usr/local/tomcat/conf/server.xml
     ports:
       - "8081:8080"
       - "8444:8443"
