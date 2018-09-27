@@ -47,4 +47,4 @@ CMD catalina.sh run
 
 HEALTHCHECK --interval=2s --timeout=3s \
  CMD curl -s 'https://localhost:8443/geoserver/web/wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage' -k | \
- grep -q '<span id="version">2.10.2</span>' || exit 1
+ grep -q '<span id="version">2.11.1</span>' || exit 1
