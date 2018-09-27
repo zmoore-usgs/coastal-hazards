@@ -51,8 +51,6 @@ public class MetadataResource {
 
       	private static final Logger log = LoggerFactory.getLogger(MetadataResource.class);
     
-	private static final int FILE_UPLOAD_MAX_SIZE = 15728640;
-	private static final String FILENAME_PARAM = "qqfile";
 	private static File UPLOAD_DIR;
 
 	public MetadataResource() {

@@ -22,7 +22,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -507,9 +506,9 @@ public class MetadataUtil {
             String fullPath = "//*/" + path + "/citeinfo/title";
             
             //Find correct publication type
-            if(path.equals("citation")){
+            if("citation".equals(path)){
                 pubType = Publication.PublicationType.data;
-            } else if(path.equals("lworkcit")){
+            } else if("lworkcit".equals(path)){
                 pubType = Publication.PublicationType.publications;
             } else{
                 pubType = Publication.PublicationType.resources;
