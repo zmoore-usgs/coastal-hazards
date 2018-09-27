@@ -6,15 +6,20 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
-import gov.usgs.cida.coastalhazards.model.Bbox;
+import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import javax.ws.rs.core.Response;
+import javax.xml.parsers.DocumentBuilderFactory;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
+import org.w3c.dom.Document;
 
 /**
  *
@@ -26,18 +31,16 @@ public class MetadataResourceTest {
     private static String BTxml = "Boston_transects.xml";
     
     /**
-     * Test of getBoundingBoxFromFgdcMetadataAE method, of class MetadataUtil.
+     * Test of getMetadata method, of class MetadataResource.
      */
     @Test
     public void testGetMetadataWithoutCswBTXml() throws IOException {
-        System.out.println("testGetBoundingBoxFromFgdcMetadataAE");
-        // This method tests the parsing that occurs in: Bbox result = MetadataUtil.getBoundingBoxFromFgdcMetadata(metadata); // file is ~40kb
-        // spdom is the WGS84 bbox, format for the Bbox is "BOX(%f %f, %f %f)"
+        System.out.println("testGetMetadataWithoutCswBTXml");
 
         //get the metadata from the test file as a string using this package to locate it ...
         String packageName = this.getClass().getCanonicalName();
-        System.out.println("PackageName: " + packageName); //PackageName: gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtilTest
-        // this is where the test resource is located - gov.usgs.cida.coastalhazards.rest.data + /ne_AEmeta.xml
+        System.out.println("PackageName: " + packageName); //PackageName: gov.usgs.cida.coastalhazards.rest.data.MetadataResourceTest
+        // this is where the test resource is located - gov.usgs.cida.coastalhazards.rest.data + /Boston_transects.xml
         String replaced = packageName.replaceAll("[.]", "/");
         String[] names = replaced.split("/MetadataResourceTest");
         String packageNameShort = names[0];
@@ -52,6 +55,37 @@ public class MetadataResourceTest {
         Map<String,List> gsonResp = GsonUtil.getDefault().fromJson((String) resp.getEntity(), Map.class);
         
         assertEquals(gsonResp.size(),5);
+    }
+    
+    /**
+     * Test of extractStringsFromCsw method, of class MetadataUtil.
+     */
+    @Test
+    public void testExtractStringsFromCswDoc() throws IOException {
+        System.out.println("testExtractStringsFromCswDoc");
+        
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        Document doc = null;
+        //get the metadata from the test file as a string using this package to locate it ...
+        String packageName = this.getClass().getCanonicalName();
+        System.out.println("PackageName: " + packageName); //PackageName: gov.usgs.cida.coastalhazards.rest.data.MetadataResourceTest
+        // this is where the test resource is located - gov.usgs.cida.coastalhazards.rest.data + /Boston_transects.xml
+        String replaced = packageName.replaceAll("[.]", "/");
+        String[] names = replaced.split("/MetadataResourceTest");
+        String packageNameShort = names[0];
+        
+        String testFileFullName = packageNameShort + "/" + BTxml;
+
+        String metadataXml = loadResourceAsString(testFileFullName);
+        try{
+            doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(metadataXml)));
+        } catch (Exception e){
+            log.error("Failed to parse metadata xml document. Error: " + e.getMessage() + ". Stack Trace: " + e.getStackTrace());
+        }
+        assertNotNull(MetadataUtil.extractStringsFromCswDoc(doc, "//*/placekey"));
+        assertEquals(MetadataUtil.extractStringsFromCswDoc(doc, "//*/placekey").size(),5);
+        assertEquals(MetadataUtil.extractStringsFromCswDoc(doc, "//*/themekey").size(),28);
+        
     }
     
     
