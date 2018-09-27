@@ -305,7 +305,7 @@ CCH.Util.OWS = function () {
 			if (!url) {
 				if ((server === 'dsas-geoserver' || server === 'cida-geoserver') && namespace !== 'ows') {
 					url = CCH.CONFIG.contextPath + me.servers[server].endpoints.wmsGetCapsUrl;
-					url = url.add(namespace + '/', url.indexOf('ows'));
+					url = url.substr(0, url.indexOf('ows')) + namespace + '/' + url.substr(url.indexOf('ows'));
 				} else if (server === 'stpete-arcserver') {
 					url = CCH.CONFIG.contextPath + me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WMSServer?service=wms&version=1.3.0&request=GetCapabilities';
 				} else if (server === 'marine-arcserver') {
