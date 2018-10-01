@@ -643,13 +643,6 @@
                     <div class="modal-body">
                         <div class="vector-modal-upload">
                             <h4>Upload Layer Data</h4>
-                            <form id="vector-form-layer" enctype="multipart/form-data">
-                                <div>
-                                    <label for="file">Zipped Shape File</label>
-                                    <input type="file" name="file"/>
-                                </div>
-                            </form>
-                            <br/>
                             <form id="vector-form-metadata" enctype="multipart/form-data">
                                 <div>
                                     <label for="file">Metadata XML</label>
@@ -657,8 +650,15 @@
                                 </div>
                             </form>
                             <br/>
-                            <button type="button" class="btn btn-success" id="vector-modal-submit-btn">Create Layer</button>
+                            <form id="vector-form-layer" enctype="multipart/form-data">
+                                <div>
+                                    <label for="file">Zipped Shape File</label>
+                                    <input type="file" name="file"/>
+                                </div>
+                            </form>
                             <br/>
+                            <button type="button" class="btn btn-success" id="vector-modal-submit-btn">Create Layer</button>
+                            <br/><br/>
                             <p id="vector-modal-result"><br/></p>
                         </div>
                         <div class="upload-modal-actions">
@@ -706,23 +706,32 @@
                     <div class="modal-body">
                         <div class="upload-modal-upload">
                             <h4>Upload Layer Data</h4>
+                            <form id="raster-form-metadata" enctype="multipart/form-data">
+                                <div>
+                                    <label for="file">Metadata XML</label>
+                                    <input type="file" name="file"/>
+                                </div>
+                            </form>
+                            <br/>
                             <form id="raster-form-layer" enctype="multipart/form-data">
                                 <div>
                                     <label for="file">Zipped GeoTIFF</label>
                                     <input type="file" name="file"/>
                                 </div>
-                            </form>
-                            <br/>
-                            <form id="raster-form-metadata" enctype="multipart/form-data">
+                                <br/>
                                 <div>
-                                    <label for="metadata">Metadata XML</label>
-                                    <input type="file" name="file"/>
+                                    <label for="extractSrs">Extract SRS Code from Metadata</label>
+                                    <input id="raster-modal-extract-srs" type="checkbox" name="extractSrs" checked/>
+                                </div>
+                                <div id="raster-modal-srs-text" hidden="hidden">
+                                    <label for="epsgCode">SRS Code</label>
+                                    <input id="raster-modal-srs-text-box" type="text" name="epsgCode"/>
+                                    <br/><br/>
                                 </div>
                             </form>
-                            <br/>
                             <button type="button" class="btn btn-success" id="raster-modal-submit-btn">Create Layer</button>
-                            <br/>
-                            <p id="raster-modal-result"><br/></p>
+                            <br/><br/>
+                            <p id="raster-modal-result"></p>
                         </div>
                         <div class="upload-modal-actions">
                             <div class="upload-modal-result-new-item">

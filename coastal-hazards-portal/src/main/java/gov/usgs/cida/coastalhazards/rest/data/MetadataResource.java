@@ -34,6 +34,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.geotools.referencing.CRS;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,54 +50,62 @@ import org.xml.sax.SAXException;
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class MetadataResource {
 
-      	private static final Logger log = LoggerFactory.getLogger(MetadataResource.class);
-    
+	  	private static final Logger log = LoggerFactory.getLogger(MetadataResource.class);
+	
 	private static File UPLOAD_DIR;
 
 	public MetadataResource() {
 		super();
 		UPLOAD_DIR = new File(FileUtils.getTempDirectoryPath() + "/metadata-upload");
 	}
-        
-        @POST
+		
+	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-        @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response getMetadata(@Context HttpServletRequest req, @FormDataParam("file") String postBody) {
-            Response response = Response.ok(postBody).build();
-            Document doc = null;
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            List<String> keywords = new ArrayList();
-            List<Publication> data = new ArrayList();
-            List<Publication> publication = new ArrayList();
-            List<Publication> resource = new ArrayList();
-            Bbox box = new Bbox();
-            
-            try {
-                doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(postBody)));
-                doc.getDocumentElement().normalize();
+			Response response = Response.ok(postBody).build();
+			Document doc = null;
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			List<String> keywords = new ArrayList<>();
+			List<Publication> data = new ArrayList<>();
+			List<Publication> publication = new ArrayList<>();
+			List<Publication> resource = new ArrayList<>();
+			Bbox box = new Bbox();
+			
+			try {
+				doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(postBody)));
+				doc.getDocumentElement().normalize();
 
-                box = MetadataUtil.getBoundingBoxFromFgdcMetadata(postBody);
-                keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/placekey"));
-                keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/themekey"));
-                
-                data.addAll(MetadataUtil.getResourcesFromXml(doc, "citation"));
-                publication.addAll(MetadataUtil.getResourcesFromXml(doc, "lworkcit"));
-                resource.addAll(MetadataUtil.getResourcesFromXml(doc, "crossref"));
-                resource.addAll(MetadataUtil.getResourcesFromXml(doc, "srccite"));
-                
-                Map<String, Object> grouped = new HashMap();
-                grouped.put("Box", box);
-                grouped.put("Keywords", keywords);
-                grouped.put("Data", data);
-                grouped.put("Publications", publication);
-                grouped.put("Resources", resource);
-                
-                response = Response.ok(GsonUtil.getDefault().toJson(grouped, Map.class)).build();
-            } catch (Exception e) {
-                log.error("Failed to parse metadata xml document. Error: " + e.getMessage() + ". Stack Trace: " + e.getStackTrace());
-            }
+				box = MetadataUtil.getBoundingBoxFromFgdcMetadata(postBody);
+				keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/placekey"));
+				keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/themekey"));
+				
+				data.addAll(MetadataUtil.getResourcesFromXml(doc, "citation"));
+				publication.addAll(MetadataUtil.getResourcesFromXml(doc, "lworkcit"));
+				resource.addAll(MetadataUtil.getResourcesFromXml(doc, "crossref"));
+				resource.addAll(MetadataUtil.getResourcesFromXml(doc, "srccite"));		
+				
+				Map<String, Object> grouped = new HashMap<>();
+				grouped.put("Box", box);
+				grouped.put("Keywords", keywords);
+				grouped.put("Data", data);
+				grouped.put("Publications", publication);
+				grouped.put("Resources", resource);
 
-            return response;
+				// Only some, generally raster, metadata xml files will include EPSG data
+				try {
+					String epsgCode = CRS.lookupIdentifier(MetadataUtil.getCrsFromFgdcMetadata(postBody), true);
+					grouped.put("EPSGCode", epsgCode);
+				} catch (Exception e) {
+					log.info("Unable to extract an EPSG code from metadata XML; This is not an error. Returning null. Reason: " + e.getMessage());
+				}
+				
+				response = Response.ok(GsonUtil.getDefault().toJson(grouped, Map.class)).build();
+			} catch (Exception e) {
+				log.error("Failed to parse metadata xml document. Error: " + e.getMessage() + ". Stack Trace: " + e.getStackTrace());
+			}
+
+			return response;
 	}
 
 	@GET
@@ -120,8 +129,10 @@ public class MetadataResource {
 	@GET
 	@Path("/summarize/itemid/{itemid}/attribute/{attr}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getMetadataSummaryByAttribtueUsingItemID(@PathParam("itemid") String itemId,
-			@PathParam("attr") String attr) throws URISyntaxException {
+	public Response getMetadataSummaryByAttribtueUsingItemID(
+		@PathParam("itemid") String itemId,
+		@PathParam("attr") String attr
+	) throws URISyntaxException {
 		Response response;
 		try (ItemManager itemManager = new ItemManager()) {
 			Item item = itemManager.load(itemId);
