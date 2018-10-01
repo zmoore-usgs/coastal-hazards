@@ -50,8 +50,7 @@ import org.xml.sax.SAXException;
 @PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class MetadataResource {
 
-	  	private static final Logger log = LoggerFactory.getLogger(MetadataResource.class);
-	
+	private static final Logger log = LoggerFactory.getLogger(MetadataResource.class);
 	private static File UPLOAD_DIR;
 
 	public MetadataResource() {
@@ -63,49 +62,50 @@ public class MetadataResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response getMetadata(@Context HttpServletRequest req, @FormDataParam("file") String postBody) {
-			Response response = Response.ok(postBody).build();
-			Document doc = null;
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			List<String> keywords = new ArrayList<>();
-			List<Publication> data = new ArrayList<>();
-			List<Publication> publication = new ArrayList<>();
-			List<Publication> resource = new ArrayList<>();
-			Bbox box = new Bbox();
+		Response response = Response.ok(postBody).build();
+		Document doc = null;
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		List<String> keywords = new ArrayList<>();
+		List<Publication> data = new ArrayList<>();
+		List<Publication> publication = new ArrayList<>();
+		List<Publication> resource = new ArrayList<>();
+		Bbox box = new Bbox();
+		
+		try {
+			doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(postBody)));
+			doc.getDocumentElement().normalize();
+
+			box = MetadataUtil.getBoundingBoxFromFgdcMetadata(postBody);
+			keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/placekey"));
+			keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/themekey"));
 			
+			data.addAll(MetadataUtil.getResourcesFromXml(doc, "citation"));
+			publication.addAll(MetadataUtil.getResourcesFromXml(doc, "lworkcit"));
+			resource.addAll(MetadataUtil.getResourcesFromXml(doc, "crossref"));
+			resource.addAll(MetadataUtil.getResourcesFromXml(doc, "srccite"));		
+			
+			Map<String, Object> grouped = new HashMap<>();
+			grouped.put("Box", box);
+			grouped.put("Keywords", keywords);
+			grouped.put("Data", data);
+			grouped.put("Publications", publication);
+			grouped.put("Resources", resource);
+
+			// Only some, generally raster, metadata xml files will include EPSG data
 			try {
-				doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(postBody)));
-				doc.getDocumentElement().normalize();
-
-				box = MetadataUtil.getBoundingBoxFromFgdcMetadata(postBody);
-				keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/placekey"));
-				keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/themekey"));
-				
-				data.addAll(MetadataUtil.getResourcesFromXml(doc, "citation"));
-				publication.addAll(MetadataUtil.getResourcesFromXml(doc, "lworkcit"));
-				resource.addAll(MetadataUtil.getResourcesFromXml(doc, "crossref"));
-				resource.addAll(MetadataUtil.getResourcesFromXml(doc, "srccite"));		
-				
-				Map<String, Object> grouped = new HashMap<>();
-				grouped.put("Box", box);
-				grouped.put("Keywords", keywords);
-				grouped.put("Data", data);
-				grouped.put("Publications", publication);
-				grouped.put("Resources", resource);
-
-				// Only some, generally raster, metadata xml files will include EPSG data
-				try {
-					String epsgCode = CRS.lookupIdentifier(MetadataUtil.getCrsFromFgdcMetadata(postBody), true);
-					grouped.put("EPSGCode", epsgCode);
-				} catch (Exception e) {
-					log.info("Unable to extract an EPSG code from metadata XML; This is not an error. Returning null. Reason: " + e.getMessage());
-				}
-				
-				response = Response.ok(GsonUtil.getDefault().toJson(grouped, Map.class)).build();
+				String epsgCode = CRS.lookupIdentifier(MetadataUtil.getCrsFromFgdcMetadata(postBody), true);
+				grouped.put("EPSGCode", epsgCode);
 			} catch (Exception e) {
-				log.error("Failed to parse metadata xml document. Error: " + e.getMessage() + ". Stack Trace: " + e.getStackTrace());
+				log.info("Unable to extract an EPSG code from metadata XML; This is not an error. Returning null. Reason: " + e.getMessage());
 			}
+			
+			response = Response.ok(GsonUtil.getDefault().toJson(grouped, Map.class)).build();
+			
+		} catch (Exception e) {
+			log.error("Failed to parse metadata xml document. Error: " + e.getMessage() + ". Stack Trace: " + e.getStackTrace());
+		}
 
-			return response;
+		return response;
 	}
 
 	@GET

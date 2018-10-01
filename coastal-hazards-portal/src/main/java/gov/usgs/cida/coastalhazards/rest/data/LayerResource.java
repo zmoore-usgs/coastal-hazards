@@ -74,7 +74,7 @@ public class LayerResource {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getLayer(@Context HttpServletRequest req, @PathParam("id") String id) {			
+	public Response getLayer(@Context HttpServletRequest req, @PathParam("id") String id) {
 		Response response = null;
 		try (LayerManager manager = new LayerManager()) {
 			Layer layer = manager.load(id);
