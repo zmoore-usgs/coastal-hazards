@@ -7,7 +7,6 @@ import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Layer;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.util.GeoserverUtil;
-import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
@@ -23,6 +22,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -36,23 +36,17 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException; 
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import static gov.usgs.cida.coastalhazards.rest.data.ItemResource.PUBLIC_URL;
 import java.util.ArrayList;
 import javax.servlet.annotation.MultipartConfig;
 import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.core.Response.Status;
-import javax.xml.bind.JAXBException;
-import org.geotools.referencing.CRS;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.opengis.referencing.FactoryException;
-
 /**
  * Works with ArcGIS and Geoserver services for service like importing layers
  *
@@ -80,7 +74,7 @@ public class LayerResource {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getLayer(@Context HttpServletRequest req, @PathParam("id") String id) {            
+	public Response getLayer(@Context HttpServletRequest req, @PathParam("id") String id) {
 		Response response = null;
 		try (LayerManager manager = new LayerManager()) {
 			Layer layer = manager.load(id);
@@ -103,25 +97,22 @@ public class LayerResource {
 		String newId = IdGenerator.generate();
 		
 		List<Service> added = null;
+
+		//Upload data to GeoServer
 		try {
 			log.info("Vector layer upload - about to parseRequest");
 			byte[] inmemory = IOUtils.toByteArray(postBody);
 			try (ByteArrayInputStream bais = new ByteArrayInputStream(inmemory)) {
-				 log.info("Vector layer create - about to doCSWInsertFromString");
-				String metadataId = MetadataUtil.doCSWInsertFromString(MetadataUtil.extractMetadataFromShp(bais));
-				bais.reset();
-				
 				log.info("Vector layer create - about to do GeoserverUtil.addVectorLayer with Id: " + newId);
 				added = GeoserverUtil.addVectorLayer(bais, newId);
-				
-				log.info("Vector layer create - about to makeCSWServiceForUrl with metadataId: " + metadataId);
-				added.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
 			} finally {
 				inmemory = null; // just in case
 			}
-		} catch (IOException | ParserConfigurationException | SAXException | IllegalArgumentException e) {
-			log.error("Problem creating services from input", e);
+		} catch (IOException | IllegalArgumentException e) {
+			log.error("An error occured while posting the layer data to GeoServer: ", e);
 		} 
+
+		//Create WFS Service, CCH Layer Object, and Response
 		if (added != null && !added.isEmpty()) {
 			WFSService wfs = (WFSService)Service.ogcHelper(Service.ServiceType.proxy_wfs, added);
 			Bbox bbox = null;
@@ -141,8 +132,9 @@ public class LayerResource {
 			}
 			response = Response.created(layerURI(layer)).build();
 		} else {
-			response = Response.serverError().entity("Unable to create layer").build();
+			response = Response.serverError().entity("Unable to create layer. Please contact us for support.").build();
 		}
+
 		return response;
 	}
 	
@@ -159,79 +151,71 @@ public class LayerResource {
 		return response;
 	}
 	
-    @POST
+	@POST
 	@Path("/raster")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.TEXT_PLAIN)
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response createRasterLayer(
-                @Context HttpServletRequest req, 
-                @FormDataParam("metadata") String metadata, 
-                @FormDataParam("file") InputStream zipFileStream,
-                @FormDataParam("file") FormDataContentDisposition fileDisposition
-        ) {
-                      List<Service> services = new ArrayList<>();
-            
-            try{
-                log.info("Raster layer upload - about to parseRequest");
-                String newId = IdGenerator.generate();
-                
-                String metadataId;
-                if (metadata == null || metadata.isEmpty()) {
-                    throw new ServerErrorException("Metadata file is missing or empty.", Status.INTERNAL_SERVER_ERROR);
-                }
+		@Context HttpServletRequest req, 
+		@FormDataParam("file") InputStream zipFileStream,
+		@FormDataParam("epsgCode") String epsgCode,
+		@FormDataParam("bboxn") Double bboxNorth,
+		@FormDataParam("bboxe") Double bboxEast,
+		@FormDataParam("bboxs") Double bboxSouth,
+		@FormDataParam("bboxw") Double bboxWest,
+		@FormDataParam("file") FormDataContentDisposition fileDisposition
+	) {
+		List<Service> services = new ArrayList<>();
+		
+		log.info("Raster layer upload - about to parseRequest");
+		String newId = IdGenerator.generate();
 
-                try {
-                    log.info("Raster layer create - about to doCSWInsertFromString");
-                    metadataId = MetadataUtil.doCSWInsertFromString(metadata);
-                    } catch (IOException | ParserConfigurationException | SAXException ex) {
-                        throw new ServerErrorException("Error inserting metadata to the CSW server.", Status.INTERNAL_SERVER_ERROR, ex);
-                    }
-                log.info("Raster layer create - about to makeCSWServiceForUrl with metadataId: " + metadataId);
-                services.add(MetadataUtil.makeCSWServiceForUrl(MetadataUtil.getMetadataByIdUrl(metadataId)));
-
-                Bbox bbox = MetadataUtil.getBoundingBoxFromFgdcMetadata(metadata);
-                log.info("Starting CRS Identifier Lookup");
-                long startTime = System.nanoTime();
-                String EPSGcode = CRS.lookupIdentifier(MetadataUtil.getCrsFromFgdcMetadata(metadata), true);
-                long endTime = System.nanoTime();
-                long duration = (endTime - startTime)/1000000;  //divide by 1000000 to get milliseconds
-                log.info("Finished CRS Identifier Lookup. Took " + duration + "ms.");
-                
-               if (bbox == null || EPSGcode == null) {
-                    throw new ServerErrorException("Unable to identify bbox or epsg code from metadata.", Status.INTERNAL_SERVER_ERROR);
-                }
-                
-                log.info("Raster layer create - about to addRasterLayer to geoserver with an id of: " + newId); 
-                log.info("Raster layer create - about to addRasterLayer to geoserver with a  bbox: " + bbox.getBbox());
-                log.info("Raster layer create - about to addRasterLayer to geoserver with an EPSG of: " + EPSGcode);
-                
-                Service rasterService = GeoserverUtil.addRasterLayer(geoserverEndpoint, zipFileStream, newId, bbox, EPSGcode);
-                if(null == rasterService) {
-                        throw new ServerErrorException("Unable to create a store and/or layer in GeoServer.", Status.INTERNAL_SERVER_ERROR);
-                } else {
-                        services.add(rasterService);
-                }
-                
-                if (!services.isEmpty()) {
-			Layer layer = new Layer();
-			layer.setId(newId); 
-			layer.setServices(services);
-			layer.setBbox(bbox);
-			
-			try (LayerManager manager = new LayerManager()) {
-				manager.save(layer);
-			}
-			return Response.created(layerURI(layer)).build();
-		} else {
-			throw new ServerErrorException("Unable to create layer", Status.INTERNAL_SERVER_ERROR);
+		if (epsgCode == null || epsgCode.isEmpty() || bboxNorth == null || bboxEast == null || bboxSouth == null || bboxWest == null) {
+			log.error("BBox or EPSG code not provided with request.");
+			throw new ServerErrorException("BBox or EPSG code not provided with request.", Status.BAD_REQUEST);
 		}
-                
-            } catch (JAXBException | FactoryException | IOException ex) {
-                throw new ServerErrorException("Error parsing upload request", Status.INTERNAL_SERVER_ERROR, ex);
-            }
-        }
-             
+		
+		Bbox bbox = new Bbox();
+		bbox.setBbox(bboxWest, bboxSouth, bboxEast, bboxNorth);
+
+		log.info("Raster layer create - about to addRasterLayer to geoserver with an id of: " + newId); 
+		log.info("Raster layer create - about to addRasterLayer to geoserver with an EPSG of: " + epsgCode);
+		
+		try {
+			Service rasterService = GeoserverUtil.addRasterLayer(geoserverEndpoint, zipFileStream, newId, epsgCode);
+			if(null == rasterService) {
+				log.error("Unable to create a store and/or layer in GeoServer.");
+				throw new ServerErrorException("Unable to create a store and/or layer in GeoServer.", Status.INTERNAL_SERVER_ERROR);
+			} else {
+				services.add(rasterService);
+			}
+		} catch(IOException e) {
+			log.error("Unable to create a store and/or layer in GeoServer: " + e.getMessage());
+			throw new ServerErrorException("Unable to create a store and/or layer in GeoServer.", Status.INTERNAL_SERVER_ERROR);
+		}
+
+		log.info("Raster layer create - about to create CCH layer object with an id of: " + newId);
+		log.info("Raster layer create - about to create CCH layer object with " + services.size() + " services.");
+		log.info("Raster layer create - about to create CCH layer object with a bbox of: " + bbox.getBbox());
+	
+		Layer layer = new Layer();
+		layer.setId(newId); 
+		layer.setServices(services);
+		layer.setBbox(bbox);
+		
+		try (LayerManager manager = new LayerManager()) {
+			manager.save(layer);
+			log.info("Raster layer create - saved CCH layer object.");
+		} catch(PersistenceException e) {
+			log.error("Failed to save CCH Layer Object in database: " + e.getMessage());
+			throw new ServerErrorException("Failed to save CCH Layer Object in database.", Status.INTERNAL_SERVER_ERROR);
+		}
+
+		log.info("Raster layer create - about to create response...");
+		return Response.created(layerURI(layer)).build();
+	}
+			 
 	@DELETE
 	@Path("/{layer}")
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
