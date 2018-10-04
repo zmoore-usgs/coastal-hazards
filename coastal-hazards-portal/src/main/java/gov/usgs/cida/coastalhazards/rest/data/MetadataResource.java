@@ -52,16 +52,28 @@ public class MetadataResource {
 
 	private static final Logger log = LoggerFactory.getLogger(MetadataResource.class);
 	private static File UPLOAD_DIR;
+	private static String latestMetadata;
 
 	public MetadataResource() {
 		super();
 		UPLOAD_DIR = new File(FileUtils.getTempDirectoryPath() + "/metadata-upload");
+	}
+	
+	@GET
+	@Path("/latest")
+	public Response getLatestMetadata() {
+		return Response.ok(latestMetadata).build();
+	}
+	
+	public void setLatestMetadata(String stormMetadata) {
+		latestMetadata = stormMetadata;
 	}
 		
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response getMetadata(@Context HttpServletRequest req, @FormDataParam("file") String postBody) {
+		setLatestMetadata(postBody);
 		Response response = Response.ok(postBody).build();
 		Document doc = null;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

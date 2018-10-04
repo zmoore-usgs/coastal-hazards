@@ -1,9 +1,9 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,17 +31,20 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 import gov.usgs.cida.coastalhazards.Attributes;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
@@ -60,11 +63,14 @@ import gov.usgs.cida.coastalhazards.model.summary.Full;
 import gov.usgs.cida.coastalhazards.model.summary.Publication;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.model.util.Status;
+import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.StormUtil;
 import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
+import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.WFSIntrospector;
+import gov.usgs.cida.utilities.properties.JNDISingleton;
 import jersey.repackaged.com.google.common.collect.Lists;
 
 /**
@@ -75,6 +81,12 @@ import jersey.repackaged.com.google.common.collect.Lists;
 public class TemplateResource {
 
 	private static final Logger log = LoggerFactory.getLogger(TemplateResource.class);
+	private static final DynamicReadOnlyProperties props;
+	private static final String metadataEndpoint;
+	static {
+		props = JNDISingleton.getInstance();
+		metadataEndpoint = props.getProperty("coastal-hazards.base.url") + DataURI.DATA_SERVICE_ENDPOINT + DataURI.METADATA_PATH + "/latest";
+	}
 
 	@GET
 	@Path("/item/{id}")
@@ -188,9 +200,8 @@ public class TemplateResource {
 			//this is the server's fault rather than the client's
 			response = Response.status(500).build();
 		} else {
-			log.debug("instantiateTemplate");
 			response = instantiateTemplate(templateId, childJson);
-			log.debug("instantiateTemplateComplete");
+
 			if (response.getStatus() == HttpStatus.SC_OK) {
 				if (active) {
 					hoistNewTemplateToTopLevel(templateId, itemMan);
@@ -298,8 +309,6 @@ public class TemplateResource {
 					if ("item".equalsIgnoreCase(copyType) || "alias".equalsIgnoreCase(copyType)) {
 						summary = copyExistingSummary(copyType, copyVal, itemMan, aliasMan);
 					} else {
-						log.debug("title = {}", title);
-						log.debug("srcUsed = {}", srcUsed);
 						summary = StormUtil.buildStormTemplateSummary(title, srcUsed);
 					}
 					if (null == summary) {
@@ -404,7 +413,8 @@ public class TemplateResource {
 				} else {
 					throw new BadRequestException("Must specify child or attribute to replace/use");
 				}
-				Item newItem = templateItem(template, attr, layer);
+				Summary summary = makeSummary(attr);
+				Item newItem = templateItem(template, attr, layer, summary);
 				if (replaceId == null) {
 					replaceId = newItem.getId();
 				}
@@ -430,7 +440,8 @@ public class TemplateResource {
 		List<String> attrs = WFSIntrospector.getAttrs(wfs);
 		for (String attr : attrs) {
 			if (Attributes.contains(attr)) {
-				Item item = templateItem(template, attr, layer);
+				Summary summary = makeSummary(attr);
+				Item item = templateItem(template, attr, layer, summary);
 				items.add(item);
 			}
 		}
@@ -438,7 +449,7 @@ public class TemplateResource {
 		return items;
 	}
 
-	private Item templateItem(Item template, String attr, Layer layer) {
+	private Item templateItem(Item template, String attr, Layer layer, Summary summary) {
 		String newId = IdGenerator.generate();
 		Item newItem = new Item();
 		newItem.setAttr(attr);
@@ -452,7 +463,7 @@ public class TemplateResource {
 		}
 		newItem.setServices(serviceCopies);
 		newItem.setItemType(Item.ItemType.data);
-		newItem.setSummary(new Summary());
+		newItem.setSummary(summary);
 		newItem.setId(newId);
 		newItem.setBbox(Bbox.copyValues(bbox, new Bbox()));
 		newItem.setActiveStorm(template.isActiveStorm());
@@ -460,6 +471,21 @@ public class TemplateResource {
 		newItem.setType(template.getType());
 		newItem.setName(template.getName());
 		return newItem;
+	}
+
+	private Summary makeSummary(String attr) throws JsonSyntaxException {
+		String summaryJson = null;
+		try {
+			summaryJson = MetadataUtil.getSummaryFromWPS(metadataEndpoint, attr);
+			log.debug("summaryJsonMetadataUtil {}", summaryJson);
+		} catch (IOException | ParserConfigurationException | SAXException | URISyntaxException ex) {
+			log.error("Problem getting summary from item", ex);
+		}
+		Gson gson = GsonUtil.getDefault();
+		log.debug(String.valueOf(gson));
+		Summary summary = gson.fromJson(summaryJson, Summary.class);
+		log.debug(String.valueOf(summary));
+		return summary;
 	}
 	
 	private Map<String, Item> makeChildItemMap(List<Item> children) {
@@ -487,33 +513,20 @@ public class TemplateResource {
 	}
 	
 	protected Summary gatherTemplateSummary(Summary previousSummary, List<Item> children) {
-		log.debug("gatherTemplateSummary, previous summary {}", previousSummary);
 		Summary newSummary = Summary.copyValues(previousSummary, null);
+
 		String keywords = previousSummary.getKeywords();
 		Set<String> keywordSet = keywordsFromString(keywords);
 		Set<Publication> publicationSet = new LinkedHashSet<>();
 		
 		Full full = previousSummary.getFull();
-		log.debug("previousSummary, full {}", full);
 		List<Publication> publications = full.getPublications();
 		publicationSet.addAll(publications);
 		if (children != null) {
 			for (Item item : children) {
-				log.debug("children, item {}", item);
-				Summary itemSummary = item.getSummary();
-				log.debug("children, itemSummary {}", itemSummary);
-				Set<String> childKeywords = keywordsFromString(itemSummary.getKeywords());
+				Set<String> childKeywords = keywordsFromString(item.getSummary().getKeywords());
 				keywordSet.addAll(childKeywords);
-				Full itemSummaryFull = itemSummary.getFull();
-				if (null == itemSummaryFull) {
-					itemSummaryFull = new Full();
-				}
-				log.debug("children, itemSummaryFull {}", itemSummaryFull);
-				List<Publication> childPubs = itemSummaryFull.getPublications();
-				if (null == childPubs) {
-					childPubs = new ArrayList<>();
-				}
-				log.debug("children, itemSummaryFullPubs {}", childPubs);
+				List<Publication> childPubs = item.getSummary().getFull().getPublications();
 				for (Publication pub : childPubs) {
 					publicationSet.add(Publication.copyValues(pub, null));
 				}
@@ -522,7 +535,7 @@ public class TemplateResource {
 		String newKeywords = StringUtils.join(keywordSet, "|");
 		newSummary.setKeywords(newKeywords);
 		newSummary.getFull().setPublications(Lists.newArrayList(publicationSet));
-		log.debug("gatheredTemplateSummary");
+
 		return newSummary;
 	}
 	
