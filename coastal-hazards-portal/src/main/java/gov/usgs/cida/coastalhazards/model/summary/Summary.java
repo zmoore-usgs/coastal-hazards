@@ -80,7 +80,7 @@ public class Summary implements Serializable {
 		this.download = download;
 	}
 
-	@Column(name = "metadata_download", length = VERSION_MAX_LENGTH)
+	@Column(name = "metadata_download_link", length = VERSION_MAX_LENGTH)
 	public String getMetadataDownload() {
 		return metadataDownload;
 	}

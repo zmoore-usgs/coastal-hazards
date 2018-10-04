@@ -1,0 +1,80 @@
+{
+    "itemType": "data",
+    "attr": "LRR",
+    "type": "historical",
+    "ribbonable": false,
+    "summary": {
+        "version": "manual",
+        "tiny": {
+            "text": "sadf"
+        },
+        "download": {
+            "link": ""
+        },
+        "legend": {
+            "title": "asdf"
+        },
+        "medium": {
+            "title": "asdf",
+            "text": "adsf"
+        },
+        "full": {
+            "title": "asdf",
+            "text": "adsf",
+            "publications": {
+                "data": [{
+                        "title": "Boston_transects_rates_LTw.shp - Digital Shoreline Analysis System version 4.3 transects and long-term linear regression shoreline change statistics for all data available in the Boston coastal region Carson Beach in South Boston to Weymouth River, including the Boston Harbor Islands",
+                        "link": "http://pubs.usgs.gov/of/2012/1183/data/Boston/Boston_transects_rates_LTw.zip",
+                        "type": "data"
+                    }],
+                "publications": [{
+                        "title": "Massachusetts Shoreline Change Project: A GIS Compilation of Vector Shorelines and Associated Shoreline Change Data for the 2013 update",
+                        "link": "http://pubs.usgs.gov/of/2012/1183/",
+                        "type": "publications"
+                    }],
+                "resources": [{
+                        "title": "Massachusetts Shoreline Change Mapping and Analysis Project, 2013 Update",
+                        "link": "http://pubs.usgs.gov/of/2012/1189/",
+                        "type": "resources"
+                    }, {
+                        "title": "Digital Shoreline Analysis System (DSAS) version 4.0: an ArcGIS extension for calculating shoreline change",
+                        "link": "http://woodshole.er.usgs.gov/project-pages/dsas/version4/index.html",
+                        "type": "resources"
+                    }, {
+                        "title": "Digital Shoreline Analysis System (DSAS) version 4.0: an ArcGIS extension for calculating shoreline change",
+                        "link": "http://woodshole.er.usgs.gov/project-pages/dsas/",
+                        "type": "resources"
+                    }, {
+                        "title": "Digital Shoreline Analysis System (DSAS) version 4.0: an ArcGIS extension for calculating shoreline change",
+                        "link": "http://pubs.usgs.gov/of/2008/1278/",
+                        "type": "resources"
+                    }, {
+                        "title": "The Massachusetts Shoreline Change Project: 1800s to 1994 Technical Report",
+                        "link": "http://www.mass.gov/czm/hazards/pdf/sc_technical_report.pdf",
+                        "type": "resources"
+                    }, {
+                        "title": "The Massachusetts Shoreline Change Project: 1800s to 1994 Technical Report",
+                        "link": "http://www.mass.gov/czm/hazards/shoreline_change/shorelinechangeproject.htm",
+                        "type": "resources"
+                    }]
+            }
+        },
+        "keywords": "geoscientificInformation|oceans and coastal|oceans and estuaries|oceans|Massachusetts Office of Coastal Zone Management|WHCMSC|Woods Hole Coastal and Marine Science Center|CMGP|Coastal and Marine Geology Program|USGS|U.S. Geological Survey|DSAS|Digital Shoreline Analysis System|Transect|Baseline|LRR|Linear Regression Rate|NSM|Net Shoreline Movement|SCE|Shoreline Change Envelope|Accretion|Erosion|Shoreline Change Rate|long-term|Historic Shoreline|Shoreline|Esri polyline shapefile|Boston|Massachusetts|New England|United States|Atlantic Coast"
+    },
+    "children": [],
+    "showChildren": false,
+    "enabled": false,
+    "services": [{
+            "type": "proxy_wfs",
+            "endpoint": "http://130.11.170.91:8081/geoserver/proxied/wfs",
+            "serviceParameter": "proxied:GqhvYt8u"
+        }, {
+            "type": "proxy_wms",
+            "endpoint": "http://130.11.170.91:8081/geoserver/proxied/wms",
+            "serviceParameter": "proxied:GqhvYt8u"
+        }],
+    "displayedChildren": [],
+    "activeStorm": false,
+    "featured": false,
+    "bbox": ["-71.052532", "42.245734", "-70.874396", "42.343552"]
+}
