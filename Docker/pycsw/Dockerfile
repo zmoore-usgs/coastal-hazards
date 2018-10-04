@@ -37,7 +37,3 @@ COPY run.sh run.sh
 RUN chmod +x run.sh
 
 CMD ./run.sh
-
-HEALTHCHECK --interval=2s --timeout=3s \
- CMD sleep 1 | \
- 		curl -s "localhost:8000/csw/" | grep -q "pycsw ${PYCSW_VERSION}" || exit 1

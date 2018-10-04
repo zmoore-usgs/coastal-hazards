@@ -65,6 +65,8 @@ public class MetadataResource {
 		Response response = Response.ok(postBody).build();
 		Document doc = null;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		List<String> title = new ArrayList<>();
+		List<String> srcUsed = new ArrayList<>();
 		List<String> keywords = new ArrayList<>();
 		List<Publication> data = new ArrayList<>();
 		List<Publication> publication = new ArrayList<>();
@@ -74,7 +76,10 @@ public class MetadataResource {
 		try {
 			doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(postBody)));
 			doc.getDocumentElement().normalize();
-
+			
+			title.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "/metadata/idinfo/citation/citeinfo/title"));
+			srcUsed.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "/metadata/dataqual/lineage/procstep/srcused"));
+			
 			box = MetadataUtil.getBoundingBoxFromFgdcMetadata(postBody);
 			keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/placekey"));
 			keywords.addAll(MetadataUtil.extractStringsFromCswDoc(doc, "//*/themekey"));
@@ -85,6 +90,8 @@ public class MetadataResource {
 			resource.addAll(MetadataUtil.getResourcesFromXml(doc, "srccite"));		
 			
 			Map<String, Object> grouped = new HashMap<>();
+			grouped.put("title", title);
+			grouped.put("srcUsed", srcUsed);
 			grouped.put("Box", box);
 			grouped.put("Keywords", keywords);
 			grouped.put("Data", data);

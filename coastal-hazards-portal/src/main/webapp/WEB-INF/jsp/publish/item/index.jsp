@@ -821,12 +821,14 @@
                     <div class="modal-body">
                         <span>Warning: Creating a new storm will cause any un-saved changes currently on the mediation page to be lost.</span>
                         <br/><br/>
-                        <form id="storm-form" enctype="multipart/form-data">
+                        <form id="storm-form-metadata" enctype="multipart/form-data">
                             <div>
                                 <label for="file">1a. Metadata XML</label>
-                                <input type="file" name="metadata"/>
+                                <input type="file" name="file"/>
                             </div>
                             <br/>
+                        </form>
+                        <form id="storm-form-layer" enctype="multipart/form-data">
                             <div>
                                 <label for="file">1b. Zipped Shape File</label>
                                 <input type="file" name="file"/>

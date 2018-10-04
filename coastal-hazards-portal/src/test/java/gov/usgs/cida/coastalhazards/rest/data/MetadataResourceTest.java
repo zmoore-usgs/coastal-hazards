@@ -5,21 +5,24 @@
  */
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import gov.usgs.cida.coastalhazards.gson.GsonUtil;
-import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import javax.ws.rs.core.Response;
-import javax.xml.parsers.DocumentBuilderFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Map;
+import java.util.Scanner;
+
+import javax.ws.rs.core.Response;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
+import gov.usgs.cida.coastalhazards.gson.GsonUtil;
+import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 
 /**
  *
@@ -52,9 +55,11 @@ public class MetadataResourceTest {
         MetadataResource mr = new MetadataResource();
         Response resp = mr.getMetadata(null, metadataXml);
         
-        Map<String,List> gsonResp = GsonUtil.getDefault().fromJson((String) resp.getEntity(), Map.class);
+        System.out.println("Response: " + resp.getEntity());
         
-        assertEquals(gsonResp.size(),5);
+        Map<String,Object> gsonResp = GsonUtil.getDefault().fromJson((String) resp.getEntity(), Map.class);
+        
+        assertEquals(7,gsonResp.size());
     }
     
     /**
