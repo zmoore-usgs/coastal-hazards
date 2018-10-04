@@ -75,6 +75,9 @@ CCH.Objects.Publish.UI = function () {
 		$rasterModal = $('#raster-modal'),
 		$rasterModalSubmitButton = $('#raster-modal-submit-btn'),
 		$rasterModalCreateItemButton = $('#raster-modal-create-button'),
+		$rasterModalExtractSrsBox = $('#raster-modal-extract-srs'),
+		$rasterModalSrsText = $('#raster-modal-srs-text'),
+		$rasterModalSrsTextBox = $('#raster-modal-srs-text-box'),
 		$rasterModalUpdateServicesBox = $('#raster-services'),
 		$rasterModalUpdateResourcesBox = $('#raster-resources'),
 		$rasterModalUpdateKeywordsBox = $('#raster-keywords'),
@@ -2075,7 +2078,7 @@ CCH.Objects.Publish.UI = function () {
 		currentUpload.$createButton = $('#vector-modal-create-button');
 		currentUpload.$updateButton = $('#vector-modal-update-button');
 		
-		postLayer(new FormData($('#vector-form-layer')[0]), new FormData($('#vector-form-metadata')[0]), currentUpload);
+		createLayer(new FormData($('#vector-form-metadata')[0]), new FormData($('#vector-form-layer')[0]), currentUpload);
 	});
 
 	$rasterModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
@@ -2087,7 +2090,12 @@ CCH.Objects.Publish.UI = function () {
 		currentUpload.$createButton = $('#raster-modal-create-button');
 		currentUpload.$updateButton = $('#raster-modal-update-button');
 
-		postLayer(new FormData($('#raster-form-layer')[0]), new FormData($('#raster-form-metadata')[0]), currentUpload);
+		//Ensure SRS Code is provided
+		if(!$rasterModalExtractSrsBox.prop("checked") && ($rasterModalSrsTextBox.val() == null || $rasterModalSrsTextBox.val() == "")) {
+			layerCreateErrorCallback(null, "SRS Code must be provided if not being extracted from the metadata.", null, currentUpload);
+		} else {
+			createLayer(new FormData($('#raster-form-metadata')[0]), new FormData($('#raster-form-layer')[0]), currentUpload);
+		}
 	});
 	
 	$vectorModalCreateItemButton.on(CCH.CONFIG.strings.click, function(){
@@ -2149,35 +2157,40 @@ CCH.Objects.Publish.UI = function () {
 		layerUploadButtonsEnabled(true);
 	};
 
-	var postLayerSuccessCallback = function(metadataFormData, data, textStatus, jqXHR, currentUpload) {
+	var createLayer = function(metadataFormData, layerFormData, currentUpload) {
+		clearLayerUploadResults();
+		layerItemButtonsEnabled(false);
+		layerUploadButtonsEnabled(false);
+		postMetadata(metadataFormData, layerFormData, currentUpload);
+	}
+
+	var applyAdditionalMetadataToRasterForm = function(layerFormData) {
+		if(newLayerMetadata != null) {
+			if($rasterModalExtractSrsBox.is(':checked')) {
+				if(newLayerMetadata.EPSGCode != null) {
+					layerFormData.set("epsgCode", newLayerMetadata.EPSGCode);
+				} else {
+					layerFormData.set("epsgCode", "");
+				}		
+			}
+			
+			if(newLayerMetadata.Box != null && newLayerMetadata.Box.length == 4) {
+				layerFormData.set("bboxw", newLayerMetadata.Box[0]);
+				layerFormData.set("bboxs", newLayerMetadata.Box[1]);
+				layerFormData.set("bboxe", newLayerMetadata.Box[2]);
+				layerFormData.set("bboxn", newLayerMetadata.Box[3]);
+			}
+		}
+
+		return layerFormData;
+	}
+
+	var postLayerSuccessCallback = function(data, textStatus, jqXHR, currentUpload) {
 		currentUpload.$result.empty();
-		var layerUrl = jqXHR.getResponseHeader('Location');
-		var layerId = getLayerIdFromUrl(layerUrl);
 
 		if(201 === jqXHR.status){
-			newLayerId = layerId;
-			newLayerUrl = layerUrl;
-			postMetadata(metadataFormData, currentUpload);
-		} else {
-			handleUnexpectedResponse(currentUpload);
-		}
-	};
-
-	var postLayerErrorCallback = function(jqXHR, textStatus, errorThrown, currentUpload) {
-		currentUpload.$result.empty();
-		currentUpload.$result.append("Error");
-		currentUpload.$closeButton.prop("disabled",false);
-		currentUpload.$cancelButton.prop("disabled",false);
-		layerUploadButtonsEnabled(true);
-		newLayerId = null;
-		newLayerUrl = null;
-		newLayerMetadata = null;
-	};
-
-	var postMetadataSuccessCallback = function(data, textStatus, jqXHR, currentUpload) {
-		newLayerMetadata = data;
-		
-		if(200 === jqXHR.status) {
+			newLayerUrl = jqXHR.getResponseHeader('Location');
+			newLayerId = getLayerIdFromUrl(newLayerUrl);
 			currentUpload.$result.append("Successfully published layer " + newLayerId + ". Click ");
 			currentUpload.$result.append('<a href="' + newLayerUrl + '" target="_blank">here</a> to see the layer');
 			currentUpload.$closeButton.prop("disabled",false);
@@ -2190,12 +2203,38 @@ CCH.Objects.Publish.UI = function () {
 			}
 		} else {
 			handleUnexpectedResponse(currentUpload);
+		}
+	};
+
+	var postMetadataSuccessCallback = function(layerFormData, data, textStatus, jqXHR, currentUpload) {
+		if(200 === jqXHR.status) {
+			newLayerMetadata = data;
+			
+			//Apply metadata to raster form data, if uploading raster
+			if(newLayerIsRaster) {
+				layerFormData = applyAdditionalMetadataToRasterForm(layerFormData);
+
+				//Validate Additional Raster Metadata before posting the Layer
+				if(layerFormData.get("bboxn") == null) {
+					layerCreateErrorCallback(null, "Failed to parse BBox from provided Metadata XML.", null, currentUpload);
+				} else if($rasterModalExtractSrsBox.is(':checked') && (layerFormData.get("epsgCode") == null || layerFormData.get("epsgCode") == "")) {
+					layerCreateErrorCallback(null, "Failed to parse EPSG Code from provided Metadata XML.", null, currentUpload);
+				} else if(!$rasterModalExtractSrsBox.is(':checked') && (layerFormData.get("epsgCode") == null || layerFormData.get("epsgCode") == "")) {
+					layerCreateErrorCallback(null, "You must provide an EPSG Code if not extracting from the metadata.", null, currentUpload);
+				} else {
+					postLayer(layerFormData, currentUpload);
+				}
+			} else {
+				postLayer(layerFormData, currentUpload);
+			}
+		} else {
+			handleUnexpectedResponse(currentUpload);
 		}					
 	};
 
-	var postMetadataErrorCallback = function(jqXHR, textStatus, errorThrown, currentUpload) {
+	var layerCreateErrorCallback = function(jqXHR, textStatus, errorThrown, currentUpload) {
 		currentUpload.$result.empty();
-		currentUpload.$result.append("Error");
+		currentUpload.$result.append("An error occurred while creating the layer: " + textStatus);
 		currentUpload.$closeButton.prop("disabled",false);
 		currentUpload.$cancelButton.prop("disabled",false);
 		layerItemButtonsEnabled(false);
@@ -2205,11 +2244,8 @@ CCH.Objects.Publish.UI = function () {
 		newLayerMetadata = null;
 	};
 
-	var postLayer = function(layerFormData, metadataFormData, currentUpload) {
+	var postLayer = function(layerFormData, currentUpload) {
 		var postUrl = CCH.baseUrl + "/data/layer" + (newLayerIsRaster ? "/raster" : "");
-		clearLayerUploadResults();
-		layerItemButtonsEnabled(false);
-		layerUploadButtonsEnabled(false);
 
 		$.ajax({
 			url: postUrl,
@@ -2219,26 +2255,26 @@ CCH.Objects.Publish.UI = function () {
 			processData: false
 		})
 		.done(function(data, textStatus, jqXHR) {
-			postLayerSuccessCallback(metadataFormData, data, textStatus, jqXHR, currentUpload);
+			postLayerSuccessCallback(data, textStatus, jqXHR, currentUpload);
 		})
 		.fail(function(jqXHR, textStatus, errorThrown){
-			postLayerErrorCallback(jqXHR, textStatus, errorThrown, currentUpload);
+			layerCreateErrorCallback(jqXHR, textStatus, errorThrown, currentUpload);
 		});
 	}
 
-	var postMetadata = function(formData, currentUpload) {
+	var postMetadata = function(metadataFormData, layerFormData, currentUpload) {
 		$.ajax({
 			url: CCH.baseUrl + "/data/metadata",
 			type: 'POST',
-			data: formData,
+			data: metadataFormData,
 			contentType: false,
 			processData: false
 		})
 		.done(function(data, textStatus, jqXHR) {
-			postMetadataSuccessCallback(data, textStatus, jqXHR, currentUpload);
+			postMetadataSuccessCallback(layerFormData, data, textStatus, jqXHR, currentUpload);
 		})
 		.fail(function(jqXHR, textStatus, errorThrown){
-			postMetadataErrorCallback(jqXHR, textStatus, errorThrown, currentUpload);
+			layerCreateErrorCallback(jqXHR, textStatus, errorThrown, currentUpload);
 		});
 	};
 
@@ -2298,6 +2334,14 @@ CCH.Objects.Publish.UI = function () {
 
 	me.clearForm();
 
+	$rasterModalExtractSrsBox.change(function() {
+		if($(this).is(':checked')) {
+			$rasterModalSrsText.attr(CCH.CONFIG.strings.hidden, CCH.CONFIG.strings.hidden);
+		} else {
+			$rasterModalSrsText.removeAttr(CCH.CONFIG.strings.hidden);
+		}
+	});
+
 	// If the item is a storm, give the user a chance to mark it active or inactive
 	$typeSb.on('change', function (evt) {
 		if (evt.target.value === "storms") {
@@ -2342,7 +2386,7 @@ CCH.Objects.Publish.UI = function () {
 		if($(this).is(':checked')) {
 			$newStormModalEditTrackDiv.removeAttr(CCH.CONFIG.strings.hidden);
 		} else {
-			$newStormModalEditTrackDiv.attr(CCH.CONFIG.strings.hidden, CCH.CONFIG.strings.hidden)
+			$newStormModalEditTrackDiv.attr(CCH.CONFIG.strings.hidden, CCH.CONFIG.strings.hidden);
 		}
 	});
 

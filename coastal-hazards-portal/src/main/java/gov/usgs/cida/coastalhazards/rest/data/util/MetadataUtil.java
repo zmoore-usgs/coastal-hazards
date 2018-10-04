@@ -314,9 +314,6 @@ public class MetadataUtil {
                 double maxx = bounding.getEastbc();
                 double maxy = bounding.getNorthbc();
         
-                Bbox result = new Bbox();
-                result.setBbox(minx, miny, maxx, maxy);
-
                 bbox.setBbox(minx, miny, maxx, maxy);
             
                 return bbox;
