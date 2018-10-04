@@ -525,7 +525,13 @@
                                                 <textarea class="form-control" rows="1" id="form-publish-item-download-link" disabled="disabled"></textarea>
                                             </div>
                                         </div>
-
+                                        <div id="form-publish-info-item-metadata-download-link" class="row row-description">
+                                            <div class="form-group">
+                                                <label for="form-publish-item-metadata-download-link"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Metadata Download Link (Leave Blank to Disable Metadata Downloads)</label>
+                                                <textarea class="form-control" rows="1" id="form-publish-item-metadata-download-link" disabled="disabled"></textarea>
+                                            </div>
+                                        </div>
+                                        
                                     </div>
 
                                 </div>

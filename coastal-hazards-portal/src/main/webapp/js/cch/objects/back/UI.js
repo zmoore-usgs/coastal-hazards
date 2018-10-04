@@ -42,6 +42,11 @@ CCH.Objects.Back.UI = function (args) {
 		if(!me.item.summary.download || !me.item.summary.download.link || me.item.summary.download.link.length === 0){
 			me.$downloadDataButton.prop("disabled", true);
 		}
+                
+                //Disable downloading if no link provided
+		if(!me.item.summary.metadataDownload || me.item.summary.metadataDownload.length === 0){
+			me.$metadataButton.prop("disabled", true);
+		}
 		
 		//Click Handlers
 		me.$infoButton.on('click', function () {
@@ -127,19 +132,14 @@ CCH.Objects.Back.UI = function (args) {
 			return service.type === 'csw';
 		});
 
-		// If item has a metadata service behind it, wire up the button. Otherwise, remove it.
-		if (me.cswService && me.cswService.endpoint) {
-			me.$metadataButton.on('click', function () {
-				window.location.href = me.cswService.endpoint + '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
-				ga('send', 'event', {
-					'eventCategory': 'infopage',
-					'eventAction': 'metadataButtonClicked',
-					'eventLabel': 'info page event'
-				});
-			});
-		} else {
-			me.$metadataButton.remove();
-		}
+                me.$metadataButton.on('click', function () {
+                        window.location.href = me.item.summary.metadataDownload;
+                        ga('send', 'event', {
+                                'eventCategory': 'infopage',
+                                'eventAction': 'metadataButtonClicked',
+                                'eventLabel': 'info page event'
+                        });
+                });
 
 		// Build the additional information section for the item
 		if (me.item.summary.full.publications) {
