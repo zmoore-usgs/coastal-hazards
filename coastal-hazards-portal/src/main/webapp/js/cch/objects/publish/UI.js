@@ -121,7 +121,8 @@ CCH.Objects.Publish.UI = function () {
 		$resourcesPanel = $('#Resources-panel'),
 		$metaDataPanel = $('#metadata-panel'),
 		$newStormResult = $('#storm-modal-result'),
-		$newStormForm = $('#storm-form'),
+		$newStormMetadata = $('#storm-form-metadata'),
+		$newStormLayer = $('#storm-form-layer'),
 		$newStormCloseButton = $('#storm-modal-close-button'),
 		$newStormCancelButton = $('#storm-modal-cancel-button'),
 		$editingEnabled = false,
@@ -2550,7 +2551,7 @@ CCH.Objects.Publish.UI = function () {
 	}
 
 	me.postStormLayer = function($result, newAlias, copyType, copyText, trackFormData, trackBbox) {
-		var formData = new FormData($newStormForm[0]);
+		var formData = new FormData($newStormLayer[0]);
 
 		$result.empty();
 		$result.append('Working... (Step 2/5)<br/><br/>');
@@ -2643,18 +2644,29 @@ CCH.Objects.Publish.UI = function () {
 		$result.empty();
 		$result.append('Working... (Step 5/5)<br/><br/>');
 		$.ajax({
+			url: CCH.baseUrl + "/data/metadata",
+			type: 'POST',
+			data: new FormData($newStormMetadata[0]),
+			contentType: false,
+			processData: false
+		})
+		.success(function(data, textStatus, jqXHR) {
+			$.ajax({
 				url: CCH.CONFIG.contextPath + '/data/template/storm/',
+				traditional: true,
 				data: {
 					layerId: layerId,
 					activeStorm: $newStormModalActiveBox.is(':checked'),
 					alias: newAlias,
 					copyType: copyType,
 					copyVal: copyText,
-					trackId: trackId
+					trackId: trackId,
+					title: data.title,
+					srcUsed: data.srcUsed
 				},
 				method: "GET"
 			})
-			.done(function(data) {
+			.success(function(data) {
 				var id = data.id;
 
 				if(id != null) {
@@ -2673,11 +2685,12 @@ CCH.Objects.Publish.UI = function () {
 					me.enableNewStormButtons();
 				}
 			})
-			.fail(function(data) {
-				$result.append('Failed to create storm item and associated child items. Storm creation aborted.');
-				me.enableNewStormButtons();
-				console.error(data);
-			});
+		})
+		.fail(function(data) {
+			$result.append('Failed to create storm item and associated child items. Storm creation aborted.');
+			me.enableNewStormButtons();
+			console.error(data);
+		});
 	};
 
 	me.buildTrackData = function($result, newAlias, copyType, copyText, trackFormData, trackBbox, layerId) {
