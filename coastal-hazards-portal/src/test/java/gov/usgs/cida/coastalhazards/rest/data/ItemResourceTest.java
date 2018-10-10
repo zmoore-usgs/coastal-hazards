@@ -5,21 +5,13 @@
  */
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import gov.usgs.cida.coastalhazards.gson.GsonUtil;
-import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
+import gov.usgs.cida.coastalhazards.model.Item;
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
-import javax.ws.rs.core.Response;
-import javax.xml.parsers.DocumentBuilderFactory;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
 /**
  *
@@ -44,12 +36,12 @@ public class ItemResourceTest {
         String testFileFullName = packageNameShort + "/" + BTI;
 
         String itemString = loadResourceAsString(testFileFullName);
-        ItemResource ir = new ItemResource();
         
         // ISSUE IS THAT metadataDownload is currently an object (metadata : {...}  when it should be just a string metadata : ...)
-        Response resp = ir.postItem(itemString, null);
-        
-        assertNotNull(resp);
+        Item bostonTest = Item.fromJSON(itemString);
+	
+	assertNotNull(bostonTest);
+	assertEquals("google.com",bostonTest.getSummary().getMetadataDownload());
     }
     
     private String loadResourceAsString(String fileName) throws IOException {

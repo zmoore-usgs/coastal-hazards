@@ -469,9 +469,7 @@ CCH.Objects.Publish.UI = function () {
 		summary.download = {
 			link: $downloadLinkTextArea.val().trim()
 		};
-		summary.metadataDownload = {
-			link: $metadataDownloadLinkTextArea.val().trim()
-		};
+		summary.metadataDownload = $metadataDownloadLinkTextArea.val().trim();
 		summary.legend = {
 			title: $titleLegendTextArea.val().trim()
 		};

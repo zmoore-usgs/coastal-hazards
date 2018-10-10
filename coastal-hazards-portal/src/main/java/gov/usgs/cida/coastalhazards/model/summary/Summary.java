@@ -31,7 +31,7 @@ public class Summary implements Serializable {
 	private Full full;
 	private String keywords;
 	private Download download;
-        private String metadataDownload;
+	private String metadataDownload;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -127,7 +127,7 @@ public class Summary implements Serializable {
 			summary.setLegend(from.getLegend());
 			summary.setMedium(from.getMedium());
 			summary.setDownload(from.getDownload());
-                        summary.setMetadataDownload(from.getMetadataDownload());
+			summary.setMetadataDownload(from.getMetadataDownload());
 			Full toFull = new Full();
 			if (to != null && to.getFull() != null) {
 				toFull = to.getFull();

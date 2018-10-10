@@ -43,7 +43,7 @@ CCH.Objects.Back.UI = function (args) {
 			me.$downloadDataButton.prop("disabled", true);
 		}
                 
-                //Disable downloading if no link provided
+		//Disable metadata downloading if no link provided
 		if(!me.item.summary.metadataDownload || me.item.summary.metadataDownload.length === 0){
 			me.$metadataButton.prop("disabled", true);
 		}
