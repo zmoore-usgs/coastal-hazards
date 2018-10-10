@@ -148,10 +148,6 @@ public class MetadataUtil {
 		return id;
 	}
 
-	public static String extractFirstStringFromCswDoc(Document cswDoc, String path) {
-        return extractStringsFromCswDoc(cswDoc, path).get(0);
-	}
-
 	public static List<String> extractStringsFromCswDoc(Document cswDoc, String path) {
 		XPathFactory xPathfactory = XPathFactory.newInstance();
         XPath xpath = xPathfactory.newXPath();
