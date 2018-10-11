@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ItemResourceTest {
           
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(MetadataResourceTest.class);
     private static String BTI = "Boston_Item.json";
     
     /**
