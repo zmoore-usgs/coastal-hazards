@@ -11,8 +11,6 @@ secrets:
     file: Docker/rserve/rserve.conf
   rserve_profile:
     file: Docker/rserve/profile.conf
-  pycsw_config:
-    file: Docker/pycsw/default.cfg
   n52_wps_config:
     file: coastal-hazards-n52/docker/wps_config.xml
   geoserver_serverxml_config:
@@ -56,26 +54,6 @@ services:
       - source: rserve_profile
         target: /profile.conf
 
-  cch_pycsw:
-    build:
-        context: ./Docker/pycsw
-        args:
-          - doi_network=$doi_network
-    networks:
-      cch-net:
-        aliases:
-          - pycsw
-    image: cch_pycsw
-    ports:
-      - "8000:8000"
-    env_file:
-      - "compose${CCH_ENV_LOCAL}.env"
-    secrets:
-      - source: pycsw_config
-        target: /pycsw/default.cfg
-    depends_on:
-      - cch_postgres
-
   cch_n52_wps:
     build:
       context: ./coastal-hazards-n52
@@ -116,7 +94,6 @@ services:
       - cch_n52_wps
       - cch_postgres
       - cch_geoserver
-      - cch_pycsw
 
   cch_geoserver:
     build:
