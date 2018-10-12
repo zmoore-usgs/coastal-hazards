@@ -22,7 +22,6 @@ public class Summary implements Serializable {
 	private static final long serialVersionUID = 182763L;
 
 	public static final int VERSION_MAX_LENGTH = 15;
-	public static final int METADATA_MAX_LENGTH = 200;
 
 	private transient int id;
 	private String version;
@@ -81,7 +80,7 @@ public class Summary implements Serializable {
 		this.download = download;
 	}
 
-	@Column(name = "metadata_download_link", length = METADATA_MAX_LENGTH)
+	@Column(name = "metadata_download_link")
 	public String getMetadataDownload() {
 		return metadataDownload;
 	}
