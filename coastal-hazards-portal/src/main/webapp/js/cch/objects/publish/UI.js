@@ -21,6 +21,7 @@ CCH.Objects.Publish.UI = function () {
 		$descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
 		$descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
 		$downloadLinkTextArea = $form.find('#form-publish-item-download-link'),
+		$metadataDownloadLinkTextArea = $form.find('#form-publish-item-metadata-download-link'),
 		$bboxNorth = $form.find('#form-publish-item-bbox-input-north'),
 		$bboxWest = $form.find('#form-publish-item-bbox-input-west'),
 		$bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
@@ -167,7 +168,7 @@ CCH.Objects.Publish.UI = function () {
 	me.clearForm = function () {
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $descriptionTinyTextArea,
-			$downloadLinkTextArea, $typeSb, $attributeSelect, $attributeSelectHelper,
+			$downloadLinkTextArea, $metadataDownloadLinkTextArea, $typeSb, $attributeSelect, $attributeSelectHelper,
 			$srcWfsServiceInput, $srcWfsServiceParamInput, 
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $proxyWmsServiceParamInput,
@@ -180,7 +181,7 @@ CCH.Objects.Publish.UI = function () {
 				});
 
 		[$itemIdInput, $titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
-			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $typeSb, 
+			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $metadataDownloadLinkTextArea, $typeSb, 
 			$itemEnabledField, $attributeSelect, $attributeSelectHelper, $popFromLayerInput,
 			$srcWfsServiceInput, $srcWfsServiceParamInput, $srcWmsServiceInput, $srcWmsServiceParamInput,
 			$proxyWfsServiceInput, $proxyWfsServiceParamInput, $proxyWmsServiceInput,
@@ -232,7 +233,7 @@ CCH.Objects.Publish.UI = function () {
 	me.enableNewAggregationForm = function () {
 		$itemType.val('aggregation');
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
-			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $typeSb,
+			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $metadataDownloadLinkTextArea, $typeSb,
 			$attributeSelect, $srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
@@ -386,6 +387,11 @@ CCH.Objects.Publish.UI = function () {
 			{
 				errors.push('Provided download link is not a valid URL.');
 			}
+                        
+			if(!me.isBlank($metadataDownloadLinkTextArea) && !CCH.Util.Util.isValidUrl($metadataDownloadLinkTextArea.val()))
+			{
+				errors.push('Provided metadata download link is not a valid URL.');
+			}
 
 			if (me.isBlank($descriptionFullTextArea)) {
 				errors.push('Full description not provided');
@@ -463,6 +469,7 @@ CCH.Objects.Publish.UI = function () {
 		summary.download = {
 			link: $downloadLinkTextArea.val().trim()
 		};
+		summary.metadataDownload = $metadataDownloadLinkTextArea.val().trim();
 		summary.legend = {
 			title: $titleLegendTextArea.val().trim()
 		};
@@ -1014,6 +1021,7 @@ CCH.Objects.Publish.UI = function () {
 				descriptionMedium,
 				descriptionTiny,
 				downloadLink,
+				metadataDownloadLink,
 				keywords = [],
 				services = {},
 				type,
@@ -1029,6 +1037,7 @@ CCH.Objects.Publish.UI = function () {
 			titleMedium = summary.medium.title;
 			titleLegend = summary.legend ? summary.legend.title : "";
 			downloadLink = summary.download ? summary.download.link : "";
+			metadataDownloadLink = summary.metadataDownload;
 			descriptionFull = summary.full.text;
 			descriptionMedium = summary.medium.text;
 			descriptionTiny = summary.tiny.text;
@@ -1157,7 +1166,7 @@ CCH.Objects.Publish.UI = function () {
 			
 			[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
 					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
-					$proxyWmsCheckButton, $isFeaturedCB, $downloadLinkTextArea,
+					$proxyWmsCheckButton, $isFeaturedCB, $downloadLinkTextArea, $metadataDownloadLinkTextArea,
 					$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $ribbonableCb,
 					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
 					$buttonSave, $buttonDelete, $ribbonableCb, $metadataSummaryField]
@@ -1176,6 +1185,7 @@ CCH.Objects.Publish.UI = function () {
 			$descriptionMediumTextArea.val(descriptionMedium);
 			$descriptionTinyTextArea.val(descriptionTiny);
 			$downloadLinkTextArea.val(downloadLink);
+			$metadataDownloadLinkTextArea.val(metadataDownloadLink);
 			$metadataSummaryField.val(summary.version || 'unknown');
 			
 			// Add keywords
@@ -1550,6 +1560,8 @@ CCH.Objects.Publish.UI = function () {
 						$descriptionTinyTextArea.val(response.tiny.text || '');
 						
 						$downloadLinkTextArea.val((response.download && response.download.link) || '');
+						
+						$metadataDownloadLinkTextArea.val((response.metadataDownload));
 					}
 				],
 				error: [

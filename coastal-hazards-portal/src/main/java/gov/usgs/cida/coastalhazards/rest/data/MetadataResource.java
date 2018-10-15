@@ -121,7 +121,7 @@ public class MetadataResource {
 			response = Response.ok(GsonUtil.getDefault().toJson(grouped, Map.class)).build();
 			
 		} catch (Exception e) {
-			log.error("Failed to parse metadata xml document. Error: " + e.getMessage() + ". Stack Trace: " + e.getStackTrace());
+			log.error("Failed to parse metadata xml document. Error: " + e.getMessage() + ". Stack Trace: " + e.toString());
 		}
 
 		return response;

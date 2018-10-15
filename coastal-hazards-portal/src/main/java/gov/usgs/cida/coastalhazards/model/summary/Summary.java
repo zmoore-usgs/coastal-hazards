@@ -22,6 +22,7 @@ public class Summary implements Serializable {
 	private static final long serialVersionUID = 182763L;
 
 	public static final int VERSION_MAX_LENGTH = 15;
+	public static final int METADATA_MAX_LENGTH = 200;
 
 	private transient int id;
 	private String version;
@@ -31,6 +32,7 @@ public class Summary implements Serializable {
 	private Full full;
 	private String keywords;
 	private Download download;
+	private String metadataDownload;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -79,6 +81,15 @@ public class Summary implements Serializable {
 		this.download = download;
 	}
 
+	@Column(name = "metadata_download_link", length = METADATA_MAX_LENGTH)
+	public String getMetadataDownload() {
+		return metadataDownload;
+	}
+	
+	public void setMetadataDownload(String metadataDownload) {
+		this.metadataDownload = metadataDownload;
+	}
+        
 	@Embedded
 	public Medium getMedium() {
 		return medium;
@@ -117,6 +128,7 @@ public class Summary implements Serializable {
 			summary.setLegend(from.getLegend());
 			summary.setMedium(from.getMedium());
 			summary.setDownload(from.getDownload());
+			summary.setMetadataDownload(from.getMetadataDownload());
 			Full toFull = new Full();
 			if (to != null && to.getFull() != null) {
 				toFull = to.getFull();
