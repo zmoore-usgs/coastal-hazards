@@ -110,14 +110,6 @@ coastal-hazards.cidags.endpoint: Specifies where the back-end proxy server shoul
 Used In: CCHP
 Example: <Environment name="coastal-hazards.cidags.endpoint" type="java.lang.String" value="http://cida.usgs.gov/DSASweb/geoserver" />
 
-coastal-hazards.csw.endpoint: Specifies where the back-end proxy server should send connections to for Coastal Hazards’ CSW Server
-Used In: CCHP
-Example: <Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="http://cida.usgs.gov/qa/coastalhazards/csw" />
-
-coastal-hazards.csw.endpoint: Used for local csw transactions.
-Used In: CCHP
-Example: <Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="http://127.0.0.1/pycsw-wsgi" />
-
 coastal-hazards.geocoding.endpoint: Endpoint used to make geospatial searches.
 Used In: CCHP
 Example: <Environment name="coastal-hazards.geocoding.endpoint" type="java.lang.String" value="http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find" />

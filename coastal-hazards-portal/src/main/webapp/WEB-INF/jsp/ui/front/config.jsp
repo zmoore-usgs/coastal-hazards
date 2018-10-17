@@ -24,7 +24,6 @@
 	String marineArcServerEndpoint = props.getProperty("coastal-hazards.marine.endpoint");
 	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "//geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
 	String publicUrl = props.getProperty("coastal-hazards.public.url", "https://127.0.0.1:8443/coastal-hazards-portal");
-	String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "https://localhost:8043/pycsw");
 %>
 <%
 	Set<String> stormTrackSet = Attributes.getStormTrackAttrs();
@@ -180,10 +179,7 @@
 					},
 					'download': {
 						'endpoint' : '/data/download/item/'
-					},
-                    'external-csw' : {
-                        'endpoint' : '<%=externalCSWEndpoint%>'
-                    }
+					}
 				},
 				'storm_track_attributes' : [<%=stormTrackAttrs%>]
 			}

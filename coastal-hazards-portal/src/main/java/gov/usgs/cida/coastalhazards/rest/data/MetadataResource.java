@@ -146,28 +146,6 @@ public class MetadataResource {
 	}
 
 	@GET
-	@Path("/summarize/itemid/{itemid}/attribute/{attr}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getMetadataSummaryByAttribtueUsingItemID(
-		@PathParam("itemid") String itemId,
-		@PathParam("attr") String attr
-	) throws URISyntaxException {
-		Response response;
-		try (ItemManager itemManager = new ItemManager()) {
-			Item item = itemManager.load(itemId);
-			String jsonSummary = MetadataUtil.getSummaryFromWPS(getMetadataUrl(item), attr);
-			Summary summary = GsonUtil.getDefault().fromJson(jsonSummary, Summary.class);
-			response = Response.ok(GsonUtil.getDefault().toJson(summary, Summary.class), MediaType.APPLICATION_JSON_TYPE).build();
-		}
-		catch (IOException | ParserConfigurationException | SAXException | JsonSyntaxException ex) {
-			Map<String, String> err = new HashMap<>();
-			err.put("message", ex.getMessage());
-			response = Response.serverError().entity(GsonUtil.getDefault().toJson(err, HashMap.class)).build();
-		}
-		return response;
-	}
-
-	@GET
 	@Path("/summarize/fid/{fid}/attribute/{attr}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getMetadataSummaryByAttribtueUsingFD(@PathParam("fid") String fid,
@@ -185,18 +163,4 @@ public class MetadataResource {
 		}
 		return response;
 	}
-
-	private static String getMetadataUrl(Item item) {
-		String url = "";
-		if (item != null) {
-			List<Service> services = item.getServices();
-			for (Service service : services) {
-				if (service.getType() == Service.ServiceType.csw) {
-					url = service.getEndpoint();
-				}
-			}
-		}
-		return url;
-	}
-
 }

@@ -25,7 +25,6 @@ CCH.Objects.Back.UI = function (args) {
 		me.$infoSummary = $('#info-summary');
 		me.$infoPubListSpan = $('#info-container-publications-list-span');
 		me.$labelActionCenter = $('#label-action-center');
-		me.cswService;
 		me.$publist;
 		me.item = args.item;
 		me.$mapServicesButton = $('#map-services-link-button');
@@ -128,10 +127,6 @@ CCH.Objects.Back.UI = function (args) {
 		});
 
 		// Create a "View Metadata" button
-		me.cswService = CCH.CONFIG.item.services.find(function (service) {
-			return service.type === 'csw';
-		});
-
                 me.$metadataButton.on('click', function () {
                         window.location.href = me.item.summary.metadataDownload;
                         ga('send', 'event', {
@@ -372,9 +367,6 @@ CCH.Objects.Back.UI = function (args) {
 		Handlebars.registerHelper('list_translation', function (serviceType) {
 			var serviceString = '';
 			switch (serviceType) {
-				case ('csw') :
-					serviceString = 'CSW';
-					break;
 				case ('source_wms') :
 					serviceString = 'Source WMS';
 					break;

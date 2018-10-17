@@ -73,13 +73,13 @@ Any re-built services can then be brought up via the service-specific version of
 ### Additional Important Notes
 
 1. It is recommended that you primarily use the docker containers for running the
-Rserve, PyCSW, and PostgreSQL portions of the application. Due to the large size
+Rserve and PostgreSQL portions of the application. Due to the large size
 of most files that are uploaded into the portal it requires a very large Docker VM
 to store a decent number of items. In order to launch only a subset of the
 applications services run a command similar to the following (you can find the
   service names in the `docker-compose.yml` file in the project root directory).
 
-    `docker-compose up cch_postgres cch_pycsw cch_rserve`
+    `docker-compose up cch_postgres cch_rserve`
 
 2. The ports that are described in the `compose.env` for the different services
 are the ports that they will be _exposed_ on from Docker, not necessarily the

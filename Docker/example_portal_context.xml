@@ -54,9 +54,6 @@ description="{usedBy: ['coastalhazards']}"
 <Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="https://coastalmap.marine.usgs.gov/cmgp" override="false" />
 <Environment name="coastal-hazards.geocoding.endpoint" type="java.lang.String" value="https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find" override="false" />
 <Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="http://cidasddvascch.cr.usgs.gov:8080/wps" override="false" />
-<Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="http://localhost:8000/wsgi/pycsw" override="false" />
-<Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="http://localhost:8000/wsgi/pycsw" override="false" />
-<Environment name="coastal-hazards.csw.external.endpoint" type="java.lang.String" value="http://localhost:8180/coastal-hazards-portal/csw/" override="false" />
 
 <Environment name="coastal-hazards.go.usa.gov.login" type="java.lang.String" value="USGS%20Coastal%20Hazards" override="false" />
 <Environment name="coastal-hazards.go.usa.gov.apikey" type="java.lang.String" value="SOME_GREAT_API_KEY_ANGELA" override="false" />

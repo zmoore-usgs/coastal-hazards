@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
-import gov.usgs.cida.coastalhazards.util.ogc.CSWService;
 import gov.usgs.cida.coastalhazards.util.ogc.OGCService;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.coastalhazards.util.ogc.WMSService;
@@ -415,15 +414,6 @@ public class Item implements Serializable, Cacheable {
 			wmsService = (WMSService) ogc;
 		}
 		return wmsService;
-	}
-
-	public CSWService fetchCswService() {
-		CSWService cswService = null;
-		OGCService ogc = fetchOgcService(ServiceType.csw);
-		if (ogc instanceof CSWService) {
-			cswService = (CSWService) ogc;
-		}
-		return cswService;
 	}
 
 	public WFSService fetchWfsService() {
