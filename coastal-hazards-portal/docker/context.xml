@@ -31,9 +31,6 @@
 	<Environment name="coastal-hazards.cidags.endpoint" type="java.lang.String" value="${cch_cidags_endpoint}"/>
 	<Environment name="coastal-hazards.portal.geoserver.endpoint" type="java.lang.String" value="${cch_portal_geoserver_endpoint}"/>
 	<Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="${cch_n52_endpoint}"/>
-	<Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="${cch_csw_endpoint}"/>
-	<Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="${cch_csw_internal_endpoint}"/>
-	<Environment name="coastal-hazards.csw.external.endpoint" type="java.lang.String" value="${cch_csw_external_endpoint}"/>
 	<Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="${cch_upload_max_size}"/>
 	<!-- TODO: Is this used? -->
 	<Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="${cch_upload_filename_param}"/>

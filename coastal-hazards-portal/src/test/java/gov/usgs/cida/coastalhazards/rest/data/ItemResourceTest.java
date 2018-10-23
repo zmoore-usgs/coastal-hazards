@@ -35,7 +35,6 @@ public class ItemResourceTest {
 
         String itemString = loadResourceAsString(testFileFullName);
         
-        // ISSUE IS THAT metadataDownload is currently an object (metadata : {...}  when it should be just a string metadata : ...)
         Item bostonTest = Item.fromJSON(itemString);
 	
 	assertNotNull(bostonTest);

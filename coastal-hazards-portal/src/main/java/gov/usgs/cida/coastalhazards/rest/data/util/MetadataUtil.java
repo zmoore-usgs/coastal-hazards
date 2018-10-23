@@ -64,40 +64,14 @@ public class MetadataUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(MetadataUtil.class);
 
-	private static final String cswLocalEndpoint;
-	private static final String cswExternalEndpoint;
 	private static final String cchn52Endpoint;
 	private static final DynamicReadOnlyProperties props;
-	private static final String NAMESPACE_CSW = "http://www.opengis.net/cat/csw/2.0.2";
-	private static final String NAMESPACE_DC = "http://purl.org/dc/elements/1.1/";
 	
 	public static final String[] XML_PROLOG_PATTERNS = {"<\\?xml[^>]*>", "<!DOCTYPE[^>]*>"};
 
 	static {
 		props = JNDISingleton.getInstance();
-		cswLocalEndpoint = props.getProperty("coastal-hazards.csw.internal.endpoint");
-		cswExternalEndpoint = props.getProperty("coastal-hazards.csw.external.endpoint");
 		cchn52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
-	}
-
-	public static String doCSWInsertFromUploadId(String metadataId) throws IOException, ParserConfigurationException, SAXException {
-		String insertedId = null;
-
-		MetadataResource metadata = new MetadataResource();
-		Response response = metadata.getFileById(metadataId);
-		String xmlWithoutHeader = stripXMLProlog(response.getEntity().toString());
-		insertedId = doCSWInsert(xmlWithoutHeader);
-
-		return insertedId;
-	}
-	
-	public static String doCSWInsertFromString(String metadata) throws IOException, ParserConfigurationException, SAXException {
-		String insertedId = null;
-		
-		String xmlWithoutHeader = stripXMLProlog(metadata);
-		insertedId = doCSWInsert(xmlWithoutHeader);
-		
-		return insertedId;
 	}
 	
 	public static String stripXMLProlog(String xml) {
@@ -106,46 +80,6 @@ public class MetadataUtil {
 			xmlWithoutHeader = xmlWithoutHeader.replaceAll(prolog, "");
 		}
 		return xmlWithoutHeader;
-	}
-
-	private static String doCSWInsert(String xmlWithoutHeader) throws IOException, ParserConfigurationException, SAXException {
-		String id = null;
-		String cswRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-				+ "<csw:Transaction service=\"CSW\" version=\"2.0.2\" xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\">"
-				+ "<csw:Insert>"
-				+ xmlWithoutHeader
-				+ "</csw:Insert>"
-				+ "</csw:Transaction>";
-		HttpUriRequest req = new HttpPost(cswLocalEndpoint);
-		HttpClient client = new DefaultHttpClient();
-		req.addHeader("Content-Type", "text/xml");
-		if (!StringUtils.isBlank(cswRequest) && req instanceof HttpEntityEnclosingRequestBase) {
-			StringEntity contentEntity = new StringEntity(cswRequest);
-			((HttpEntityEnclosingRequestBase) req).setEntity(contentEntity);
-		}
-		HttpResponse resp = client.execute(req);
-		StatusLine statusLine = resp.getStatusLine();
-
-		if (statusLine.getStatusCode() != 200) {
-			throw new IOException("Error in response from csw");
-		}
-		String data = IOUtils.toString(resp.getEntity().getContent(), "UTF-8");
-		if (data.contains("ExceptionReport")) {
-			log.error(data);
-			throw new IOException("Error in response from csw");
-		}
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setNamespaceAware(true);
-		Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(data.getBytes()));
-		JXPathContext ctx = JXPathContext.newContext(doc.getDocumentElement());
-		ctx.registerNamespace("csw", NAMESPACE_CSW);
-		ctx.registerNamespace("dc", NAMESPACE_DC);
-		Node inserted = (Node) ctx.selectSingleNode("//csw:totalInserted/text()");
-		if (1 == Integer.parseInt(inserted.getTextContent())) {
-			Node idNode = (Node) ctx.selectSingleNode("//dc:identifier/text()");
-			id = idNode.getTextContent();
-		}
-		return id;
 	}
 
 	public static List<String> extractStringsFromCswDoc(Document cswDoc, String path) {
@@ -270,17 +204,6 @@ public class MetadataUtil {
 			IOUtils.closeQuietly(zip);
 		}
 		return metadata;
-	}
-	
-	public static String getMetadataByIdUrl(String id) {
-		return cswExternalEndpoint + "?service=CSW&request=GetRecordById&version=2.0.2&typeNames=fgdc:metadata&id=" + id +"&outputSchema=http://www.opengis.net/cat/csw/csdgm&elementSetName=full";
-	}
-	
-	public static Service makeCSWServiceForUrl(String url) {
-		Service csw = new Service();
-		csw.setType(Service.ServiceType.csw);
-		csw.setEndpoint(url);
-		return csw;
 	}
         
         public static Bbox getBoundingBoxFromFgdcMetadata(String inMetadata) throws JAXBException, UnsupportedEncodingException{

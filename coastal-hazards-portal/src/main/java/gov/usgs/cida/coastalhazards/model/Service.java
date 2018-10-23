@@ -1,6 +1,5 @@
 package gov.usgs.cida.coastalhazards.model;
 
-import gov.usgs.cida.coastalhazards.util.ogc.CSWService;
 import gov.usgs.cida.coastalhazards.util.ogc.OGCService;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.coastalhazards.util.ogc.WMSService;
@@ -40,8 +39,8 @@ public class Service implements Serializable {
 		source_wms,
 		esri_rest,
 		proxy_wfs,
-		proxy_wms,
-		csw;
+		proxy_wms
+		;
 	}
 
 	@Id
@@ -89,9 +88,6 @@ public class Service implements Serializable {
 			for (Service service : services) {
 				if (service.getType() == type) {
 					switch (type) {
-						case csw:
-							ogc = new CSWService(service);
-							break;
 						case proxy_wms:
 						case source_wms:
 							ogc = new WMSService(service);
