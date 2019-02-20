@@ -47,4 +47,5 @@
 	<include file="addAliasTable.xml" relativeToChangelogFile="true" />
 	<include file="addAliasTablePrimaryKey.xml" relativeToChangelogFile="true" />
         <include file="addMetadataDownloadLink.xml" relativeToChangelogFile="true" />
+        <include file="removeCswRecords.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
