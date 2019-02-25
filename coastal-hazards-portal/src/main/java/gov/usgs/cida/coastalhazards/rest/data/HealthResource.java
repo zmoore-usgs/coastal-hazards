@@ -45,9 +45,6 @@ public class HealthResource {
 	private static final String geoserverEndpoint;
 	private static final String geoserverUser;
 	private static final String geoserverPass;
-        private static final String pycswEndpoint;
-        private static final String pycswVersion;
-        private static final String pycswVersionDefault = "2.0.2";
 	private static final DynamicReadOnlyProperties props;
 	
 	static {
@@ -55,8 +52,6 @@ public class HealthResource {
 		geoserverEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
 		geoserverUser = props.getProperty("coastal-hazards.geoserver.username");
 		geoserverPass = props.getProperty("coastal-hazards.geoserver.password");
-                pycswVersion = props.getProperty("coastal-hazards.csw.version", pycswVersionDefault);
-                pycswEndpoint = props.getProperty("coastal-hazards.csw.external.endpoint");  // includes the / csw/
 	}
 
 	@GET
@@ -142,43 +137,6 @@ public class HealthResource {
 		} catch (Exception e) {
 			LOG.warn("Exception occurred while checking health", e);
 			componentCheckMap.put("Geoserver", false);
-			overallHealth = false;
-		}
-                
-                try { // health check add for pycsw Jira cchs-306
-                        boolean hasCswGetCapabilities = false;
-                        Map<String, Boolean> pyCswStatus = new HashMap<>();
-                        
-			String endpointTest = pycswEndpoint + "?service=CSW&request=GetCapabilities&version=" + pycswVersion;
-                        HttpGet httpGet = new HttpGet(endpointTest);
-                        HttpClient httpclient = new DefaultHttpClient();
-                        
-                        // Create a custom response handler
-                        ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-                            @Override
-                            public String handleResponse(
-                                final HttpResponse response) throws ClientProtocolException, IOException {
-                                int status = response.getStatusLine().getStatusCode();
-                                if (status >= 200 && status < 300) {
-                                HttpEntity entity = response.getEntity();
-                                    return entity != null ? EntityUtils.toString(entity) : null;
-                                } else {
-                                throw new ClientProtocolException("Unexpected response status: " + status);
-                                }
-                            }
-                        }; // close anonymous inner class
-                    
-			String resp = httpclient.execute(httpGet, responseHandler); 
-			hasCswGetCapabilities = resp != null;
-			
-			pyCswStatus.put("getCapabilities", hasCswGetCapabilities);
-			componentCheckMap.put("PyCsw", pyCswStatus);
-			overallHealth = overallHealth && hasCswGetCapabilities;
-                        
-		} catch (Exception e) {
-			LOG.warn("Exception occurred while checking csw health", e);
-			componentCheckMap.put("Pycsw", false);
 			overallHealth = false;
 		}
                                              

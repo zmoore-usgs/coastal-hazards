@@ -21,6 +21,7 @@ CCH.Objects.Publish.UI = function () {
 		$descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
 		$descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
 		$downloadLinkTextArea = $form.find('#form-publish-item-download-link'),
+		$metadataDownloadLinkTextArea = $form.find('#form-publish-item-metadata-download-link'),
 		$bboxNorth = $form.find('#form-publish-item-bbox-input-north'),
 		$bboxWest = $form.find('#form-publish-item-bbox-input-west'),
 		$bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
@@ -29,11 +30,7 @@ CCH.Objects.Publish.UI = function () {
 		$typeSb = $form.find('#form-publish-item-type'),
 		$attributeSelect = $form.find('#form-publish-item-attribute'),
 		$attributeSelectHelper = $form.find('#form-publish-item-attribute-helper'),
-		$attributeRetrieveDataButton = $form.find('#form-publish-item-attribute-button'),
-		$attributeRetrieveTitlesButton = $form.find('#form-publish-item-title-button'),
 		$keywordGroup = $form.find('.form-group-keyword'),
-		$cswServiceInput = $form.find('#form-publish-item-service-csw'),
-		$cswServiceInputButton = $form.find('#form-publish-item-service-csw-button-fetch'),
 		$isFeaturedCB = $form.find('#checkbox-featured'),
 		$srcWfsServiceInput = $form.find('#form-publish-item-service-source-wfs'),
 		$srcWfsServiceParamInput = $form.find('#form-publish-item-service-source-wfs-serviceparam'),
@@ -69,14 +66,23 @@ CCH.Objects.Publish.UI = function () {
 		$newStormTrackForm = $('#storm-modal-nhc-form'),
 		$vectorModal = $('#vector-modal'),
 		$vectorModalSubmitButton = $('#vector-modal-submit-btn'),
-		$vectorModalPopButton = $('#vector-modal-populate-button'),
+		$vectorModalCreateItemButton = $('#vector-modal-create-button'),
+		$vectorModalUpdateServicesBox = $('#vector-services'),
+		$vectorModalUpdateResourcesBox = $('#vector-resources'),
+		$vectorModalUpdateKeywordsBox = $('#vector-keywords'),
+		$vectorModalUpdateBboxBox = $('#vector-bbox'),
+		$vectorModalUpdateItemButton = $('#vector-modal-update-button'),
 		$rasterModal = $('#raster-modal'),
-		$rasterModalPopButton = $('#raster-modal-populate-button'),
 		$rasterModalSubmitButton = $('#raster-modal-submit-btn'),
-		$titleModal = $('#title-modal'),
-		$titleModalContinueButton = $('#title-modal-continue-button'),
-		$resourceModal = $('#resource-modal'),
-		$resourceModalContinueButton = $('#resource-modal-continue-button'),
+		$rasterModalCreateItemButton = $('#raster-modal-create-button'),
+		$rasterModalExtractSrsBox = $('#raster-modal-extract-srs'),
+		$rasterModalSrsText = $('#raster-modal-srs-text'),
+		$rasterModalSrsTextBox = $('#raster-modal-srs-text-box'),
+		$rasterModalUpdateServicesBox = $('#raster-services'),
+		$rasterModalUpdateResourcesBox = $('#raster-resources'),
+		$rasterModalUpdateKeywordsBox = $('#raster-keywords'),
+		$rasterModalUpdateBboxBox = $('#raster-bbox'),
+		$rasterModalUpdateItemButton = $('#raster-modal-update-button'),
 		$metadataSummaryField = $('#form-publish-info-item-summary-version'),
 		$itemEnabledField = $('#form-publish-info-item-enabled'),
 		$itemImage = $form.find('#form-publish-info-item-image'),
@@ -89,7 +95,6 @@ CCH.Objects.Publish.UI = function () {
 		$aliasModalAddButton = $('#form-publish-alias-modal-button-add'),
 		$aliasModal = $('#alias-modal'),
 		$aliasModalList = $('#sortable-modal-aliases'),
-		$aliasModalPopButton = $('#alias-modal-populate-button'),
 		$aliasModalFilterButton = $('.alias-modal-filter-button'),
 		$buttonCreateVectorLayer = $('#publish-button-create-vector-layer'),
 		$buttonCreateRasterLayer = $('#publish-button-create-raster-layer'),
@@ -117,14 +122,15 @@ CCH.Objects.Publish.UI = function () {
 		$resourcesPanel = $('#Resources-panel'),
 		$metaDataPanel = $('#metadata-panel'),
 		$newStormResult = $('#storm-modal-result'),
-		$newStormForm = $('#storm-form'),
+		$newStormMetadata = $('#storm-form-metadata'),
+		$newStormLayer = $('#storm-form-layer'),
 		$newStormCloseButton = $('#storm-modal-close-button'),
 		$newStormCancelButton = $('#storm-modal-cancel-button'),
-		$newStormLayerId = null,
-		$stormTrackItemId = null,
-		$newVectorLayerId = null,
-		$newRasterLayerId = null,
-		$editingEnabled = false;
+		$editingEnabled = false,
+		newLayerId = null,
+		newLayerUrl = null,
+		newLayerIsRaster = false,
+		newLayerMetadata = null;
 
 	const ALIAS_NAME_REGEX = "(?!([A-Z|a-z|0-9|-])).";
 	me.allAliasList = [];
@@ -162,7 +168,7 @@ CCH.Objects.Publish.UI = function () {
 	me.clearForm = function () {
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
 			$descriptionMediumTextArea, $descriptionTinyTextArea, $descriptionTinyTextArea,
-			$downloadLinkTextArea, $typeSb, $attributeSelect, $attributeSelectHelper,
+			$downloadLinkTextArea, $metadataDownloadLinkTextArea, $typeSb, $attributeSelect, $attributeSelectHelper,
 			$srcWfsServiceInput, $srcWfsServiceParamInput, 
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $proxyWmsServiceParamInput,
@@ -175,10 +181,9 @@ CCH.Objects.Publish.UI = function () {
 				});
 
 		[$itemIdInput, $titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
-			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $typeSb, 
-			$itemEnabledField, $attributeSelect, $attributeSelectHelper,
-			$cswServiceInput, $cswServiceInputButton, $srcWfsServiceInput,
-			$srcWfsServiceParamInput, $srcWmsServiceInput, $srcWmsServiceParamInput,
+			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $metadataDownloadLinkTextArea, $typeSb, 
+			$itemEnabledField, $attributeSelect, $attributeSelectHelper, $popFromLayerInput,
+			$srcWfsServiceInput, $srcWfsServiceParamInput, $srcWmsServiceInput, $srcWmsServiceParamInput,
 			$proxyWfsServiceInput, $proxyWfsServiceParamInput, $proxyWmsServiceInput,
 			$proxyWmsServiceParamInput, $metadataSummaryField, $itemType, $name]
 				.concat($('.form-group-keyword input'))
@@ -191,9 +196,6 @@ CCH.Objects.Publish.UI = function () {
 			$i.prop(CCH.CONFIG.strings.checked, false);
 		});
 		$editingEnabled = false;
-		$aliasModalPopButton.prop("disabled", true);
-		$vectorModalPopButton.prop("disabled", true);
-		$rasterModalPopButton.prop("disabled", true);
 		$('.form-group-keyword').not(':first').remove();
 		$('.form-group-keyword button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
 		$resourcesPanel.find('.resource-list-container-sortable').empty();
@@ -207,20 +209,18 @@ CCH.Objects.Publish.UI = function () {
 
 	me.enableNewItemForm = function () {
 		$itemType.val('data');
-                [$servicePanel.find('input, button'), $buttonSave, $buttonDelete]
-                        .forEach(function ($item) {
-                            $item.removeAttr(CCH.CONFIG.strings.disabled);
+				[$servicePanel.find('input, button'), $buttonSave, $buttonDelete]
+						.forEach(function ($item) {
+							$item.removeAttr(CCH.CONFIG.strings.disabled);
 			});
 		$editingEnabled = true;
-		$aliasModalPopButton.prop("disabled", false);
 		
-		if($newVectorLayerId !== null){
-			$vectorModalPopButton.prop("disabled", false);
+		if(newLayerId !== null && !newLayerIsRaster){
+			$vectorModalUpdateItemButton.prop("disabled", false);
+		} else if(newLayerId !== null && newLayerIsRaster){
+			$rasterModalUpdateItemButton.prop("disabled", false);
 		}
-		
-		if($newRasterLayerId !== null){
-			$rasterModalPopButton.prop("disabled", false);
-		}
+
 		$showChildrenCb.prop(CCH.CONFIG.strings.checked, false);
 		$isActiveStormChecbox.prop(CCH.CONFIG.strings.checked, false);
 		$isFeaturedCB.prop(CCH.CONFIG.strings.checked, false);
@@ -233,7 +233,7 @@ CCH.Objects.Publish.UI = function () {
 	me.enableNewAggregationForm = function () {
 		$itemType.val('aggregation');
 		[$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $descriptionFullTextArea,
-			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $typeSb,
+			$descriptionMediumTextArea, $descriptionTinyTextArea, $downloadLinkTextArea, $metadataDownloadLinkTextArea, $typeSb,
 			$attributeSelect, $srcWfsServiceInput, $srcWfsServiceParamInput,
 			$srcWmsServiceInput, $srcWmsServiceParamInput, $proxyWfsServiceInput,
 			$proxyWfsServiceParamInput, $proxyWmsServiceInput, $getWfsAttributesButton,
@@ -248,15 +248,13 @@ CCH.Objects.Publish.UI = function () {
 					$item.removeAttr(CCH.CONFIG.strings.disabled);
 				});
 		$editingEnabled = true;
-		$aliasModalPopButton.prop("disabled", false);
-		
-		if($newVectorLayerId !== null){
-			$vectorModalPopButton.prop("disabled", false);
+
+		if(newLayerId !== null && !newLayerIsRaster){
+			$vectorModalUpdateItemButton.prop("disabled", false);
+		} else if(newLayerId !== null && newLayerIsRaster){
+			$rasterModalUpdateItemButton.prop("disabled", false);
 		}
-		
-		if($newRasterLayerId !== null){
-			$rasterModalPopButton.prop("disabled", false);
-		}
+
 		$itemEnabledField.val('false');
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.addClass(CCH.CONFIG.strings.enabled);
@@ -308,12 +306,6 @@ CCH.Objects.Publish.UI = function () {
 					errors.push('Attribute is missing');
 				} else if ($attributeSelect.val().length > CCH.CONFIG.limits.item.attribute) {
 					errors.push('Attribute was longer than ' + CCH.CONFIG.limits.item.attribute + ' characters');
-				}
-
-				if (me.isBlank($cswServiceInput)) {
-					errors.push('CSW service endpoint not entered');
-				} else if ($cswServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
-					errors.push('CSW endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
 				}
 
 				if ($srcWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
@@ -395,6 +387,11 @@ CCH.Objects.Publish.UI = function () {
 			{
 				errors.push('Provided download link is not a valid URL.');
 			}
+                        
+			if(!me.isBlank($metadataDownloadLinkTextArea) && !CCH.Util.Util.isValidUrl($metadataDownloadLinkTextArea.val()))
+			{
+				errors.push('Provided metadata download link is not a valid URL.');
+			}
 
 			if (me.isBlank($descriptionFullTextArea)) {
 				errors.push('Full description not provided');
@@ -472,6 +469,7 @@ CCH.Objects.Publish.UI = function () {
 		summary.download = {
 			link: $downloadLinkTextArea.val().trim()
 		};
+		summary.metadataDownload = $metadataDownloadLinkTextArea.val().trim();
 		summary.legend = {
 			title: $titleLegendTextArea.val().trim()
 		};
@@ -506,15 +504,6 @@ CCH.Objects.Publish.UI = function () {
 			keywordsArray.push($(input).val().trim());
 		});
 		item.summary.keywords = keywordsArray.join('|');
-
-		var cswServiceEndpoint = $cswServiceInput.val().trim();
-		if (cswServiceEndpoint) {
-			services.push({
-				type: 'csw',
-				endpoint: cswServiceEndpoint,
-				serviceParameter: ''
-			});
-		}
 		
 		var sourceWfsServiceEndpoint = $srcWfsServiceInput.val().trim(),
 			sourceWfsServiceParam = $srcWfsServiceParamInput.val().trim();
@@ -606,168 +595,10 @@ CCH.Objects.Publish.UI = function () {
 			$keywordGroup.after($keywordGroupLocal);
 		}
 	};
-
-	me.updateFormWithNewCSWInfo = function (responseObject, textStatus) {
-	    if (textStatus === 'success') {
-		if(responseObject.children != null){
-		    //PYCSW 1.x Support -- Remove After Server pycsw Upgrades Complete
-		    var cswNodes = responseObject.children;
-		    var tag;
-		    cswNodes[0].children.forEach(function (node) {
-			    tag = node.tag;
-
-			    if (tag === 'idinfo') {
-				    node.children.forEach(function (childNode) {
-					    tag = childNode.tag;
-					    switch (tag) {
-					    case 'spdom':
-						    if (childNode.children) {
-							    childNode.children[0].children.forEach(function (spdom) {
-								    var direction = spdom.tag.substring(0, spdom.tag.length - 2);
-								    $('#form-publish-item-bbox-input-' + direction).val(spdom.text);
-							    });
-						    }
-						    break;
-					    case 'keywords':
-						    childNode.children.forEach(function (kwNode) {
-							    var keywords = kwNode.children;
-							    keywords.splice(1).forEach(function (kwObject) {
-								    var keyword = kwObject.text;
-								    me.addKeywordGroup(keyword);
-							    });
-						    });
-						    break;
-					    }
-				    });
-			    }
-		    });
-		} else {
-		    //PYCSW 2.x Support
-		    //Bounding Box Information
-		    var bbox = responseObject["csw:GetRecordByIdResponse"].metadata.idinfo.spdom.bounding;
-
-		    for(var dir in bbox){
-				if(bbox.hasOwnProperty(dir)){
-					var direction = dir.substring(0, dir.length - 2);
-					var text = bbox[dir]["#text"];
-
-					if(text == null){
-					text = bbox[dir];
-					}
-					$('#form-publish-item-bbox-input-' + direction).val(text);
-				}
-		    }
-
-		    //Keywords
-		    var keywords = responseObject["csw:GetRecordByIdResponse"].metadata.idinfo.keywords;
-
-		    for(var category in keywords){
-				var listKey = category.trim() + "key"
-				if(Array.isArray(keywords[category])){
-					for(var sub in keywords[category]){
-					me.parseJsonKeywords(keywords[category][sub][listKey]);
-					}
-				} else {
-					me.parseJsonKeywords(keywords[category][listKey]);
-				}
-		    }
-		}
-	    }
-	};
 	
-	me.parseJsonKeywords = function (keywords) {
-	    if(Array.isArray(keywords)){
-		keywords.forEach(function(keyword) {
-		    me.addKeywordGroup(keyword);
-		})
-	    } else {
-		me.addKeywordGroup(keywords);
-	    }
-	}
-
 	me.initNewItemForm = function () {
-		var $cswInput = $('#form-publish-item-service-csw'),
-			cswUrl = $cswInput.val();
-
 		me.clearForm();
 		me.enableNewItemForm();
-
-		$cswInput.val(cswUrl);
-	};
-	
-	me.populateKeywordsAndBbox = function () {
-		me.getCSWInfo({
-			url: $cswServiceInput.val(),
-			callbacks: {
-				success: [me.updateFormWithNewCSWInfo],
-				error: [
-					function (response) {
-						$alertModal.modal(CCH.CONFIG.strings.hide);
-						$alertModalTitle.html('CSW Record Could Not Be Attained');
-						$alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
-						$alertModal.modal(CCH.CONFIG.strings.show);
-					}
-				]
-			}
-		});
-	};
-
-	me.getCSWInfo = function (args) {
-		args = args || {};
-
-		var callbacks = args.callbacks || {
-			success: [],
-			error: []
-		},
-		cswURL = args.url,
-				url = CCH.CONFIG.contextPath + '/csw/' +
-				cswURL.substring(cswURL.indexOf('?')) +
-				'&outputFormat=application/json';
-
-		$.ajax({
-			url: url,
-			dataType: 'json',
-			contentType: "application/json; charset=utf-8",
-			success: function (json, textStatus, jqXHR) {
-				callbacks.success.forEach(function (cb) {
-					cb(json, textStatus, jqXHR);
-				});
-			},
-			error: function () {
-				callbacks.error.forEach(function (cb) {
-					cb();
-				});
-			}
-		});
-	};
-
-	me.publishMetadata = function (args) {
-		args = args || {};
-		var token = args.token,
-			callbacks = args.callbacks || {
-				success: [],
-				error: []
-			};
-
-		$.ajax({
-			url: CCH.CONFIG.contextPath + '/publish/metadata/' + token,
-			type: 'POST',
-			dataType: 'json',
-			success: function (json, textStatus, jqXHR) {
-				if (callbacks.success && callbacks.success.length > 0) {
-					callbacks.success.forEach(function (callback) {
-						callback.call(null, json, textStatus, jqXHR);
-					});
-				}
-			},
-			error: function (xhr, status, error) {
-				if (callbacks.error && callbacks.error.length > 0) {
-					callbacks.error.forEach(function (callback) {
-						callback.call(null, xhr, status, error);
-					});
-				}
-			}
-		});
 	};
 
 	me.addUserInformationToForm = function (args) {
@@ -791,13 +622,13 @@ CCH.Objects.Publish.UI = function () {
 				.attr('value', '')
 				.html('');
 		$attributeSelectHelper.append(emptyOption);
-                
+				
 		if (featureTypes) {
 			featureTypes = featureTypes[0];
 			featureTypes.properties.forEach(function (ft) {
 				ftName = ft.name;
 				ftNameLower = ftName.toLowerCase();
-				if ($.inArray(ftNameLower, ['objectid','shape','shape.len', 'the_geom', 'descriptio','name']) === -1) {
+				if ($.inArray(ftNameLower, ['objectid','shape','shape.len', 'the_geom', 'description','name']) === -1) {
 					$option = $('<option>')
 							.attr('value', ft.name)
 							.html(ft.name);
@@ -806,61 +637,34 @@ CCH.Objects.Publish.UI = function () {
 			});
 		}
 		$attributeSelectHelper.removeAttr(CCH.CONFIG.strings.disabled);
-		$attributeRetrieveDataButton.removeAttr(CCH.CONFIG.strings.disabled);
-		$attributeRetrieveTitlesButton.removeAttr(CCH.CONFIG.strings.disabled);
 	};
 	
-	me.updateSelectChange = function () {
+	me.updateSelectChange = function() {
 		if ($attributeSelectHelper.val() !== '') {
 			$attributeSelect.val($attributeSelectHelper.val());
-			me.unlockTitlesResourcesMetadata();
 		}
 	};
-        
+		
 	//Unlocks item type and features panel
 	me.unlockItemTypeFeatures = function () {
-	    [$typeSb, $attributeSelect,$featuresPanel.find('button, input')]
+		[$typeSb, $attributeSelect,$featuresPanel.find('button, input')]
 		.forEach(function ($item) {
-		    $item.removeAttr(CCH.CONFIG.strings.disabled);
+			$item.removeAttr(CCH.CONFIG.strings.disabled);
 		});
 	};
 
 	//Unlocks Titles, Resources, and Metadata Panels
-	me.unlockTitlesResourcesMetadata = function () {
-	    [$titlesPanel.find('button, textarea'), $resourcesPanel.find('button'), $metaDataPanel.find('button, input')]
+	me.unlockTitlesResourcesMetadata = function() {
+		[$titlesPanel.find('button, textarea'), $resourcesPanel.find('button'), $metaDataPanel.find('button, input')]
 		.forEach(function ($item) {
-		    $item.removeAttr(CCH.CONFIG.strings.disabled);
+			$item.removeAttr(CCH.CONFIG.strings.disabled);
 		});
 	};
-	
-	//Locks Titles, Resources, and Metadata Panels
- 	me.lockTitlesResourcesMetadata = function () {
-	    [$titlesPanel.find('button, textarea'), $resourcesPanel.find('button'), $metaDataPanel.find('button, input')]
-                .forEach(function ($item) {
-                    $item.prop("disabled", true);
-                });
-	};
 
-	me.metadataPublishCallback = function (mdObject, status) {
-		if (status === 'success') {
-			$itemType.val('data');
-			$('#form-publish-item-service-csw').val(mdObject.metadata);
-			me.getCSWInfo({
-				url: mdObject.metadata,
-				callbacks: {
-					success: [me.updateFormWithNewCSWInfo],
-					error: [
-						function (response) {
-							$alertModal.modal(CCH.CONFIG.strings.hide);
-							$alertModalTitle.html('CSW Record Could Not Be Attained');
-							$alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
-							$alertModal.modal(CCH.CONFIG.strings.show);
-						}
-					]
-				}
-			});
-		}
-	};
+	me.unlockRestOfForm = function() {
+		me.unlockItemTypeFeatures();
+		me.unlockTitlesResourcesMetadata();
+	}
 	
 	me.createModalAliasRowListeners = function(alias, newAlias, aliasRowHtml){
 		var $rowObject = $(aliasRowHtml);
@@ -1217,6 +1021,7 @@ CCH.Objects.Publish.UI = function () {
 				descriptionMedium,
 				descriptionTiny,
 				downloadLink,
+				metadataDownloadLink,
 				keywords = [],
 				services = {},
 				type,
@@ -1232,6 +1037,7 @@ CCH.Objects.Publish.UI = function () {
 			titleMedium = summary.medium.title;
 			titleLegend = summary.legend ? summary.legend.title : "";
 			downloadLink = summary.download ? summary.download.link : "";
+			metadataDownloadLink = summary.metadataDownload;
 			descriptionFull = summary.full.text;
 			descriptionMedium = summary.medium.text;
 			descriptionTiny = summary.tiny.text;
@@ -1316,14 +1122,8 @@ CCH.Objects.Publish.UI = function () {
 				
 				$attributeSelect.val(item.attr);
 				if (item.services.length > 0) {
-                                    
+									
 					// Fill out services panel
-					if (services.csw) {
-						$cswServiceInput
-								.val(services.csw.endpoint)
-								.removeAttr(CCH.CONFIG.strings.disabled);
-					}
-
 					if (services.source_wfs) {
 						$srcWfsServiceInput
 								.val(services.source_wfs.endpoint)
@@ -1366,7 +1166,7 @@ CCH.Objects.Publish.UI = function () {
 			
 			[$wfsServerHelpButton, $sourceWfsCheckButton, $wfsSourceCopyButton,
 					$wmsServerHelpButton, $sourceWmsCheckButton, $proxyWfsCheckButton,
-					$proxyWmsCheckButton, $isFeaturedCB, $downloadLinkTextArea,
+					$proxyWmsCheckButton, $isFeaturedCB, $downloadLinkTextArea, $metadataDownloadLinkTextArea,
 					$titleFullTextArea, $titleMediumTextArea, $titleLegendTextArea, $ribbonableCb,
 					$descriptionFullTextArea, $descriptionMediumTextArea, $descriptionTinyTextArea,
 					$buttonSave, $buttonDelete, $ribbonableCb, $metadataSummaryField]
@@ -1385,6 +1185,7 @@ CCH.Objects.Publish.UI = function () {
 			$descriptionMediumTextArea.val(descriptionMedium);
 			$descriptionTinyTextArea.val(descriptionTiny);
 			$downloadLinkTextArea.val(downloadLink);
+			$metadataDownloadLinkTextArea.val(metadataDownloadLink);
 			$metadataSummaryField.val(summary.version || 'unknown');
 			
 			// Add keywords
@@ -1424,8 +1225,7 @@ CCH.Objects.Publish.UI = function () {
 		} else {
 			CCH.LOG.warn('UI.js::addItemToForm: function was called with no item');
 		}
-		me.unlockItemTypeFeatures();
-		me.unlockTitlesResourcesMetadata();
+		me.unlockRestOfForm();
 	};
 
 	me.wfsInfoUpdated = function () {
@@ -1702,13 +1502,12 @@ CCH.Objects.Publish.UI = function () {
 			$.ajax({
 				url: layerurl,
 				success: function (data) {
+					me.unlockRestOfForm();
 					for (var i=0; i < data.services.length; i++) {
 						var service = data.services[i];
 						var serviceEndpoint = (service.hasOwnProperty("endpoint")) ? service.endpoint : "";
 						var serviceParameter = (service.hasOwnProperty("serviceParameter")) ? service.serviceParameter : "";
-						if (service.type === "csw") {
-							$cswServiceInput.val(serviceEndpoint);
-						} else if (service.type === "source_wfs") {
+						if (service.type === "source_wfs") {
 							$srcWfsServiceInput.val(serviceEndpoint);
 							$srcWfsServiceParamInput.val(serviceParameter);
 						} else if (service.type === "source_wms") {
@@ -1739,75 +1538,7 @@ CCH.Objects.Publish.UI = function () {
 			})();
 		}
 	};
-	
-	me.getTitlesForAttribute = function () {
-		var attribute = $attributeSelect.val();
-
-		CCH.ows.requestSummaryByAttribute({
-			url: $('#form-publish-item-service-csw').val(),
-			attribute: attribute,
-			callbacks: {
-				success: [
-					function (response) {
-						$titleFullTextArea.val(response.full.title || '');
-						$descriptionFullTextArea.val(response.full.text || '');
-
-						$titleMediumTextArea.val(response.medium.title || '');
-						$descriptionMediumTextArea.val(response.medium.text || '');
-						
-						$titleLegendTextArea.val((response.legend && response.legend.title) || '');
-
-						$descriptionTinyTextArea.val(response.tiny.text || '');
-						
-						$downloadLinkTextArea.val((response.download && response.download.link) || '');
-					}
-				],
-				error: [
-					function (err) {
-						$alertModal.modal(CCH.CONFIG.strings.hide);
-						$alertModalTitle.html('Unable To Load Attribute Information');
-						$alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
-						$alertModal.modal(CCH.CONFIG.strings.show);
-					}
-				]
-			}
-		});
-	};
-
-	me.getDataForAttribute = function () {
-		var attribute = $attributeSelect.val();
-                
-		CCH.ows.requestSummaryByAttribute({
-			url: $('#form-publish-item-service-csw').val(),
-			attribute: attribute,
-			callbacks: {
-				success: [
-					function (response) {
-						$('.resource-list-container-sortable').empty();
-						$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
-						Object.keys(response.full.publications).forEach(function (type) {
-							response.full.publications[type].forEach(function (publication) {
-								me.createPublicationRow(publication.link, publication.title, type);
-							});
-						});
-                                                
-						response.keywords.split('|').forEach(function (keyword) {
-							me.addKeywordGroup(keyword);
-						});
-					}
-				],
-				error: [
-					function (err) {
-						$alertModal.modal(CCH.CONFIG.strings.hide);
-						$alertModalTitle.html('Unable To Load Attribute Information');
-						$alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
-						$alertModal.modal(CCH.CONFIG.strings.show);
-					}
-				]
-			}
-		});
-	};
-	
+		
 	$keywordGroup.find('input').removeAttr(CCH.CONFIG.strings.disabled);
 	$keywordGroup.find('button:nth-child(2)').addClass(CCH.CONFIG.strings.hidden);
 	$keywordGroup.find('button').removeAttr(CCH.CONFIG.strings.disabled);
@@ -1965,30 +1696,11 @@ CCH.Objects.Publish.UI = function () {
 	$wfsSourceCopyButton.on(CCH.CONFIG.strings.click, function () {
 		$srcWmsServiceInput.val($srcWfsServiceInput.val().replace('WFSServer', 'WMSServer'));
 	});
-
-	$attributeRetrieveTitlesButton.on(CCH.CONFIG.strings.click, function () {
-		$titleModal.modal(CCH.CONFIG.strings.show);
-	});
-	
-	$titleModalContinueButton.on(CCH.CONFIG.strings.click, function() {
-		me.getTitlesForAttribute();
-	});
-        
-        $attributeRetrieveDataButton.on(CCH.CONFIG.strings.click, function () {
-		$resourceModal.modal(CCH.CONFIG.strings.show);
-	});
-        
-        $resourceModalContinueButton.on(CCH.CONFIG.strings.click, function() {
-		me.getDataForAttribute();
-	});
 	
 	$attributeSelectHelper.on(CCH.CONFIG.strings.change, me.updateSelectChange);
 
-	$cswServiceInputButton.on(CCH.CONFIG.strings.click, me.populateKeywordsAndBbox);
-
 	$popFromLayerButton.on(CCH.CONFIG.strings.click, function() {
 		me.loadLayerInfo($popFromLayerInput.val());
-                me.unlockItemTypeFeatures();
 	});
 
 	$sourceWfsCheckButton.on(CCH.CONFIG.strings.click, function () {
@@ -2285,126 +1997,277 @@ CCH.Objects.Publish.UI = function () {
 	};
 		
 	$vectorModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
-		var $result = $('#vector-modal-result');
-		var $form = $('#vector-form');
-		var $closeButton = $('#vector-modal-close-button');
-		var $cancelButton = $('#vector-modal-cancel-button');
+		var currentUpload = {};
+		newLayerIsRaster = false;
+		currentUpload.$result = $('#vector-modal-result');
+		currentUpload.$closeButton = $('#vector-modal-close-button');
+		currentUpload.$cancelButton = $('#vector-modal-cancel-button');
+		currentUpload.$createButton = $('#vector-modal-create-button');
+		currentUpload.$updateButton = $('#vector-modal-update-button');
 		
-		$newVectorLayerId = null;
-		$result.empty();
-		$result.append('Working...');
-		$closeButton.prop("disabled",true);
-		$cancelButton.prop("disabled",true);
-		$vectorModalPopButton.prop("disabled",true);
-		e.preventDefault();
-		var formData = new FormData($form[0]);
-		$.ajax({
-			url: CCH.baseUrl + "/data/layer/",
-			type: 'POST',
-			data: formData,
-			contentType: false,
-			processData: false
-		})
-		.done(function(data, textStatus, jqXHR){
-			$result.empty();
-			
-			var status = jqXHR.status;
-			var layerUrl = jqXHR.getResponseHeader('Location');
-			var layerId = getLayerIdFromUrl(layerUrl);
-			if(201 === status){
-				$newVectorLayerId = layerId;
-				$result.append("Successfully published layer " + layerId + " . Click ");
-				$result.append('<a href="' + layerUrl + '" target="_blank">here</a> to see the layer');
-				
-				if($editingEnabled){
-					$vectorModalPopButton.prop("disabled",false);
-				}
-			} else {
-				$result.append("Received unexpected response: '" + data + "'. Layer might not have been created correctly.");
-				$newVectorLayerId = null;
-			}
-			$closeButton.prop("disabled",false);
-			$cancelButton.prop("disabled",false);
-		})
-		.fail(function(jqXHR, textStatus, errorThrown){
-			$result.empty();
-			$result.append("Error");
-			$closeButton.prop("disabled",false);
-			$cancelButton.prop("disabled",false);
-			$newVectorLayerId = null;
-		});
-	});
-	
-	$rasterModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
-		var $result = $('#raster-modal-result');
-		var $form = $('#raster-form');
-		var $closeButton = $('#raster-modal-close-button');
-		var $cancelButton = $('#raster-modal-cancel-button');
-		
-		$newRasterLayerId = null;
-		$result.empty();
-		$result.append('Working...');
-		$closeButton.prop("disabled",true);
-		$cancelButton.prop("disabled",true);
-		$rasterModalPopButton.prop("disabled",true);
-		e.preventDefault();
-		var formData = new FormData($form[0]);
-		$.ajax({
-			url: CCH.baseUrl + "/data/layer/raster",
-			type: 'POST',
-			data: formData,
-			contentType: false,
-			processData: false
-		})
-		.done(function(data, textStatus, jqXHR){
-			$result.empty();
-			
-			var status = jqXHR.status;
-			var layerUrl = jqXHR.getResponseHeader('Location');
-			var layerId = getLayerIdFromUrl(layerUrl);
-			if(201 === status){
-				$newRasterLayerId = layerId;
-				$result.append("Successfully published layer " + layerId + " . Click ");
-				$result.append('<a href="' + layerUrl + '" target="_blank">here</a> to see the layer');
-				
-				if($editingEnabled)
-				{
-					$rasterModalPopButton.prop("disabled",false);
-				}
-			} else {
-				$result.append("Received unexpected response: '" + data + "'. Layer might not have been created correctly.");
-				$newRasterLayerId = null;
-			}
-			
-			$closeButton.prop("disabled",false);
-			$cancelButton.prop("disabled",false);
-		})
-		.fail(function(jqXHR, textStatus, errorThrown){
-			$result.empty();
-			$result.append("Error");
-			$newRasterLayerId = null;
-			$closeButton.prop("disabled",false);
-			$cancelButton.prop("disabled",false);
-		});
-	});	
-	
-	$aliasModalPopButton.on(CCH.CONFIG.strings.click, function(){
-		
-	});
-	
-	$vectorModalPopButton.on(CCH.CONFIG.strings.click, function(){
-		$popFromLayerInput.val($newVectorLayerId);
-		me.loadLayerInfo($popFromLayerInput.val());
-		me.unlockItemTypeFeatures();
-	});
-	
-	$rasterModalPopButton.on(CCH.CONFIG.strings.click, function(){
-		$popFromLayerInput.val($newRasterLayerId);
-		me.loadLayerInfo($popFromLayerInput.val());
-		me.unlockItemTypeFeatures();
+		createLayer(new FormData($('#vector-form-metadata')[0]), new FormData($('#vector-form-layer')[0]), currentUpload);
 	});
 
+	$rasterModalSubmitButton.on(CCH.CONFIG.strings.click, function(e){
+		var currentUpload = {};
+		newLayerIsRaster = true;
+		currentUpload.$result = $('#raster-modal-result');
+		currentUpload.$closeButton = $('#raster-modal-close-button');
+		currentUpload.$cancelButton = $('#raster-modal-cancel-button');
+		currentUpload.$createButton = $('#raster-modal-create-button');
+		currentUpload.$updateButton = $('#raster-modal-update-button');
+
+		//Ensure SRS Code is provided
+		if(!$rasterModalExtractSrsBox.prop("checked") && ($rasterModalSrsTextBox.val() == null || $rasterModalSrsTextBox.val() == "")) {
+			layerCreateErrorCallback(null, "SRS Code must be provided if not being extracted from the metadata.", null, currentUpload);
+		} else {
+			createLayer(new FormData($('#raster-form-metadata')[0]), new FormData($('#raster-form-layer')[0]), currentUpload);
+		}
+	});
+	
+	$vectorModalCreateItemButton.on(CCH.CONFIG.strings.click, function(){
+		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
+		me.clearForm();
+		me.enableNewItemForm();
+		applyLayerDataToForm(true,true,true,true);
+	});
+
+	$rasterModalCreateItemButton.on(CCH.CONFIG.strings.click, function(){
+		history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
+		me.clearForm();
+		me.enableNewItemForm();
+		applyLayerDataToForm(true,true,true,true);
+	});
+
+	$vectorModalUpdateItemButton.on(CCH.CONFIG.strings.click, function(){
+		applyLayerDataToForm(
+			$($vectorModalUpdateServicesBox).prop("checked"), 
+			$($vectorModalUpdateResourcesBox).prop("checked"),
+			$($vectorModalUpdateKeywordsBox).prop("checked"),
+			$($vectorModalUpdateBboxBox).prop("checked")
+		);
+	});
+
+	$rasterModalUpdateItemButton.on(CCH.CONFIG.strings.click, function(){
+		applyLayerDataToForm(
+			$($rasterModalUpdateServicesBox).prop("checked"), 
+			$($rasterModalUpdateResourcesBox).prop("checked"),
+			$($rasterModalUpdateKeywordsBox).prop("checked"),
+			$($rasterModalUpdateBboxBox).prop("checked")
+		);
+	});
+
+	var clearLayerUploadResults = function() {
+		$('#raster-modal-result').empty();
+		$('#vector-modal-result').empty();
+	}
+
+	var layerUploadButtonsEnabled = function(val) {
+		$rasterModalSubmitButton.prop("disabled", !val);
+		$vectorModalSubmitButton.prop("disabled", !val);
+	}
+
+	var layerItemButtonsEnabled = function(val) {
+		$('#vector-modal-create-button').prop("disabled", !val);
+		$('#vector-modal-update-button').prop("disabled", !val);
+		$('#raster-modal-create-button').prop("disabled", !val);
+		$('#raster-modal-update-button').prop("disabled", !val);
+	}
+
+	var handleUnexpectedResponse = function(currentUpload) {
+		currentUpload.$result.append("Received unexpected response: '" + data + "'. Layer might not have been created correctly.");
+		newLayerId = null;
+		newLayerUrl = null;
+		newLayerMetadata = null;
+		currentUpload.$closeButton.prop("disabled",false);
+		currentUpload.$cancelButton.prop("disabled",false);
+		layerUploadButtonsEnabled(true);
+	};
+
+	var createLayer = function(metadataFormData, layerFormData, currentUpload) {
+		clearLayerUploadResults();
+		layerItemButtonsEnabled(false);
+		layerUploadButtonsEnabled(false);
+		postMetadata(metadataFormData, layerFormData, currentUpload);
+	}
+
+	var applyAdditionalMetadataToRasterForm = function(layerFormData) {
+		if(newLayerMetadata != null) {
+			if($rasterModalExtractSrsBox.is(':checked')) {
+				if(newLayerMetadata.EPSGCode != null) {
+					layerFormData.set("epsgCode", newLayerMetadata.EPSGCode);
+				} else {
+					layerFormData.set("epsgCode", "");
+				}		
+			}
+			
+			if(newLayerMetadata.Box != null && newLayerMetadata.Box.length == 4) {
+				layerFormData.set("bboxw", newLayerMetadata.Box[0]);
+				layerFormData.set("bboxs", newLayerMetadata.Box[1]);
+				layerFormData.set("bboxe", newLayerMetadata.Box[2]);
+				layerFormData.set("bboxn", newLayerMetadata.Box[3]);
+			}
+		}
+
+		return layerFormData;
+	}
+
+	var postLayerSuccessCallback = function(data, textStatus, jqXHR, currentUpload) {
+		currentUpload.$result.empty();
+
+		if(201 === jqXHR.status){
+			newLayerUrl = jqXHR.getResponseHeader('Location');
+			newLayerId = getLayerIdFromUrl(newLayerUrl);
+			currentUpload.$result.append("Successfully published layer " + newLayerId + ". Click ");
+			currentUpload.$result.append('<a href="' + newLayerUrl + '" target="_blank">here</a> to see the layer');
+			currentUpload.$closeButton.prop("disabled",false);
+			currentUpload.$cancelButton.prop("disabled",false);
+			currentUpload.$createButton.prop("disabled",false);
+			layerUploadButtonsEnabled(true);
+
+			if($editingEnabled) {
+				currentUpload.$updateButton.prop("disabled",false);
+			}
+		} else {
+			handleUnexpectedResponse(currentUpload);
+		}
+	};
+
+	var postMetadataSuccessCallback = function(layerFormData, data, textStatus, jqXHR, currentUpload) {
+		if(200 === jqXHR.status) {
+			newLayerMetadata = data;
+			
+			//Apply metadata to raster form data, if uploading raster
+			if(newLayerIsRaster) {
+				layerFormData = applyAdditionalMetadataToRasterForm(layerFormData);
+
+				//Validate Additional Raster Metadata before posting the Layer
+				if(layerFormData.get("bboxn") == null) {
+					layerCreateErrorCallback(null, "Failed to parse BBox from provided Metadata XML.", null, currentUpload);
+				} else if($rasterModalExtractSrsBox.is(':checked') && (layerFormData.get("epsgCode") == null || layerFormData.get("epsgCode") == "")) {
+					layerCreateErrorCallback(null, "Failed to parse EPSG Code from provided Metadata XML.", null, currentUpload);
+				} else if(!$rasterModalExtractSrsBox.is(':checked') && (layerFormData.get("epsgCode") == null || layerFormData.get("epsgCode") == "")) {
+					layerCreateErrorCallback(null, "You must provide an EPSG Code if not extracting from the metadata.", null, currentUpload);
+				} else {
+					postLayer(layerFormData, currentUpload);
+				}
+			} else {
+				postLayer(layerFormData, currentUpload);
+			}
+		} else {
+			handleUnexpectedResponse(currentUpload);
+		}					
+	};
+
+	var layerCreateErrorCallback = function(jqXHR, textStatus, errorThrown, currentUpload) {
+		currentUpload.$result.empty();
+		currentUpload.$result.append("An error occurred while creating the layer: " + textStatus);
+		currentUpload.$closeButton.prop("disabled",false);
+		currentUpload.$cancelButton.prop("disabled",false);
+		layerItemButtonsEnabled(false);
+		layerUploadButtonsEnabled(true);
+		newLayerId = null;
+		newLayerUrl = null;
+		newLayerMetadata = null;
+	};
+
+	var postLayer = function(layerFormData, currentUpload) {
+		var postUrl = CCH.baseUrl + "/data/layer" + (newLayerIsRaster ? "/raster" : "");
+
+		$.ajax({
+			url: postUrl,
+			type: 'POST',
+			data: layerFormData,
+			contentType: false,
+			processData: false
+		})
+		.done(function(data, textStatus, jqXHR) {
+			postLayerSuccessCallback(data, textStatus, jqXHR, currentUpload);
+		})
+		.fail(function(jqXHR, textStatus, errorThrown){
+			layerCreateErrorCallback(jqXHR, textStatus, errorThrown, currentUpload);
+		});
+	}
+
+	var postMetadata = function(metadataFormData, layerFormData, currentUpload) {
+		$.ajax({
+			url: CCH.baseUrl + "/data/metadata",
+			type: 'POST',
+			data: metadataFormData,
+			contentType: false,
+			processData: false
+		})
+		.done(function(data, textStatus, jqXHR) {
+			postMetadataSuccessCallback(layerFormData, data, textStatus, jqXHR, currentUpload);
+		})
+		.fail(function(jqXHR, textStatus, errorThrown){
+			layerCreateErrorCallback(jqXHR, textStatus, errorThrown, currentUpload);
+		});
+	};
+
+	var applyLayerDataToForm = function(applyServices, applyResources, applyKeywords, applyBbox) {
+		// Apply Services
+		if(applyServices && newLayerId !== null) {
+			$popFromLayerInput.val(newLayerId);
+			me.loadLayerInfo($popFromLayerInput.val());
+		}
+
+		if(newLayerMetadata != null) {
+			// Apply Resources
+			if(applyResources) {
+				$('.resource-list-container-sortable').empty();
+				$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
+				
+				//Publications
+				if(newLayerMetadata.hasOwnProperty("Publications")) {
+					newLayerMetadata.Publications.forEach(function (publication) {
+						me.createPublicationRow(publication.link, publication.title, "publications");
+					});
+				}
+
+				//Data
+				if(newLayerMetadata.hasOwnProperty("Data")) {
+					newLayerMetadata.Data.forEach(function (data) {
+						me.createPublicationRow(data.link, data.title, "data");
+					});
+				}
+
+				//Resources
+				if(newLayerMetadata.hasOwnProperty("Resources")) {
+					newLayerMetadata.Resources.forEach(function (resource) {
+						me.createPublicationRow(resource.link, resource.title, "resources");
+					});
+				}
+			}
+
+			// Apply Keywords
+			if(applyKeywords && newLayerMetadata.hasOwnProperty("Keywords")) {
+				newLayerMetadata.Keywords.forEach(function (keyword) {
+					me.addKeywordGroup(keyword);
+				});
+			}
+
+			// Apply Bbox
+			if(applyBbox && newLayerMetadata.hasOwnProperty("Box")) {
+				//Bbox
+				var newBbox = newLayerMetadata.Box;
+				$bboxWest.val(newBbox[0]);
+				$bboxSouth.val(newBbox[1]);
+				$bboxEast.val(newBbox[2]);
+				$bboxNorth.val(newBbox[3]);
+			}
+		}
+	};
+
 	me.clearForm();
+
+	$rasterModalExtractSrsBox.change(function() {
+		if($(this).is(':checked')) {
+			$rasterModalSrsText.attr(CCH.CONFIG.strings.hidden, CCH.CONFIG.strings.hidden);
+		} else {
+			$rasterModalSrsText.removeAttr(CCH.CONFIG.strings.hidden);
+		}
+	});
 
 	// If the item is a storm, give the user a chance to mark it active or inactive
 	$typeSb.on('change', function (evt) {
@@ -2413,16 +2276,7 @@ CCH.Objects.Publish.UI = function () {
 		} else {
 			$isActiveStormRow.addClass('hidden');
 		}
-                $itemAttributePanel.find('button').removeAttr(CCH.CONFIG.strings.disabled);
-	});
-        
-        //Checks to see if Attributes has a val and unlocks titles, Resources, and metdata for create new items
-	$attributeSelect.on('input', function () {
-	    if ($attributeSelect.val().length > 0) {
-		me.unlockTitlesResourcesMetadata();
-	    } else {
-		me.lockTitlesResourcesMetadata();
-	    }
+		$itemAttributePanel.find('button').removeAttr(CCH.CONFIG.strings.disabled);
 	});
 	
 	//When the alias modal is closed reload the item alias list
@@ -2459,7 +2313,7 @@ CCH.Objects.Publish.UI = function () {
 		if($(this).is(':checked')) {
 			$newStormModalEditTrackDiv.removeAttr(CCH.CONFIG.strings.hidden);
 		} else {
-			$newStormModalEditTrackDiv.attr(CCH.CONFIG.strings.hidden, CCH.CONFIG.strings.hidden)
+			$newStormModalEditTrackDiv.attr(CCH.CONFIG.strings.hidden, CCH.CONFIG.strings.hidden);
 		}
 	});
 
@@ -2625,10 +2479,7 @@ CCH.Objects.Publish.UI = function () {
 		}
 	}
 
-	me.createNewStorm = function(newAlias, copyType, copyText, trackFormData, trackBbox) {		
-		$newStormLayerId = null;
-		$stormTrackItemId = null;
-
+	me.createNewStorm = function(newAlias, copyType, copyText, trackFormData, trackBbox) {
 		//Disable buttons
 		me.clearForm();
 		$newStormCloseButton.prop("disabled",true);
@@ -2640,7 +2491,7 @@ CCH.Objects.Publish.UI = function () {
 	}
 
 	me.postStormLayer = function($result, newAlias, copyType, copyText, trackFormData, trackBbox) {
-		var formData = new FormData($newStormForm[0]);
+		var formData = new FormData($newStormLayer[0]);
 
 		$result.empty();
 		$result.append('Working... (Step 2/5)<br/><br/>');
@@ -2657,9 +2508,7 @@ CCH.Objects.Publish.UI = function () {
 			var layerUrl = jqXHR.getResponseHeader('Location');
 			var layerId = getLayerIdFromUrl(layerUrl);
 
-			if (201 === status){				
-				$newStormLayerId = layerId;
-
+			if (201 === status){
 				if(trackFormData != null) {
 					//Create Track Children
 					me.buildTrackData($result, newAlias, copyType, copyText, trackFormData, trackBbox, layerId);
@@ -2669,13 +2518,11 @@ CCH.Objects.Publish.UI = function () {
 			} else {
 				$result.append("Received unexpected response during layer creation: '" + data + 
 					"'. Layer might not have been created correctly. Storm creation aborted.");
-				$newStormLayerId = null;
 				me.enableNewStormButtons();
 			}
 		})
 		.fail(function(jqXHR, textStatus, errorThrown){
 			$result.append("Error creating layer using selected file.");
-			$newStormLayerId = null;
 			me.enableNewStormButtons();
 		});
 	}
@@ -2704,7 +2551,6 @@ CCH.Objects.Publish.UI = function () {
 			},
 			error: function(data) {
 				$result.append("Failed to post an NHC Track Child Item. Storm creation aborted. Error code: " + data.status);
-				$newStormLayerId = null;
 				me.enableNewStormButtons();
 			}
 		});
@@ -2729,7 +2575,6 @@ CCH.Objects.Publish.UI = function () {
 			},
 			error: function(data) {
 				$result.append("Failed to post NHC Track Aggregate Item. Storm creation aborted. Error code: " + data.status);
-				$newStormLayerId = null;
 				me.enableNewStormButtons();
 			}
 		});
@@ -2739,18 +2584,29 @@ CCH.Objects.Publish.UI = function () {
 		$result.empty();
 		$result.append('Working... (Step 5/5)<br/><br/>');
 		$.ajax({
+			url: CCH.baseUrl + "/data/metadata",
+			type: 'POST',
+			data: new FormData($newStormMetadata[0]),
+			contentType: false,
+			processData: false
+		})
+		.success(function(data, textStatus, jqXHR) {
+			$.ajax({
 				url: CCH.CONFIG.contextPath + '/data/template/storm/',
+				traditional: true,
 				data: {
 					layerId: layerId,
 					activeStorm: $newStormModalActiveBox.is(':checked'),
 					alias: newAlias,
 					copyType: copyType,
 					copyVal: copyText,
-					trackId: trackId
+					trackId: trackId,
+					title: data.title,
+					srcUsed: data.srcUsed
 				},
 				method: "GET"
 			})
-			.done(function(data) {
+			.success(function(data) {
 				var id = data.id;
 
 				if(id != null) {
@@ -2766,16 +2622,15 @@ CCH.Objects.Publish.UI = function () {
 					}
 				} else {
 					$result.append('An unknown error occurred while saving the storm. It may not have been created successfully.');
-					$newStormLayerId = null;
 					me.enableNewStormButtons();
 				}
 			})
-			.fail(function(data) {
-				$result.append('Failed to create storm item and associated child items. Storm creation aborted.');
-				$newStormLayerId = null;
-				me.enableNewStormButtons();
-				console.error(data);
-			});
+		})
+		.fail(function(data) {
+			$result.append('Failed to create storm item and associated child items. Storm creation aborted.');
+			me.enableNewStormButtons();
+			console.error(data);
+		});
 	};
 
 	me.buildTrackData = function($result, newAlias, copyType, copyText, trackFormData, trackBbox, layerId) {
@@ -2801,7 +2656,6 @@ CCH.Objects.Publish.UI = function () {
 				error: function(data) {
 					$result.empty();
 					$result.append("Failed to retireve storm layer BBOX");
-					$newStormLayerId = null;
 					me.enableNewStormButtons();
 				}
 			});
@@ -2913,13 +2767,6 @@ CCH.Objects.Publish.UI = function () {
 		});
 
 		return nhcJson;
-	}
-
-	me.populateStormTemplateForm = function() {
-		$popFromLayerInput.val($newStormLayerId);
-		me.loadLayerInfo($popFromLayerInput.val());
-		me.unlockItemTypeFeatures();
-		$typeSb.val('storms');
 	}
 
 	me.enableNewStormButtons = function() {

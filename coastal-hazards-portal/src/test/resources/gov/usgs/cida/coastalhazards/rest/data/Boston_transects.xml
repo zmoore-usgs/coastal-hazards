@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xml:lang="en">
+	<idinfo>
+		<citation>
+			<citeinfo>
+				<origin>U.S. Geological Survey</origin>
+				<pubdate>2013</pubdate>
+				<title>Boston_transects_rates_LTw.shp - Digital Shoreline Analysis System version 4.3 transects and long-term linear regression shoreline change statistics for all data available in the Boston coastal region Carson Beach in South Boston to Weymouth River, including the Boston Harbor Islands</title>
+				<geoform Sync="TRUE">vector digital data</geoform>
+				<serinfo>
+					<sername>Open-File Report</sername>
+					<issue>2012-1183</issue>
+				</serinfo>
+				<pubinfo>
+					<pubplace>Woods Hole Coastal and Marine Science Center, Woods Hole, MA</pubplace>
+					<publish>U.S. Geological Survey, Coastal and Marine Geology Program</publish>
+				</pubinfo>
+				<onlink>http://pubs.usgs.gov/of/2012/1183/data/Boston/Boston_transects_rates_LTw.zip</onlink>
+				<lworkcit>
+					<citeinfo>
+						<origin>Theresa L. Smith</origin>
+						<origin>Emily A. Himmelstoss</origin>
+						<origin>E. Robert Thieler</origin>
+						<pubdate>2013</pubdate>
+						<title>Massachusetts Shoreline Change Project: A GIS Compilation of Vector Shorelines and Associated Shoreline Change Data for the 2013 update</title>
+						<serinfo>
+							<sername>Open-File Report</sername>
+							<issue>2012-1183</issue>
+						</serinfo>
+						<pubinfo>
+							<pubplace>Woods Hole Coastal and Marine Science Center, Woods Hole, MA</pubplace>
+							<publish>U.S. Geological Survey, Coastal and Marine Geology Program</publish>
+						</pubinfo>
+						<onlink>http://pubs.usgs.gov/of/2012/1183/</onlink>
+					</citeinfo>
+				</lworkcit>
+				<ftname Sync="TRUE">Boston_transects_rates_LTw</ftname></citeinfo>
+		</citation>
+		<descript>
+			<abstract>Due to continued coastal population growth and increased threats of erosion, current data on trends and rates of shoreline movement are required to inform shoreline and floodplain management. The Massachusetts Office of Coastal Zone Management launched the Shoreline Change Project in 1989 to identify erosion-prone areas of the coast. In 2001, a 1994 shoreline was added to calculate both long- and short-term shoreline change rates at 40-meter intervals along ocean-facing sections of the Massachusetts coast. 
+
+The Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) in cooperation with the Massachusetts Office of Coastal Zone Management, has compiled reliable historical shoreline data along open-facing sections of the Massachusetts coast under the Massachusetts Shoreline Change Mapping and Analysis Project 2013 Update. Two oceanfront shorelines for Massachusetts (approximately 1,800 km) were (1) delineated using 2008/09 color aerial orthoimagery, and (2) extracted from topographic LIDAR datasets (2007) obtained from NOAA's Ocean Service, Coastal Services Center. The new shorelines were integrated with existing Massachusetts Office of Coastal Zone Management and USGS historical shoreline data in order to compute long- and short-term rates using the latest version of the Digital Shoreline Analysis System (DSAS).</abstract>
+			<purpose>This dataset consists of long-term (100+ years) linear regression shoreline change rates for the Boston region of Massachusetts.  Rates of long-term shoreline change were computed within a GIS using the Digital Shoreline Analysis System (DSAS) version 4.3, an ArcGIS extension developed by the U.S. Geological Survey. The baseline is used as a reference line for the transects cast by the DSAS software. The transects intersect each shoreline at the measurement points, which are then used to calculate a linear regression rate for the Massachusetts Office of Coastal Zone Management Shoreline Change Project.  Long-term linear regression statistics were calculated with all of the historical shorelines compiled for the Massachusetts Office of Coastal Zone Management Shoreline Change Project.</purpose>
+			<langdata Sync="TRUE">en</langdata></descript>
+		<timeperd>
+			<timeinfo>
+				<sngdate>
+					<caldate>2013</caldate>
+				</sngdate>
+			</timeinfo>
+			<current>publication date</current>
+		</timeperd>
+		<status>
+			<progress>Complete</progress>
+			<update>None planned</update>
+		</status>
+		<spdom>
+			<bounding>
+				<westbc Sync="TRUE">-71.052532</westbc>
+				<eastbc Sync="TRUE">-70.874396</eastbc>
+				<northbc Sync="TRUE">42.343552</northbc>
+				<southbc Sync="TRUE">42.245734</southbc>
+			</bounding>
+			<lboundng><leftbc Sync="TRUE">-71.052532</leftbc><rightbc Sync="TRUE">-70.874396</rightbc><bottombc Sync="TRUE">42.245734</bottombc><topbc Sync="TRUE">42.343552</topbc></lboundng></spdom>
+		<keywords>
+			<theme>
+				<themekt>General</themekt>
+				<themekey>Esri polyline shapefile</themekey>
+				<themekey>Shoreline</themekey>
+				<themekey>Historic Shoreline</themekey>
+				<themekey>long-term</themekey>
+				<themekey>Shoreline Change Rate</themekey>
+				<themekey>Erosion</themekey>
+				<themekey>Accretion</themekey>
+				<themekey>Shoreline Change Envelope</themekey>
+				<themekey>SCE</themekey>
+				<themekey>Net Shoreline Movement</themekey>
+				<themekey>NSM</themekey>
+				<themekey>Linear Regression Rate</themekey>
+				<themekey>LRR</themekey>
+				<themekey>Baseline</themekey>
+				<themekey>Transect</themekey>
+				<themekey>Digital Shoreline Analysis System</themekey>
+				<themekey>DSAS</themekey>
+				<themekey>U.S. Geological Survey</themekey>
+				<themekey>USGS</themekey>
+				<themekey>Coastal and Marine Geology Program</themekey>
+				<themekey>CMGP</themekey>
+				<themekey>Woods Hole Coastal and Marine Science Center</themekey>
+				<themekey>WHCMSC</themekey>
+				<themekey>Massachusetts Office of Coastal Zone Management</themekey>
+			</theme>
+			<theme>
+				<themekt>ISO 19115 Topic Category</themekt>
+				<themekey>oceans</themekey>
+				<themekey>oceans and estuaries</themekey>
+				<themekey>oceans and coastal</themekey>
+				<themekey>geoscientificInformation</themekey></theme>
+			<place>
+				<placekt>General</placekt>
+				<placekey>Atlantic Coast</placekey>
+				<placekey>United States</placekey>
+				<placekey>New England</placekey>
+				<placekey>Massachusetts</placekey>
+				<placekey>Boston</placekey>
+			</place>
+		</keywords>
+		<accconst>None</accconst>
+		<useconst>These data were automatically generated using the DSAS versions 4.2 (transects) and 4.3 (rates) software applications and should only be used for purposes explicitly stated by the originating organization.  Please recognize the U.S. Geological Survey (USGS) and the Massachusetts Office of Coastal Zone Management as the originators of this dataset.</useconst>
+		<ptcontac>
+			<cntinfo>
+				<cntorgp>
+					<cntorg>U.S. Geological Survey</cntorg>
+					<cntper>Theresa Smith</cntper>
+				</cntorgp>
+				<cntpos>Contract Geologist</cntpos>
+				<cntaddr>
+					<addrtype>mailing and physical address</addrtype>
+					<address>384 Woods Hole Road</address>
+					<city>Woods Hole</city>
+					<state>MA</state>
+					<postal>02543-1598</postal>
+					<country>USA</country>
+				</cntaddr>
+				<cntvoice>508-548-8700</cntvoice>
+				<cntfax>508-457-2310</cntfax>
+				<cntemail>theresasmith@usgs.gov</cntemail>
+			</cntinfo>
+		</ptcontac>
+		<native Sync="TRUE">Microsoft Windows Vista Version 6.1 (Build 7601) Service Pack 1; ESRI ArcCatalog 9.3.1.1850</native>
+		<crossref>
+			<citeinfo>
+				<origin>E.R. Thieler</origin>
+				<origin>T.L. Smith</origin>
+				<origin>Julia Knisel</origin>
+				<origin>D.W. Sampson</origin>
+				<pubdate>2013</pubdate>
+				<title>Massachusetts Shoreline Change Mapping and Analysis Project, 2013 Update</title>
+				<serinfo>
+					<sername>Open-File Report</sername>
+					<issue>2012-1189</issue>
+				</serinfo>
+				<pubinfo>
+					<pubplace>Woods Hole Coastal and Marine Science Center, Woods Hole, MA</pubplace>
+					<publish>U.S. Geological Survey, Coastal and Marine Geology Program</publish>
+				</pubinfo>
+				<onlink>http://pubs.usgs.gov/of/2012/1189/</onlink>
+			</citeinfo>
+		</crossref>
+		<crossref>
+			<citeinfo>
+				<origin>E.R. Thieler</origin>
+				<origin>E.A. Himmelstoss</origin>
+				<origin>J.L. Zichichi</origin>
+				<origin>A. Ergul</origin>
+				<pubdate>2009</pubdate>
+				<title>Digital Shoreline Analysis System (DSAS) version 4.0: an ArcGIS extension for calculating shoreline change</title>
+				<serinfo>
+					<sername>Open-File Report</sername>
+					<issue>2008-1278</issue>
+				</serinfo>
+				<pubinfo>
+					<pubplace>Woods Hole Coastal and Marine Science Center, Woods Hole, MA</pubplace>
+					<publish>U.S. Geological Survey, Coastal and Marine Geology Program</publish>
+				</pubinfo>
+				<othercit>Current version is 4.3</othercit>
+				<onlink>http://woodshole.er.usgs.gov/project-pages/dsas/version4/index.html</onlink>
+				<onlink>http://woodshole.er.usgs.gov/project-pages/dsas/</onlink>
+				<onlink>http://pubs.usgs.gov/of/2008/1278/</onlink>
+			</citeinfo>
+		</crossref>
+		<crossref>
+			<citeinfo>
+				<origin>E. Robert Thieler</origin>
+				<origin>James F. O'Connell</origin>
+				<origin>Courtney A. Schupp</origin>
+				<pubdate>20010904</pubdate>
+				<title>The Massachusetts Shoreline Change Project: 1800s to 1994 Technical Report</title>
+				<serinfo>
+					<sername>Administrative Report</sername>
+				</serinfo>
+				<pubinfo>
+					<pubplace>Woods Hole Coastal and Marine Science Center, Woods Hole, MA</pubplace>
+					<publish>U.S. Geological Survey, Coastal and Marine Geology Program</publish>
+				</pubinfo>
+				<onlink>http://www.mass.gov/czm/hazards/pdf/sc_technical_report.pdf</onlink>
+				<onlink>http://www.mass.gov/czm/hazards/shoreline_change/shorelinechangeproject.htm</onlink>
+			</citeinfo>
+		</crossref>
+		<natvform Sync="TRUE">Shapefile</natvform></idinfo>
+	<dataqual>
+		<attracc>
+			<attraccr>The attributes of this dataset are based on the field requirements of the Digital Shoreline Analysis System and were automatically generated by the software during the generation of the transect layer or during the calculation of shoreline change rates performed by the software.</attraccr>
+		</attracc>
+		<logic>These transect data were generated using DSAS v.4.2 and the rates were calculated using DSAS v.4.3, an automated software program which does not perform checks for fidelity of the input features. The transects were visually inspected and sometimes manually adjusted within a standard ArcMap edit session to adjust the position at which an individual transect intersected the shorelines.</logic>
+		<complete>This dataset contains the transects automatically generated by the DSAS software application that were used to calculate long-term shoreline change rates for the region. Additional transects may have been generated but did not intersect the minimum requirement of three shorelines to calculate linear regression long-term rates. These data are part of a state-wide assessment of shoreline change that includes over 26,500 individual transect locations that were used to compute both short- and long-term rates of change, based on almost 9200 linear kilometers of historical shoreline position data. It is very likely that some gross errors or blunders were introduced during compilation and analysis of this large amount of information. Such errors have been described in the context of shoreline change mapping as coarse errors (Fenster and others, 2001) and can generally be considered to affect only a very small percentage of the overall dataset.
+
+Fenster, M.S., Dolan, R., and Morton, R.A., 2001, Coastal storms and shoreline change: signal or noise?: Journal of Coastal Research, v. 17, no. 3, p. 714-720.
+</complete>
+		<lineage>
+			<procstep>
+				<procdesc>Transect Features Generated using DSAS v4.2 in ArcMap v9.3. Parameters Used: baseline layer=Boston_baseline, baseline group field=NULL, transect spacing=50 meters, transect length=200 meters, cast direction=AUTO-DETECT, baseline location=off shore, cast method=smoothed baseline, smoothing distance=300 meters, flip baselines=not selected. For additional details on these parameters, please see the DSAS help file distributed with the DSAS software, or visit the USGS website at: http://pubs.usgs.gov/of/2008/1278/.
+
+This process step and all subsequent process steps were performed by Theresa Smith.</procdesc>
+				<procdate>20110913</procdate>
+				<proccont>
+					<cntinfo>
+						<cntperp>
+							<cntper>Theresa Smith</cntper>
+							<cntorg>U.S. Geological Survey</cntorg>
+						</cntperp>
+						<cntpos>Contract Geologist</cntpos>
+						<cntaddr>
+							<addrtype>mailing and physical address</addrtype>
+							<address>384 Woods Hole Road</address>
+							<city>Woods Hole</city>
+							<state>MA</state>
+							<postal>02543-1598</postal>
+							<country>USA</country>
+						</cntaddr>
+						<cntvoice>508-548-8700</cntvoice>
+						<cntfax>508-457-2310</cntfax>
+						<cntemail>theresasmith@usgs.gov</cntemail>
+					</cntinfo>
+				</proccont>
+			</procstep>
+			<procstep>
+				<procdesc>After transects were generated, it was necessary to edit sections of the baseline using the dynamic topology in DSAS that allows edits to the baseline in a standard ArcMap (v9.3) editing session to update the position of transects if the transect field is enabled in as the target layer in the DSAS (v4.2) toolbar.</procdesc>
+				<procdate>20110915</procdate>
+			</procstep>
+			<procstep>
+				<procdesc>After transects were generated, the entire geodatabase was upgraded to v.10 by right-clicking on the geodatabase and choosing “Properties” from the pop-up window in ArcCatalog v.10.  The “Upgrade Geodatabase” button was clicked at the bottom of the General tab in the Database Properties window.</procdesc>
+				<procdate>20120206</procdate>
+			</procstep>
+			<procstep>
+				<procdesc>Rate Calculations Performed using DSAS v.4.3 for ArcMap v.10. Parameters Used: shoreline layer=Boston_Shorelines, shoreline date field=Date_, shoreline uncertainty field name=Uncy, the default accuracy=10.8 meters, shoreline intersection parameters=nearest, stats calculations=[Shoreline Change Envelope (SCE), Net Shoreline Movement (NSM), Linear Regression Rate (LRR)], shoreline threshold=3, confidence interval=90%, Output rate table name=Boston_transects_rates_20120207_174830.dbf.</procdesc>
+				<procdate>20120207</procdate>
+			</procstep>
+			<procstep>
+				<procdesc>The shoreline rates output table (Boston_transects_rates_20120207_174830.dbf) was joined to the transect feature class in ArcMap v.10 by right-clicking on the transect layer &gt; joins and relates &gt; join &gt; join attributes from a table. Parameters: join field - ObjectID; table to join - Boston_transects_rates_20120207_174830; field in table: TransectID; join options - keep only matching records.</procdesc>
+				<procdate>20120207</procdate>
+			</procstep>
+			<procstep>
+				<procdesc>The joined data were exported to a shapefile in ArcMap v.10 by right-clicking the transect file, choosing data &gt; export data. The new shapefile was named Boston_transects_rates_LTw.shp and permanently adds the joined rate fields to the transect attribute table.</procdesc>
+				<procdate>20120207</procdate>
+			</procstep>
+			<procstep>
+				<procdesc>Due to the lack of continuous long-term shoreline position data, some transects intersected shorelines from 1970-2009, but did not intersect shorelines prior to 1970, which resulted in long-term linear regression rates that were identical to short-term linear regression rates. A filter was applied to the transect/rates data in ArcMap v10: 1) Select by Attributes &gt; create new selection: SELECT FROM Boston_shorelines.shp WHERE [Year] &gt;=1970; and 2) Select by Location, Target layer: Boston_transects_rates_LTw.shp, Source layer: Boston_shorelines.shp, parameters: use selected features spatial selection method: Target layer(s) features intersect the source layer feature). Transects that did not intersect long-term shoreline data (1844-1960) were deleted in a standard editing session (ArcMAP v10).</procdesc>
+				<procdate>20121112</procdate>
+			</procstep>
+			<procstep>
+				<procdesc>The exported transect shapefile was projected in Esri's ArcToolbox (v.10) &gt; Data Management Tools &gt; Projections and Transformations &gt; Feature &gt; Project. Parameters: input projection - NAD_1983_StatePlane_Massachusetts_Mainland_FIPS_2001; output projection - geographic coordinates (NAD83); transformation - none.</procdesc>
+				<procdate>20121116</procdate>
+			</procstep>
+		</lineage>
+	</dataqual>
+	<spdoinfo>
+		<direct Sync="TRUE">Vector</direct>
+		<ptvctinf>
+			<sdtsterm Name="Boston_transects_rates_LTw">
+				<sdtstype Sync="TRUE">String</sdtstype>
+				<ptvctcnt Sync="TRUE">1295</ptvctcnt>
+			</sdtsterm>
+			<esriterm Name="Boston_transects_rates_LTw"><efeatyp Sync="TRUE">Simple</efeatyp><efeageom Sync="TRUE">Polyline</efeageom><esritopo Sync="TRUE">FALSE</esritopo><efeacnt Sync="TRUE">1295</efeacnt><spindex Sync="TRUE">TRUE</spindex><linrefer Sync="TRUE">FALSE</linrefer></esriterm></ptvctinf>
+	</spdoinfo>
+	<spref>
+		<horizsys>
+			<geograph>
+				<latres>0.000001</latres>
+				<longres>0.000001</longres>
+				<geogunit Sync="TRUE">Decimal degrees</geogunit>
+			</geograph>
+			<geodetic>
+				<horizdn Sync="TRUE">North American Datum of 1983</horizdn>
+				<ellips Sync="TRUE">Geodetic Reference System 80</ellips>
+				<semiaxis Sync="TRUE">6378137.000000</semiaxis>
+				<denflat Sync="TRUE">298.257222</denflat>
+			</geodetic>
+			<cordsysn><geogcsn Sync="TRUE">GCS_North_American_1983</geogcsn></cordsysn></horizsys>
+	</spref>
+	<eainfo>
+		<detailed Name="Boston_transects_rates_LTw">
+			<enttyp>
+				<enttypl Sync="TRUE">Boston_transects_rates_LTw</enttypl>
+				<enttypd>Measurement transects and resulting long-term linear regression rate calculations</enttypd>
+				<enttypds>U.S. Geological Survey</enttypds>
+				<enttypt Sync="TRUE">Feature Class</enttypt><enttypc Sync="TRUE">1295</enttypc></enttyp>
+			<attr>
+				<attrlabl Sync="TRUE">FID</attrlabl>
+				<attrdef Sync="TRUE">Internal feature number.</attrdef>
+				<attrdefs Sync="TRUE">ESRI</attrdefs>
+				<attrdomv>
+					<udom Sync="TRUE">Sequential unique whole numbers that are automatically generated.</udom>
+				</attrdomv>
+				<attalias Sync="TRUE">FID</attalias><attrtype Sync="TRUE">OID</attrtype><attwidth Sync="TRUE">4</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr>
+			<attr>
+				<attrlabl Sync="TRUE">Shape</attrlabl>
+				<attrdef Sync="TRUE">Feature geometry.</attrdef>
+				<attrdefs Sync="TRUE">ESRI</attrdefs>
+				<attrdomv>
+					<udom Sync="TRUE">Coordinates defining the features.</udom>
+				</attrdomv>
+				<attalias Sync="TRUE">Shape</attalias><attrtype Sync="TRUE">Geometry</attrtype><attwidth Sync="TRUE">0</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr>
+			<attr>
+				<attrlabl Sync="TRUE">OBJECTID</attrlabl>
+				<attrdef Sync="TRUE">Internal feature number used within geodatabase.</attrdef>
+				<attrdefs Sync="TRUE">Esri</attrdefs>
+				<attrdomv>
+					<udom>Sequential unique whole numbers that are automatically generated.</udom>
+				</attrdomv>
+				<attalias Sync="TRUE">OBJECTID</attalias><attrtype Sync="TRUE">Number</attrtype><attwidth Sync="TRUE">9</attwidth></attr>
+			<attr>
+				<attrlabl Sync="TRUE">BaselineID</attrlabl>
+				<attrdef>Unique identification number of the baseline segment. If BaselineID=0 no transects will be generated. Used by DSAS to determine transect ordering alongshore if multiple baseline segments exist.</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>0</rdommin>
+						<rdommax>unlimited</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">BaselineID</attalias><attrtype Sync="TRUE">Number</attrtype><attwidth Sync="TRUE">9</attwidth></attr>
+			<attr>
+				<attrlabl Sync="TRUE">TransOrder</attrlabl>
+				<attrdef>Assigned by DSAS on the basis of transect order along the baseline or baselines. This field provides the user with a method to sort transect data from the start of the baseline segment with an ID=1 and increment sequentially to the end of the final baseline segment.</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>1</rdommin>
+						<rdommax>1298</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">TransOrder</attalias><attrtype Sync="TRUE">Number</attrtype><attwidth Sync="TRUE">9</attwidth></attr>
+			<attr>
+				<attrlabl Sync="TRUE">StartX</attrlabl>
+				<attrdef>Assigned by DSAS automatically to record the X coordinate of the beginning of the transect in meter units (MA State Plane, NAD 83).</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<udom>Values based on data set extent.</udom>
+				</attrdomv>
+				<attalias Sync="TRUE">StartX</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+			<attr>
+				<attrlabl Sync="TRUE">StartY</attrlabl>
+				<attrdef>Assigned by DSAS automatically to record the Y coordinate of the beginning of the transect in meter units (MA State Plane, NAD 83).</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<udom>Values based on data set extent.</udom>
+				</attrdomv>
+				<attalias Sync="TRUE">StartY</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+			<attr>
+				<attrlabl Sync="TRUE">EndX</attrlabl>
+				<attrdef>Assigned by DSAS automatically to record the X coordinate of the end of the transect in meter units (MA State Plane, NAD 83).</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<udom>Values based on data set extent.</udom>
+				</attrdomv>
+				<attalias Sync="TRUE">EndX</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+			<attr>
+				<attrlabl Sync="TRUE">EndY</attrlabl>
+				<attrdef>Assigned by DSAS automatically to record the Y coordinate of the end of the transect in meter units (MA State Plane, NAD 83).</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<udom>Values based on data set extent.</udom>
+				</attrdomv>
+				<attalias Sync="TRUE">EndY</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+			<attr>
+				<attrlabl Sync="TRUE">Azimuth</attrlabl>
+				<attrdef>Assigned by DSAS to record the azimuth of the transect measure in degrees clockwise from North.</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>0</rdommin>
+						<rdommax>360</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">Azimuth</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+			<attr>
+				<attrlabl Sync="TRUE">TransectId</attrlabl>
+				<attrdef>Same value as ObjectID. Used as a permanent and unique identification number for each transect in the output rates table calculated by DSAS. This attribute was used as the common field when joining the rates table (.dbf) to the transect feature class in a geodatabase.</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<udom>Positive real numbers that are automatically generated.</udom>
+				</attrdomv>
+				<attalias Sync="TRUE">TransectId</attalias><attrtype Sync="TRUE">Number</attrtype><attwidth Sync="TRUE">9</attwidth></attr>
+			<attr>
+				<attrlabl Sync="TRUE">SCE</attrlabl>
+				<attrdef>Shoreline Change Envelope the distance in meters  (MA State Plane, NAD 83) calculated by DSAS between the shoreline farthest from and closest to the baseline.</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>0.45</rdommin>
+						<rdommax>388.05</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">SCE</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+			<attr>
+				<attrlabl Sync="TRUE">NSM</attrlabl>
+				<attrdef>Net Shoreline Movement - the distance in meters (MA State Plane, NAD 83) calculated by DSAS between the oldest and youngest shorelines for each transect. If negative, the youngest shoreline is landward of the oldest (erosional), if positive, the youngest is seaward of the oldest (accretional).</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>-171.75</rdommin>
+						<rdommax>388.05</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">NSM</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+			<attr>
+				<attrlabl Sync="TRUE">Shape_Leng</attrlabl>
+				<attrdef>Length of feature in meter units (MA State Plane, NAD 83).</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>25.869235</rdommin>
+						<rdommax>429.830983</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">Shape_Leng</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+			<attr>
+				<attrlabl Sync="TRUE">LRR</attrlabl>
+				<attrdef>Linear Regression Rate- A linear regression rate-of-change statistic was calculated by fitting a least-squares regression line to all shoreline points for a particular transect. The best-fit regression line is placed so that the sum of the squared residuals (determined by squaring the offset distance of each data point from the regression line and adding the squared residuals together) is minimized.  The linear regression rate is the slope of the best-fit line. The rate is reported in meters per year with positive values indicating accretion and negative values indicating erosion.</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>-1.51</rdommin>
+						<rdommax>2.99</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">LRR</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+			<attr>
+				<attrlabl Sync="TRUE">LR2</attrlabl>
+				<attrdef>R-squared statistic, or coefficient of determination of linear regression, is the variance in the data calculated by DSAS that is explained by a regression. It is a dimensionless statistic that ranges from 1.0 to 0.0 and measure how successfully the best-fit line accounts for variation in the data.  R-squared values close to 1.0 imply that the best-fit line explains most of the variation in the dependent variable.  R-squared values close to 0.0 implies that the best-fit line explains little of the variation in the dependent variable and may not be a useful model.</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>0</rdommin>
+						<rdommax>1</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">LR2</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+			<attr>
+				<attrlabl Sync="TRUE">LSE</attrlabl>
+				<attrdef>The predicted (or estimated) values of y (the distance from baseline in meters) are computed for each shoreline point by using the values of x (the shoreline date) and solving the equation for the best-fit regression line (y=mx+b). The standard error is also called the standard deviation.</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>0.01</rdommin>
+						<rdommax>136.82</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">LSE</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+			<attr>
+				<attrlabl Sync="TRUE">LCI90</attrlabl>
+				<attrdef>The standard error of the slope with confidence interval describes the uncertainty of the reported rate. The LRR rates are determined by a best-fit regression line for the shoreline data at each transect. The slope of this line is the reported rate of change (in meters/year). The confidence interval (LCI) is calculated by multiplying the standard error (also called the standard deviation) of the slope by the two-tailed test statistic at the user-specified 90 percent confidence. This value is often reported in conjunction with the slope to describe the confidence of the reported rate. For example: LRR = 1.2 LCI90 = 0.7 could be reported as a rate of 1.2 (+/-) 0.7 meters/year.</attrdef>
+				<attrdefs>U.S. Geological Survey</attrdefs>
+				<attrdomv>
+					<rdom>
+						<rdommin>0</rdommin>
+						<rdommax>5.212</rdommax>
+					</rdom>
+				</attrdomv>
+				<attalias Sync="TRUE">LCI90</attalias><attrtype Sync="TRUE">Float</attrtype><attwidth Sync="TRUE">19</attwidth><atnumdec Sync="TRUE">11</atnumdec></attr>
+		</detailed>
+	</eainfo>
+	<distinfo>
+		<distrib>
+			<cntinfo>
+				<cntorgp>
+					<cntorg>U.S. Geological Survey</cntorg>
+				</cntorgp>
+				<cntaddr>
+					<addrtype>mailing and physical address</addrtype>
+					<address>384 Woods Hole Road</address>
+					<city>Woods Hole</city>
+					<state>MA</state>
+					<postal>02543-1598</postal>
+					<country>USA</country>
+				</cntaddr>
+				<cntvoice>508-548-8700</cntvoice>
+				<cntfax>508-457-2310</cntfax>
+			</cntinfo>
+		</distrib>
+		<resdesc>Downloadable data.</resdesc>
+		<distliab>
+Neither the U.S. Government, the Department of the Interior, nor the USGS, nor any of their employees, contractors, or subcontractors, make any warranty, express or implied, nor assume any legal liability or responsibility for the accuracy, completeness, or usefulness of any information, apparatus, product, or process disclosed, nor represent that its use would not infringe on privately owned rights. The act of distribution shall not constitute any such warranty, and no responsibility is assumed by the USGS in the use of these data or related materials.
+
+Any use of trade, product, or firm names is for descriptive purposes only and does not imply endorsement by the U.S. Government.
+		</distliab>
+		<stdorder>
+			<digform>
+				<digtinfo>
+					<formname>WinZip</formname>
+					<formvern>14</formvern>
+					<formcont>This WinZip file contains a shapefile of transects generated by the Digital Shoreline Analysis System including long-term linear regression rate calculations for the Boston region of Massachusetts.  Metadata is also included.</formcont>
+					<filedec>Use WinZip or pkUnzip</filedec>
+					<transize>150 KB</transize>
+					<dssize>150.26 KB</dssize><formspec>Esri polyline shapefile</formspec></digtinfo>
+				<digtopt>
+					<onlinopt>
+						<computer>
+							<networka>
+								<networkr>http://pubs.usgs.gov/of/2012/1183/data/Boston/Boston_transects_rates_LTw.zip</networkr>
+							</networka>
+						</computer>
+						<accinstr>Data may be downloaded via the World Wide Web (WWW).</accinstr>
+					</onlinopt>
+				</digtopt>
+			</digform>
+			<fees>None</fees>
+		</stdorder>
+		<techpreq>This zip file contains data available in Environmental Systems Research Institute (Esri) polyline shapefile format. The user must have ArcGIS or ArcView 3.0 or greater software to read and process the data file. In lieu of ArcView or ArcGIS, the user may utilize another GIS application package capable of importing the data. A free data viewer, ArcExplorer, capable of displaying the data is available from Esri at www.esri.com.</techpreq>
+	</distinfo>
+	<metainfo>
+		<metd>20121125</metd>
+		<metc>
+			<cntinfo>
+				<cntpos>Contract Geologist</cntpos>
+				<cntaddr>
+					<addrtype>mailing and physical address</addrtype>
+					<address>384 Woods Hole Road</address>
+					<city>Woods Hole</city>
+					<state>MA</state>
+					<postal>02543-1598</postal>
+					<country>USA</country>
+				</cntaddr>
+				<cntvoice>508-548-8700</cntvoice>
+				<cntfax>508-457-2310</cntfax>
+				<cntemail>theresasmith@usgs.gov</cntemail>
+				<cntorgp><cntorg>U.S. Geological Survey</cntorg><cntper>Theresa Smith</cntper></cntorgp></cntinfo>
+		</metc>
+		<metstdn Sync="TRUE">FGDC Content Standards for Digital Geospatial Metadata</metstdn>
+		<metstdv Sync="TRUE">FGDC-STD-001-1998</metstdv>
+		<mettc Sync="TRUE">local time</mettc>
+		<langmeta Sync="TRUE">en</langmeta><metextns><onlink Sync="TRUE">http://www.esri.com/metadata/esriprof80.html</onlink><metprof Sync="TRUE">ESRI Metadata Profile</metprof></metextns></metainfo>
+	<dataIdInfo><envirDesc Sync="TRUE">Microsoft Windows Vista Version 6.1 (Build 7601) Service Pack 1; ESRI ArcCatalog 9.3.1.1850</envirDesc><dataLang><languageCode Sync="TRUE" value="en"></languageCode></dataLang><idCitation><resTitle Sync="TRUE">Boston_transects_rates_LTw</resTitle><presForm><PresFormCd Sync="TRUE" value="005"></PresFormCd></presForm></idCitation><spatRpType><SpatRepTypCd Sync="TRUE" value="001"></SpatRepTypCd></spatRpType><dataExt><geoEle><GeoBndBox esriExtentType="native"><westBL Sync="TRUE">-71.052532</westBL><eastBL Sync="TRUE">-70.874396</eastBL><northBL Sync="TRUE">42.343552</northBL><southBL Sync="TRUE">42.245734</southBL><exTypeCode Sync="TRUE">1</exTypeCode></GeoBndBox></geoEle></dataExt><geoBox esriExtentType="decdegrees"><westBL Sync="TRUE">-71.052532</westBL><eastBL Sync="TRUE">-70.874396</eastBL><northBL Sync="TRUE">42.343552</northBL><southBL Sync="TRUE">42.245734</southBL><exTypeCode Sync="TRUE">1</exTypeCode></geoBox></dataIdInfo><mdLang><languageCode Sync="TRUE" value="en"></languageCode></mdLang><mdStanName Sync="TRUE">ISO 19115 Geographic Information - Metadata</mdStanName><mdStanVer Sync="TRUE">DIS_ESRI1.0</mdStanVer><mdChar><CharSetCd Sync="TRUE" value="004"></CharSetCd></mdChar><mdHrLv><ScopeCd Sync="TRUE" value="005"></ScopeCd></mdHrLv><mdHrLvName Sync="TRUE">dataset</mdHrLvName><distInfo><distributor><distorTran><onLineSrc><orDesc Sync="TRUE">002</orDesc><linkage Sync="TRUE">file://\\IGSAGIEGLTTSM70\C$\Users\tsmith\Desktop\data_mp_042413\Boston\Boston_transects_rates_LTw.shp</linkage><protocol Sync="TRUE">Local Area Network</protocol></onLineSrc><transSize Sync="TRUE">0.109</transSize></distorTran><distorFormat><formatName Sync="TRUE">Shapefile</formatName></distorFormat></distributor></distInfo><refSysInfo><RefSystem><refSysID><identCode Sync="TRUE">GCS_North_American_1983</identCode></refSysID></RefSystem></refSysInfo><spatRepInfo><VectSpatRep><topLvl><TopoLevCd Sync="TRUE" value="001"></TopoLevCd></topLvl><geometObjs Name="Boston_transects_rates_LTw"><geoObjTyp><GeoObjTypCd Sync="TRUE" value="001"></GeoObjTypCd></geoObjTyp><geoObjCnt Sync="TRUE">1295</geoObjCnt></geometObjs></VectSpatRep></spatRepInfo><Esri><SyncDate>20130424</SyncDate><SyncTime>15112600</SyncTime><ModDate>20130424</ModDate><ModTime>15112600</ModTime></Esri><mdDateSt Sync="TRUE">20130424</mdDateSt></metadata>

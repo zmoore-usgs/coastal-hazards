@@ -55,8 +55,8 @@ public class GeoserverUtil {
 
 	// TODO move these centrally or into configuration
 	private static final String PROXY_STORE = "proxied";
-        private static final String PROXY_WORKSPACE = "proxied";
-        private static final String DEFAULT_RASTER_STYLE = "raster";
+	private static final String PROXY_WORKSPACE = "proxied";
+	private static final String DEFAULT_RASTER_STYLE = "raster";
 
 	static {
 		props = JNDISingleton.getInstance();
@@ -319,7 +319,7 @@ public class GeoserverUtil {
                                             + "</wps:DataInputs>"
                                             + "<wps:ResponseForm>"
                                             + "<wps:RawDataOutput>"
-                                            + "<ows:Identifier>filePaths</ows:Identifier>"
+                                            + "<ows:Identifier>filePath</ows:Identifier>"
                                             + "</wps:RawDataOutput>"
                                             + "</wps:ResponseForm>"
                                             + "</wps:Execute>").getBytes());
@@ -335,7 +335,7 @@ public class GeoserverUtil {
                     return urlString;
             }
                                             
-            public static Service addRasterLayer(String geoServerEndpoint, InputStream zipFileStream, String layerId, Bbox bbox, String EPSGcode) throws FileNotFoundException, IOException {                   
+            public static Service addRasterLayer(String geoServerEndpoint, InputStream zipFileStream, String layerId, String EPSGcode) throws FileNotFoundException, IOException {                   
                     Service rasterService = null;
                     String fileId = UUID.randomUUID().toString();
                     String realFileName = TempFileResource.getFileNameForId(fileId);

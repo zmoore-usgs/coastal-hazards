@@ -71,7 +71,6 @@
 	String geoserverEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
 	String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
 	String marineArcServerEndpoint = props.getProperty("coastal-hazards.marine.endpoint");
-	String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "https://localhost:4443/pycsw");
 	String version = props.getProperty("application.version");
 	String resourceSuffix = development ? "" : "-" + version + "-min";
 	String vJquery = getProp("version.jquery");
@@ -333,9 +332,6 @@
 							},
 							'session': {
 								'endpoint': '/data/view/'
-							},
-							'external-csw': {
-								'endpoint': '<%=externalCSWEndpoint%>'
 							}
 						}
 					},

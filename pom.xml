@@ -118,8 +118,8 @@
 		<version.bootstrap>3.3.4</version.bootstrap>
 		<version.fontawesome>4.7.0</version.fontawesome>
 		<version.openlayers>2.13.1</version.openlayers>
-		<gs.version>2.10.2</gs.version>
-		<gt.version>16.2</gt.version>
+		<gs.version>2.11.1</gs.version>
+		<gt.version>17.1</gt.version>
 		<httpclient.version>4.5.1</httpclient.version>
 	</properties>
 	<scm>
@@ -309,7 +309,7 @@
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
-				<version>1.2.2</version>
+				<version>1.3.3</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-jxpath</groupId>

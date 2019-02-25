@@ -84,28 +84,4 @@ public class PublishResource {
         map.put("id", token);
         return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", map)).build();
     }
-
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
-    @POST
-    @Path("metadata/{token}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response publishItems(@Context HttpServletRequest req, @PathParam("token") String metaToken) throws URISyntaxException {
-        Response response = null;
-        Map<String, String> responseContent = new HashMap<>();
-        
-        try {
-            String identifier = MetadataUtil.doCSWInsertFromUploadId(metaToken);
-            if (identifier == null) {
-                throw new RuntimeException("Could not get identifier from CSW transaction response");
-            }
-            String url = MetadataUtil.getMetadataByIdUrl(identifier);
-            responseContent.put("metadata", url);
-            response = Response.ok(GsonUtil.getDefault().toJson(responseContent, HashMap.class)).build();
-        } catch (IOException | RuntimeException | ParserConfigurationException | SAXException ex) {
-            responseContent.put("message", ex.getMessage() == null ? "NPE" : ex.getMessage());
-            response = Response.serverError().entity(GsonUtil.getDefault().toJson(responseContent, HashMap.class)).build();
-        }
-        return response;
-    }
-    
 }

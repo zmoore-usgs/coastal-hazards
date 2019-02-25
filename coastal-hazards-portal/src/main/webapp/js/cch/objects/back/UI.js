@@ -25,7 +25,6 @@ CCH.Objects.Back.UI = function (args) {
 		me.$infoSummary = $('#info-summary');
 		me.$infoPubListSpan = $('#info-container-publications-list-span');
 		me.$labelActionCenter = $('#label-action-center');
-		me.cswService;
 		me.$publist;
 		me.item = args.item;
 		me.$mapServicesButton = $('#map-services-link-button');
@@ -41,6 +40,11 @@ CCH.Objects.Back.UI = function (args) {
 		//Disable downloading if no link provided
 		if(!me.item.summary.download || !me.item.summary.download.link || me.item.summary.download.link.length === 0){
 			me.$downloadDataButton.prop("disabled", true);
+		}
+                
+		//Disable metadata downloading if no link provided
+		if(!me.item.summary.metadataDownload || me.item.summary.metadataDownload.length === 0){
+			me.$metadataButton.prop("disabled", true);
 		}
 		
 		//Click Handlers
@@ -123,23 +127,14 @@ CCH.Objects.Back.UI = function (args) {
 		});
 
 		// Create a "View Metadata" button
-		me.cswService = CCH.CONFIG.item.services.find(function (service) {
-			return service.type === 'csw';
-		});
-
-		// If item has a metadata service behind it, wire up the button. Otherwise, remove it.
-		if (me.cswService && me.cswService.endpoint) {
-			me.$metadataButton.on('click', function () {
-				window.location.href = me.cswService.endpoint + '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
-				ga('send', 'event', {
-					'eventCategory': 'infopage',
-					'eventAction': 'metadataButtonClicked',
-					'eventLabel': 'info page event'
-				});
-			});
-		} else {
-			me.$metadataButton.remove();
-		}
+                me.$metadataButton.on('click', function () {
+                        window.location.href = me.item.summary.metadataDownload;
+                        ga('send', 'event', {
+                                'eventCategory': 'infopage',
+                                'eventAction': 'metadataButtonClicked',
+                                'eventLabel': 'info page event'
+                        });
+                });
 
 		// Build the additional information section for the item
 		if (me.item.summary.full.publications) {
@@ -372,9 +367,6 @@ CCH.Objects.Back.UI = function (args) {
 		Handlebars.registerHelper('list_translation', function (serviceType) {
 			var serviceString = '';
 			switch (serviceType) {
-				case ('csw') :
-					serviceString = 'CSW';
-					break;
 				case ('source_wms') :
 					serviceString = 'Source WMS';
 					break;

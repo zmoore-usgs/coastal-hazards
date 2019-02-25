@@ -7,7 +7,6 @@
         <version>1.1.64-SNAPSHOT</version>
     </parent>
   
-    <groupId>gov.usgs.cida.coastalhazards</groupId>
     <artifactId>coastal-hazards-export</artifactId>
     <name>Coastal Hazards Data Export</name>
   
@@ -26,32 +25,27 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-opengis</artifactId>
-            <version>${gt.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-api</artifactId>
-            <version>${gt.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-shapefile</artifactId>
-            <version>${gt.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-data</artifactId>
-            <version>${gt.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-wfs</artifactId>
-            <version>${gt.version}</version>
+            <version>16.2</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-epsg-hsql</artifactId>
-            <version>${gt.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

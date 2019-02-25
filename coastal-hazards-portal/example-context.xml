@@ -36,14 +36,6 @@
 <!-- <Environment name="gov.usgs.cida.n52.wps.config.location" type="java.lang.String" value="/opt/tomcat/instance/default/data/coastal-hazards/n52/wps_config.xml" override="false" /> -->
 	<Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="http://cidasddvascch.cr.usgs.gov:8080/wps" override="false" />
   <!-- <Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="http://192.168.99.100:8082/wps" /> -->  
-  <!--  <Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="http://192.168.99.100:8000/csw/" /> -->
-  <Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="http://cidasddvascch.cr.usgs.gov/wsgi/pycsw" override="false" />
-<!--	<Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="http://192.168.99.100:8000/pycsw-wsgi" /> -->
-<!--	<Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="http://127.0.0.1/wsgi/pycsw" override="false" /> not certain if this is correct as not deployed locally-->
-    <Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="https://cida-test.er.usgs.gov/dev/coastalchangehazardsportal/csw/" override="false" />
-	<Environment name="coastal-hazards.csw.external.endpoint" type="java.lang.String" value="https://cida-test.er.usgs.gov/dev/coastalchangehazardsportal/csw/" override="false" />
-   <!-- <Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="http://pycsw:8000/pycsw-wsgi" /> --> 
-    <!-- csw will fail with this. Auth is set up for localhost only.-->
     <Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="15728640" /> 
     <Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="qqfile" /> 
     <Environment name="coastal-hazards.files.directory.base" type="java.lang.String" value="/opt/tomcat/instance/default/data/coastal-hazards" /> 
