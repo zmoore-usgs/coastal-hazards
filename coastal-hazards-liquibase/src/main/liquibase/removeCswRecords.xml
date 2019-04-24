@@ -3,4 +3,17 @@
     <changeSet author="mhines" id="removeCswRecords">
         <sql> DELETE FROM service WHERE service_type='csw' </sql>
     </changeSet>
+    <changeSet author="mhines" id="updateServiceItemListIndexAfterCswRemoval">
+        <sql> 
+		WITH subquery AS
+		(
+			SELECT service.id, service_item.item_id, row_number() OVER (PARTITION BY service_item.item_id)-1 as newindex
+			FROM public.service, public.service_item WHERE service_item.service_id = service.id
+		)
+		UPDATE service_item
+		SET list_index = subquery.newindex
+		FROM subquery
+		WHERE service_item.service_id = subquery.id;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
