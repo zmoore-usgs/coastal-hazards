@@ -12,7 +12,7 @@ RUN if [ "${doi_network}" = true ]; then \
 RUN apt-get update && \
 	apt-get install --no-install-recommends -y \
 	telnet=0.17-36 \
-	libcurl3=7.38.0-4+deb8u14 \
+	libcurl3=7.38.0-4+deb8u15 \
 	libcurl4-openssl-dev=7.38.0-4+deb8u15 \
 	libssl-dev=1.0.1t-1+deb8u11 \
 	zlib1g-dev=1:1.2.8.dfsg-2+b1 \
