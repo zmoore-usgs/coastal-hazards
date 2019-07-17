@@ -180,7 +180,9 @@ CCH.Objects.Item = function (args) {
 				itemType = me.itemType,
 				sldId = id,
 				layer = null,
-				CONE_OF_UNCERTAINTY = "6";
+				CONE_OF_UNCERTAINTY = "6",
+				WIND_EXTENT = "8,7,4,9";
+
 
 		if (itemType !== 'aggregation' && itemType !== 'template') {
 			layer = new OpenLayers.Layer.WMS(
@@ -211,6 +213,9 @@ CCH.Objects.Item = function (args) {
 		if (layer && me.type === 'storm_track') {
 			layer.params.FORMAT = 'image/png32';
 			if (layer.params.LAYERS === CONE_OF_UNCERTAINTY) {
+				layer.opacity = 0.7;
+			}
+			if (layer.params.LAYERS === WIND_EXTENT) {
 				layer.opacity = 0.5;
 			}
 			delete layer.params.STYLES;

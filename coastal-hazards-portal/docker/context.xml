@@ -63,7 +63,7 @@
 	<Environment name="coastal-hazards.nhc.track.bbox.south" type="java.lang.String" value="17.64"/>
 	<Environment name="coastal-hazards.nhc.track.wms" type="java.lang.String" value="http://nowcoast.noaa.gov/arcgis/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/WmsServer?"/>
 	<Environment name="coastal-hazards.nhc.track.attrs" type="java.lang.String" value="NHC_TRACK_POLY|NHC_TRACK_LIN|NHC_TRACK_PT"/>
-	<Environment name="coastal-hazards.nhc.track.attr.params" type="java.lang.String" value="6|3|8,7,4"/>
+	<Environment name="coastal-hazards.nhc.track.attr.params" type="java.lang.String" value="6|3|8,7,4,9"/>
 	<Environment name="coastal-hazards.nhc.track.tiny.text" type="java.lang.String" value="NWS NHC Forecasted Tropical Cyclone"/>
 	<Environment name="coastal-hazards.nhc.track.med.title" type="java.lang.String" value="NWS NHC Forecast"/>
 	<Environment name="coastal-hazards.nhc.track.med.text" type="java.lang.String" value="The latest Tropical Cyclone Forecast from the NWS National Hurricane Center (NHC), updated hourly."/>
