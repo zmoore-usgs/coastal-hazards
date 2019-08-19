@@ -13,12 +13,28 @@ ENV POSTGRES_USER=postgres
 ENV POSTGRES_DB=cchportal
 ENV LIQUIBASE_HOME /opt/liquibase
 
+# Add Alpine 3.6 repository to get access to plpython
+RUN echo "@v3.6 http://dl-cdn.alpinelinux.org/alpine/v3.6/main/" >> /etc/apk/repositories
+
+RUN set -x \
+    && apk update && apk upgrade \
+		&& apk add --no-cache openssl \
+			ca-certificates \
+			python \
+			python-dev \
+			postgresql-plpython2@v3.6 \
+			postgresql-plpython2-contrib@v3.6 \
+			git \
+    		curl \
+    		openjdk8 && \
+	rm -rf /var/cache/apk/*;
+
 RUN if [ "${doi_network}" = true ]; then \
-		mkdir -p /usr/lib/ssl/certs/ && \
-		/usr/bin/wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://sslhelp.doi.net/docs/DOIRootCA2.cer && \
-		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0 && \
-		echo "\\n\\nca-certificate = /usr/lib/ssl/certs/DOIRootCA.crt" >> /etc/wgetrc; \
+		mkdir -p /etc/ssl/certs && \
+		wget -O /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer"; \
 	fi
+
+RUN update-ca-certificates
 
 # Required for JRE 8 - Java 8 is required to run the Liquibase JAR - lifted from https://github.com/docker-library/openjdk
 RUN { \
@@ -29,23 +45,12 @@ RUN { \
 	} > /usr/local/bin/docker-java-home \
 	&& chmod +x /usr/local/bin/docker-java-home
 
-# Add Alpine 3.6 repository to get access to plpython
-RUN echo "@v3.6 http://dl-cdn.alpinelinux.org/alpine/v3.6/main/" >> /etc/apk/repositories
-
 RUN set -x \
-    && apk update && apk upgrade \
-		&& apk add --no-cache python \
-			python-dev \
-			postgresql-plpython2@v3.6 \
-			postgresql-plpython2-contrib@v3.6 \
-			git \
-    	curl\
-    	openjdk8 \
     && [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
 RUN cp /usr/lib/postgresql/*.so /usr/local/lib/postgresql/
 RUN mkdir -p ${LIQUIBASE_HOME}
-RUN curl -Lk "https://github.com/liquibase/liquibase/releases/download/liquibase-parent-${LIQUIBASE_VERSION}/liquibase-${LIQUIBASE_VERSION}-bin.tar.gz" > liquibase-bin.tar.gz
+RUN curl -L "https://github.com/liquibase/liquibase/releases/download/liquibase-parent-${LIQUIBASE_VERSION}/liquibase-${LIQUIBASE_VERSION}-bin.tar.gz" > liquibase-bin.tar.gz
 RUN tar -xzf liquibase-bin.tar.gz -C "${LIQUIBASE_HOME}/" && \
 	rm liquibase-bin.tar.gz
 RUN curl -o ${LIQUIBASE_HOME}/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-${POSTGRES_JDBC_VERSION}.jar
