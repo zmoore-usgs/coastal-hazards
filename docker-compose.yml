@@ -90,10 +90,6 @@ services:
       - "8900:8900"
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
-    depends_on:
-      - cch_n52_wps
-      - cch_postgres
-      - cch_geoserver
     volumes:
       - type: bind
         source: ./Docker/keycloak/keycloak_tomcat_config.json
