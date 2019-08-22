@@ -14,7 +14,6 @@ import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
-import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -37,7 +34,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +42,6 @@ import org.slf4j.LoggerFactory;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path(DataURI.TREE_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class TreeResource {
 
 	private static final Logger log = LoggerFactory.getLogger(TreeResource.class);
@@ -131,10 +126,9 @@ public class TreeResource {
 
 	@PUT
 	@Path("/item/{id}")
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response updateChildren(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response;
-		if (StringUtils.isNotBlank(id) && StringUtils.isNotBlank(content)) {
+		if (stringIsNotBlank(id) && stringIsNotBlank(content)) {
 			try {
 				JsonObject jsonObj = (JsonObject) new JsonParser().parse(content);
 				Map<String, JsonObject> itemMap = new HashMap<>(1);
@@ -160,10 +154,9 @@ public class TreeResource {
 
 	@POST
 	@Path("/item")
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response updateChildrenBulk(@Context HttpServletRequest request, String content) {
 		Response response;
-		if (StringUtils.isNotBlank(content)) {
+		if (stringIsNotBlank(content)) {
 			try {
 				JsonObject jsonObj = (JsonObject) new JsonParser().parse(content);
 				int totalItemCount = 0;
@@ -348,5 +341,9 @@ public class TreeResource {
 		}
 
 		return returnStatus;
+	}
+
+	private Boolean stringIsNotBlank(String str) {
+		return str != null && !str.trim().isEmpty();
 	}
 }

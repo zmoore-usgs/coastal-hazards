@@ -11,12 +11,10 @@ import gov.usgs.cida.coastalhazards.model.util.Status.StatusName;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.annotation.security.PermitAll;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -25,21 +23,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path(DataURI.HEALTH_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class HealthResource {
 	private static final Logger LOG = LoggerFactory.getLogger(HealthResource.class);
 	private static final String geoserverEndpoint;

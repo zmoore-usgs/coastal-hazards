@@ -7,16 +7,12 @@ import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
-import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
-import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -33,7 +29,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +38,6 @@ import org.slf4j.LoggerFactory;
  * @author jordan
  */
 @Path(DataURI.ITEM_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class ItemResource {
 
 	private static final Logger log = LoggerFactory.getLogger(ItemResource.class);
@@ -137,7 +131,6 @@ public class ItemResource {
 	 * @param request passed through context of request
 	 * @return
 	 */
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -181,7 +174,6 @@ public class ItemResource {
 	 * @param content
 	 * @return
 	 */
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -240,7 +232,6 @@ public class ItemResource {
 		return response;
 	}
 
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@DELETE
 	@Path("/{id}")
 	public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id, @QueryParam("deleteChildren") boolean deleteChildren) {
@@ -285,12 +276,5 @@ public class ItemResource {
 			response = Response.ok("{\"cycle\": " + cycle + "}", MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;
-	}
-
-	public static URI itemURI(Item item) {
-		UriBuilder fromUri = UriBuilder.fromUri(PUBLIC_URL);
-		URI uri = fromUri.path(DataURI.DATA_SERVICE_ENDPOINT + DataURI.ITEM_PATH)
-				.path(item.getId()).build();
-		return uri;
 	}
 }

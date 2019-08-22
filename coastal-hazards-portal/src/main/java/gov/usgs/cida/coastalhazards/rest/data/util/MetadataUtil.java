@@ -2,9 +2,7 @@ package gov.usgs.cida.coastalhazards.rest.data.util;
 
 import gov.usgs.cida.coastalhazards.metadata.CRSParameters;
 import gov.usgs.cida.coastalhazards.model.Bbox;
-import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.summary.Publication;
-import gov.usgs.cida.coastalhazards.rest.data.MetadataResource;
 import gov.usgs.cida.coastalhazards.xml.model.Bounding;
 import gov.usgs.cida.coastalhazards.xml.model.Horizsys;
 import gov.usgs.cida.coastalhazards.xml.model.Idinfo;
@@ -25,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;

@@ -4,7 +4,6 @@ import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.sld.SLDGenerator;
 import gov.usgs.cida.utilities.PerformanceProfiler;
-import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -20,7 +19,6 @@ import org.slf4j.LoggerFactory;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path(DataURI.SLD_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class SLDResource {
 	private static transient final Logger LOG = LoggerFactory.getLogger(SLDResource.class);
 	/**

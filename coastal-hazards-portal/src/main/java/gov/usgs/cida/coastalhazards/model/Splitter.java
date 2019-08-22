@@ -8,4 +8,6 @@ import java.io.Serializable;
  */
 public class Splitter implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
 }

@@ -45,6 +45,7 @@
 		<appender-ref ref="file"/>
 	</root>
 
+	<logger name="gov.usgs.cida.coastalhazards" level="INFO" />
 	<logger name="org.apache.http.wire" level="WARN" />
 	<logger name="org.hibernate" level="WARN" />
 	<logger name="it.geosolutions.geoserver.rest" level="WARN" />

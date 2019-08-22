@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
@@ -27,7 +26,6 @@ import org.glassfish.jersey.server.ParamException;
  * @author isuftin
  */
 @Path(DataURI.QR_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class QRCodeResource {
 
 	static private final int MAX_WIDTH = 4096;

@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.ws.rs.BadRequestException;
@@ -65,7 +64,6 @@ import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.StormUtil;
-import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.IdGenerator;
@@ -98,7 +96,6 @@ public class TemplateResource {
 	@POST
 	@Path("/item/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response instantiateTemplate(@PathParam("id") String id, String content) {
 		Response response = null;
 		try (ItemManager itemMan = new ItemManager(); LayerManager layerMan = new LayerManager()) {
@@ -274,7 +271,6 @@ public class TemplateResource {
 	@GET
 	@Path("/storm")
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response instantiateStormTemplate(
 			@QueryParam("layerId") String layerId,
 			@QueryParam("activeStorm") String active,

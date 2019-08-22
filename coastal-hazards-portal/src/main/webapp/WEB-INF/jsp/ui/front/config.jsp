@@ -1,5 +1,4 @@
 <%@page import="java.util.HashSet"%>
-<%@page import="org.apache.commons.lang3.ArrayUtils"%>
 <%@page import="java.util.Set"%>
 <%@page import="gov.usgs.cida.coastalhazards.Attributes"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>

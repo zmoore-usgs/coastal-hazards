@@ -601,14 +601,10 @@ CCH.Objects.Publish.UI = function () {
 		me.enableNewItemForm();
 	};
 
-	me.addUserInformationToForm = function (args) {
-		args = args || {};
-		var user = args.data || CCH.CONFIG.user,
-				username = user.username,
-				$container = $('.container'),
-				$panetTitle = $container.find('> div > div > h3');
-
-		$panetTitle.append('Welcome, ', username, '.');
+	me.addUserInformationToForm = function (usernameString) {
+		var $container = $('.container'),
+			$panetTitle = $container.find('> div > div > h3');
+		$panetTitle.append('Welcome, ', usernameString, '.');
 	};
 
 	me.updateSelectAttribute = function (responseObject) {
@@ -1588,7 +1584,7 @@ CCH.Objects.Publish.UI = function () {
 	});
 
 	$buttonLogout.on(CCH.CONFIG.strings.click, function () {
-		CCH.Auth.logout();
+		alert("logout");
 	});
 
 	$buttonSave.on(CCH.CONFIG.strings.click, function () {

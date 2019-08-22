@@ -8,12 +8,9 @@ import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.model.Alias;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
-import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -37,7 +34,6 @@ import javax.ws.rs.core.Response;
  * @author Zack Moore <zmoore@usgs.gov>
  */
 @Path(DataURI.ALIAS_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class AliasResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -141,7 +137,6 @@ public class AliasResource {
 		return response;
 	}
 	
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@DELETE
 	@Path("/{id}")
 	public Response deleteAlias(@Context HttpServletRequest request, @PathParam("id") String id) {
@@ -156,7 +151,6 @@ public class AliasResource {
 		return response;
 	}
 	
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@DELETE
 	@Path("/item/{id}")
 	public Response deleteAliasesForItem(@Context HttpServletRequest request, @PathParam("id") String itemId) {
@@ -171,7 +165,6 @@ public class AliasResource {
 		return response;
 	}
 	
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -203,7 +196,6 @@ public class AliasResource {
 		return response;
 	}
 	
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)

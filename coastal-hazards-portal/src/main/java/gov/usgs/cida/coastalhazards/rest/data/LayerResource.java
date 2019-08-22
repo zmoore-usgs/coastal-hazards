@@ -7,7 +7,6 @@ import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Layer;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.util.GeoserverUtil;
-import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.IdGenerator;
@@ -20,8 +19,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -54,7 +51,6 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
  */
 @MultipartConfig
 @Path(DataURI.LAYER_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class LayerResource {
 
 	private static final Logger log = LoggerFactory.getLogger(LayerResource.class);
@@ -90,7 +86,6 @@ public class LayerResource {
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
 	@Produces(MediaType.TEXT_PLAIN)
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response createVectorLayer(@Context HttpServletRequest req, InputStream postBody) {
 		Response response = null;
 		
@@ -142,7 +137,6 @@ public class LayerResource {
 	@Path("/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.TEXT_PLAIN)
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response createVectorLayerForm(@Context HttpServletRequest req, @FormDataParam("file") InputStream postBody) {
 		Response response = null;
 		
@@ -155,7 +149,6 @@ public class LayerResource {
 	@Path("/raster")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.TEXT_PLAIN)
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response createRasterLayer(
 		@Context HttpServletRequest req, 
 		@FormDataParam("file") InputStream zipFileStream,
@@ -218,7 +211,6 @@ public class LayerResource {
 			 
 	@DELETE
 	@Path("/{layer}")
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteLaterFromGeoserver(@Context HttpServletRequest req, @PathParam("layer") String layer) throws URISyntaxException {
 		if (StringUtils.isBlank(layer)) {

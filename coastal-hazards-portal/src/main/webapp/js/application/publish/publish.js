@@ -8,9 +8,7 @@
 		var me = (this === window) ? {} : $.extend({}, me, args);
 
 		var _init = function () {
-			CCH.ui.addUserInformationToForm({
-				data: CCH.CONFIG.user
-			});
+			CCH.ui.addUserInformationToForm(CCH.CONFIG.username);
 
 			var searchItemSuccess = function (itemJSON) {
 				CCH.CONFIG.item = CCH.Objects.Item(itemJSON);

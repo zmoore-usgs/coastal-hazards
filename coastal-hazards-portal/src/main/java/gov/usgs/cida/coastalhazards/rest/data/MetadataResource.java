@@ -2,14 +2,10 @@ package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.JsonSyntaxException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
-import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.summary.Publication;
 import gov.usgs.cida.coastalhazards.model.Bbox;
-import gov.usgs.cida.coastalhazards.model.Item;
-import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
-import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,8 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -47,7 +41,6 @@ import org.xml.sax.SAXException;
  * @author isuftin
  */
 @Path(DataURI.METADATA_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class MetadataResource {
 
 	private static final Logger log = LoggerFactory.getLogger(MetadataResource.class);
@@ -71,7 +64,6 @@ public class MetadataResource {
 		
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	public Response getMetadata(@Context HttpServletRequest req, @FormDataParam("file") String postBody) {
 		setLatestMetadata(postBody);
 		Response response = Response.ok(postBody).build();

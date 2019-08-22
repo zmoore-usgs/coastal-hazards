@@ -94,6 +94,10 @@ services:
       - cch_n52_wps
       - cch_postgres
       - cch_geoserver
+    volumes:
+      - type: bind
+        source: ./Docker/keycloak/keycloak_tomcat_config.json
+        target: /usr/local/tomcat/conf/keycloak.json
 
   cch_geoserver:
     build:
@@ -113,3 +117,26 @@ services:
       - "8444:8443"
     env_file:
       - "compose${CCH_ENV_LOCAL}.env"
+
+  cch_keycloak:
+    image: jboss/keycloak
+    networks:
+      cch-net:
+        aliases:
+          - keycloak
+    ports: 
+      - "8083:8083"
+      - "8446:8446"
+    command: ["-Djboss.socket.binding.port-offset=3"]
+    environment:
+      - DB_VENDOR=h2
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_IMPORT=/tmp/cch_realm.json
+      - KEYCLOAK_HOSTNAME=keycloak
+      - KEYCLOAK_HTTP_PORT=8083
+      - KEYCLOAK_HTTPS_PORT=8446
+    volumes:
+      - type: bind
+        source: ./Docker/keycloak/cch_realm.json
+        target: /tmp/cch_realm.json

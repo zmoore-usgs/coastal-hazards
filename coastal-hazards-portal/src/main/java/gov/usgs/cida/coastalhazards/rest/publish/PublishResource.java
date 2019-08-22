@@ -1,39 +1,28 @@
 package gov.usgs.cida.coastalhazards.rest.publish;
 
-import gov.usgs.cida.coastalhazards.gson.GsonUtil;
-import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
-import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.glassfish.jersey.server.mvc.Viewable;
-import org.xml.sax.SAXException;
 
 /**
  *
  * @author isuftin
  */
 @Path("/")
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
 public class PublishResource {
 	
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/tree/")
@@ -41,7 +30,6 @@ public class PublishResource {
        return manageTree(req, "");
     }
 
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/tree/{token}")
@@ -51,7 +39,6 @@ public class PublishResource {
         return Response.ok(new Viewable("/WEB-INF/jsp/publish/tree/index.jsp", map)).build();
     }
 
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/item/")
@@ -59,7 +46,6 @@ public class PublishResource {
        return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", new HashMap<>(0))).build();
     }
     
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/layer/raster")
@@ -67,7 +53,6 @@ public class PublishResource {
        return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/raster.jsp", new HashMap<>(0))).build();
     }
 	
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/layer/vector")
@@ -75,7 +60,6 @@ public class PublishResource {
        return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/vector.jsp", new HashMap<>(0))).build();
     }
     
-    @RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/item/{token}")

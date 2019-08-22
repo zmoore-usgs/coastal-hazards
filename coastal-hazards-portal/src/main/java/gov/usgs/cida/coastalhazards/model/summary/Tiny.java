@@ -12,6 +12,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Tiny implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     public static final int MAX_LENGTH = 105;
     
     private String text;

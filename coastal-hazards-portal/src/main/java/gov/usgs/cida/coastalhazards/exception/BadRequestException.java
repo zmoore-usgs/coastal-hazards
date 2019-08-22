@@ -8,6 +8,8 @@ import javax.ws.rs.WebApplicationException;
  */
 public class BadRequestException extends WebApplicationException {
     
+    private static final long serialVersionUID = 1L;
+
     @Override
     public String getMessage() {
         return "Request was unable to be performed: bad";

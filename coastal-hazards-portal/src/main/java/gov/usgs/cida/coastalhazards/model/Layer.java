@@ -13,8 +13,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.hibernate.annotations.IndexColumn;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -25,7 +23,6 @@ import org.slf4j.LoggerFactory;
 @Table(name = "layer")
 public class Layer implements Serializable {
 	
-	private static final Logger log = LoggerFactory.getLogger(Layer.class);
 	private static final long serialVersionUID = 1377960586550331014L;
 
 	private String id;

@@ -15,6 +15,7 @@ import javax.persistence.Table;
 @Table(name = "authorized_users")
 public class AuthorizedUser implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private transient long id;
     private String name;
     private String email;

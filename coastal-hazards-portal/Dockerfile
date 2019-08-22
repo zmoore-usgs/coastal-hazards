@@ -3,6 +3,7 @@ FROM tomcat:8.0-jre8-alpine
 ARG doi_network=false
 ARG PORTAL_VERSION=1.1.63
 ARG POSTGRES_JDBC_VERSION=42.2.4
+ARG KEYCLOAK_ADAPTER_VERSION=6.0.1
 ENV KEY_STORE_PASSWORD=changeit
 
 RUN apk add --update --no-cache \
@@ -29,6 +30,12 @@ COPY docker/key-store.jks /usr/local/tomcat/ssl/trust-store.jks
 RUN curl -o /usr/local/tomcat/webapps/coastal-hazards-portal.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-portal/${PORTAL_VERSION}/coastal-hazards-portal-${PORTAL_VERSION}.war"
 
 RUN curl -o /usr/local/tomcat/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar
+
+RUN curl -o /usr/local/tomcat/keycloak.tar.gz https://downloads.jboss.org/keycloak/$KEYCLOAK_ADAPTER_VERSION/adapters/keycloak-oidc/keycloak-tomcat8-adapter-dist-$KEYCLOAK_ADAPTER_VERSION.tar.gz
+
+RUN tar xvzf /usr/local/tomcat/keycloak.tar.gz -C /usr/local/tomcat/lib/
+
+RUN rm /usr/local/tomcat/keycloak.tar.gz 
 
 COPY docker/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 COPY docker/server.xml /usr/local/tomcat/conf/server.xml

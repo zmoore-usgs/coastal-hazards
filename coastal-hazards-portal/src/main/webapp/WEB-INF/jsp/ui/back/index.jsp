@@ -1,5 +1,4 @@
 <%@page import="gov.usgs.cida.coastalhazards.model.Alias"%>
-<%@page import="org.apache.commons.lang3.time.DateFormatUtils"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@page import="gov.usgs.cida.coastalhazards.rest.ui.Identifier"%>
