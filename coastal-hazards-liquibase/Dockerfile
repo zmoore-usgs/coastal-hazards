@@ -15,8 +15,7 @@ ENV LIQUIBASE_HOME /opt/liquibase
 # Add Alpine 3.6 repository to get access to plpython
 RUN echo "@v3.6 http://dl-cdn.alpinelinux.org/alpine/v3.6/main/" >> /etc/apk/repositories
 
-RUN set -x \
-    && apk update && apk upgrade \
+RUN apk update && apk upgrade \
 		&& apk add --no-cache openssl \
 			ca-certificates \
 			python \
