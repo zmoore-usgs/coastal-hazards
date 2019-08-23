@@ -20,7 +20,7 @@ import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
 
 /**
  *
- * @author isuftin, zmoore
+ * @author isuftin
  */
 @Path("/")
 @ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
