@@ -8,7 +8,6 @@ import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.io.InputStream;
 import java.util.List;
-
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
