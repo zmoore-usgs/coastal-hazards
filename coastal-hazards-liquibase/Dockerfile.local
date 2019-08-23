@@ -29,10 +29,9 @@ RUN apk update && apk upgrade \
 
 RUN if getent ahosts sslhelp.doi.net > /dev/null 2>&1; then \
 		mkdir -p /etc/ssl/certs && \
-		wget -O /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer"; \
+		wget -O /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
+		update-ca-certificates; \
 	fi
-
-RUN update-ca-certificates
 
 # Required for JRE 8 - Java 8 is required to run the Liquibase JAR - lifted from https://github.com/docker-library/openjdk
 RUN { \

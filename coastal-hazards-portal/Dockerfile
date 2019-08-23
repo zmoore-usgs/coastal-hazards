@@ -13,12 +13,9 @@ RUN apk add --update --no-cache \
 
 RUN if getent ahosts sslhelp.doi.net > /dev/null 2>&1; then \
 		mkdir -p /etc/ssl/certs && \
-		wget -O /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer"; \
+		wget -O /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
+		update-ca-certificates; \
 	fi
-
-RUN update-ca-certificates
-
-RUN curl -o /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.1.0/psi-probe-web-3.1.0.war"
 
 RUN mkdir -p /usr/local/tomcat/ssl
 
@@ -26,15 +23,12 @@ COPY docker/key-store.jks /usr/local/tomcat/ssl/key-store.jks
 
 COPY docker/key-store.jks /usr/local/tomcat/ssl/trust-store.jks
 
-RUN curl -o /usr/local/tomcat/webapps/coastal-hazards-portal.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-portal/${PORTAL_VERSION}/coastal-hazards-portal-${PORTAL_VERSION}.war"
-
-RUN curl -o /usr/local/tomcat/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar
-
-RUN curl -o /usr/local/tomcat/keycloak.tar.gz https://downloads.jboss.org/keycloak/$KEYCLOAK_ADAPTER_VERSION/adapters/keycloak-oidc/keycloak-tomcat8-adapter-dist-$KEYCLOAK_ADAPTER_VERSION.tar.gz
-
-RUN tar xvzf /usr/local/tomcat/keycloak.tar.gz -C /usr/local/tomcat/lib/
-
-RUN rm /usr/local/tomcat/keycloak.tar.gz 
+RUN curl -o /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.1.0/psi-probe-web-3.1.0.war" && \
+	curl -o /usr/local/tomcat/webapps/coastal-hazards-portal.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-portal/${PORTAL_VERSION}/coastal-hazards-portal-${PORTAL_VERSION}.war" && \
+	curl -o /usr/local/tomcat/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar && \
+	curl -o /usr/local/tomcat/keycloak.tar.gz https://downloads.jboss.org/keycloak/$KEYCLOAK_ADAPTER_VERSION/adapters/keycloak-oidc/keycloak-tomcat8-adapter-dist-$KEYCLOAK_ADAPTER_VERSION.tar.gz && \
+	tar xvzf /usr/local/tomcat/keycloak.tar.gz -C /usr/local/tomcat/lib/ && \
+	rm /usr/local/tomcat/keycloak.tar.gz;
 
 COPY docker/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 COPY docker/server.xml /usr/local/tomcat/conf/server.xml
