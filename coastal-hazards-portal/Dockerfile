@@ -11,7 +11,7 @@ RUN apk add --update --no-cache \
 	rm -rf /var/lib/apt/lists/* && \
   rm /var/cache/apk/*
 
-RUN if getent ahosts sslhelp.doi.net > /dev/null 2>&1; then \
+RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 		mkdir -p /etc/ssl/certs && \
 		wget -O /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
 		update-ca-certificates; \

@@ -8,7 +8,7 @@ ENV KEY_STORE_PASSWORD=changeit
 
 RUN apk add --update openssl curl
 
-RUN if getent ahosts sslhelp.doi.net > /dev/null 2>&1; then \
+RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 		mkdir -p /usr/lib/ssl/certs/ && \
 		/usr/bin/wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://sslhelp.doi.net/docs/DOIRootCA2.cer && \
 		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0 && \
