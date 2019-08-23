@@ -13,6 +13,7 @@ import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.glassfish.jersey.server.model.AnnotatedMethod;
 
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
@@ -62,42 +63,39 @@ public class ConfiguredRolesAllowedDynamicFeature implements DynamicFeature {
 
 	@Priority(Priorities.AUTHORIZATION - 1) // authorization filter - should go after any authentication filters
 	private static class ConfiguredRolesAllowedPastLoginFilter implements ContainerRequestFilter {
-		private final boolean denyAll;
 		private final String[] rolesAllowed;
 
 		ConfiguredRolesAllowedPastLoginFilter() {
-			this.denyAll = true;
 			this.rolesAllowed = null;
 		}
 
 		ConfiguredRolesAllowedPastLoginFilter(String[] rolesAllowed) {
-			this.denyAll = false;
-			this.rolesAllowed = (rolesAllowed != null) ? rolesAllowed : new String[] {};
+			this.rolesAllowed = (rolesAllowed != null) ? rolesAllowed : null;
 		}
 
 		@Override
 		public void filter(ContainerRequestContext requestContext) throws IOException {
-			if (!denyAll) {
+			if (rolesAllowed != null) {
 				for (String role : rolesAllowed) {
 					if (requestContext.getSecurityContext().isUserInRole(role)) {
 						return;
 					}
 				}
-            }
-            
-            throw new ForbiddenException();
+			}
+			
+			throw new ForbiddenException();
 		}
 	}
 
 	protected String[] loadRoles(String property) {
-        DynamicReadOnlyProperties props = JNDISingleton.getInstance();
-        
-        // Default value in getProperty doesn't assign to empty values, so we have to do a maunal check after
-        String adminRole = props.getProperty(property, "");
-        
-        if(adminRole == null || adminRole.trim().isEmpty()) {
-            adminRole = DEFAULT_ADMIN_ROLE;
-        }
+		DynamicReadOnlyProperties props = JNDISingleton.getInstance();
+		
+		// Default value in getProperty doesn't assign to empty values, so we have to do a maunal check after
+		String adminRole = props.getProperty(property, "");
+		
+		if(StringUtils.isBlank(adminRole)) {
+			adminRole = DEFAULT_ADMIN_ROLE;
+		}
 
 		return new String[] {adminRole};
 	}

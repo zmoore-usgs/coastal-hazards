@@ -37,6 +37,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,7 +135,7 @@ public class TreeResource {
 	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response updateChildren(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response;
-		if (stringIsNotBlank(id) && stringIsNotBlank(content)) {
+		if (StringUtils.isNotBlank(id) && StringUtils.isNotBlank(content)) {
 			try {
 				JsonObject jsonObj = (JsonObject) new JsonParser().parse(content);
 				Map<String, JsonObject> itemMap = new HashMap<>(1);
@@ -162,7 +164,7 @@ public class TreeResource {
 	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response updateChildrenBulk(@Context HttpServletRequest request, String content) {
 		Response response;
-		if (stringIsNotBlank(content)) {
+		if (StringUtils.isNotBlank(content)) {
 			try {
 				JsonObject jsonObj = (JsonObject) new JsonParser().parse(content);
 				int totalItemCount = 0;
@@ -347,9 +349,5 @@ public class TreeResource {
 		}
 
 		return returnStatus;
-	}
-
-	private Boolean stringIsNotBlank(String str) {
-		return str != null && !str.trim().isEmpty();
 	}
 }

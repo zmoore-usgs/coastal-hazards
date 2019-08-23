@@ -6,7 +6,8 @@ import java.util.Date;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.client.utils.DateUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -50,7 +51,7 @@ public class HttpUtil {
 	public static String fetchDataFromUri(String endpoint) {
 		String data = null;
 
-		try(DefaultHttpClient client = new DefaultHttpClient()) {
+		try(CloseableHttpClient client = HttpClientBuilder.create().build()) {
 			HttpUriRequest req = new HttpGet(endpoint);
 			req.addHeader("Content-Type", "text/xml");
 			HttpResponse resp = client.execute(req);
