@@ -20,8 +20,6 @@ services:
   cch_postgres:
     build:
       context: ./coastal-hazards-liquibase
-      args:
-        - doi_network=$doi_network
     networks:
       cch-net:
         aliases:
@@ -35,8 +33,6 @@ services:
   cch_rserve:
     build:
       context: ./Docker/rserve
-      args:
-        - doi_network=$doi_network
     networks:
       cch-net:
         aliases:
@@ -57,8 +53,6 @@ services:
   cch_n52_wps:
     build:
       context: ./coastal-hazards-n52
-      args:
-        - doi_network=$doi_network
     networks:
       cch-net:
         aliases:
@@ -77,8 +71,6 @@ services:
   cch_portal:
     build:
         context: ./coastal-hazards-portal
-        args:
-          - doi_network=$doi_network
     networks:
       cch-net:
         aliases:
@@ -98,8 +90,6 @@ services:
   cch_geoserver:
     build:
         context: ./coastal-hazards-geoserver
-        args:
-          - doi_network=$doi_network
     networks:
       cch-net:
         aliases:

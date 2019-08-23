@@ -1,6 +1,5 @@
 FROM tomcat:8.0-jre8-alpine
 
-ARG doi_network=false
 ARG POSTGRES_JDBC_VERSION=42.2.4
 ARG KEYCLOAK_ADAPTER_VERSION=6.0.1
 ENV KEY_STORE_PASSWORD=changeit
@@ -11,7 +10,7 @@ RUN apk add --update --no-cache \
 	rm -rf /var/lib/apt/lists/* && \
   rm /var/cache/apk/*
 
-RUN if [ "${doi_network}" = true ]; then \
+RUN if getent ahosts sslhelp.doi.net > /dev/null 2>&1; then \
 		mkdir -p /etc/ssl/certs && \
 		wget -O /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer"; \
 	fi

@@ -3,7 +3,6 @@ Required Environment Variables
 - CCH_LIQUIBASE_VERSION - The version of the CCH Liquibase project to checkout
 
 Optional Environment Variables
-- DOI_NETWORK - [default: false] Set to true if within the DOI network to add the DOI Root Cert to the container
 - CCH_LOAD_BOOTSTRAP - [default: false] Set to true to load the portal bootstrap data from liquibase
 
 Example Build Command
