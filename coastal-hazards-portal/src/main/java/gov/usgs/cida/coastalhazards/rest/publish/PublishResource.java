@@ -1,10 +1,12 @@
 package gov.usgs.cida.coastalhazards.rest.publish;
 
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -17,6 +19,7 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.server.mvc.Viewable;
 
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
+import gov.usgs.cida.utilities.properties.JNDISingleton;
 
 /**
  *
@@ -25,6 +28,8 @@ import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
 @Path("/")
 @ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
 public class PublishResource {
+	public static final String PUBLIC_URL = JNDISingleton.getInstance()
+			.getProperty("coastal-hazards.public.url", "https://localhost:8443/coastal-hazards-portal");
 
 	@GET
 	@Produces(MediaType.TEXT_HTML)
@@ -70,5 +75,13 @@ public class PublishResource {
 		Map<String, String> map = new HashMap<>(1);
 		map.put("id", token);
 		return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", map)).build();
+	}
+
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	@Path("/auth/logout")
+	public Response logout(@Context HttpServletRequest req)  throws ServletException, URISyntaxException {
+		req.logout();
+		return Response.seeOther(new URI(PUBLIC_URL)).build();
 	}
 }

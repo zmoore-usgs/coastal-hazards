@@ -1584,7 +1584,7 @@ CCH.Objects.Publish.UI = function () {
 	});
 
 	$buttonLogout.on(CCH.CONFIG.strings.click, function () {
-		alert("logout");
+		window.location = CCH.CONFIG.contextPath + '/publish/auth/logout';
 	});
 
 	$buttonSave.on(CCH.CONFIG.strings.click, function () {

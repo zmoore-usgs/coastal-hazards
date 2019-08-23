@@ -494,7 +494,6 @@
       "id": "65830c82-8369-434b-b992-f1fb0b55d721",
       "clientId": "cch_local",
       "rootUrl": "https://localhost:8443/coastal-hazards-portal/",
-      "adminUrl": "https://localhost:8443/coastal-hazards-portal/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
