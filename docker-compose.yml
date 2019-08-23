@@ -28,7 +28,7 @@ services:
     ports:
       - "5432:5432"
     env_file:
-      - "compose${CCH_ENV_LOCAL}.env"
+      - "compose.env"
 
   cch_rserve:
     build:
@@ -41,7 +41,7 @@ services:
     ports:
       - "6311:6311"
     env_file:
-      - "compose${CCH_ENV_LOCAL}.env"
+      - "compose.env"
     secrets:
       - source: rserve_password
         target: /rserve.pwd
@@ -61,7 +61,7 @@ services:
     ports:
       - "8082:8080"
     env_file:
-      - "compose${CCH_ENV_LOCAL}.env"
+      - "compose.env"
     secrets:
       - source: n52_wps_config
         target: /wps_config.xml
@@ -81,7 +81,7 @@ services:
       - "8443:8443"
       - "8900:8900"
     env_file:
-      - "compose${CCH_ENV_LOCAL}.env"
+      - "compose.env"
     volumes:
       - type: bind
         source: ./Docker/keycloak/keycloak_tomcat_config.json
@@ -102,7 +102,7 @@ services:
       - "8081:8080"
       - "8444:8443"
     env_file:
-      - "compose${CCH_ENV_LOCAL}.env"
+      - "compose.env"
 
   cch_keycloak:
     image: jboss/keycloak

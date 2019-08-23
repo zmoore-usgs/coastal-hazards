@@ -48,24 +48,6 @@ containers shoudl automatically be able to detect when being built on the DOI
 Network and will make the necessary modifications to be able to pull
 dependencies when this is the case.
 
-#### Parameterized Environment Variables
-===============================
-Several of the containers accept parameterized environment files. By default,
-`docker-compose` will use `compose.env`. To customize the parameters, first
-create a copy of `compose.env`. Make sure the copy's file name starts
-with`compose` and ends with `.env`. An example valid custom env file name is
-`compose_johns_laptop.env`. To take advantage of your custom env file, prepend
-each of your `docker-compose` commands with an assignment to the `CCH_ENV_LOCAL`
-variable. Use the middle portion of your custom env file name as the value. For
-example:
-
-```
-$ CCH_ENV_LOCAL="_johns_laptop" docker-compose up cch_keycloak cch_postgres cch_rserve cch_n52_wps
-```
-
-Known Bugs: Not all parameterizations work. In particular, most version numbers
-in custom env files are ignored in favor of the default values. This is detailed
-further [on Slack](https://usgs-cida.slack.com/archives/cch/p1476487434000753).
 
 #### Building Everything
 ==========
@@ -77,18 +59,13 @@ and run:
 docker-compose up
 `
 
-If you are not on the doi network, do not specify that variable. If you need
-parameterized environments, add the appropriate `CCH_ENV_LOCAL` value as
-described in the "Parameterized Environment Variables" section.
-
-
 #### Running The Portal and GeoServer locally with all other services in containers
 ================
 
 Run a command like the following to stand up the relevant containers:
 
 `
-CCH_ENV_LOCAL="_local" docker-compose up cch_keycloak cch_postgres cch_rserve
+docker-compose up cch_keycloak cch_postgres cch_rserve
 cch_n52_wps
 `
 
@@ -237,7 +214,7 @@ Not seeing the changes you expect? Try building without a cache by using
 Example:
 
 ```
-CCH_ENV_LOCAL="_johns_laptop" docker-compose up --build --force-recreate cch_postgres cch_rserve cch_n52_wps
+docker-compose up --build --force-recreate cch_postgres cch_rserve cch_n52_wps
 ```
 
 ##### DB-related Startup Errors
