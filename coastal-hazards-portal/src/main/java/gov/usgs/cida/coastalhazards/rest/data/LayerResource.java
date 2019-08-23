@@ -8,6 +8,7 @@ import gov.usgs.cida.coastalhazards.model.Layer;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.util.GeoserverUtil;
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.IdGenerator;
@@ -90,7 +91,7 @@ public class LayerResource {
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
 	@Produces(MediaType.TEXT_PLAIN)
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response createVectorLayer(@Context HttpServletRequest req, InputStream postBody) {
 		Response response = null;
 		
@@ -142,7 +143,7 @@ public class LayerResource {
 	@Path("/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.TEXT_PLAIN)
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response createVectorLayerForm(@Context HttpServletRequest req, @FormDataParam("file") InputStream postBody) {
 		Response response = null;
 		
@@ -155,7 +156,7 @@ public class LayerResource {
 	@Path("/raster")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.TEXT_PLAIN)
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response createRasterLayer(
 		@Context HttpServletRequest req, 
 		@FormDataParam("file") InputStream zipFileStream,
@@ -219,7 +220,7 @@ public class LayerResource {
 	@DELETE
 	@Path("/{layer}")
 	@Produces(MediaType.APPLICATION_JSON)
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response deleteLaterFromGeoserver(@Context HttpServletRequest req, @PathParam("layer") String layer) throws URISyntaxException {
 		if (StringUtils.isBlank(layer)) {
 			throw new PreconditionFailedException();

@@ -8,6 +8,7 @@ import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.util.Date;
@@ -133,7 +134,7 @@ public class ItemResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response postItem(String content, @Context HttpServletRequest request) {
 		Response response;
 		Item item = Item.fromJSON(content);
@@ -177,7 +178,7 @@ public class ItemResource {
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response = null;
 		try (ItemManager itemManager = new ItemManager()) {
@@ -235,7 +236,7 @@ public class ItemResource {
 
 	@DELETE
 	@Path("/{id}")
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id, @QueryParam("deleteChildren") boolean deleteChildren) {
 		Response response = null;
 		

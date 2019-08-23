@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.server.mvc.Viewable;
 
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 
 /**
@@ -26,7 +27,7 @@ import gov.usgs.cida.utilities.properties.JNDISingleton;
  * @author isuftin
  */
 @Path("/")
-@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 public class PublishResource {
 	public static final String PUBLIC_URL = JNDISingleton.getInstance()
 			.getProperty("coastal-hazards.public.url", "https://localhost:8443/coastal-hazards-portal");

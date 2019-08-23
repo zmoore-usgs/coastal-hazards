@@ -7,6 +7,7 @@ import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -69,7 +70,7 @@ public class MetadataResource {
 		
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response getMetadata(@Context HttpServletRequest req, @FormDataParam("file") String postBody) {
 		setLatestMetadata(postBody);
 		Response response = Response.ok(postBody).build();

@@ -66,6 +66,7 @@ import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.StormUtil;
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.IdGenerator;
@@ -99,7 +100,7 @@ public class TemplateResource {
 	@POST
 	@Path("/item/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response instantiateTemplate(@PathParam("id") String id, String content) {
 		Response response = null;
 		try (ItemManager itemMan = new ItemManager(); LayerManager layerMan = new LayerManager()) {
@@ -275,7 +276,7 @@ public class TemplateResource {
 	@GET
 	@Path("/storm")
 	@Produces(MediaType.APPLICATION_JSON)
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response instantiateStormTemplate(
 			@QueryParam("layerId") String layerId,
 			@QueryParam("activeStorm") String active,

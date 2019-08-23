@@ -26,6 +26,7 @@ import gov.usgs.cida.utilities.properties.JNDISingleton;
  */
 public class ConfiguredRolesAllowedDynamicFeature implements DynamicFeature {
 	private static final String DEFAULT_ADMIN_ROLE = "CCH_ADMIN";
+	public static final String CCH_ADMIN_USER_PROP = "coastal-hazards.portal.auth.admin.role";
  
 	@Override
 	public void configure(final ResourceInfo resourceInfo, final FeatureContext configuration) {

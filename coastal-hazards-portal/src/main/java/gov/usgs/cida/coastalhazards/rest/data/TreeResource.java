@@ -15,6 +15,7 @@ import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -129,7 +130,7 @@ public class TreeResource {
 
 	@PUT
 	@Path("/item/{id}")
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response updateChildren(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response;
 		if (stringIsNotBlank(id) && stringIsNotBlank(content)) {
@@ -158,7 +159,7 @@ public class TreeResource {
 
 	@POST
 	@Path("/item")
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response updateChildrenBulk(@Context HttpServletRequest request, String content) {
 		Response response;
 		if (stringIsNotBlank(content)) {

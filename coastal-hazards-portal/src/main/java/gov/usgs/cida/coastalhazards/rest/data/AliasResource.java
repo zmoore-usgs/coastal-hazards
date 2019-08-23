@@ -9,6 +9,7 @@ import gov.usgs.cida.coastalhazards.model.Alias;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.util.Date;
 import java.util.List;
@@ -142,7 +143,7 @@ public class AliasResource {
 	
 	@DELETE
 	@Path("/{id}")
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response deleteAlias(@Context HttpServletRequest request, @PathParam("id") String id) {
 		Response response = null;
 		try (AliasManager aliasManager = new AliasManager()) {
@@ -157,7 +158,7 @@ public class AliasResource {
 	
 	@DELETE
 	@Path("/item/{id}")
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response deleteAliasesForItem(@Context HttpServletRequest request, @PathParam("id") String itemId) {
 		Response response = null;
 		try (AliasManager aliasManager = new AliasManager()) {			
@@ -173,7 +174,7 @@ public class AliasResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response postAlias(String content, @Context HttpServletRequest request) {
 		Response response;
 		Alias alias = Alias.fromJSON(content);
@@ -206,7 +207,7 @@ public class AliasResource {
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response updateAlias(@PathParam("id") String id, String content, @Context HttpServletRequest request) {
 		Response response = null;
 		Alias newAlias = Alias.fromJSON(content);
