@@ -21,15 +21,27 @@ instructions make the assumption they are executed from the coastal hazards
 project root directory.
 
 #### Setup
-1. Change `EXTERNAL_HOST` to have the value of your host machine's IP.
+1. Change `EXTERNAL_HOST` to have the value of your host machine's IP 
+(or localhost if running Docker directly).
     * using docker-machine: `docker-machine ip <machine name>`
     * Ubuntu 18.04: `hostname -I`
 
 2. Add an entry to your host OS `hosts` file to map the hostname `keycloak` to
-   `127.0.0.1`. This is necessary for the Dockerized version of Keycloak to be
+   the IP of your Docker host. This is necessary for the Dockerized version of Keycloak to be
    able to properly complete the OAuth2 flow with the portal application
    (regardless of whether the portal is run within Docker or on a local Tomcat
    instance).
+
+   To determine your Docker host address:
+
+    1. If using Docker installed directly on your machine as in Linux, use
+        `localhost` or `127.0.0.1`
+    2. If using a remote Docker engine, use the IP of the host
+        running your Docker engine.
+    3. If using Docker Machine, use the name of the VM to find out the ip. For
+        example, if the VM's name is "workbench", issue the following command:
+
+        `docker-machine ip workbench`
 
 3. If building from local sources, run `mvn clean package`. There should be a
    total of 3 WAR files created, 1 in each of `coastal-hazards-n52`,

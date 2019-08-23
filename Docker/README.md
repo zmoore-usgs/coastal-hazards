@@ -114,12 +114,23 @@ available on **the same URL** both _within_ and _outside_ of the Docker network.
 Within the network created by the Docker Compose file the Keycloak container
 runs on the `keycloak` hostname, however this hostname is not directly available
 to us outside of the Docker network. To get around this, you should add an entry
-to your host OS `hosts` file to map the hostname `keycloak` to `127.0.0.1` so
-that when you open a browser to `keycloak:8083/auth/` you end up at the keycloak
-site running on `127.0.0.1:8083`. This will allow the OAuth2 login flow to work
-properly between the Keycloak server and Portal server. This step **must** be
-done regardless of whether the portal is running in Docker or on a Tomcat
-instance outside of Docker.
+to your host OS `hosts` file to map the hostname `keycloak` to your Docker host 
+address so that when you open a browser to `keycloak:8083/auth/` you end up at 
+the keycloak site running on `<docker host>:8083`. This will allow the OAuth2 
+login flow to work properly between the Keycloak server and Portal server. This
+step **must** be done regardless of whether the portal is running in Docker or
+on a Tomcat instance outside of Docker.
+
+To determine your Docker host address:
+
+1. If using Docker installed directly on your machine as in Linux, use
+   `localhost` or `127.0.0.1`
+2. If using a remote Docker engine, use the IP of the host
+   running your Docker engine.
+3. If using Docker Machine, use the name of the VM to find out the ip. For
+   example, if the VM's name is "workbench", issue the following command:
+
+    `docker-machine ip workbench`
 
 The `CCH` Realm that is automatically configured in the cch_keycloak container
 includes three default users:
