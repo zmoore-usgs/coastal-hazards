@@ -134,5 +134,5 @@ services:
       - KEYCLOAK_HTTPS_PORT=8446
     volumes:
       - type: bind
-        source: ./Docker/keycloak/cch_realm.json
+        source: ./Docker/keycloak/cch_local_development_realm.json
         target: /tmp/cch_realm.json
