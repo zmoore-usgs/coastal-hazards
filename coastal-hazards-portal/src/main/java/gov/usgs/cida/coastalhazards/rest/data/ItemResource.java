@@ -7,12 +7,15 @@ import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -29,8 +32,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -38,10 +39,8 @@ import org.slf4j.LoggerFactory;
  * @author jordan
  */
 @Path(DataURI.ITEM_PATH)
+@PermitAll
 public class ItemResource {
-
-	private static final Logger log = LoggerFactory.getLogger(ItemResource.class);
-
 	public static final String PUBLIC_URL = JNDISingleton.getInstance()
 			.getProperty("coastal-hazards.public.url", "https://localhost:8443/coastal-hazards-portal");
 
@@ -134,6 +133,7 @@ public class ItemResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
 	public Response postItem(String content, @Context HttpServletRequest request) {
 		Response response;
 		Item item = Item.fromJSON(content);
@@ -177,6 +177,7 @@ public class ItemResource {
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
 	public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response = null;
 		try (ItemManager itemManager = new ItemManager()) {
@@ -185,7 +186,7 @@ public class ItemResource {
 			String trackId = null;
 
 			//If this is a storm going from active to inactive then remove the track item
-			if(dbItem.getType() == Item.Type.storms && !updatedItem.isActiveStorm() && dbItem.isActiveStorm()) {
+			if(dbItem != null && dbItem.getType() == Item.Type.storms && !updatedItem.isActiveStorm() && dbItem.isActiveStorm()) {
 				Integer trackIndex = null;
 
 				//Find Track Child
@@ -234,6 +235,7 @@ public class ItemResource {
 
 	@DELETE
 	@Path("/{id}")
+	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
 	public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id, @QueryParam("deleteChildren") boolean deleteChildren) {
 		Response response = null;
 		

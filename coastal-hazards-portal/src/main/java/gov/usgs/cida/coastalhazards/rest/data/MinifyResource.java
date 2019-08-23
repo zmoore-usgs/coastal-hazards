@@ -10,6 +10,8 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -24,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author isuftin
  */
 @Path(DataURI.MINIFY_PATH)
+@PermitAll
 public class MinifyResource {
 
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MinifyResource.class);

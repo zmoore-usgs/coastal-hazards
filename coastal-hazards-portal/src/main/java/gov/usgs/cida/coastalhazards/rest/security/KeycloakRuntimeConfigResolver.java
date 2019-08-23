@@ -20,6 +20,7 @@ import gov.usgs.cida.utilities.properties.JNDISingleton;
 
 /**
  * KeycloakRuntimeConfigResolver - Loads the keycloak config JSON at runtime, rather than bundling it with the JAR
+ * @author zmoore
  */
 public class KeycloakRuntimeConfigResolver implements KeycloakConfigResolver {
 

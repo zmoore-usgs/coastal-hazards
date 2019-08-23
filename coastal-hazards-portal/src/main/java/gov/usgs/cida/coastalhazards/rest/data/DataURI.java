@@ -7,7 +7,6 @@ package gov.usgs.cida.coastalhazards.rest.data;
 public class DataURI {
 	
 	public static final String DATA_SERVICE_ENDPOINT = "/data";
-
 	public static final String ITEM_PATH = "/item";
 	public static final String TEMPLATE_PATH = "/template";
 	public static final String METADATA_PATH = "/metadata";

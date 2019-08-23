@@ -4,9 +4,12 @@ import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Thumbnail;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.io.InputStream;
 import java.util.List;
+
+import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -27,6 +30,7 @@ import javax.ws.rs.core.Response;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path(DataURI.THUMBNAIL_PATH)
+@PermitAll
 public class ThumbnailResource {
 
 	@GET
@@ -72,6 +76,7 @@ public class ThumbnailResource {
 	@Path("/item/{id}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
 	public Response putImage(@PathParam("id") String id, String content, @Context HttpServletRequest request) {
 		Response response = null;
 		Thumbnail thumb = new Thumbnail();

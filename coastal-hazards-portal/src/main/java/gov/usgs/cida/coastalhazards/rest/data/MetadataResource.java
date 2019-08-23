@@ -6,6 +6,8 @@ import gov.usgs.cida.coastalhazards.model.summary.Publication;
 import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -41,6 +45,7 @@ import org.xml.sax.SAXException;
  * @author isuftin
  */
 @Path(DataURI.METADATA_PATH)
+@PermitAll
 public class MetadataResource {
 
 	private static final Logger log = LoggerFactory.getLogger(MetadataResource.class);
@@ -64,6 +69,7 @@ public class MetadataResource {
 		
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
+	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
 	public Response getMetadata(@Context HttpServletRequest req, @FormDataParam("file") String postBody) {
 		setLatestMetadata(postBody);
 		Response response = Response.ok(postBody).build();

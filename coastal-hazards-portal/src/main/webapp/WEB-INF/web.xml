@@ -156,6 +156,7 @@
 	</servlet-mapping>
 	
 	<!-- Security -->
+	<!-- Override the default Keycloak Tomcat Adapter Config Resolver with our implementation -->
 	<context-param>
         <param-name>keycloak.config.resolver</param-name>
         <param-value>gov.usgs.cida.coastalhazards.rest.security.KeycloakRuntimeConfigResolver</param-value>
@@ -183,17 +184,20 @@
 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
 		</user-data-constraint>
-		<!-- Let any role through at this level, we handle roles in the Java Code -->
+		<!-- Let any role through at the Keycloak Authorization level, 
+			 we handle roles dynamically in the Java Code with our own filter -->
 		<auth-constraint>
 			<role-name>*</role-name>
 		</auth-constraint>
 	</security-constraint>
 
+	<!-- Configure the login method to use Keycloak -->
 	<login-config>
 		<auth-method>KEYCLOAK</auth-method>
-		<realm-name>this is required but not used</realm-name>
+		<realm-name>This is required but not used currently by the Keycloak Tomcat 8 Adapter</realm-name>
 	</login-config>
 
+	<!-- Auth Constraint Roles must be defined when using wildcards -->
 	<security-role>
 		<role-name>*</role-name>
 	</security-role>

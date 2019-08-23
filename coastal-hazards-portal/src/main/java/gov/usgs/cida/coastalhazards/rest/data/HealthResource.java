@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+
+import javax.annotation.security.PermitAll;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path(DataURI.HEALTH_PATH)
+@PermitAll
 public class HealthResource {
 	private static final Logger LOG = LoggerFactory.getLogger(HealthResource.class);
 	private static final String geoserverEndpoint;

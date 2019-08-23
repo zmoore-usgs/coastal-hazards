@@ -4,7 +4,6 @@ import gov.usgs.cida.coastalhazards.model.Alias;
 import gov.usgs.cida.coastalhazards.model.Item;
 import java.util.List;
 import javax.persistence.Query;
-import org.apache.log4j.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
@@ -13,9 +12,7 @@ import javax.persistence.EntityTransaction;
  * @author Zack Moore <zmoore@usgs.gov>
  */
 public class AliasManager implements AutoCloseable {
-
-    private static final Logger log = Logger.getLogger(DataDomainManager.class);
-    
+   
     private static final String HQL_SELECT_ALL = "select a from Alias a";
     private static final String HQL_SELECT_BY_ID = "select a from Alias a where a.id = :id";
     private static final String HQL_SELECT_BY_ITEM_ID = "select a from Alias a where a.itemId = :item_id";

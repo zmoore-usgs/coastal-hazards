@@ -8,6 +8,7 @@ import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.model.Alias;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
+import javax.annotation.security.PermitAll;
 import javax.persistence.RollbackException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -34,6 +36,7 @@ import javax.ws.rs.core.Response;
  * @author Zack Moore <zmoore@usgs.gov>
  */
 @Path(DataURI.ALIAS_PATH)
+@PermitAll
 public class AliasResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -139,6 +142,7 @@ public class AliasResource {
 	
 	@DELETE
 	@Path("/{id}")
+	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
 	public Response deleteAlias(@Context HttpServletRequest request, @PathParam("id") String id) {
 		Response response = null;
 		try (AliasManager aliasManager = new AliasManager()) {
@@ -153,6 +157,7 @@ public class AliasResource {
 	
 	@DELETE
 	@Path("/item/{id}")
+	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
 	public Response deleteAliasesForItem(@Context HttpServletRequest request, @PathParam("id") String itemId) {
 		Response response = null;
 		try (AliasManager aliasManager = new AliasManager()) {			
@@ -168,6 +173,7 @@ public class AliasResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
 	public Response postAlias(String content, @Context HttpServletRequest request) {
 		Response response;
 		Alias alias = Alias.fromJSON(content);
@@ -200,6 +206,7 @@ public class AliasResource {
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
 	public Response updateAlias(@PathParam("id") String id, String content, @Context HttpServletRequest request) {
 		Response response = null;
 		Alias newAlias = Alias.fromJSON(content);

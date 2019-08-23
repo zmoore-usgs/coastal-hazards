@@ -14,7 +14,9 @@ The `compose.env` file located in the project root directory contains example va
     * using docker-machine: `docker-machine ip <machine name>`
     * Ubuntu 18.04: `hostname -I`
 
-2. If building from local sources, run `mvn clean package`. There should be a total of 3 WAR files created, 1 in each of `coastal-hazards-n52`, `coastal-hazards-geoserver`, and `coastal-hazards-portal`.
+2. Add an entry to your host OS `hosts` file to map the hostname `keycloak` to `127.0.0.1`. This is necessary for the Dockerized version of Keycloak to be able to properly complete the OAuth2 flow with the portal application (regardless of whether the portal is run within Docker or on a local Tomcat instance).
+
+3. If building from local sources, run `mvn clean package`. There should be a total of 3 WAR files created, 1 in each of `coastal-hazards-n52`, `coastal-hazards-geoserver`, and `coastal-hazards-portal`.
 
 #### Building and running the docker containers
 
@@ -24,9 +26,24 @@ The `compose.env` file located in the project root directory contains example va
     * Note: If you are having trouble pulling the necessary files for the docker containers during build and you are behind the DOI network, try adding `doi_network=true` to your command. It's possible that the SSL inspection certificate is causing problems.
 
 2. To launch the built images into containers, execute `docker-compose up`
-    * Note: To limit output, only include the containers you want to see. For example, `docker-compose up cch_portal` will   only show the output for `cch_portal`.
+    * Note: To limit output, only include the containers you want to see. For example, `docker-compose up cch_portal` will only show the output for `cch_portal`.
 
 3. Once the portal has finished building and starting it should be accessible from `http://<EXTERNAL_HOST>:8080/coastal-hazards-portal/`
+
+4. If accessing a secure part of the portal application you will be directed to login via the local Keycloak container that should be running on `https://keycloak:8446` (this is why step 2 of the setup section is important). There are 3 default local users configured in the Keycloak container:
+
+    1. User: admin, Password: admin
+
+        This local user is what should be used for modifying the Realm in Keycloak. This user does not have the role to access the mediation page in the portal itself, but is the only user with admin privileges within Keycloak.
+
+    2. User: cch_admin, Password: password
+
+        This local user has the proper role to be granted access to the mediation page in the local Dockerized version of the
+        coastal-hazards-portal application.
+
+    3. User: cch_user, Password: password
+
+        This local user has no roles assigned and is meant to serve as a test user who might try to login to the mediation page without the proper role.
 
 ### Stopping the docker containers
 
@@ -69,6 +86,39 @@ as the `docker-compose up` command (described above). Example:
 
 Any re-built services can then be brought up via the service-specific version of
 `docker-compose` described in point `1` under `Additional Important Notes` below.
+
+### Setting up a non-Docker Tomcat 8 for Coastal Hazards Portal (not GeoServer)
+#### Libraries
+The Tomcat instance will need several libraries installed into its `lib` directory in
+order for it to work properly with the CCH Portal application. These are installed
+during the build of the Dockerized portal, but must be installed manually in the non-
+Dockerized version.
+
+1. PostgreSQL JDBC - Where ${version} is the version defined in the coastal-hazards-portal Dockerfile as `POSTGRES_JDBC_VERSION`: 
+
+    https://jdbc.postgresql.org/download/postgresql-${version}.jar
+
+2. Keycloak Tomcat 8 Adapter - Where ${version} is the version defined in the coastal-hazards-portal Dockerfile as `KEYCLOAK_ADAPTER_VERSION`: 
+
+    https://downloads.jboss.org/keycloak/${version}/adapters/keycloak-oidc/keycloak-tomcat8-adapter-dist-${version}.tar.gz 
+
+    (Can also change `.tar.gz` to `.zip`)
+
+Once you've downloaded the files above place all of the JARs into the tomcat instance `lib` directory (the JAR files must be extracted from the Keycloak Tomcat 8 Adapter archive).
+
+#### Configuration Files
+To setup a non-Docker Tomcat 8 instance for CCH Portal, take a look at the config
+files in the ./coastal-hazards-portal/docker directory. These files can be used
+to properly configure a Tomcat 8 instance for running the portal. Note that the
+`context.xml` "Environment" values are set via the `setenv.sh` script, which pulls
+its values out of the system environment. When running locally outside of Docker it
+is easier to skip the `setenv.sh` script and simply replace the substituion parameters
+in `context.xml` with the actual values you want to use. To see the values used by
+Docker, check out `./compose.env` in the project root dir, but note that some of the
+values in that file are specific to the way that Docker is configured and won't work
+directly outside of it (specifically the various URL and port parameters).
+
+
 
 ### Additional Important Notes
 

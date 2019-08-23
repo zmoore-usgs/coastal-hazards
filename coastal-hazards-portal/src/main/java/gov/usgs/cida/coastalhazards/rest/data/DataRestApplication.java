@@ -6,6 +6,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 import org.glassfish.jersey.servlet.ServletProperties;
 
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
+
 /**
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
@@ -18,5 +20,8 @@ public class DataRestApplication extends ResourceConfig {
 		property(ServletProperties.FILTER_STATIC_CONTENT_REGEX, "(/WEB-INF/jsp/*)");
 		register(JspMvcFeature.class);
 		register(MultiPartFeature.class);
+
+		//security
+		register(ConfiguredRolesAllowedDynamicFeature.class);
 	}
 }

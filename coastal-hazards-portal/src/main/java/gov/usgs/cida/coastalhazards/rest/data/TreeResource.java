@@ -14,6 +14,8 @@ import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -42,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path(DataURI.TREE_PATH)
+@PermitAll
 public class TreeResource {
 
 	private static final Logger log = LoggerFactory.getLogger(TreeResource.class);
@@ -126,6 +131,7 @@ public class TreeResource {
 
 	@PUT
 	@Path("/item/{id}")
+	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
 	public Response updateChildren(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response;
 		if (stringIsNotBlank(id) && stringIsNotBlank(content)) {
@@ -154,6 +160,7 @@ public class TreeResource {
 
 	@POST
 	@Path("/item")
+	@ConfiguredRolesAllowed("coastal-hazards.portal.auth.admin.role")
 	public Response updateChildrenBulk(@Context HttpServletRequest request, String content) {
 		Response response;
 		if (stringIsNotBlank(content)) {

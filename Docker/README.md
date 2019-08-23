@@ -9,11 +9,12 @@ Contents:
 - Docker Machine
 - Building on the DOI network
 - Parameterized Environment Variables
+- Building Everything
+- Running The Portal and GeoServer Locally
 - Geoserver
 - RServe
 - 52N WPS
 - Postgres/PostGIS
-- PyCSW
 - Troubleshooting
 
 #### Docker
@@ -45,7 +46,7 @@ With this modification, the containers that need it will include pulling the SSL
 Several of the containers accept parameterized environment files. By default, `docker-compose` will use `compose.env`. To customize the parameters, first create a copy of `compose.env`. Make sure the copy's file name starts with`compose` and ends with `.env`. An example valid custom env file name is `compose_johns_laptop.env`. To take advantage of your custom env file, prepend each of your `docker-compose` commands with an assignment to the `CCH_ENV_LOCAL` variable. Use the middle portion of your custom env file name as the value. For example:
 
 ```
-$ CCH_ENV_LOCAL="_johns_laptop" doi_network="true" docker-compose up cch_db cch_rserve cch_n52_wps cch_pycsw
+$ CCH_ENV_LOCAL="_johns_laptop" doi_network="true" docker-compose up cch_keycloak cch_postgres cch_rserve cch_n52_wps
 ```
 
 Known Bugs:
@@ -69,12 +70,33 @@ If you are not on the doi network, do not specify that variable. If you need par
 Run a command like the following to stand up the relevant containers:
 
 `
-CCH_ENV_LOCAL="_local" doi_network="true" docker-compose up cch_db cch_rserve cch_n52_wps cch_pycsw
+CCH_ENV_LOCAL="_local" doi_network="true" docker-compose up cch_keycloak cch_postgres cch_rserve cch_n52_wps
 `
 
 Manually set up you tomcat instances locally for the Portal and GeoServer. Use the dev tier's context.xml's or the Dockerized context.xml's as a starting point.
 
 Modify the context.xml's for those tomcat instances. Most references to services should use either `localhost` or your docker machine vm's IP. Ports for containerized services are defined in `coastal-hazards/Docker/docker-compose.yml`.
+
+
+#### Keycloak
+=========
+
+CCH Uses Keycloak for authentication into the mediation page, and as such when running in Docker we must have a Keycloak instance available for the portal to authenticate with. The cch_keycloak container is started and automatically configured using the `cch_realm.json` file in `./Docker/keycloak/`. In order for Keycloak to work properly it must be available on **the same URL** both _within_ and _outside_ of the Docker network. Within the network created by the Docker Compose file the Keycloak container runs on the `keycloak` hostname, however this hostname is not directly available to us outside of the Docker network. To get around this, you should add an entry to your host OS `hosts` file to map the hostname `keycloak` to `127.0.0.1` so that when you open a browser to `keycloak:8083/auth/` you end up at the keycloak site running on `127.0.0.1:8083`. This will allow the OAuth2 login flow to work properly between the Keycloak server and Portal server. This step **must** be done regardless of whether the portal is running in Docker or on a Tomcat instance outside of Docker.
+
+The `CCH` Realm that is automatically configured in the cch_keycloak constainer includes three default users:
+
+1. User: admin, Password: admin
+
+    This local user is what should be used for modifying the Realm in Keycloak. This user does not have the role to access the mediation page in the portal itself, but is the only user with admin privileges within Keycloak.
+
+2. User: cch_admin, Password: password
+
+    This local user has the proper role to be granted access to the mediation page in the local Dockerized version of the
+    coastal-hazards-portal application.
+
+2. User: cch_user, Password: password
+
+    This local user has no roles assigned and is meant to serve as a test user who might try to login to the mediation page without the proper role.
 
 
 #### Geoserver
@@ -121,26 +143,13 @@ Once the server is up and running, you can access the server by pointing your we
 
 This container is standalone and does not depend on any other containers to run. You can run the container by issuing:
 
-`docker-compose up cch_db`
+`docker-compose up cch_postgres`
 
 The DOI SSL issue also applies to this container, so if you are on the DOI network, issue:
 
-`doi_network="true" docker-compose build cch_db`
+`doi_network="true" docker-compose build cch_postgres`
 
 You will then be able to connect to the database via the ports and credentials described in `docker-compose.yml` and `postgres/Dockerfile`
-
-#### PyCSW
-=====
-
-PyCSW requires a database. Accordingly, this container requires the postgres (`cch_db`) container.
-
-You can run the container and its dependent db container by issuing:
-
-`docker-compose up cch_pycsw`
-
-The DOI SSL issue also applies to this container, so if you are on the DOI network, issue:
-
-`doi_network="true" docker-compose build cch_pycsw`
 
 
 #### Troubleshooting
@@ -154,22 +163,21 @@ Not seeing the changes you expect? Try building without a cache by using `--buil
 Example:
 
 ```
-CCH_ENV_LOCAL="_johns_laptop" doi_network="true" docker-compose up --build --force-recreate cch_db cch_rserve cch_n52_wps cch_pycsw
+CCH_ENV_LOCAL="_johns_laptop" doi_network="true" docker-compose up --build --force-recreate cch_postgres cch_rserve cch_n52_wps
 ```
 
 ##### DB-related Startup Errors
 
-The postgres and PyCSW containers may fail to start the first time you try to `docker-compose up` them, logging messages like:
+The postgres container may fail to start the first time you try to `docker-compose up` them, logging messages like:
 
 `
-docker_cch_db_1 exited with code 255
-docker_cch_pycsw_1 exited with code 1
+docker_cch_postgres_1 exited with code 255
 `
 
 In that case, try running the same command again. You may get an error like this:
 
 `
-ERROR: for cch_db  oci runtime error: container with id exists: 5ca07708b997ab70562ae32f79d4925b0bf7e35c7997a00ded90cf416685e038
+ERROR: for cch_postgres  oci runtime error: container with id exists: 5ca07708b997ab70562ae32f79d4925b0bf7e35c7997a00ded90cf416685e038
 Traceback (most recent call last):
   File "/usr/bin/docker-compose", line 9, in <module>
     load_entry_point('docker-compose==1.7.1', 'console_scripts', 'docker-compose')()
