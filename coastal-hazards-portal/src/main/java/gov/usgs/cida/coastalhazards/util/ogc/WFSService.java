@@ -85,9 +85,9 @@ public class WFSService implements OGCService {
         boolean isValid = false;
         try {
             isValid = !(StringUtils.isBlank(this.getEndpoint()) || StringUtils.isBlank(this.getTypeName()));
-            new URL(this.getEndpoint()).toString();
+            new URL(this.getEndpoint());
         } catch (MalformedURLException ex) {
-            isValid = false;
+            // Do nothing, isValid is already false
         }
         return isValid;
     }
