@@ -5,14 +5,14 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.http.impl.cookie.DateUtils;
+import org.apache.http.client.utils.DateUtils;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,13 +51,11 @@ public class HttpUtil {
 	public static String fetchDataFromUri(String endpoint) {
 		String data = null;
 
-		try {
+		try(CloseableHttpClient client = HttpClientBuilder.create().build()) {
 			HttpUriRequest req = new HttpGet(endpoint);
-			HttpClient client = new DefaultHttpClient();
 			req.addHeader("Content-Type", "text/xml");
 			HttpResponse resp = client.execute(req);
 			StatusLine statusLine = resp.getStatusLine();
-
 			if (statusLine.getStatusCode() != 200) {
 				log.error("Failed to retrieve data from " + endpoint + ". Error code " + statusLine.getStatusCode() + ". Reason: " + statusLine.getReasonPhrase());
 			} else {

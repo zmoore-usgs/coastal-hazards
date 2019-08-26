@@ -8,18 +8,18 @@ import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.model.Alias;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
-import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
+import javax.annotation.security.PermitAll;
 import javax.persistence.RollbackException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -37,7 +37,7 @@ import javax.ws.rs.core.Response;
  * @author Zack Moore <zmoore@usgs.gov>
  */
 @Path(DataURI.ALIAS_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
+@PermitAll
 public class AliasResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -141,9 +141,9 @@ public class AliasResource {
 		return response;
 	}
 	
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@DELETE
 	@Path("/{id}")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response deleteAlias(@Context HttpServletRequest request, @PathParam("id") String id) {
 		Response response = null;
 		try (AliasManager aliasManager = new AliasManager()) {
@@ -156,9 +156,9 @@ public class AliasResource {
 		return response;
 	}
 	
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@DELETE
 	@Path("/item/{id}")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response deleteAliasesForItem(@Context HttpServletRequest request, @PathParam("id") String itemId) {
 		Response response = null;
 		try (AliasManager aliasManager = new AliasManager()) {			
@@ -171,10 +171,10 @@ public class AliasResource {
 		return response;
 	}
 	
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response postAlias(String content, @Context HttpServletRequest request) {
 		Response response;
 		Alias alias = Alias.fromJSON(content);
@@ -203,11 +203,11 @@ public class AliasResource {
 		return response;
 	}
 	
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response updateAlias(@PathParam("id") String id, String content, @Context HttpServletRequest request) {
 		Response response = null;
 		Alias newAlias = Alias.fromJSON(content);

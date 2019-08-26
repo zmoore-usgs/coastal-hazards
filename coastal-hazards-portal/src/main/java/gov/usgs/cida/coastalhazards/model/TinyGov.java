@@ -13,6 +13,7 @@ import javax.persistence.Id;
 public class TinyGov implements Serializable{
 
     
+    private static final long serialVersionUID = 1L;
     private String fullUrl;
     private String tinyUrl;
 

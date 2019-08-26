@@ -1,6 +1,5 @@
 package gov.usgs.cida.coastalhazards.rest.data.util;
 
-import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.rest.data.DataURI;
 import gov.usgs.cida.coastalhazards.rest.data.TempFileResource;

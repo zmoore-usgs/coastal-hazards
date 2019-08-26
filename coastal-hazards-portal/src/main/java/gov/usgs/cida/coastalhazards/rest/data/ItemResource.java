@@ -7,16 +7,16 @@ import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
-import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
-import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -33,9 +33,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -43,11 +40,8 @@ import org.slf4j.LoggerFactory;
  * @author jordan
  */
 @Path(DataURI.ITEM_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
+@PermitAll
 public class ItemResource {
-
-	private static final Logger log = LoggerFactory.getLogger(ItemResource.class);
-
 	public static final String PUBLIC_URL = JNDISingleton.getInstance()
 			.getProperty("coastal-hazards.public.url", "https://localhost:8443/coastal-hazards-portal");
 
@@ -137,10 +131,10 @@ public class ItemResource {
 	 * @param request passed through context of request
 	 * @return
 	 */
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response postItem(String content, @Context HttpServletRequest request) {
 		Response response;
 		Item item = Item.fromJSON(content);
@@ -181,10 +175,10 @@ public class ItemResource {
 	 * @param content
 	 * @return
 	 */
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response = null;
 		try (ItemManager itemManager = new ItemManager()) {
@@ -193,7 +187,7 @@ public class ItemResource {
 			String trackId = null;
 
 			//If this is a storm going from active to inactive then remove the track item
-			if(dbItem.getType() == Item.Type.storms && !updatedItem.isActiveStorm() && dbItem.isActiveStorm()) {
+			if(dbItem != null && dbItem.getType() == Item.Type.storms && !updatedItem.isActiveStorm() && dbItem.isActiveStorm()) {
 				Integer trackIndex = null;
 
 				//Find Track Child
@@ -240,9 +234,9 @@ public class ItemResource {
 		return response;
 	}
 
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
 	@DELETE
 	@Path("/{id}")
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id, @QueryParam("deleteChildren") boolean deleteChildren) {
 		Response response = null;
 		
@@ -285,12 +279,5 @@ public class ItemResource {
 			response = Response.ok("{\"cycle\": " + cycle + "}", MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;
-	}
-
-	public static URI itemURI(Item item) {
-		UriBuilder fromUri = UriBuilder.fromUri(PUBLIC_URL);
-		URI uri = fromUri.path(DataURI.DATA_SERVICE_ENDPOINT + DataURI.ITEM_PATH)
-				.path(item.getId()).build();
-		return uri;
 	}
 }

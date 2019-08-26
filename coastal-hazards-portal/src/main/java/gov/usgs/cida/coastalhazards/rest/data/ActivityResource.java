@@ -4,6 +4,7 @@ import gov.usgs.cida.coastalhazards.jpa.ActivityManager;
 import gov.usgs.cida.coastalhazards.model.Activity;
 import gov.usgs.cida.coastalhazards.model.Activity.ActivityType;
 import java.util.Date;
+
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -17,7 +18,7 @@ import javax.ws.rs.core.Response;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path(DataURI.ACTIVITY_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
+@PermitAll
 public class ActivityResource {
     
     private static ActivityManager activityManager;

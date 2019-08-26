@@ -8,8 +8,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -20,7 +18,7 @@ import org.slf4j.LoggerFactory;
 @Table(name = "alias")
 public class Alias implements Serializable {
 
-	private static final Logger log = LoggerFactory.getLogger(Alias.class);
+	private static final long serialVersionUID = 1L;
 
 	private String id;
 	private String item_id;

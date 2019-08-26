@@ -20,8 +20,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -32,7 +30,6 @@ import org.slf4j.LoggerFactory;
 public class DataDomain implements Serializable, Cacheable {
     
     private static final long serialVersionUID = 1966390157385346795L;
-    private static final Logger log = LoggerFactory.getLogger(DataDomain.class);
     
     private int id;
     private String itemId;

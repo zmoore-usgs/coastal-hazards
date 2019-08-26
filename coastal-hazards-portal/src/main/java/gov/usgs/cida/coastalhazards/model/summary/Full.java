@@ -24,6 +24,7 @@ import org.hibernate.annotations.IndexColumn;
 @Table(name="full_summary")
 public class Full implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     public static final int TITLE_MAX_LENGTH = 1024;
     public static final int TEXT_MAX_LENGTH = 64000;
 

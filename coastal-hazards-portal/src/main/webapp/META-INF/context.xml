@@ -1,2 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path="/coastal-hazards-portal"/>
+<Context path="/coastal-hazards-portal">
+    <Valve className="org.keycloak.adapters.tomcat.KeycloakAuthenticatorValve"/>
+</Context>

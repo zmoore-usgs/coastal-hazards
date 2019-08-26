@@ -8,6 +8,8 @@ import javax.ws.rs.WebApplicationException;
  */
 public class UnauthorizedException extends WebApplicationException {
     
+    private static final long serialVersionUID = 1L;
+
     @Override
     public String getMessage() {
         return "Authorization failed when accessing resource";

@@ -28,5 +28,5 @@ $(document).ready(function () {
 		item: CCH.itemid || ''
 	});
 
-	CCH.Auth.checkAuthStatus().then(CCH.publish.init);
+	CCH.publish.init();
 });

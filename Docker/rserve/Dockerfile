@@ -2,15 +2,9 @@ FROM rocker/r-ver:3.3.3
 
 LABEL maintainer="gs-w_eto_eb_federal_employees@usgs.gov"
 
-ARG doi_network=false
-
-RUN if [ "${doi_network}" = true ]; then \
-		/usr/bin/wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://sslhelp.doi.net/docs/DOIRootCA2.cer && \
-		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0; \
-	fi
-
 RUN apt-get update && \
 	apt-get install --no-install-recommends -y \
+	wget \
 	telnet=0.17-36 \
 	libcurl3=7.38.0-4+deb8u15 \
 	libcurl4-openssl-dev=7.38.0-4+deb8u15 \
@@ -24,6 +18,11 @@ RUN apt-get update && \
 	apt-get clean
 
 RUN mkdir work
+
+RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
+		wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://sslhelp.doi.net/docs/DOIRootCA2.cer && \
+		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0; \
+	fi
 
 RUN R -e "install.packages('devtools');library(devtools);install.packages(c('Rserve','RCurl','XML'));install_github('USGS-R/hazardItems');"
 

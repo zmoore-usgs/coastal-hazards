@@ -12,6 +12,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class SessionItem implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private String itemId;
     private boolean visible;
     

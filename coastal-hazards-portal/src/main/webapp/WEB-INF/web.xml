@@ -155,23 +155,50 @@
 		<url-pattern>/info/</url-pattern>  
 	</servlet-mapping>
 	
+	<!-- Security -->
+	<!-- Override the default Keycloak Tomcat Adapter Config Resolver with our implementation -->
+	<context-param>
+        <param-name>keycloak.config.resolver</param-name>
+        <param-value>gov.usgs.cida.coastalhazards.rest.security.KeycloakRuntimeConfigResolver</param-value>
+    </context-param>
 	<security-constraint>
 		<web-resource-collection>
-			<web-resource-name>Secure the publishing endpoint</web-resource-name>
+			<web-resource-name>Secure the publishing endpoint for everything</web-resource-name>
 			<url-pattern>/publish/*</url-pattern>
 		</web-resource-collection>
 		<web-resource-collection>
-			<web-resource-name>Secure the publishing endpoint</web-resource-name>
-			<url-pattern>/security/*</url-pattern>
-		</web-resource-collection>
-		<web-resource-collection>
-			<web-resource-name>Secure the data endpoint for everything but GET</web-resource-name>
+			<web-resource-name>Secure the data endpoints for everything but GET</web-resource-name>
 			<url-pattern>/data/*</url-pattern>
 			<http-method>DELETE</http-method>
 			<http-method>PUT</http-method>
+			<http-method>POST</http-method>
+			<http-method>UPDATE</http-method>
+		</web-resource-collection>
+		<web-resource-collection>
+			<web-resource-name>Secure the data/view endpoint for everything but GET and POST</web-resource-name>
+			<url-pattern>/data/view/*</url-pattern>
+			<http-method>PUT</http-method>
+			<http-method>DELETE</http-method>
+			<http-method>UPDATE</http-method>
 		</web-resource-collection>
 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
 		</user-data-constraint>
+		<!-- Let any role through at the Keycloak Authorization level, 
+			 we handle roles dynamically in the Java Code with our own filter -->
+		<auth-constraint>
+			<role-name>*</role-name>
+		</auth-constraint>
 	</security-constraint>
+
+	<!-- Configure the login method to use Keycloak -->
+	<login-config>
+		<auth-method>KEYCLOAK</auth-method>
+		<realm-name>This is required but not used currently by the Keycloak Tomcat 8 Adapter</realm-name>
+	</login-config>
+
+	<!-- Auth Constraint Roles must be defined when using wildcards -->
+	<security-role>
+		<role-name>*</role-name>
+	</security-role>
 </web-app>

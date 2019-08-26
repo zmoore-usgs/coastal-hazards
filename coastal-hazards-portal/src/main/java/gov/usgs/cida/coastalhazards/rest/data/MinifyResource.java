@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -25,11 +26,10 @@ import org.slf4j.LoggerFactory;
  * @author isuftin
  */
 @Path(DataURI.MINIFY_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
+@PermitAll
 public class MinifyResource {
 
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MinifyResource.class);
-	private static final long serialVersionUID = 1L;
     private static TinyGovManager urlManager = new TinyGovManager();
 
 	@GET
@@ -105,9 +105,8 @@ public class MinifyResource {
 			responseMap.put("message", ex.getMessage());
 			response = Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
-		} finally {
-			return response;
 		}
+		return response;
 	}
 
 	@GET
@@ -133,8 +132,7 @@ public class MinifyResource {
 			responseMap.put("message", ex.getMessage());
 			response = Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
-		} finally {
-			return response;
-		}
+		} 
+		return response;
 	}
 }

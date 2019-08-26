@@ -6,6 +6,8 @@ package gov.usgs.cida.coastalhazards.exception;
  */
 public class DownloadStagingUnsuccessfulException extends RuntimeException {
     
+    private static final long serialVersionUID = 1L;
+
     @Override
     public String getMessage() {
         return "Unable to stage download from remote source";

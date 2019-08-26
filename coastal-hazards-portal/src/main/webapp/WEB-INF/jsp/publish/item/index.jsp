@@ -16,7 +16,9 @@
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page import="java.util.Map" %>
-
+<%@ page import="org.keycloak.KeycloakSecurityContext" %>
+<%@ page import="org.keycloak.representations.AccessToken" %>
+<%@ page import="org.keycloak.representations.IDToken" %>
 <%!
     protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
@@ -66,6 +68,12 @@
     String nhcTrackResTitles = getProp("coastal-hazards.nhc.track.res.titles");
     String nhcTrackResLinks = getProp("coastal-hazards.nhc.track.res.links");
 
+    // Get Username
+    KeycloakSecurityContext securityContext = (KeycloakSecurityContext) request.getAttribute(KeycloakSecurityContext.class.getName());
+    IDToken idToken = securityContext.getIdToken();
+    AccessToken accessToken = securityContext.getToken();
+    String usernameString = idToken.getPreferredUsername();
+
     // Figure out the path based on the ID passed in, if any
     Map<String, String> attributeMap = (Map<String, String>) pageContext.findAttribute("it");
     String id = attributeMap.get("id") == null ? "" : attributeMap.get("id");
@@ -109,6 +117,7 @@
             CCH.itemid = '<%= id%>';
             CCH.baseUrl = '<%= baseUrl%>';
             CCH.CONFIG.contextPath = '<%= baseUrl%>';
+            CCH.CONFIG.username = '<%= usernameString%>';
             CCH.CONFIG.ui = {
                 'disableBoundingBoxInputForAggregations': true
             },
@@ -605,7 +614,6 @@
         <script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Auth.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/publish.js"></script>

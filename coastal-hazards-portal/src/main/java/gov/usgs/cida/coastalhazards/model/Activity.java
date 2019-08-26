@@ -21,6 +21,8 @@ import javax.persistence.TemporalType;
 @Table(name = "activity")
 public class Activity implements Serializable {
     
+    private static final long serialVersionUID = 1L;
+
     public enum ActivityType {
 		// When the item is viewed in the info page
         USE,

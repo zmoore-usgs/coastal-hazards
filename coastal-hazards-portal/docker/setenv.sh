@@ -6,10 +6,11 @@ export CATALINA_OPTS="$CATALINA_OPTS -XX:HeapDumpPath=/heapdumps"
 export CATALINA_OPTS="$CATALINA_OPTS -XX:SoftRefLRUPolicyMSPerMB=36000"
 export CATALINA_OPTS="$CATALINA_OPTS -XX:+UseParallelGC"
 export CATALINA_OPTS="$CATALINA_OPTS -Djava.awt.headless=true"
+export CATALINA_OPTS="$CATALINA_OPTS -Dcch_auth_config_file=$PORTAL_KEYCLOAK_FILE_PATH"
+export CATALINA_OPTS="$CATALINA_OPTS -Dcch_auth_admin_role=$PORTAL_ADMIN_ROLE"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_db_hostname=$POSTGRES_HOST"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_db_port=$POSTGRES_PORT"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_db_password=$POSTGRES_CCH_PASSWORD"
-export CATALINA_OPTS="$CATALINA_OPTS -Dcch_auth_service_endpoint=$CIDA_AUTH_ENDPOINT"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_public_url=http://$EXTERNAL_HOST:$PORTAL_HTTP_PORT/coastal-hazards-portal"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_base_url=http://$EXTERNAL_HOST:$PORTAL_INTERNAL_HTTP_PORT/coastal-hazards-portal"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcch_base_secure_url=https://$EXTERNAL_HOST:$PORTAL_HTTPS_PORT/coastal-hazards-portal"
@@ -45,7 +46,3 @@ export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=/usr/local/tomcat/ssl/tr
 export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStorePassword=${KEY_STORE_PASSWORD}"
 export JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=/heapdumps"
 export JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
-
-if [ "${PORTAL_ALLOW_ANONYMOUS_LOGIN}" = "true" ]; then
-    export CATALINA_OPTS="$CATALINA_OPTS -Dcch_null_role=CCH_ADMIN"
-fi;

@@ -12,6 +12,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Medium implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     public static final int TITLE_MAX_LENGTH = 1024;
     public static final int TEXT_MAX_LENGTH = 2048;
 

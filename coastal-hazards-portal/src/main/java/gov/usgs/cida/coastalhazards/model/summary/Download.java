@@ -11,6 +11,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Download implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private String link;
 
     @Column(name="download_link")

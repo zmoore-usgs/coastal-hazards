@@ -14,7 +14,8 @@ import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
-import gov.usgs.cida.coastalhazards.rest.security.CoastalHazardsTokenBasedSecurityFilter;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
+import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,7 +25,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -37,7 +37,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import org.apache.commons.lang3.StringUtils;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path(DataURI.TREE_PATH)
-@PermitAll //says that all methods, unless otherwise secured, will be allowed by default
+@PermitAll
 public class TreeResource {
 
 	private static final Logger log = LoggerFactory.getLogger(TreeResource.class);
@@ -131,7 +132,7 @@ public class TreeResource {
 
 	@PUT
 	@Path("/item/{id}")
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response updateChildren(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response;
 		if (StringUtils.isNotBlank(id) && StringUtils.isNotBlank(content)) {
@@ -160,7 +161,7 @@ public class TreeResource {
 
 	@POST
 	@Path("/item")
-	@RolesAllowed({CoastalHazardsTokenBasedSecurityFilter.CCH_ADMIN_ROLE})
+	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response updateChildrenBulk(@Context HttpServletRequest request, String content) {
 		Response response;
 		if (StringUtils.isNotBlank(content)) {

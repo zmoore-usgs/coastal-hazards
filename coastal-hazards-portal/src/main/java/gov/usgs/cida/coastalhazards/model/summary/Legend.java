@@ -11,6 +11,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Legend implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private String title;
 
     @Column(name="legend_title")

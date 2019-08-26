@@ -19,7 +19,11 @@
 		logAbandoned="true"
 		description="{usedBy: ['coastalhazards']}"/>
 
-	<Environment name="cida.auth.service.endpoint" override="true" type="java.lang.String" value="${cch_auth_service_endpoint}"/>
+	<!-- Keycloak -->
+	<Environment name="coastal-hazards.portal.auth.config.file" type="java.lang.String" value="${cch_auth_config_file}"/>
+	<Environment name="coastal-hazards.portal.auth.admin.role" type="java.lang.String" value="${cch_auth_admin_role}"/>
+
+	<!-- General -->
 	<Environment name="coastal-hazards.public.url" type="java.lang.String" value="${cch_public_url}"/>
 	<Environment name="coastal-hazards.base.url" type="java.lang.String" value="${cch_base_url}"/>
 	<Environment name="coastal-hazards.base.secure.url" type="java.lang.String" value="${cch_base_secure_url}" override="false"/>
@@ -32,16 +36,6 @@
 	<Environment name="coastal-hazards.portal.geoserver.endpoint" type="java.lang.String" value="${cch_portal_geoserver_endpoint}"/>
 	<Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="${cch_n52_endpoint}"/>
 	<Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="${cch_upload_max_size}"/>
-	<!-- TODO: Is this used? -->
-	<Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="${cch_upload_filename_param}"/>
-	<!-- TODO: Is this used? -->
-	<Environment name="coastal-hazards.files.directory.base" type="java.lang.String" value="${cch_files_directory_base}"/>
-	<!-- TODO: Is this used? -->
-	<Environment name="coastal-hazards.files.directory.work" type="java.lang.String" value="${cch_files_directory_work}"/>
-	<!-- TODO: Is this used? -->
-	<Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="${cch_files_directory_upload}"/>
-	<!-- TODO: Is this used? -->
-	<Environment name="coastal-hazards.files.directory.download" type="java.lang.String" value="${cch_files_directory_download}"/>
 	<Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.unzip.base" type="java.lang.String" value="${cch_files_directory_unzip}" override="false"/>
 	<Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token" type="java.lang.String" value="${cch_fetch_and_unzip_token}" override="false"/>
 	<Environment name="coastal-hazards.portal.geoserver.external.endpoint" type="java.lang.String" value="${cch_geoserver_endpoint}"/>
@@ -50,7 +44,6 @@
 	<Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="${cch_geoserver_password}"/>
 	<Environment name="production" type="java.lang.String" value="${cch_is_production}"/>
 	<Environment name="development" type="java.lang.String" value="${cch_is_development}"/>
-	<Environment name="cida.auth.client.null.roles" override="false" type="java.lang.String" value="${cch_null_role}"/>
 	<Environment name="coastal-hazards.geoserver.layer.age.maximum" type="java.lang.Integer" value="${cch_layer_age_max}"/>
 	<Environment name="coastal-hazards.geoserver.workspaces.permanent" type="java.lang.String" value="${cch_geoserver_workspace_permanent}"/>
 	<Environment name="coastal-hazards.workspace.published" type="java.lang.String" value="${cch_geoserver_workspace_published}"/>

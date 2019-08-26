@@ -17,24 +17,27 @@
 		<version.handlebars>3.0.0-1</version.handlebars>
 		<version.jstree>3.1.1</version.jstree>
 		<version.introjs>1.0.0</version.introjs>
+		<version.keycloak>6.0.1</version.keycloak>
 	</properties>
 
 	<dependencies>
 		<dependency>
-			<groupId>gov.usgs.cida.auth</groupId>
-			<artifactId>auth-web-utils</artifactId>
-			<version>1.1.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.servlet</groupId>
-					<artifactId>javax.servlet-api</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-core</artifactId>
+			<version>${version.keycloak}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>gov.usgs.cida.auth</groupId>
-			<artifactId>auth-client</artifactId>
-			<version>1.1.0</version>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-adapter-core</artifactId>
+			<version>${version.keycloak}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-adapter-spi</artifactId>
+			<version>${version.keycloak}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida.coastalhazards</groupId>

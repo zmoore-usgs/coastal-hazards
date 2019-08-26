@@ -4,6 +4,7 @@ Crawl-delay: 20
 Disallow: /images/
 Disallow: /css/
 Disallow: /authentication/
+Disallow: /keycloak/
 Disallow: /publish/
 Disallow: /data/qr/
 Disallow: /data/sld/
