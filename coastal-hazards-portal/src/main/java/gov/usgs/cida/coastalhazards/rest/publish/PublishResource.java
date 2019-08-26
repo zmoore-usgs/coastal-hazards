@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.security.PermitAll;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -81,6 +82,7 @@ public class PublishResource {
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	@Path("/auth/logout")
+	@PermitAll
 	public Response logout(@Context HttpServletRequest req)  throws ServletException, URISyntaxException {
 		req.logout();
 		return Response.seeOther(new URI(PUBLIC_URL)).build();

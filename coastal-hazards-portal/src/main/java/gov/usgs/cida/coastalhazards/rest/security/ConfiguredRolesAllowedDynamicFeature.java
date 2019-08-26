@@ -46,7 +46,7 @@ public class ConfiguredRolesAllowedDynamicFeature implements DynamicFeature {
 			return;
 		}
 
-		// PermitAll takes precedence over ConfiguredRolesAllowed on the class
+		// PermitAll on the method takes precedence over ConfiguredRolesAllowed on the class
 		if (am.isAnnotationPresent(PermitAll.class)) {
 			// Do nothing.
 			return;
