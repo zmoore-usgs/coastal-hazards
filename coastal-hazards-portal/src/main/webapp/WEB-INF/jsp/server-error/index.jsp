@@ -134,7 +134,7 @@
 			switch (errorCode) {
 					case 403 :
 					{
-						description = 'Not Authorized - You are not authorized to access this page.';
+						description = 'Not Authorized';
 						contact.content = 'I was not authorized to access the path at ' + errorPath;
 						break;
 					}
