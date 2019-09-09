@@ -175,6 +175,10 @@
 			<http-method>UPDATE</http-method>
 		</web-resource-collection>
 		<web-resource-collection>
+			<web-resource-name>Secure the storm template endpoints for everything</web-resource-name>
+			<url-pattern>/data/template/storm/*</url-pattern>
+		</web-resource-collection>
+		<web-resource-collection>
 			<web-resource-name>Secure the data/view endpoint for everything but GET and POST</web-resource-name>
 			<url-pattern>/data/view/*</url-pattern>
 			<http-method>PUT</http-method>
