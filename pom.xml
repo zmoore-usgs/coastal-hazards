@@ -104,7 +104,19 @@
 			<organizationUrl>http://cida.usgs.gov</organizationUrl>
 			<timezone>-6</timezone>
 		</developer>
-	</developers>
+		</developer>
+                <developer>
+			<id>wcondon</id>
+			<name>Bill Condon</name>
+			<email>wcondon@usgs.gov</email>
+			<roles>
+				<role>Computer Scientist</role>
+			</roles>
+			<organization>USGS WH</organization>
+			<organizationUrl>http://usgs.gov/centers/whcmsc</organizationUrl>
+			<timezone>-5</timezone>
+		</developer>
+			</developers>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
