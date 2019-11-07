@@ -104,7 +104,6 @@
 			<organizationUrl>http://cida.usgs.gov</organizationUrl>
 			<timezone>-6</timezone>
 		</developer>
-		</developer>
                 <developer>
 			<id>wcondon</id>
 			<name>Bill Condon</name>
