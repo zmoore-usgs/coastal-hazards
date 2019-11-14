@@ -8,9 +8,9 @@ RUN apt-get update && \
 	telnet=0.17-36 \
 	libcurl3=7.38.0-4+deb8u16 \
 	libcurl4-openssl-dev=7.38.0-4+deb8u16 \
-	libssl-dev=1.0.1t-1+deb8u11 \
+	libssl-dev=1.0.1t-1+deb8u12 \
 	zlib1g-dev=1:1.2.8.dfsg-2+b1 \
-	libssh2-1=1.4.3-4.1+deb8u5 \
+	libssh2-1=1.4.3-4.1+deb8u6 \
 	libpng12-dev=1.2.50-2+deb8u3 \
 	libxml2=2.9.1+dfsg1-5+deb8u7 \
 	libxml2-dev=2.9.1+dfsg1-5+deb8u7 && \
