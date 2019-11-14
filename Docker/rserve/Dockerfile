@@ -6,8 +6,8 @@ RUN apt-get update && \
 	apt-get install --no-install-recommends -y \
 	wget \
 	telnet=0.17-36 \
-	libcurl3=7.38.0-4+deb8u15 \
-	libcurl4-openssl-dev=7.38.0-4+deb8u15 \
+	libcurl3=7.38.0-4+deb8u16 \
+	libcurl4-openssl-dev=7.38.0-4+deb8u16 \
 	libssl-dev=1.0.1t-1+deb8u11 \
 	zlib1g-dev=1:1.2.8.dfsg-2+b1 \
 	libssh2-1=1.4.3-4.1+deb8u5 \
