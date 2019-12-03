@@ -11,10 +11,6 @@ secrets:
     file: Docker/rserve/rserve.conf
   rserve_profile:
     file: Docker/rserve/profile.conf
-  n52_wps_config:
-    file: coastal-hazards-n52/docker/wps_config.xml
-  geoserver_serverxml_config:
-    file: coastal-hazards-geoserver/docker/server.xml
 
 services:
   cch_postgres:
@@ -27,21 +23,22 @@ services:
     image: cch_postgres
     ports:
       - "5432:5432"
-    env_file:
-      - "compose.env"
-
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_CCH_PASSWORD=cchportal_password
+      - POSTGRES_PASSWORD=postgres_root_password
+      - POSTGRES_LOAD_BOOTSTRAP=true
   cch_rserve:
     build:
       context: ./Docker/rserve
-    networks:
-      cch-net:
-        aliases:
-          - rserve
+    network_mode: "host"
     image: cch_rserve
     ports:
       - "6311:6311"
-    env_file:
-      - "compose.env"
+    environment:
+      - RSERVE_HOST=rserve
+      - RSERVE_PORT=6311
     secrets:
       - source: rserve_password
         target: /rserve.pwd
@@ -53,36 +50,54 @@ services:
   cch_n52_wps:
     build:
       context: ./coastal-hazards-n52
-    networks:
-      cch-net:
-        aliases:
-          - n52wps
+    network_mode: "host"
     image: cch_n52_wps
     ports:
-      - "8082:8080"
-    env_file:
-      - "compose.env"
-    secrets:
-      - source: n52_wps_config
-        target: /wps_config.xml
+      - "8082:8082"
     depends_on:
       - cch_rserve
+    volumes:
+      - type: bind
+        source: ./coastal-hazards-n52/docker/key-store.jks
+        target: /usr/local/tomcat/ssl/trust-store.jks
+      - type: bind
+        source: ./coastal-hazards-n52/docker/tomcat-users.xml
+        target: /usr/local/tomcat/conf/tomcat-users.xml
+      - type: bind
+        source: ./coastal-hazards-n52/docker/context.xml
+        target: /usr/local/tomcat/conf/context.xml
+      - type: bind
+        source: ./coastal-hazards-n52/docker/server.xml
+        target: /usr/local/tomcat/conf/server.xml
+      - type: bind
+        source: ./coastal-hazards-n52/docker/wps_config.xml
+        target: /wps_config.xml
 
   cch_portal:
     build:
         context: ./coastal-hazards-portal
-    networks:
-      cch-net:
-        aliases:
-          - portal
+    network_mode: "host"
     image: cch_portal
     ports:
       - "8080:8080"
       - "8443:8443"
       - "8900:8900"
-    env_file:
-      - "compose.env"
     volumes:
+      - type: bind
+        source: ./coastal-hazards-portal/docker/key-store.jks
+        target: /usr/local/tomcat/ssl/key-store.jks
+      - type: bind
+        source: ./coastal-hazards-portal/docker/key-store.jks
+        target: /usr/local/tomcat/ssl/trust-store.jks
+      - type: bind
+        source: ./coastal-hazards-portal/docker/tomcat-users.xml
+        target: /usr/local/tomcat/conf/tomcat-users.xml
+      - type: bind
+        source: ./coastal-hazards-portal/docker/server.xml
+        target: /usr/local/tomcat/conf/server.xml
+      - type: bind
+        source: ./coastal-hazards-portal/docker/context.xml
+        target: /usr/local/tomcat/conf/context.xml
       - type: bind
         source: ./Docker/keycloak/keycloak_tomcat_config.json
         target: /usr/local/tomcat/conf/keycloak.json
@@ -90,19 +105,27 @@ services:
   cch_geoserver:
     build:
         context: ./coastal-hazards-geoserver
-    networks:
-      cch-net:
-        aliases:
-          - geoserver
+    network_mode: "host"
     image: cch_geoserver
-    secrets:
-      - source: geoserver_serverxml_config
-        target: /usr/local/tomcat/conf/server.xml
     ports:
-      - "8081:8080"
-      - "8444:8443"
-    env_file:
-      - "compose.env"
+      - "8081:8081"
+      - "8444:8444"
+    volumes:
+      - type: bind
+        source: ./coastal-hazards-geoserver/docker/key-store.jks
+        target: /usr/local/tomcat/ssl/key-store.jks
+      - type: bind
+        source: ./coastal-hazards-geoserver/docker/key-store.jks
+        target: /usr/local/tomcat/ssl/trust-store.jks
+      - type: bind
+        source: ./coastal-hazards-geoserver/docker/tomcat-users.xml
+        target: /usr/local/tomcat/conf/tomcat-users.xml
+      - type: bind
+        source: ./coastal-hazards-geoserver/docker/server.xml
+        target: /usr/local/tomcat/conf/server.xml
+      - type: bind
+        source: ./coastal-hazards-geoserver/docker/context.xml
+        target: /usr/local/tomcat/conf/context.xml
 
   cch_keycloak:
     image: jboss/keycloak

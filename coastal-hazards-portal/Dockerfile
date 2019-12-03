@@ -19,10 +19,6 @@ RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 
 RUN mkdir -p /usr/local/tomcat/ssl
 
-COPY docker/key-store.jks /usr/local/tomcat/ssl/key-store.jks
-
-COPY docker/key-store.jks /usr/local/tomcat/ssl/trust-store.jks
-
 RUN curl -o /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.1.0/psi-probe-web-3.1.0.war" && \
 	curl -o /usr/local/tomcat/webapps/coastal-hazards-portal.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-portal/${PORTAL_VERSION}/coastal-hazards-portal-${PORTAL_VERSION}.war" && \
 	curl -o /usr/local/tomcat/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar && \
@@ -30,19 +26,12 @@ RUN curl -o /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2
 	tar xvzf /usr/local/tomcat/keycloak.tar.gz -C /usr/local/tomcat/lib/ && \
 	rm /usr/local/tomcat/keycloak.tar.gz;
 
-COPY docker/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
-COPY docker/server.xml /usr/local/tomcat/conf/server.xml
 COPY docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
-COPY docker/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
-COPY docker/context.xml /usr/local/tomcat/conf/context.xml
 
 RUN chmod +x /usr/local/tomcat/bin/setenv.sh
 
-RUN rm -rf /usr/local/tomcat/bin/ROOT
-
-RUN rm -rf /usr/local/tomcat/bin/docs
-
-RUN rm -rf /usr/local/tomcat/bin/examples
+RUN rm -rf /usr/local/tomcat/webapps/ROOT /usr/local/tomcat/webapps/docs /usr/local/tomcat/webapps/examples
+RUN rm -f /usr/local/tomcat/conf/tomcat-users.xml /usr/local/tomcat/conf/server.xml /usr/local/tomcat/conf/context.xml
 
 HEALTHCHECK --interval=10s --timeout=2s \
 	CMD curl -s -k "https://localhost:8443/coastal-hazards-portal/diagnostics" | grep -q '<div name="getServletPath">/diagnostics</div>' || exit 1
