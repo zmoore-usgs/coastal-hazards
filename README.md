@@ -11,7 +11,7 @@ the science behind coastal change hazards and providing data, tools, and
 scientific knowledge to help coastal planners, resource managers, and emergency
 operations as they work to reduce risk along our coastlines.
 
-### Using Docker For Local Deployment
+### **Using Docker For Local Deployment**
 
 #### TL;DR - Just get it running
 
@@ -99,7 +99,7 @@ about uplaoded data.
         user who might try to login to the mediation page without the proper
         role.
 
-### Stopping the docker containers
+### **Stopping the docker containers**
 
 In order to bring down the running cch stack run the following command:
 
@@ -115,7 +115,7 @@ Once you've found the container ID run `docker stop <container ID>` to stop
 that service and then, if you'd like to also remove the container, run 
 `docker rm <container ID>`.
 
-### Modifying the docker images
+### **Modifying the docker images**
 
 When you launch a service using `docker-compose` it does _NOT_ always re-build
 the docker image for the service it is trying to launch. If there is already an
@@ -152,7 +152,7 @@ you'd run `docker ps` to find the _cch\_portal_ container ID and then run
 portal container without stopping the other services. Then you can run the build
 and launch command again to restart the portal container with your new changes.
 
-### Setting up a non-Docker Tomcat 8 for Coastal Hazards Portal (not GeoServer)
+### **Setting up a non-Docker Tomcat 8 for Coastal Hazards Portal (not GeoServer)**
 #### Libraries
 The Tomcat instance will need several libraries installed into its `lib`
 directory in order for it to work properly with the CCH Portal application.
