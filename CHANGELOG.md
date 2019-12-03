@@ -53,6 +53,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 -   isuftin@usgs.gov - rserve - package dependencies
 -   isuftin@usgs.gov - Switched rserve container to use rocker/r-ver:3.3.3 to lock down
     changes in base container
+-   zmoore@usgs.gov - Refactored local development docker setup to mount config files at
+    container startup rather than copy at build to simplify configuration.
+-   zmoore@usgs.gov - Adjust containers to run in "host" network mode to simplify
+    configuration and make things work.
+-   zmoore@usgs.gov - Adjusted actual tomcat ports of GeoServer and N52 WPS so that they
+    work properly in host network mode.
 
 ### Removed
 

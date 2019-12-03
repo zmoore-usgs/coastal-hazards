@@ -4,5 +4,5 @@
     <Manager pathname="" />
     <Environment name="gov.usgs.cida.n52.wps.config.location" type="java.lang.String" value="/wps_config.xml" override="false" />
     <Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.unzip.base" type="java.lang.String" value="/data/coastal-hazards/uploaded-data" override="false" /> 
-    <Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token" type="java.lang.String" value="${cch_fetch_and_unzip_token}" override="false" />
+    <Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token" type="java.lang.String" value="I_pf^-qRE~^8Sf#" override="false" />
 </Context>

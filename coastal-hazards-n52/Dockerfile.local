@@ -15,23 +15,18 @@ RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 		echo "\\n\\nca-certificate = /usr/lib/ssl/certs/DOIRootCA.crt" >> /etc/wgetrc; \
 	fi
 
-RUN mkdir -p /usr/local/tomcat/ssl
-
-COPY docker/key-store.jks /usr/local/tomcat/ssl/trust-store.jks
+RUN mkdir -p /usr/local/tomcat/ssl && mkdir -p /data/coastal-hazards/uploaded-data
 
 RUN wget -O /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.1.0/psi-probe-web-3.1.0.war"
 
 COPY target/wps.war /usr/local/tomcat/webapps/wps.war
-
-RUN mkdir -p /data/coastal-hazards/uploaded-data
-
-COPY docker/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
-COPY docker/context.xml /usr/local/tomcat/conf/context.xml
 COPY docker/run.sh /run.sh
-COPY docker/wps_config.xml /wps_config.xml
 COPY docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 
 RUN chmod +x /usr/local/tomcat/bin/setenv.sh /run.sh
+
+RUN rm -rf /usr/local/tomcat/webapps/ROOT /usr/local/tomcat/webapps/docs /usr/local/tomcat/webapps/examples
+RUN rm -rf /usr/local/tomcat/conf/tomcat-users.xml /usr/local/tomcat/conf/context.xml /usr/local/tomcat/conf/server.xml
 
 CMD /run.sh
 
