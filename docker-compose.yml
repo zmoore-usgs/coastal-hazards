@@ -52,8 +52,6 @@ services:
       - "8082:8082"
     depends_on:
       - cch_rserve
-    env_file:
-      - "compose.env"
     volumes:
       - type: bind
         source: ./coastal-hazards-n52/docker/key-store.jks

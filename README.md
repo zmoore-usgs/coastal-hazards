@@ -59,14 +59,14 @@ about uplaoded data.
 
 #### Building and running the docker containers
 
-1. To build the images from local sources execute 
+1. To build the images from artifacts built locally execute:
     `docker-compose -f docker-compose.yml -f docker-compose-local.yml build`
     * This should begin the process of building. This process will take some
       time, possibly in upwards of 15 minutes.
     * Note: If you want to build the containers from pre-built artifacts
       simply run `docker-compose build`
 
-2. To launch the built images into containers, execute `docker-compose up`
+2. To launch the built images into containers, execute: `docker-compose up`
     * Note: To limit output, only include the containers you want to see. For
       example, `docker-compose up cch_portal` will only show the output for
       `cch_portal`.
@@ -109,6 +109,9 @@ This will bring down _all_ of the running CCH services defined in the
 `docker-compose.yml` file. Note that running this command will also __REMOVE__
 the associated docker containers meaning all data stored in them will be lost.
 
+To bring down a select service you can use the command `docker-compose stop <service name>`.
+Example: `docker-compose stop cch_portal`
+
 An alternative method for only brining down select services is to run 
 `docker ps` to find the container ID of the service that you'd like to bring down.
 Once you've found the container ID run `docker stop <container ID>` to stop
@@ -147,10 +150,9 @@ but not the portal itself since you might be actively working on it you would ru
 Then once you're ready to run the portal in another command window you'd run:
 `docker-compose up --build cch_portal` which will rebuild and launch the portal
 container. If you need to make changes to the portal and want to bring it back down
-you'd run `docker ps` to find the _cch\_portal_ container ID and then run 
-`docker stop <container ID> && docker rm <container ID>` to stop and remove the
-portal container without stopping the other services. Then you can run the build
-and launch command again to restart the portal container with your new changes.
+you'd use one of the methods described above to stop the portal container but not
+the rest of the containers, and then bring it back up with the build and launch
+command `docker-compose up --build cch_portal`.
 
 ### **Setting up a non-Docker Tomcat 8 for Coastal Hazards Portal (not GeoServer)**
 #### Libraries
