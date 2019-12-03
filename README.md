@@ -17,9 +17,10 @@ operations as they work to reduce risk along our coastlines.
 
 1. From project root directory `mvn clean package`
 2. From project root directory `docker-compose -f docker-compose.yml -f docker-compose-local.yml build`
-3. From project root directory `docker-compose up`
-4. Visit `http://localhost:8080/coastal-hazards-portal/`
-5. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
+3. Add a line to your operating system `hosts` (Ubuntu `/etc/hosts`) file with: `127.0.0.1 keycloak`
+4. From project root directory `docker-compose up`
+5. Visit `http://localhost:8080/coastal-hazards-portal/`
+6. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
     - Login - **Username**: `cch_admin` | **Password**: `password`
 
 #### Full Explanation
@@ -56,6 +57,15 @@ about uplaoded data.
 1. If building from local sources, run `mvn clean package`. There should be a
    total of 3 WAR files created, 1 in each of `coastal-hazards-n52`,
    `coastal-hazards-geoserver`, and `coastal-hazards-portal`.
+
+2. In order for the full authorization flow to work with keycloak you will need to add
+    an entry to your operating system's `hosts` file. On Ubuntu this is found at
+    `/etc/hosts`. The entry needs to map the alias `keycloak` to the local IP on your
+    your machine. An example entry would look like:
+
+    ```
+    127.0.0.1 keycloak
+    ```
 
 #### Building and running the docker containers
 
