@@ -1,4 +1,4 @@
-FROM tomcat:8.0-jre8-alpine
+FROM tomcat:8.5-jre8-alpine
 
 LABEL maintainer="gs-w_eto_eb_federal_employees@usgs.gov"
 
@@ -21,9 +21,8 @@ RUN wget -O /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2
 RUN wget -O /usr/local/tomcat/webapps/wps.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-n52/${N52_WPS_VERSION}/coastal-hazards-n52-${N52_WPS_VERSION}.war"
 
 COPY docker/run.sh /run.sh
-COPY docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 
-RUN chmod +x /usr/local/tomcat/bin/setenv.sh /run.sh
+RUN chmod +x /run.sh
 
 RUN rm -rf /usr/local/tomcat/webapps/ROOT /usr/local/tomcat/webapps/docs /usr/local/tomcat/webapps/examples
 RUN rm -f /usr/local/tomcat/conf/tomcat-users.xml /usr/local/tomcat/conf/context.xml /usr/local/tomcat/conf/server.xml
