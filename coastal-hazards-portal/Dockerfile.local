@@ -1,4 +1,4 @@
-FROM tomcat:8.0-jre8-alpine
+FROM tomcat:8.5-jre8-alpine
 
 ARG POSTGRES_JDBC_VERSION=42.2.4
 ARG KEYCLOAK_ADAPTER_VERSION=6.0.1

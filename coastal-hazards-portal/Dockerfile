@@ -1,4 +1,4 @@
-FROM tomcat:8.0-jre8-alpine
+FROM tomcat:8.5-jre8-alpine
 
 ARG PORTAL_VERSION=1.1.63
 ARG POSTGRES_JDBC_VERSION=42.2.4

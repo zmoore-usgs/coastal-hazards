@@ -12,6 +12,7 @@
 <%@page import="gov.usgs.cida.coastalhazards.rest.data.ItemResource"%>
 <%@page import="java.io.File"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
+<%@page import="org.apache.commons.lang3.time.DateFormatUtils"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
