@@ -13,6 +13,17 @@ operations as they work to reduce risk along our coastlines.
 
 ### Using Docker For Local Deployment
 
+#### TL;DR - Just get it running
+
+1. From project root directory `mvn clean package`
+2. From project root directory `docker-compose -f docker-compose.yml -f docker-compose-local.yml build`
+3. From project root directory `docker-compose up`
+4. Visit `http://localhost:8080/coastal-hazards-portal/`
+5. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
+    - Login - **Username**: `cch_admin` | **Password**: `password`
+
+#### Full Explanation
+
 While this project does not currently run using Docker Containers when deployed
 into a server environment, this project contains Dockerfiles to aid in setting
 up a local development environment quickly.
