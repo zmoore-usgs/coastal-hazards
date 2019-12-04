@@ -129,7 +129,7 @@ services:
       cch-net:
         aliases:
           - keycloak
-    ports: 
+    ports:
       - "8083:8083"
       - "8446:8446"
     command: ["-Djboss.socket.binding.port-offset=3"]

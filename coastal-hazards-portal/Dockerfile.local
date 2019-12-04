@@ -24,7 +24,7 @@ RUN curl -o /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2
 	tar xvzf /usr/local/tomcat/keycloak.tar.gz -C /usr/local/tomcat/lib/ && \
 	rm /usr/local/tomcat/keycloak.tar.gz;
 
-COPY target/coastal-hazards-portal.war /usr/local/tomcat/webapps/coastal-hazards-portal.war
+COPY --from=maven_base /source/coastal-hazards-portal/target/coastal-hazards-portal.war /usr/local/tomcat/webapps/coastal-hazards-portal.war
 COPY docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 
 RUN chmod +x /usr/local/tomcat/bin/setenv.sh
