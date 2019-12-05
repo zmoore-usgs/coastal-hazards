@@ -30,6 +30,4 @@ COPY coastal-hazards-portal coastal-hazards-portal
 COPY coastal-hazards-wps coastal-hazards-wps
 COPY ehcache-shaded ehcache-shaded
 
-
-
-RUN mvn -B clean package
+RUN mvn -B package

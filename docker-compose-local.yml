@@ -15,10 +15,6 @@ services:
       context: .
       dockerfile: ./Docker/maven_base/Dockerfile
       target: maven_base
-    volumes:
-      - type: bind
-        source: ./
-        target: /source
 
   cch_postgres:
     << : *local-dockerfile
