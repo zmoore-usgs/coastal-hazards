@@ -32,7 +32,7 @@ COPY rserve.pwd rserve.pwd
 COPY run.sh run.sh
 RUN chmod +x ./run.sh
 
-ENV PORTAL_INTERNAL_HOST=portal
+ENV PORTAL_INTERNAL_HOST=localhost
 ENV PORTAL_INTERNAL_HTTPS_PORT=8443
 
 CMD ./run.sh

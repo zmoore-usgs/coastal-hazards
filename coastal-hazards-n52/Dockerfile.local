@@ -1,8 +1,6 @@
-FROM tomcat:8.0-jre8-alpine
+FROM tomcat:8.5-jre8-alpine
 
 LABEL maintainer="gs-w_eto_eb_federal_employees@usgs.gov"
-
-ARG N52_WPS_VERSION=1.1.63
 
 ENV KEY_STORE_PASSWORD=changeit
 
@@ -19,11 +17,10 @@ RUN mkdir -p /usr/local/tomcat/ssl /data/coastal-hazards/uploaded-data
 
 RUN wget -O /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.1.0/psi-probe-web-3.1.0.war"
 
-COPY target/wps.war /usr/local/tomcat/webapps/wps.war
+COPY --from=maven_base /source/coastal-hazards-n52/target/wps.war /usr/local/tomcat/webapps/wps.war
 COPY docker/run.sh /run.sh
-COPY docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 
-RUN chmod +x /usr/local/tomcat/bin/setenv.sh /run.sh
+RUN chmod +x /run.sh
 
 RUN rm -rf /usr/local/tomcat/webapps/ROOT /usr/local/tomcat/webapps/docs /usr/local/tomcat/webapps/examples
 RUN rm -f /usr/local/tomcat/conf/tomcat-users.xml /usr/local/tomcat/conf/context.xml /usr/local/tomcat/conf/server.xml

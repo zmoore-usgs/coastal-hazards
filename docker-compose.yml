@@ -20,15 +20,12 @@ services:
       cch-net:
         aliases:
           - postgres
+    env_file:
+      - "compose.env"
     image: cch_postgres
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_CCH_PASSWORD=cchportal_password
-      - POSTGRES_PASSWORD=postgres_root_password
-      - POSTGRES_LOAD_BOOTSTRAP=true
+
   cch_rserve:
     build:
       context: ./Docker/rserve
@@ -36,9 +33,8 @@ services:
     image: cch_rserve
     ports:
       - "6311:6311"
-    environment:
-      - RSERVE_HOST=rserve
-      - RSERVE_PORT=6311
+    env_file:
+      - "compose.env"
     secrets:
       - source: rserve_password
         target: /rserve.pwd
@@ -133,7 +129,7 @@ services:
       cch-net:
         aliases:
           - keycloak
-    ports: 
+    ports:
       - "8083:8083"
       - "8446:8446"
     command: ["-Djboss.socket.binding.port-offset=3"]

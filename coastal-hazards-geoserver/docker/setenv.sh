@@ -1,5 +1,3 @@
 export CATALINA_OPTS="$CATALINA_OPTS -DGEOSERVER_DATA_DIR=/data/geoserver"
-export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=/usr/local/tomcat/ssl/trust-store.jks"
-export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStorePassword=changeit"
 export JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=/heapdumps"
 export JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"

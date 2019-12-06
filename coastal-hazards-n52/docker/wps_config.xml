@@ -46,7 +46,7 @@
   </Datahandlers>
   <AlgorithmRepositoryList>
     <Repository name="LocalRAlgorithmRepository" className="org.n52.wps.server.r.LocalRAlgorithmRepository" active="true">
-      <Property name="Rserve_Host" active="true">localhost</Property>
+      <Property name="Rserve_Host" active="true">127.0.0.1</Property>
       <Property name="Rserve_Port" active="true">6311</Property>
       <Property name="Rserve_User" active="true">cchportal_rserve</Property>
       <Property name="Rserve_Password" active="true">cchportal_password</Property>

@@ -5,8 +5,17 @@ x-dockerfile-name:
   &local-dockerfile
   build:
     dockerfile: Dockerfile.local
+    cache_from:
+      - maven_base
 
 services:
+  maven_base:
+    image: maven_base
+    build:
+      context: .
+      dockerfile: ./Docker/maven_base/Dockerfile
+      target: maven_base
+
   cch_postgres:
     << : *local-dockerfile
 

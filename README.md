@@ -15,8 +15,8 @@ operations as they work to reduce risk along our coastlines.
 
 #### TL;DR - Just get it running
 
-1. From project root directory `mvn clean package`
-2. From project root directory `docker-compose -f docker-compose.yml -f docker-compose-local.yml build`
+1. From project root directory `docker-compose -f docker-compose.yml -f docker-compose-local.yml build`
+2. Add a line to your operating system `hosts` (Ubuntu `/etc/hosts`) file with: `127.0.0.1 keycloak`
 3. From project root directory `docker-compose up`
 4. Visit `http://localhost:8080/coastal-hazards-portal/`
 5. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
@@ -53,20 +53,25 @@ about uplaoded data.
 6. CCH Portal - The portal services and UI
 
 #### Setup
-1. If building from local sources, run `mvn clean package`. There should be a
-   total of 3 WAR files created, 1 in each of `coastal-hazards-n52`,
-   `coastal-hazards-geoserver`, and `coastal-hazards-portal`.
+1. In order for the full authorization flow to work with keycloak you will need to add
+    an entry to your operating system's `hosts` file. On Ubuntu this is found at
+    `/etc/hosts`. The entry needs to map the alias `keycloak` to the local IP on your
+    your machine. An example entry would look like:
+
+    ```
+    127.0.0.1 keycloak
+    ```
 
 #### Building and running the docker containers
 
-1. To build the images from local sources execute 
+1. To build the images from local sources:
     `docker-compose -f docker-compose.yml -f docker-compose-local.yml build`
     * This should begin the process of building. This process will take some
-      time, possibly in upwards of 15 minutes.
+      time, possibly in upwards of 15-20 minutes depending on network speed.
     * Note: If you want to build the containers from pre-built artifacts
-      simply run `docker-compose build`
+      pulled from Nexus then simply run `docker-compose build`
 
-2. To launch the built images into containers, execute `docker-compose up`
+2. To launch the built images into containers, execute: `docker-compose up`
     * Note: To limit output, only include the containers you want to see. For
       example, `docker-compose up cch_portal` will only show the output for
       `cch_portal`.
@@ -109,6 +114,9 @@ This will bring down _all_ of the running CCH services defined in the
 `docker-compose.yml` file. Note that running this command will also __REMOVE__
 the associated docker containers meaning all data stored in them will be lost.
 
+To bring down a select service you can use the command `docker-compose stop <service name>`.
+Example: `docker-compose stop cch_portal`
+
 An alternative method for only brining down select services is to run 
 `docker ps` to find the container ID of the service that you'd like to bring down.
 Once you've found the container ID run `docker stop <container ID>` to stop
@@ -145,12 +153,11 @@ wanted to launch all of the services that the portal needs as docker containers
 but not the portal itself since you might be actively working on it you would run:
 `docker-compose up cch_postgres cch_keycloak cch_n52_wps cch_geoserver cch_rserve`
 Then once you're ready to run the portal in another command window you'd run:
-`docker-compose up --build cch_portal` which will rebuild and launch the portal
+`docker-compose up --build maven_base cch_portal` which will rebuild and launch the portal
 container. If you need to make changes to the portal and want to bring it back down
-you'd run `docker ps` to find the _cch\_portal_ container ID and then run 
-`docker stop <container ID> && docker rm <container ID>` to stop and remove the
-portal container without stopping the other services. Then you can run the build
-and launch command again to restart the portal container with your new changes.
+you'd use one of the methods described above to stop the portal container but not
+the rest of the containers, and then bring it back up with the build and launch
+command `docker-compose up --build maven_base cch_portal`.
 
 ### **Setting up a non-Docker Tomcat 8 for Coastal Hazards Portal (not GeoServer)**
 #### Libraries
