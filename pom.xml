@@ -160,11 +160,6 @@
 			<url>https://repo.maven.apache.org/maven2</url>
 		</repository>
 		<repository>
-			<id>cida-public</id>
-			<name>CIDA Public Nexus</name>
-			<url>http://cida.usgs.gov/maven/cida-public/</url>
-		</repository>
-		<repository>
 			<id>opengeo</id>
 			<url>http://repo.boundlessgeo.com/main/</url>
 		</repository>
@@ -182,6 +177,11 @@
 			<id>geosolutions</id>
 			<name>GeoSolutions</name>
 			<url>http://maven.geo-solutions.it/</url>
+		</repository>
+		<repository>
+			<id>cida-public</id>
+			<name>CIDA Public Nexus</name>
+			<url>http://cida.usgs.gov/maven/cida-public/</url>
 		</repository>
 	</repositories>
 	

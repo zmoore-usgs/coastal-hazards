@@ -17,7 +17,7 @@ RUN mkdir -p /usr/local/tomcat/ssl /data/coastal-hazards/uploaded-data
 
 RUN wget -O /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.1.0/psi-probe-web-3.1.0.war"
 
-COPY --from=maven_base /source/coastal-hazards-n52/target/wps.war /usr/local/tomcat/webapps/coastal-hazards-portal.war
+COPY --from=maven_base /source/coastal-hazards-n52/target/wps.war /usr/local/tomcat/webapps/wps.war
 COPY docker/run.sh /run.sh
 
 RUN chmod +x /run.sh
