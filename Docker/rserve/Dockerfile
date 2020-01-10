@@ -12,8 +12,8 @@ RUN apt-get update && \
 	zlib1g-dev=1:1.2.8.dfsg-2+b1 \
 	libssh2-1=1.4.3-4.1+deb8u6 \
 	libpng12-dev=1.2.50-2+deb8u3 \
-	libxml2=2.9.1+dfsg1-5+deb8u7 \
-	libxml2-dev=2.9.1+dfsg1-5+deb8u7 && \
+	libxml2=2.9.1+dfsg1-5+deb8u8 \
+	libxml2-dev=2.9.1+dfsg1-5+deb8u8 && \
 	rm -rf /var/lib/apt/lists/* && \
 	apt-get clean
 
