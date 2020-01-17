@@ -22,7 +22,7 @@ RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 
 RUN mkdir -p /data/coastal-hazards/uploaded-data /usr/local/tomcat/ssl
 
-RUN wget -O /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.1.0/psi-probe-web-3.1.0.war"
+RUN wget -O /usr/local/tomcat/webapps/probe.war "https://repo1.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.1.0/psi-probe-web-3.1.0.war"
 RUN wget -O /usr/local/tomcat/webapps/geoserver.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-geoserver/${GEOSERVER_VERSION}/coastal-hazards-geoserver-${GEOSERVER_VERSION}.war"
 
 COPY docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
