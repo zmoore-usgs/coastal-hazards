@@ -17,7 +17,7 @@ RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 
 RUN mkdir -p /usr/local/tomcat/ssl /data/coastal-hazards/uploaded-data
 
-RUN wget -O /usr/local/tomcat/webapps/probe.war "http://central.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.1.0/psi-probe-web-3.1.0.war"
+RUN wget -O /usr/local/tomcat/webapps/probe.war "https://repo1.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.3.1/psi-probe-web-3.3.1.war"
 RUN wget -O /usr/local/tomcat/webapps/wps.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-n52/${N52_WPS_VERSION}/coastal-hazards-n52-${N52_WPS_VERSION}.war"
 
 COPY docker/run.sh /run.sh
