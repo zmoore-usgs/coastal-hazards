@@ -121,7 +121,7 @@ If you're going to be doing active development on the project locally it is **_h
 5. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
     - Login - **Username**: `cch_admin` | **Password**: `password`
 6. Make changes to portal code...
-7. **Terminal 3:** From project root directory `docker-compose stop cch_portal && docker-compose rm cch_portal`
+7. **Terminal 3:** From project root directory `docker-compose stop cch_portal`
     - After running this **Terminal 2** should become interactive again
 8. **Terminal 2:** From project root directory `docker-compose up --build cch_portal`
 9. Repeat steps 4-8...
@@ -253,7 +253,7 @@ This will bring down _all_ of the running CCH services defined in the
 the associated docker containers meaning all data stored in them will be lost.
 
 To bring down a select service you can use the command `docker-compose stop <service name>`.
-Example: `docker-compose stop cch_portal && docker-compose rm cch_portal`
+Example: `docker-compose stop cch_portal`
 
 An alternative method for only brining down select services is to run
 `docker ps` to find the container ID of the service that you'd like to bring down.
@@ -314,7 +314,7 @@ Once the build completes we can execute `docker-compose up cch_portal` to bring 
 
 If we then make some changes to the portal code and want to rebuild and relaunch the portal container with our changes we do the following in a new terminal:
 
-1. Stop and remove the existing container via `docker-compose stop cch_portal && docker-compose rm cch_portal`
+1. Stop and remove the existing container via `docker-compose stop cch_portal`
 2. The terminal that was running the portal container should be available again so switch back to that terminal and execute `docker-compose build cch_portal && docker-compose up cch_portal` which will rebuild the portal image from local sources and then re-launch the newly built image into a new container.
 
 Note that, as described above, we can combine the docker-compose build and up commands into a single command via: `docker-compose up --build cch_portal` which is a perfectly acceptable replacement command for the one listed in step 2.
