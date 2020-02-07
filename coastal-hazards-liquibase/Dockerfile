@@ -2,7 +2,6 @@ FROM mdillon/postgis:9.6-alpine
 
 LABEL maintainer="gs-w_eto_eb_federal_employees@usgs.gov"
 
-ARG PORTAL_LIQUIBASE_TAG=master
 ARG LIQUIBASE_VERSION=3.4.1
 ARG POSTGRES_JDBC_VERSION=42.2.4
 
@@ -52,9 +51,6 @@ RUN tar -xzf liquibase-bin.tar.gz -C "${LIQUIBASE_HOME}/" && \
 	rm liquibase-bin.tar.gz
 RUN curl -o ${LIQUIBASE_HOME}/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-${POSTGRES_JDBC_VERSION}.jar
 
-RUN git clone https://github.com/USGS-CIDA/coastal-hazards.git
-WORKDIR coastal-hazards
-RUN git checkout ${PORTAL_LIQUIBASE_TAG}
 WORKDIR /
 
 RUN mkdir -p /coastal-hazards/coastal-hazards-liquibase/

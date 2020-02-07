@@ -114,6 +114,7 @@ If you're going to be doing active development on the project locally it is **_h
 
 1. Add a line to your operating system `hosts` (Ubuntu `/etc/hosts`) file with: `127.0.0.1 keycloak`
 2. From project root directory `docker-compose up cch_keycloak cch_postgres cch_rserve cch_n52_wps cch_geoserver`
+(add `--build` to `docker-compose` up if you want to rebuild any of these images that you might already have locally)
 3. From project root directory `docker-compose up --build cch_portal`
 4. Visit `http://localhost:8080/coastal-hazards-portal/`
 5. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
@@ -302,11 +303,11 @@ Note that running `docker-compose up` will also inherently trigger `docker-compo
 
 At this point all of the services required to run the portal should be up and running, so we can build and bring up the portal itself. To build the portal from our local sources open a new terminal and execute the following:
 
-`docker-compose -f docker-compose.yml -f docker-compose local.yml build cch_portal`
+`docker-compose build cch_portal`
 
-This will build the portal via Maven within a build container and then copy the built artifacts from the build container into the final portal image. Once the build completes we can execute
+This will build the portal via Maven within a build container and then copy the built artifacts from the build container into the final portal image.
 
-`docker-compose up cch_portal` to bring up the build container and once it's up it should be accessible from: `http://localhost:8080/coastal-hazards-portal`
+Once the build completes we can execute `docker-compose up cch_portal` to bring up the build container and once it's up it should be accessible from: `http://localhost:8080/coastal-hazards-portal`
 
 If we then make some changes to the portal code and want to rebuild and relaunch the portal container with our changes we do the following in a new terminal:
 
