@@ -10,7 +10,7 @@ RUN apk add --update --no-cache \
 
 RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 		mkdir -p /etc/ssl/certs && \
-		wget -O /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
+		curl -o /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
 		update-ca-certificates; \
 	fi
 
@@ -31,7 +31,7 @@ RUN curl -o /usr/local/tomcat/webapps/coastal-hazards-portal.war "https://cida.u
 	tar xvzf /usr/local/tomcat/keycloak.tar.gz -C /usr/local/tomcat/lib/ && \
 	rm /usr/local/tomcat/keycloak.tar.gz;
 
-COPY docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
+COPY coastal-hazards-portal/docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 
 RUN chmod +x /usr/local/tomcat/bin/setenv.sh
 

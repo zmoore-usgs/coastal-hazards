@@ -10,7 +10,7 @@ RUN apk add --update --no-cache \
 
 RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 		mkdir -p /etc/ssl/certs && \
-		wget -O /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
+		curl -o /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
 		update-ca-certificates; \
 	fi
 
@@ -25,7 +25,7 @@ RUN mkdir -p /data/coastal-hazards/uploaded-data
 
 RUN curl -o /usr/local/tomcat/webapps/wps.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-n52/${N52_WPS_VERSION}/coastal-hazards-n52-${N52_WPS_VERSION}.war"
 
-COPY docker/run.sh /run.sh
+COPY coastal-hazards-n52/docker/run.sh /run.sh
 
 RUN chmod +x /run.sh
 
