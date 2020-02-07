@@ -113,15 +113,18 @@ If you're going to be doing active development on the project locally it is **_h
 ### TL;DR 2 - Make changes to the portal itself and see them locally
 
 1. Add a line to your operating system `hosts` (Ubuntu `/etc/hosts`) file with: `127.0.0.1 keycloak`
-2. From project root directory `docker-compose up cch_keycloak cch_postgres cch_rserve cch_n52_wps cch_geoserver`
-(add `--build` to `docker-compose` up if you want to rebuild any of these images that you might already have locally)
-3. From project root directory `docker-compose up --build cch_portal`
+2. **Terminal 1:** From project root directory `docker-compose up cch_keycloak cch_postgres cch_rserve cch_n52_wps cch_geoserver`
+    - Add `--build` to `docker-compose up` if you want to rebuild any of these images that you might already have locally
+    - Once these containers are up you shouldn't have to touch them or this terminal
+3. **Terminal 2:** From project root directory `docker-compose up --build cch_portal`
 4. Visit `http://localhost:8080/coastal-hazards-portal/`
 5. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
     - Login - **Username**: `cch_admin` | **Password**: `password`
 6. Make changes to portal code...
-7. From project root directory `docker-compose stop cch_portal && docker-compose rm cch_portal`
-8. From project root directory `docker-compose up --build cch_portal`
+7. **Terminal 3:** From project root directory `docker-compose stop cch_portal && docker-compose rm cch_portal`
+    - After running this **Terminal 2** should become interactive again
+8. **Terminal 2:** From project root directory `docker-compose up --build cch_portal`
+9. Repeat steps 4-8...
 
 ### High-Level Explanation
 
