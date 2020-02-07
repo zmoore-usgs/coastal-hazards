@@ -9,66 +9,68 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
--   isuftin@usgs.gov - Updates for Docker Compose to use Dockerfile specific for local artifacts
--   isuftin@usgs.gov - portal - healthcheck in dockerfile
--   isuftin@usgs.gov - portal - trust store password in setenv
--   isuftin@usgs.gov - portal - setenv heapdump options set to java opts
--   isuftin@usgs.gov - portal - internal port in compose.env
--   isuftin@usgs.gov - portal - switched to using external addressing for containers
--   isuftin@usgs.gov - geoserver - healthcheck
--   isuftin@usgs.gov - geoserver - maintainer label in dockerfile
--   isuftin@usgs.gov - n52 - healthcheck
--   isuftin@usgs.gov - n52 - maintainer label in dockerfile
--   isuftin@usgs.gov - wildcard jks certs
--   isuftin@usgs.gov - pycsw - ability to configure port
--   isuftin@usgs.gov - pycsw - ability to configure gzip encoding ability
--   isuftin@usgs.gov - pycsw - direct config file mounting
--   isuftin@usgs.gov - pycsw - health check
--   isuftin@usgs.gov - pycsw - maintainer label in dockerfile
--   isuftin@usgs.gov - initialization fix for postgres to use liquibase
--   isuftin@usgs.gov - travis configuration to build and scan docker container for rserve
--   isuftin@usgs.gov - maintainer label for rserve dockerfile
--   isuftin@usgs.gov - maintainer label for postgres dockerfile
--   isuftin@usgs.gov - healthceck to rserve dockerfile
--   isuftin@usgs.gov - healthceck to postgres dockerfile
--   isuftin@usgs.gov - this changelog
+- zmoore@usgs.gov  - Updated readmes
+- zmoore@usgs.gov  - Moved multi-stage builds back within individual service dockerfiles
+- isuftin@usgs.gov - Updates for Docker Compose to use Dockerfile specific for local artifacts
+- isuftin@usgs.gov - portal - healthcheck in dockerfile
+- isuftin@usgs.gov - portal - trust store password in setenv
+- isuftin@usgs.gov - portal - setenv heapdump options set to java opts
+- isuftin@usgs.gov - portal - internal port in compose.env
+- isuftin@usgs.gov - portal - switched to using external addressing for containers
+- isuftin@usgs.gov - geoserver - healthcheck
+- isuftin@usgs.gov - geoserver - maintainer label in dockerfile
+- isuftin@usgs.gov - n52 - healthcheck
+- isuftin@usgs.gov - n52 - maintainer label in dockerfile
+- isuftin@usgs.gov - wildcard jks certs
+- isuftin@usgs.gov - pycsw - ability to configure port
+- isuftin@usgs.gov - pycsw - ability to configure gzip encoding ability
+- isuftin@usgs.gov - pycsw - direct config file mounting
+- isuftin@usgs.gov - pycsw - health check
+- isuftin@usgs.gov - pycsw - maintainer label in dockerfile
+- isuftin@usgs.gov - initialization fix for postgres to use liquibase
+- isuftin@usgs.gov - travis configuration to build and scan docker container for rserve
+- isuftin@usgs.gov - maintainer label for rserve dockerfile
+- isuftin@usgs.gov - maintainer label for postgres dockerfile
+- isuftin@usgs.gov - healthcheck to rserve dockerfile
+- isuftin@usgs.gov - healthcheck to postgres dockerfile
+- isuftin@usgs.gov - this changelog
 
 ### Changed
 
--   isuftin@usgs.gov - removed unused kvp in environments
--   isuftin@usgs.gov - removed unused kvp in environments
--   isuftin@usgs.gov - portal - hard coding keystore password in server.xml
--   isuftin@usgs.gov - geoserver - hard-coding trust/keystore password into server.xml
--   isuftin@usgs.gov - geoserver - creating secrets config for server.xml in compose
--   isuftin@usgs.gov - geoserver - setting heapdump path properly in setenv.xml
--   isuftin@usgs.gov - geoserver - getting latest psiprobe
--   isuftin@usgs.gov - geoserver - cleaniing up apk downloads
--   isuftin@usgs.gov - geoserver - getting latest release of cch geoserver
--   isuftin@usgs.gov - n52 - Dockerfile pulls latest release of n52
--   isuftin@usgs.gov - n52 - hardcoded rserve user/pass into wps_config
--   isuftin@usgs.gov - pycsw - took out commented options in config file
--   isuftin@usgs.gov - pycsw - changed Dockerfile to use debian stretch specifically
--   isuftin@usgs.gov - postgres init script now using ash instead of bash
--   isuftin@usgs.gov - clean up postgres dependency install
--   isuftin@usgs.gov - rserve - package dependencies
--   isuftin@usgs.gov - Switched rserve container to use rocker/r-ver:3.3.3 to lock down
+- isuftin@usgs.gov - removed unused kvp in environments
+- isuftin@usgs.gov - removed unused kvp in environments
+- isuftin@usgs.gov - portal - hard coding keystore password in server.xml
+- isuftin@usgs.gov - geoserver - hard-coding trust/keystore password into server.xml
+- isuftin@usgs.gov - geoserver - creating secrets config for server.xml in compose
+- isuftin@usgs.gov - geoserver - setting heapdump path properly in setenv.xml
+- isuftin@usgs.gov - geoserver - getting latest psi-probe
+- isuftin@usgs.gov - geoserver - cleaning up apk downloads
+- isuftin@usgs.gov - geoserver - getting latest release of cch geoserver
+- isuftin@usgs.gov - n52 - Dockerfile pulls latest release of n52
+- isuftin@usgs.gov - n52 - hard-coded rserve user/pass into wps_config
+- isuftin@usgs.gov - pycsw - took out commented options in config file
+- isuftin@usgs.gov - pycsw - changed Dockerfile to use debian stretch specifically
+- isuftin@usgs.gov - postgres init script now using ash instead of bash
+- isuftin@usgs.gov - clean up postgres dependency install
+- isuftin@usgs.gov - rserve - package dependencies
+- isuftin@usgs.gov - Switched rserve container to use rocker/r-ver:3.3.3 to lock down
     changes in base container
--   zmoore@usgs.gov - Refactored local development docker setup to mount config files at
+- zmoore@usgs.gov - Refactored local development docker setup to mount config files at
     container startup rather than copy at build to simplify configuration.
--   zmoore@usgs.gov - Adjust containers to run in "host" network mode to simplify
+- zmoore@usgs.gov - Adjust containers to run in "host" network mode to simplify
     configuration and make things work.
--   zmoore@usgs.gov - Adjusted actual tomcat ports of GeoServer and N52 WPS so that they
+- zmoore@usgs.gov - Adjusted actual tomcat ports of GeoServer and N52 WPS so that they
     work properly in host network mode.
 
 ### Removed
 
--   isuftin@usgs.gov - portal - deprecated -XX:MaxPermSize from setenv
--   isuftin@usgs.gov - portal - setenv uses internal addressing for cch_csw_internal_endpoint
--   isuftin@usgs.gov - portal - coastal-hazards.geoserver.endpoint param from context.xml
--   isuftin@usgs.gov - geoserver - keystore password arg in dockerfile
--   isuftin@usgs.gov - geoserver - run.sh
--   isuftin@usgs.gov - n52 - run file no longer manipulates wps_config
--   isuftin@usgs.gov - pycsw - runtime sed replacement for config file
--   isuftin@usgs.gov - processing to change the rserve password file inline
--   isuftin@usgs.gov - bash installation for postgres init script
--   isuftin@usgs.gov - jks removed from gitignore
+- isuftin@usgs.gov - portal - deprecated -XX:MaxPermSize from setenv
+- isuftin@usgs.gov - portal - setenv uses internal addressing for cch_csw_internal_endpoint
+- isuftin@usgs.gov - portal - coastal-hazards.geoserver.endpoint param from context.xml
+- isuftin@usgs.gov - geoserver - keystore password arg in dockerfile
+- isuftin@usgs.gov - geoserver - run.sh
+- isuftin@usgs.gov - n52 - run file no longer manipulates wps_config
+- isuftin@usgs.gov - pycsw - runtime sed replacement for config file
+- isuftin@usgs.gov - processing to change the rserve password file inline
+- isuftin@usgs.gov - bash installation for postgres init script
+- isuftin@usgs.gov - jks removed from .gitignore
