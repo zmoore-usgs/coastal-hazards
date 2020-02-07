@@ -54,10 +54,10 @@ RUN rm -rf /usr/local/tomcat/webapps/ROOT /usr/local/tomcat/webapps/docs /usr/lo
 RUN rm -f /usr/local/tomcat/conf/tomcat-users.xml /usr/local/tomcat/conf/server.xml /usr/local/tomcat/conf/context.xml
 
 ARG POSTGRES_JDBC_VERSION=42.2.4
-ARG KEYCLOAK_ADAPTER_VERSION=6.0.1
+ARG KEYCLOAK_ADAPTER_VERSION=8.0.2
 
 RUN curl -o /usr/local/tomcat/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar && \
-	curl -o /usr/local/tomcat/keycloak.tar.gz https://downloads.jboss.org/keycloak/$KEYCLOAK_ADAPTER_VERSION/adapters/keycloak-oidc/keycloak-tomcat8-adapter-dist-$KEYCLOAK_ADAPTER_VERSION.tar.gz && \
+	curl -o /usr/local/tomcat/keycloak.tar.gz https://downloads.jboss.org/keycloak/$KEYCLOAK_ADAPTER_VERSION/adapters/keycloak-oidc/keycloak-tomcat-adapter-dist-$KEYCLOAK_ADAPTER_VERSION.tar.gz && \
 	tar xvzf /usr/local/tomcat/keycloak.tar.gz -C /usr/local/tomcat/lib/ && \
 	rm /usr/local/tomcat/keycloak.tar.gz;
 
