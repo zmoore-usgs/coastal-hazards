@@ -333,12 +333,12 @@ installed manually in the non- Dockerized version.
 1. PostgreSQL JDBC - Where ${version} is the version defined in the
    coastal-hazards-portal Dockerfile as `POSTGRES_JDBC_VERSION`:
 
-    https://jdbc.postgresql.org/download/postgresql-${version}.jar
+    <https://jdbc.postgresql.org/download/postgresql-${version}.jar>
 
 2. Keycloak Tomcat 8 Adapter - Where ${version} is the version defined in the
    coastal-hazards-portal Dockerfile as `KEYCLOAK_ADAPTER_VERSION`:
 
-    https://downloads.jboss.org/keycloak/${version}/adapters/keycloak-oidc/keycloak-tomcat8-adapter-dist-${version}.tar.gz
+    <https://downloads.jboss.org/keycloak/${version}/adapters/keycloak-oidc/keycloak-tomcat8-adapter-dist-${version}.tar.gz>
 
     (Can also change `.tar.gz` to `.zip`)
 
