@@ -15,11 +15,10 @@ operations as they work to reduce risk along our coastlines.
 
 #### TL;DR - Just get it running
 
-1. From project root directory `docker-compose -f docker-compose.yml -f docker-compose-local.yml build`
-2. Add a line to your operating system `hosts` (Ubuntu `/etc/hosts`) file with: `127.0.0.1 keycloak`
-3. From project root directory `docker-compose up`
-4. Visit `http://localhost:8080/coastal-hazards-portal/`
-5. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
+1. Add a line to your operating system `hosts` (Ubuntu `/etc/hosts`) file with: `127.0.0.1 keycloak`
+2. From project root directory `docker-compose -f docker-compose.yml -f docker-compose-local.yml up --build`
+3. Visit `http://localhost:8080/coastal-hazards-portal/`
+4. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
     - Login - **Username**: `cch_admin` | **Password**: `password`
 
 #### Full Explanation

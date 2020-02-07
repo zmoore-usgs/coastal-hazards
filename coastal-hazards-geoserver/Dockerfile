@@ -14,16 +14,15 @@ RUN apk add --update --no-cache \
   rm /var/cache/apk/*
 
 RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
-		mkdir -p /usr/lib/ssl/certs/ && \
-		/usr/bin/wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://sslhelp.doi.net/docs/DOIRootCA2.cer && \
-		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0 && \
-		echo "\\n\\nca-certificate = /usr/lib/ssl/certs/DOIRootCA.crt" >> /etc/wgetrc; \
+		mkdir -p /etc/ssl/certs && \
+		/usr/bin/wget -O /usr/local/share/ca-certificates/DOIRootCA.crt http://sslhelp.doi.net/docs/DOIRootCA2.cer && \
+		update-ca-certificates; \
 	fi
 
 RUN mkdir -p /data/coastal-hazards/uploaded-data /usr/local/tomcat/ssl
 
-RUN wget -O /usr/local/tomcat/webapps/probe.war "https://repo1.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.3.1/psi-probe-web-3.3.1.war"
-RUN wget -O /usr/local/tomcat/webapps/geoserver.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-geoserver/${GEOSERVER_VERSION}/coastal-hazards-geoserver-${GEOSERVER_VERSION}.war"
+RUN curl -o /usr/local/tomcat/webapps/probe.war "https://repo1.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.3.1/psi-probe-web-3.3.1.war"
+RUN curl -o /usr/local/tomcat/webapps/geoserver.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-geoserver/${GEOSERVER_VERSION}/coastal-hazards-geoserver-${GEOSERVER_VERSION}.war"
 
 COPY docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 

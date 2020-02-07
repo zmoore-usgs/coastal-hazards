@@ -6,24 +6,35 @@ x-dockerfile-name:
   build:
     dockerfile: Dockerfile.local
     cache_from:
-      - maven_base
+      - cch_build
 
 services:
-  maven_base:
-    image: maven_base
+  cch_build:
+    depends_on: 
+      - cch_tomcat
+    image: cch_build
     build:
       context: .
-      dockerfile: ./Docker/maven_base/Dockerfile
-      target: maven_base
+      dockerfile: ./Docker/cch_build/Dockerfile
+      target: cch_build
+    command: echo
 
   cch_postgres:
+    depends_on: 
+      - cch_build
     << : *local-dockerfile
 
   cch_n52_wps:
+    depends_on: 
+      - cch_build
     << : *local-dockerfile
 
   cch_portal:
+    depends_on: 
+      - cch_build
     << : *local-dockerfile
 
   cch_geoserver:
+    depends_on: 
+      - cch_build
     << : *local-dockerfile

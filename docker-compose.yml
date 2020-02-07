@@ -14,8 +14,6 @@ secrets:
 
 services:
   cch_postgres:
-    build:
-      context: ./coastal-hazards-liquibase
     networks:
       cch-net:
         aliases:
@@ -27,8 +25,6 @@ services:
       - "5432:5432"
 
   cch_rserve:
-    build:
-      context: ./Docker/rserve
     network_mode: "host"
     image: cch_rserve
     ports:
@@ -44,8 +40,6 @@ services:
         target: /profile.conf
 
   cch_n52_wps:
-    build:
-      context: ./coastal-hazards-n52
     network_mode: "host"
     image: cch_n52_wps
     ports:
@@ -70,8 +64,8 @@ services:
         target: /wps_config.xml
 
   cch_portal:
-    build:
-        context: ./coastal-hazards-portal
+    depends_on:
+      - cch_keycloak
     network_mode: "host"
     image: cch_portal
     ports:
@@ -99,8 +93,6 @@ services:
         target: /usr/local/tomcat/conf/keycloak.json
 
   cch_geoserver:
-    build:
-        context: ./coastal-hazards-geoserver
     network_mode: "host"
     image: cch_geoserver
     ports:
@@ -137,11 +129,15 @@ services:
       - DB_VENDOR=h2
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
-      - KEYCLOAK_IMPORT=/tmp/cch_realm.json
-      - KEYCLOAK_HOSTNAME=keycloak
       - KEYCLOAK_HTTP_PORT=8083
       - KEYCLOAK_HTTPS_PORT=8446
     volumes:
       - type: bind
         source: ./Docker/keycloak/cch_local_development_realm.json
         target: /tmp/cch_realm.json
+      - type: bind
+        source: ./Docker/keycloak/load_cch_realm.sh
+        target: /tmp/load_cch_realm.sh
+      - type: bind
+        source: ./Docker/keycloak/start_cch_keycloak.sh
+        target: /opt/jboss/startup-scripts/start_cch_keycloak.sh
