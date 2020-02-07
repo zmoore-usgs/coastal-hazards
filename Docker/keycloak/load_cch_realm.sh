@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Waits until the keycloak server is fully up and running and then uses the CLI to import the CCH realm
 cd ~/keycloak/bin
 until curl "keycloak:8083" | grep -q "html"; do sleep 4; done

@@ -73,8 +73,7 @@ and run:
 Run a command like the following to stand up the relevant containers:
 
 ```bash
-docker-compose up cch_keycloak cch_postgres cch_rserve
-cch_n52_wps
+docker-compose up cch_keycloak cch_postgres cch_rserve cch_n52_wps
 ```
 
 Manually set up you tomcat instances locally for the Portal and GeoServer. Use
