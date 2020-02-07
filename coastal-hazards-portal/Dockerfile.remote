@@ -4,6 +4,8 @@ ENV KEY_STORE_PASSWORD=changeit
 
 RUN apk add --update --no-cache \
 	openssl \
+	fontconfig \
+	ttf-dejavu \
 	curl && \
 	rm -rf /var/lib/apt/lists/* && \
   rm /var/cache/apk/*
