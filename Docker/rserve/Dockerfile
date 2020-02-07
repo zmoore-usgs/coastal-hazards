@@ -20,7 +20,7 @@ RUN apt-get update && \
 RUN mkdir work
 
 RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
-		wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://sslhelp.doi.net/docs/DOIRootCA2.cer && \
+		curl -o /usr/lib/ssl/certs/DOIRootCA.crt http://sslhelp.doi.net/docs/DOIRootCA2.cer && \
 		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0; \
 	fi
 

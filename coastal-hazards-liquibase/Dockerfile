@@ -1,7 +1,5 @@
 FROM mdillon/postgis:9.6-alpine
 
-LABEL maintainer="gs-w_eto_eb_federal_employees@usgs.gov"
-
 ARG LIQUIBASE_VERSION=3.4.1
 ARG POSTGRES_JDBC_VERSION=42.2.4
 
@@ -28,7 +26,7 @@ RUN apk update && apk upgrade \
 
 RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 		mkdir -p /etc/ssl/certs && \
-		wget -O /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
+		curl -o /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
 		update-ca-certificates; \
 	fi
 

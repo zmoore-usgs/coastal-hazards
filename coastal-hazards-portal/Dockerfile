@@ -2,7 +2,7 @@ FROM maven:3.6.0-jdk-8-alpine AS portal_build
 
 RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 		mkdir -p /etc/ssl/certs && \
-		wget -O /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
+		curl -o /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
 		update-ca-certificates; \
 	fi
 
@@ -40,7 +40,7 @@ RUN apk add --update --no-cache \
 
 RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 		mkdir -p /etc/ssl/certs && \
-		wget -O /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
+		curl -o /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
 		update-ca-certificates; \
 	fi
 
