@@ -103,12 +103,24 @@ This repo contains the many sub-components that make up the whole portal applica
 ### TL;DR - Just get it running
 
 1. Add a line to your operating system `hosts` (Ubuntu `/etc/hosts`) file with: `127.0.0.1 keycloak`
-2. From project root directory `docker-compose -f docker-compose.yml -f docker-compose-local.yml up --build`
+2. From project root directory `docker-compose up`
 3. Visit `http://localhost:8080/coastal-hazards-portal/`
 4. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
     - Login - **Username**: `cch_admin` | **Password**: `password`
 
 If you're going to be doing active development on the project locally it is **_highly_** suggested to read through the entirety of this readme. While it is very long, the process for building and running this project locally can be very confusing, especially if you are newer to Docker.
+
+### TL;DR 2 - Make changes to the portal itself and see them locally
+
+1. Add a line to your operating system `hosts` (Ubuntu `/etc/hosts`) file with: `127.0.0.1 keycloak`
+2. From project root directory `docker-compose up cch_keycloak cch_postgres cch_rserve cch_n52_wps cch_geoserver`
+3. From project root directory `docker-compose up --build cch_portal`
+4. Visit `http://localhost:8080/coastal-hazards-portal/`
+5. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
+    - Login - **Username**: `cch_admin` | **Password**: `password`
+6. Make changes to portal code...
+7. From project root directory `docker-compose stop cch_portal && docker-compose rm cch_portal`
+8. From project root directory `docker-compose up --build cch_portal`
 
 ### High-Level Explanation
 
@@ -190,19 +202,19 @@ The following projects in this repo have the ability to build their containers f
 - coastal-hazards-n52
 - coastal-hazards-liquibase
 
-Each of the listed projects includes two different Dockerfiles: `Dockerfile` and `Dockerfile.local`
+Each of the listed projects includes two different Dockerfiles: `Dockerfile` and `Dockerfile.remote`
 
-For Java projects `Dockerfile.local` is the same as `Dockerfile` except that instead of pulling a specified pre-built version of the project from a remote repository it instead utilizes a Docker Multistage Build to build the project from the source code in the repo and then copy the built artifact into the container. The liquibase project doesn't use Maven for building and doesn't require a Multistage build, it just copies the sources into the container instead of pulling a specific version of the sources from the remote Git repo. The `docker-compose-local.yml` file at the root of the project enables building of the `.local` versions of each supported project by overriding the target Dockerfile for `docker-compose build` and `docker-compose up`.
+For Java projects `Dockerfile` is the same as `Dockerfile.remote` except that instead of pulling a specified pre-built version of the project from a remote repository it instead utilizes a Docker Multistage Build to build the project from the source code in the repo and then copy the built artifact into the container. The liquibase project doesn't use Maven for building and doesn't require a Multistage build, it just copies the sources into the container instead of pulling a specific version of the sources from the remote Git repo. The `docker-compose-local.yml` file at the root of the project enables building of the `.local` versions of each supported project by overriding the target Dockerfile for `docker-compose build` and `docker-compose up`.
 
 The Docker Multistage Build for Java projects works by first creating a maven-based build container (such as `portal_build`), copying all of the project POM.xml files into the container, and then running a command to pull down all of the required dependencies for the specified projects via Maven. After that step is completed the source code for the specific project (and the source for any of the other projects that are required) is copied into the container and then built via Maven.
 
 This order is important because it allows us to significantly speed up builds after the first build (unless the POM files change). By copying in the POM files first and then downloading all of the necessary dependencies we take advantage of Docker Layer Caching to allow subsequent Docker builds to skip that entire (very long) step and unless the POM files change.
 
-The docker images built from both the `Dockerfile` and `Dockerfile.local` use the same image name which means that regardless of which version you build the name used to bring them up via docker-compose remains the same.
+The docker images built from both the `Dockerfile` and `Dockerfile.remote` use the same image name which means that regardless of which version you build the name used to bring them up via docker-compose remains the same.
 
 To build the images from local sources:
 
-1. Execute `docker-compose -f docker-compose.yml -f docker-compose-local.yml build`
+1. Execute `docker-compose build`
     - This should begin the process of building. This process will take some
       time, possibly in upwards of 15-20 minutes depending on network speed.
 
@@ -213,11 +225,11 @@ To build the images from local sources:
 
 #### Building From Remote Sources
 
-The Dockerfiles for each project are set to build from remote sources by default, so building this way uses a slightly shorter command:
+The Dockerfiles for each project are set to build from local sources by default, so building this way uses a slightly longer command:
 
 To build the images from remote sources:
 
-1. Execute `docker-compose build`
+1. Execute `docker-compose -f docker-compose.yml -f docker-compose-remote.yml build`
     - This should begin the process of building. This process will take some
       time, but should be much faster than local sources.
 
@@ -274,11 +286,11 @@ The coastal hazards portal project itself requires PostgreSQL DB, Rserve, GeoSer
 
 In a terminal window executing the following command will build all of the portal's required services from their local sources (for supported projects):
 
-`docker-compose -f docker-compose.yml -f docker-compose-local.yml build cch_postgres cch_rserve cch_geoserver cch_n52_wps`
+`docker-compose build cch_postgres cch_rserve cch_geoserver cch_n52_wps`
 
 If you wanted to build and run all of the portal's required services from their remote sources instead of using local sources you would run the following:
 
-`docker-compose build cch_postgres cch_rserve cch_geoserver cch_n52_wps`
+`docker-compose -f docker-compose.yml -f docker-compose-remote.yml build cch_postgres cch_rserve cch_geoserver cch_n52_wps`
 
 Once you've built the images for the required services you can bring all of the required service up via:
 
@@ -299,13 +311,13 @@ This will build the portal via Maven within a build container and then copy the 
 If we then make some changes to the portal code and want to rebuild and relaunch the portal container with our changes we do the following in a new terminal:
 
 1. Stop and remove the existing container via `docker-compose stop cch_portal && docker-compose rm cch_portal`
-2. The terminal that was running the portal container should be available again so switch back to that terminal and execute `docker-compose -f docker-compose.yml -f docker-compose-local.yml build cch_portal && docker-compose up cch_portal` which will rebuild the portal image from local sources and then re-launch the newly built image into a new container.
+2. The terminal that was running the portal container should be available again so switch back to that terminal and execute `docker-compose build cch_portal && docker-compose up cch_portal` which will rebuild the portal image from local sources and then re-launch the newly built image into a new container.
 
-Note that, as described above, we can combine the docker-compose build and up commands into a single command via: `docker-compose -f docker-compose.yml -f docker-compose-local.yml up --build cch_portal` which is a perfectly acceptable replacement command for the one listed in step 2.
+Note that, as described above, we can combine the docker-compose build and up commands into a single command via: `docker-compose up --build cch_portal` which is a perfectly acceptable replacement command for the one listed in step 2.
 
 ### Using the Java Remote Debugger on the Portal Docker Container
 
-The Coastal Hazards Portal docker container is configured to allow a Java remote debugger to attach to the portal process running within it. Depending on your Java IDE the process for attaching the remote debugger to a running application will vary, but those instructions can be found online. 
+The Coastal Hazards Portal docker container is configured to allow a Java remote debugger to attach to the portal process running within it. Depending on your Java IDE the process for attaching the remote debugger to a running application will vary, but those instructions can be found online.
 
 The import information to know regarding the portal is that the remote debug port for the portal container is: `8900`
 

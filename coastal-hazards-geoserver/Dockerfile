@@ -1,3 +1,32 @@
+FROM maven:3.6.0-jdk-8-alpine AS geoserver_build
+
+RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
+		mkdir -p /etc/ssl/certs && \
+		wget -O /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
+		update-ca-certificates; \
+	fi
+
+WORKDIR /source
+
+COPY pom.xml pom.xml
+
+COPY ehcache-shaded/pom.xml ehcache-shaded/pom.xml
+COPY coastal-hazards-commons/pom.xml coastal-hazards-commons/pom.xml
+COPY coastal-hazards-export/pom.xml coastal-hazards-export/pom.xml
+COPY coastal-hazards-n52/pom.xml coastal-hazards-n52/pom.xml
+COPY coastal-hazards-wps/pom.xml coastal-hazards-wps/pom.xml
+COPY coastal-hazards-liquibase/pom.xml coastal-hazards-liquibase/pom.xml
+COPY coastal-hazards-geoserver/pom.xml coastal-hazards-geoserver/pom.xml
+COPY coastal-hazards-portal/pom.xml coastal-hazards-portal/pom.xml
+
+RUN mvn -B -pl coastal-hazards-geoserver -am dependency:go-offline
+
+COPY coastal-hazards-commons coastal-hazards-commons
+COPY coastal-hazards-wps coastal-hazards-wps
+COPY coastal-hazards-geoserver coastal-hazards-geoserver
+
+RUN mvn -B -pl coastal-hazards-geoserver -am package
+
 FROM tomcat:8.5-jre8-alpine
 
 ENV KEY_STORE_PASSWORD=changeit
@@ -23,9 +52,8 @@ RUN rm -f /usr/local/tomcat/conf/tomcat-users.xml /usr/local/tomcat/conf/server.
 
 RUN mkdir -p /data/coastal-hazards/uploaded-data
 
-RUN curl -o /usr/local/tomcat/webapps/geoserver.war "https://cida.usgs.gov/maven/service/local/repositories/cida-public-releases/content/gov/usgs/cida/coastalhazards/coastal-hazards-geoserver/${GEOSERVER_VERSION}/coastal-hazards-geoserver-${GEOSERVER_VERSION}.war"
-
-COPY docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
+COPY --from=geoserver_build /source/coastal-hazards-geoserver/target/geoserver.war /usr/local/tomcat/webapps/geoserver.war
+COPY coastal-hazards-geoserver/docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 
 RUN chmod +x /usr/local/tomcat/bin/setenv.sh
 
