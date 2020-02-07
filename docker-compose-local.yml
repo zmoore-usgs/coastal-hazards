@@ -1,0 +1,23 @@
+---
+version: '3.5'
+
+services:
+  cch_postgres:
+    build:
+      # Build context for this image is set to its sub-directory
+      dockerfile: Dockerfile.local
+
+  cch_n52_wps:
+    build:
+      # Build context for this image is set to project root directory
+      dockerfile: ./coastal-hazards-n52/Dockerfile.local
+
+  cch_portal:
+    build:
+      # Build context for this image is set to project root directory
+      dockerfile: ./coastal-hazards-portal/Dockerfile.local
+
+  cch_geoserver:
+    build:
+      # Build context for this image is set to project root directory
+      dockerfile: ./coastal-hazards-geoserver/Dockerfile.local

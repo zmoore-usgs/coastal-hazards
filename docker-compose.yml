@@ -14,6 +14,8 @@ secrets:
 
 services:
   cch_postgres:
+    build:
+      context: ./coastal-hazards-liquibase
     networks:
       cch-net:
         aliases:
@@ -25,6 +27,8 @@ services:
       - "5432:5432"
 
   cch_rserve:
+    build:
+      context: ./Docker/rserve
     network_mode: "host"
     image: cch_rserve
     ports:
@@ -40,6 +44,9 @@ services:
         target: /profile.conf
 
   cch_n52_wps:
+    build:
+      context: .
+      dockerfile: ./coastal-hazards-n52/Dockerfile
     network_mode: "host"
     image: cch_n52_wps
     ports:
@@ -64,6 +71,9 @@ services:
         target: /wps_config.xml
 
   cch_portal:
+    build:
+      context: .
+      dockerfile: ./coastal-hazards-portal/Dockerfile
     depends_on:
       - cch_keycloak
     network_mode: "host"
@@ -93,6 +103,9 @@ services:
         target: /usr/local/tomcat/conf/keycloak.json
 
   cch_geoserver:
+    build:
+      context: .
+      dockerfile: ./coastal-hazards-geoserver/Dockerfile
     network_mode: "host"
     image: cch_geoserver
     ports:

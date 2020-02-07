@@ -1,7 +1,9 @@
-## Coastal Hazards Docker Containers
----------------------------------
+# Coastal Hazards
+
+## Docker Containers
 
 Contents:
+
 - Docker
 - Docker Compose
 - Docker Machine
@@ -15,13 +17,17 @@ Contents:
 - Postgres/PostGIS
 - Troubleshooting
 
-#### Docker
+---------------------------------
+
+### Docker
+
 ======
 
 The minimum version required for creating and running these containers is 1.12
 or higher.
 
-#### Docker Compose
+### Docker Compose
+
 ==============
 
 While Docker Compose is not strictly necessary to run this series of containers,
@@ -29,7 +35,8 @@ it does make life much easier. Ideally you will only need a single command to
 build all of the containers and then one command to run all of the containers
 without having to know much more about their inner workings.
 
-#### Docker Machine
+### Docker Machine
+
 ==============
 
 This set of containers was built against Docker Machine but I don't think that
@@ -38,48 +45,49 @@ difference you should experience if using just Docker is that instead of
 connecting to containers via the IP of the Docker Machine, you'll connect to
 localhost (unless you have some funky networking setup happening).
 
-#### Building on the DOI network
+### Building on the DOI network
+
 ===========================
 
 The DOI network has implemented an SSL intercept certificate that performs MITM
 inspection to any HTTPS traffic. This causes many errors when dependencies are
 attempting to be downloaded from GitHub, Python repositories and more. These
-containers shoudl automatically be able to detect when being built on the DOI
+containers should automatically be able to detect when being built on the DOI
 Network and will make the necessary modifications to be able to pull
 dependencies when this is the case.
 
+### Building Everything
 
-#### Building Everything
 ==========
+
 Clone the docker-rserve repo and build it as described in the first paragraph of
 the RServe section below. After, change to the coastal-hazards/Docker directory
 and run:
 
-`
-docker-compose up
-`
+`docker-compose up`
 
-#### Running The Portal and GeoServer locally with all other services in containers
+### Running The Portal and GeoServer locally with all other services in containers
+
 ================
 
 Run a command like the following to stand up the relevant containers:
 
-`
+```bash
 docker-compose up cch_keycloak cch_postgres cch_rserve
 cch_n52_wps
-`
+```
 
 Manually set up you tomcat instances locally for the Portal and GeoServer. Use
-the dev tier's context.xml's or the Dockerized context.xml's as a starting
+the dev tier's context.xml file or the Dockerized context.xml as a starting
 point.
 
-Modify the context.xml's for those tomcat instances. Most references to services
-should use either `localhost` or your docker machine vm's IP. Ports for
+Modify the context.xml for those tomcat instances. Most references to services
+should use either `localhost` or your docker machine vm IP. Ports for
 containerized services are defined in
 `coastal-hazards/Docker/docker-compose.yml`.
 
+### Keycloak
 
-#### Keycloak
 =========
 
 CCH Uses Keycloak for authentication into the mediation page, and as such when
@@ -91,9 +99,9 @@ available on **the same URL** both _within_ and _outside_ of the Docker network.
 Within the network created by the Docker Compose file the Keycloak container
 runs on the `keycloak` hostname, however this hostname is not directly available
 to us outside of the Docker network. To get around this, you should add an entry
-to your host OS `hosts` file to map the hostname `keycloak` to your Docker host 
-address so that when you open a browser to `keycloak:8083/auth/` you end up at 
-the keycloak site running on `<docker host>:8083`. This will allow the OAuth2 
+to your host OS `hosts` file to map the hostname `keycloak` to your Docker host
+address so that when you open a browser to `keycloak:8083/auth/` you end up at
+the keycloak site running on `<docker host>:8083`. This will allow the OAuth2
 login flow to work properly between the Keycloak server and Portal server. This
 step **must** be done regardless of whether the portal is running in Docker or
 on a Tomcat instance outside of Docker.
@@ -124,13 +132,13 @@ includes three default users:
     page in the local Dockerized version of the coastal-hazards-portal
     application.
 
-2. User: cch_user, Password: password
+3. User: cch_user, Password: password
 
     This local user has no roles assigned and is meant to serve as a test user
     who might try to login to the mediation page without the proper role.
 
+### Geoserver
 
-#### Geoserver
 =========
 
 The Geoserver container runs standalone and does not require other containers to
@@ -148,7 +156,8 @@ actual server. You can run the container by issuing:
 Once the server is up, you will be able to connect to it by pointing a browser
 to `http://<docker ip>:8081/geoserver`
 
-#### RServe
+### RServe
+
 ======
 
 In order to build the CCH RServe container, you will first need to build the
@@ -169,7 +178,8 @@ You can run the container by issuing:
 
 The container exposes port 6311 if you need to work with this RServe standalone
 
-#### 52N WPS
+### 52N WPS
+
 =======
 
 The 52 North WPS container takes advantage of the RServe container to create the
@@ -184,9 +194,9 @@ started if it is not currently running.
 Once the server is up and running, you can access the server by pointing your
 web browser at `http://<docker ip>:8082/wps`
 
-#### Postgres/PostGIS
-================
+### Postgres/PostGIS
 
+================
 
 This container is standalone and does not depend on any other containers to run.
 You can run the container by issuing:
@@ -201,45 +211,45 @@ network, issue:
 You will then be able to connect to the database via the ports and credentials
 described in `docker-compose.yml` and `postgres/Dockerfile`
 
+### Troubleshooting
 
-#### Troubleshooting
 =====================
 
-
-##### Stale Container Contents
+#### Stale Container Contents
 
 Not seeing the changes you expect? Try building without a cache by using
 `--build` and/or `--force-recreate`.
 
 Example:
 
-```
+```bash
 docker-compose up --build --force-recreate cch_postgres cch_rserve cch_n52_wps
 ```
 
-##### DB-related Startup Errors
+#### DB-related Startup Errors
 
 The postgres container may fail to start the first time you try to
 `docker-compose up` them, logging messages like:
 
-`
-docker_cch_postgres_1 exited with code 255
-`
+`docker_cch_postgres_1 exited with code 255`
 
 In that case, try running the same command again. You may get an error like
 this:
 
-`
+```bash
 ERROR: for cch_postgres  oci runtime error: container with id exists:
-5ca07708b997ab70562ae32f79d4925b0bf7e35c7997a00ded90cf416685e038 Traceback (most
-recent call last): File "/usr/bin/docker-compose", line 9, in <module>
+
+5ca07708b997ab70562ae32f79d4925b0bf7e35c7997a00ded90cf416685e038
+
+Traceback (most recent call last): File "/usr/bin/docker-compose", line 9, in <module>
 load_entry_point('docker-compose==1.7.1', 'console_scripts', 'docker-compose')()
 File "/usr/lib/python2.7/site-packages/compose/cli/main.py", line 63, in main
 log.error(e.msg) AttributeError: 'ProjectError' object has no attribute 'msg'
-`
+```
 
 In that case, try the same command again.
 
-##### 52N WPS Difficulties
+#### 52N WPS Difficulties
+
 If the 52N WPS is giving you a hard time, you can safely use the dev tier
 instead.
