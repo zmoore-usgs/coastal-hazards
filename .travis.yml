@@ -31,7 +31,7 @@ before_install:
   - git clone https://github.com/docker/docker-bench-security.git
 
 install:
-  - for image in $DOCKER_IMAGE_BUILD; do docker-compose up -d --build $image; done
+  - for image in $DOCKER_IMAGE_BUILD; do docker-compose -f docker-compose.yml -f docker-compose-remote.yml up -d --build $image; done
 
 script:
   - cd docker-bench-security

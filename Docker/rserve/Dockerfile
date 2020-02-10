@@ -1,7 +1,5 @@
 FROM rocker/r-ver:3.3.3
 
-LABEL maintainer="gs-w_eto_eb_federal_employees@usgs.gov"
-
 RUN apt-get update && \
 	apt-get install --no-install-recommends -y \
 	wget \
