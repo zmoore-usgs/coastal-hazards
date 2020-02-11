@@ -22,7 +22,7 @@ RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
 		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0; \
 	fi
 
-RUN R -e "install.packages('devtools');library(devtools);install.packages(c('Rserve','RCurl','XML'));install_github('USGS-R/hazardItems');"
+RUN R -e "install.packages('devtools');library(devtools);install.packages(c('Rserve','RCurl','XML', 'xml2'));install_github('USGS-R/hazardItems');"
 
 COPY profile.conf profile.conf
 COPY rserve.conf rserve.conf
