@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.Item.ItemType;
 import gov.usgs.cida.coastalhazards.model.summary.Full;
 import gov.usgs.cida.coastalhazards.model.summary.Legend;
 import gov.usgs.cida.coastalhazards.model.summary.Medium;
@@ -197,5 +199,17 @@ public class StormUtil {
 		childMap.put("children", childList);
 		
 		return childMap;
+	}
+
+	public static Item findTrackChildItem(Item stormItem) {
+		if(stormItem.getChildren() != null && stormItem.getItemType() == ItemType.template && stormItem.getType() == Item.Type.storms) {
+			for(Item child : stormItem.getChildren()) {
+				if(child.getName() != null && child.getName().equals("track") && child.getItemType() == ItemType.aggregation) {
+					return child;
+				}
+			}
+		}
+
+		return null;
 	}
 }

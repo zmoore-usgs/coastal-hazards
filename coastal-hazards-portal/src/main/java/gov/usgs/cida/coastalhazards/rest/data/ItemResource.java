@@ -7,6 +7,7 @@ import gov.usgs.cida.coastalhazards.jpa.StatusManager;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.Status;
+import gov.usgs.cida.coastalhazards.rest.data.util.StormUtil;
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
@@ -181,56 +182,54 @@ public class ItemResource {
 	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
 		Response response = null;
+		String mergedId = null;
+
 		try (ItemManager itemManager = new ItemManager()) {
 			Item dbItem = itemManager.load(id);
 			Item updatedItem = Item.fromJSON(content);
 			String trackId = null;
 
-			//If this is a storm going from active to inactive then remove the track item
-			if(dbItem != null && dbItem.getType() == Item.Type.storms && !updatedItem.isActiveStorm() && dbItem.isActiveStorm()) {
-				Integer trackIndex = null;
-
+			//If this is a storm going from active to inactive then remove the track item if it exists
+			if(dbItem != null && !updatedItem.isActiveStorm() && dbItem.isActiveStorm()) {
 				//Find Track Child
-				for(Item child : updatedItem.getChildren()) {
-					if(child.getName().equals("track")) {
-						trackId = child.getId();
-						trackIndex = updatedItem.getChildren().indexOf(child);
-						break;
-					}
-				}
+				Item trackItem = StormUtil.findTrackChildItem(updatedItem);
 
-				//Remove Track Child
-				if(trackId != null && trackIndex != null) {
-					updatedItem.getChildren().remove(trackIndex.intValue());
+				if(trackItem != null) {
+					trackId = trackItem.getId();
+					updatedItem.getChildren().remove(
+						updatedItem.getChildren().indexOf(trackItem)
+					);
 				}
 			}
 
 			Item mergedItem = Item.copyValues(updatedItem, dbItem);
-			String mergedId = null;
 
 			if (dbItem == null) {
 				mergedId = itemManager.persist(mergedItem);
 			} else {
 				mergedId = itemManager.merge(mergedItem);
 			}
-			if (null != mergedId) {
-				//Delete the storm track item once the storm has been successfully saved
-				if(trackId != null) {
-					itemManager.delete(trackId, true);
-				}
 
-				response = Response.ok().build();
-			} else {
-				throw new BadRequestException();
-			}
-			try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
-				Status status = new Status();
-				status.setStatusName(Status.StatusName.ITEM_UPDATE);
-				statusMan.save(status);
-
-				thumbMan.updateDirtyBits(id);
+			//Delete the storm track item once the storm item has been successfully saved
+			if (trackId != null && mergedId != null) {
+				itemManager.delete(trackId, true);
 			}
 		}
+
+		if (null != mergedId) {
+			response = Response.ok().build();
+		} else {
+			throw new BadRequestException();
+		}
+
+		try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
+			Status status = new Status();
+			status.setStatusName(Status.StatusName.ITEM_UPDATE);
+			statusMan.save(status);
+
+			thumbMan.updateDirtyBits(id);
+		}
+
 		return response;
 	}
 
