@@ -210,23 +210,22 @@ public class ItemResource {
 				mergedId = itemManager.merge(mergedItem);
 			}
 
+			if (null != mergedId) {
+				response = Response.ok().build();
+			} else {
+				throw new BadRequestException();
+			}
+
 			//Delete the storm track item once the storm item has been successfully saved
-			if (trackId != null && mergedId != null) {
+			if (trackId != null) {
 				itemManager.delete(trackId, true);
 			}
-		}
-
-		if (null != mergedId) {
-			response = Response.ok().build();
-		} else {
-			throw new BadRequestException();
 		}
 
 		try (StatusManager statusMan = new StatusManager(); ThumbnailManager thumbMan = new ThumbnailManager()) {
 			Status status = new Status();
 			status.setStatusName(Status.StatusName.ITEM_UPDATE);
 			statusMan.save(status);
-
 			thumbMan.updateDirtyBits(id);
 		}
 
