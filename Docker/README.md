@@ -1,4 +1,4 @@
-# Coastal Hazards
+# Coastal Hazards Docker Containers
 
 ## Docker Containers
 
@@ -55,16 +55,6 @@ attempting to be downloaded from GitHub, Python repositories and more. These
 containers should automatically be able to detect when being built on the DOI
 Network and will make the necessary modifications to be able to pull
 dependencies when this is the case.
-
-### Building Everything
-
-==========
-
-Clone the docker-rserve repo and build it as described in the first paragraph of
-the RServe section below. After, change to the coastal-hazards/Docker directory
-and run:
-
-`docker-compose up`
 
 ### Running The Portal and GeoServer locally with all other services in containers
 
@@ -158,17 +148,6 @@ to `http://<docker ip>:8081/geoserver`
 ### RServe
 
 ======
-
-In order to build the CCH RServe container, you will first need to build the
-base rserve container which is also produced by us. To build the base rserve
-container, clone the GitHub repository at
-[https://github.com/USGS-CIDA/docker-rserve](https://github.com/USGS-CIDA/docker-rserve).
-When in the directory you've cloned to, just issue `docker-compose build`.
-
-Once the base container is built, you may then build the CCH RServe container by
-issuing:
-
-`docker-compose build cch_rserve`
 
 This container is standalone and does not depend on any other containers to run.
 You can run the container by issuing:
