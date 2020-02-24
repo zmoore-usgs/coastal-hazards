@@ -55,7 +55,7 @@ public class SLDGenerator {
                 sideEffectMapPut(vulnerability, RasterPAE.rasterConfig); //raster pae -probability
                 sideEffectMapPut(vulnerability, RasterCR.rasterConfig); //raster cr - coastal response
                 sideEffectMapPut(vulnerability, OldSchoolOverallCVI.overallOldSchool);
-                sideEffectMapPut(vulnerability, Evic.evic);
+                sideEffectMapPut(vulnerability, Uvvr.uvvr);
 		gmap.put(Item.Type.vulnerability, vulnerability);
 		
 		Map<String, SLDConfig> historical = new HashMap<>();
