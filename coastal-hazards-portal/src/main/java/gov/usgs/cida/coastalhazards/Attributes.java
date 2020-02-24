@@ -103,7 +103,7 @@ public class Attributes {
 	public static final String NHC_TRACK_PT_72CAT = "NHC_TRACK_PT_72CAT";
 	public static final String NHC_TRACK_PT_120CAT = "NHC_TRACK_PT_120CAT";
         
-        public static final String VIC = "VIC"; //vulnerability index
+        public static final String UVVR = "UVVR"; //vulnerability index
 	
 	public static final String TCT = "TCT";
 	public static final String TC2 = "TC2";
@@ -213,7 +213,7 @@ public class Attributes {
         
         public static Set<String> getPolygonAttrs() {
 		Set<String> polys = new HashSet<>();
-		polys.add(VIC);
+		polys.add(UVVR);
 		return polys;
 	}
 }
