@@ -45,7 +45,7 @@ public class MinifyResource {
                 TinyGov tinygov = urlManager.load(url);
                 if (tinygov == null) {
 					String encodedUrl = URLEncoder.encode(url, "UTF-8");
-                    String minified = GoUsaGovUtils.minify(encodedUrl);
+					String minified = GoUsaGovUtils.minify(encodedUrl);
                     String short_http_url = GoUsaGovUtils.getUrlFromResponse(minified);
                     if (short_http_url == null) {
                         throw new Exception("Cannot get url from go.usa.gov");
