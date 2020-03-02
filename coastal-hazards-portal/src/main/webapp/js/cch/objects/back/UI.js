@@ -201,13 +201,11 @@ CCH.Objects.Back.UI = function (args) {
 			twttr.widgets.createShareButton(
 					url,
 					$('#twitter-button-span')[0],
-					function (element) {
-						CCH.LOG.trace('Twitter create share button callback triggered on ' + element);
-					},
 					{
 						hashtags: 'USGS_CCH',
 						lang: 'en',
 						size: 'large',
+						dnt: true,
 						text: CCH.CONFIG.item.summary.tiny.text,
 						count: 'none'
 					}

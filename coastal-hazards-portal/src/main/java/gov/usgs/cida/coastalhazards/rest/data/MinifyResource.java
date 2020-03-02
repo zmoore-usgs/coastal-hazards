@@ -37,12 +37,12 @@ public class MinifyResource {
 	@GET
 	@Path("/minify")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response minify(@QueryParam("url") String url) {
+	public Response minify(@QueryParam("scheme") String scheme, @QueryParam("url") String url) {
 		Map<String, String> responseMap = new HashMap<String, String>();
 		Response response;
 		try {
 			if (StringUtils.isNotBlank(url)) {
-				url = URLDecoder.decode(url, StandardCharsets.UTF_8.displayName());
+				url = scheme + "://" + URLDecoder.decode(url, StandardCharsets.UTF_8.displayName());
                 TinyGov tinygov = urlManager.load(url);
                 if (tinygov == null) {
                     String encodedUrl = URLEncoder.encode(url, StandardCharsets.UTF_8.displayName());
