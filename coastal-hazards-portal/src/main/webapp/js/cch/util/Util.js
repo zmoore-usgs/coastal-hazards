@@ -80,10 +80,14 @@ CCH.Util.Util = {
 		if (CCH.CONFIG.ui && CCH.CONFIG.ui.endpoints && location === CCH.CONFIG.ui.endpoints.tutorial) {
 			return $.Deferred().resolve({tinyUrl : location});
 		}
+
+		// Split URL into Scheme and Location
+		var scheme = location.indexOf("://") > 0 ? location.substr(0, location.indexOf("://")) : "https";
+		var route = location.indexOf("://") > 0 ? location.substr(location.indexOf("://") + 3) : location;
 		
 		// When we're not in a tutorial, go ahead and call the minify functionality
 		// on the back end
-		return $.ajax(CCH.CONFIG.contextPath + '/data/minifier/minify?url=' + encodeURI(location), {
+		return $.ajax(CCH.CONFIG.contextPath + '/data/minifier/minify?scheme=' + scheme + '&url=' + encodeURI(route), {
 			type: 'GET',
 			dataType: 'json'
 		});
