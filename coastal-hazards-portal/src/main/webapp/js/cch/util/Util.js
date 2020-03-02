@@ -83,7 +83,7 @@ CCH.Util.Util = {
 		
 		// When we're not in a tutorial, go ahead and call the minify functionality
 		// on the back end
-		return $.ajax(CCH.CONFIG.contextPath + '/data/minifier/minify/' + location, {
+		return $.ajax(CCH.CONFIG.contextPath + '/data/minifier/minify?url=' + encodeURI(location), {
 			type: 'GET',
 			dataType: 'json'
 		});

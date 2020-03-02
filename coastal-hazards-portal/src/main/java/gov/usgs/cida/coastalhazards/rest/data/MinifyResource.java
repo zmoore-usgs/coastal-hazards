@@ -8,14 +8,16 @@ import gov.usgs.cida.coastalhazards.rest.data.util.HttpUtil;
 import gov.usgs.cida.utilities.gov.usa.go.GoUsaGovUtils;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang.StringUtils;
@@ -33,16 +35,17 @@ public class MinifyResource {
     private static TinyGovManager urlManager = new TinyGovManager();
 
 	@GET
-	@Path("/minify/{url:.*}")
+	@Path("/minify")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response minify(@PathParam("url") String url) {
+	public Response minify(@QueryParam("url") String url) {
 		Map<String, String> responseMap = new HashMap<String, String>();
 		Response response;
 		try {
 			if (StringUtils.isNotBlank(url)) {
+				url = URLDecoder.decode(url, StandardCharsets.UTF_8.displayName());
                 TinyGov tinygov = urlManager.load(url);
                 if (tinygov == null) {
-                    String encodedUrl = URLEncoder.encode(url, "UTF-8");
+                    String encodedUrl = URLEncoder.encode(url, StandardCharsets.UTF_8.displayName());
                     String minified = GoUsaGovUtils.minify(encodedUrl);
                     String short_http_url = GoUsaGovUtils.getUrlFromResponse(minified);
                     if (short_http_url == null) {
@@ -79,60 +82,6 @@ public class MinifyResource {
 			responseMap.put("message", ex.getMessage());
 			response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
 		}
-		return response;
-	}
-
-	@GET
-	@Path("/expand/{url:.*}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response expand(@PathParam("url") String url) {
-		Map<String, String> responseMap = new HashMap<String, String>();
-		Response response = null;
-		try {
-			if (StringUtils.isNotBlank(url)) {
-				String encodedUrl = URLEncoder.encode(url, "UTF-8");
-				response = Response.ok(GoUsaGovUtils.expand(encodedUrl)).build();
-			} else {
-				responseMap.put("message", "parameter 'url' may not be missing or blank");
-				response = Response.status(Response.Status.BAD_REQUEST)
-                        .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
-			}
-		} catch (URISyntaxException ex) {
-			responseMap.put("message", ex.getMessage());
-			response = Response.status(Response.Status.BAD_REQUEST)
-                    .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
-		} catch (Exception ex) { 
-			responseMap.put("message", ex.getMessage());
-			response = Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
-		}
-		return response;
-	}
-
-	@GET
-	@Path("/clicks/{url:.*}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response clicks(@PathParam("url") String url) {
-		Map<String, String> responseMap = new HashMap<String, String>();
-		Response response = null;
-		try {
-			if (StringUtils.isNotBlank(url)) {
-				String encodedUrl = URLEncoder.encode(url, "UTF-8");
-				response = Response.ok(GoUsaGovUtils.clicks(encodedUrl)).build();
-			} else {
-				responseMap.put("message", "parameter 'url' may not be missing or blank");
-				response = Response.status(Response.Status.BAD_REQUEST)
-                        .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
-			}
-		} catch (URISyntaxException ex) {
-			responseMap.put("message", ex.getMessage());
-			response = Response.status(Response.Status.BAD_REQUEST)
-                    .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
-		} catch (Exception ex) {
-			responseMap.put("message", ex.getMessage());
-			response = Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
-		} 
 		return response;
 	}
 }
