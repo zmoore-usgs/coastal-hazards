@@ -8,6 +8,7 @@ import gov.usgs.cida.coastalhazards.rest.data.util.HttpUtil;
 import gov.usgs.cida.utilities.gov.usa.go.GoUsaGovUtils;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,10 +42,10 @@ public class MinifyResource {
 		Response response;
 		try {
 			if (StringUtils.isNotBlank(url)) {
-				url = URLDecoder.decode(url, "UTF-8");
+				url = URLDecoder.decode(url, StandardCharsets.UTF_8.displayName());
                 TinyGov tinygov = urlManager.load(url);
                 if (tinygov == null) {
-                    String encodedUrl = URLEncoder.encode(url, "UTF-8");
+                    String encodedUrl = URLEncoder.encode(url, StandardCharsets.UTF_8.displayName());
                     String minified = GoUsaGovUtils.minify(encodedUrl);
                     String short_http_url = GoUsaGovUtils.getUrlFromResponse(minified);
                     if (short_http_url == null) {
