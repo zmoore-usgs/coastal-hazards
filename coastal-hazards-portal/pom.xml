@@ -198,12 +198,6 @@
 			<version>16.2</version>
 		</dependency>
 		
-		<dependency>
-			<groupId>gov.usgs.cida.coastalhazards</groupId>
-			<artifactId>ehcache-shaded</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		
 		<!-- this has to be after hibernate in the classpath :( -->
 		<dependency>
 			<groupId>javax</groupId>

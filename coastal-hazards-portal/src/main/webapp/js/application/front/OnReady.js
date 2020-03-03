@@ -44,6 +44,7 @@ $(document).ready(function () {
 			shareModalId: 'modal-content-share',
 			shareUrlButtonId: 'modal-share-summary-url-button',
 			shareInputId: 'modal-share-summary-url-inputbox',
+			shareLoadingId: 'multi-card-twitter-load-img',
 			shareTwitterBtnId: 'multi-card-twitter-button',
 			helpModalId: 'helpModal',
 			helpModalBodyId: 'help-modal-body',
