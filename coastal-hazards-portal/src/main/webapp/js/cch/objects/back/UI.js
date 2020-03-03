@@ -448,9 +448,10 @@ CCH.Objects.Back.UI = function (args) {
 		// Highlight the entire input box
 		$('#modal-share-summary-url-inputbox').select();
 
-		// Create Tweet button after modal animation
-		if(me.DO_RETRY_TWEET_BUTTON) {
+		// Create Tweet button after modal animation (only if it doesn't exist)
+		if($('.twitter-share-button').length == 0) {
 			setTimeout(function() {
+				me.DO_RETRY_TWEET_BUTTON = true;
 				me.createTweetButton();
 			}, 300);
 		}

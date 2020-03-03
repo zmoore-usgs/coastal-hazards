@@ -537,7 +537,7 @@ CCH.Objects.Front.UI = function (args) {
 		}
 	};
 
-	me.createTweetButton = function(retries) {
+	me.createTweetButton = function() {
 		twttr.widgets.createShareButton(
 			$('#' + me.SHARE_INPUT_ID).val(),
 			$('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
