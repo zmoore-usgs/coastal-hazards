@@ -18,6 +18,7 @@ CCH.Objects.Back.UI = function (args) {
 	me.isSmall = function () {
 		return $(window).outerWidth() < me.magicResizeNumber;
 	};
+	me.TWEET_BUTTON_MAX_TRIES = 2;
 
 	me.init = function (args) {
 		me.$qrImage = $('#qr-code-img');
@@ -193,23 +194,9 @@ CCH.Objects.Back.UI = function (args) {
 
 			// Add the url to the input box
 			$shareInput.val(url);
-			// Highlight the entire input box
-			$shareInput.select();
+
 			// Enable the share button
 			$shareButton.removeClass('disabled');
-
-			twttr.widgets.createShareButton(
-					url,
-					$('#twitter-button-span')[0],
-					{
-						hashtags: 'USGS_CCH',
-						lang: 'en',
-						size: 'large',
-						dnt: true,
-						text: CCH.CONFIG.item.summary.tiny.text,
-						count: 'none'
-					}
-			);
 
 			twttr.events.bind('tweet', function () {
 				alertify.log('Your view has been tweeted. Thank you.');
@@ -427,6 +414,46 @@ CCH.Objects.Back.UI = function (args) {
 			}
 		});
 	};
+
+	me.createTweetButton = function(currentTry) {
+		twttr.widgets.createShareButton(
+			$('#modal-share-summary-url-inputbox').val(),
+			$('#twitter-button-span')[0],
+			{
+				hashtags: 'USGS_CCH',
+				lang: 'en',
+				size: 'large',
+				dnt: true,
+				text: CCH.CONFIG.item.summary.tiny.text,
+				count: 'none'
+			}
+		).then(function() {
+			// Let widget render then verify that it is visible or retry
+			setTimeout(function() {
+				if($('.twitter-share-button')[0].style.width !== "1px") {
+					$('#twitter-button-load').addClass('hidden');
+				} else if(currentTry < me.TWEET_BUTTON_MAX_TRIES) {
+					$('#twitter-button-span').empty();
+					me.createTweetButton(currentTry + 1);
+				} else {
+					$('#twitter-button-load').addClass('hidden');
+					$('#twitter-button-span').html("Failed to load tweet button. Please close and try again.")
+				}
+			}, 200);
+		});
+	}
+
+	$('#modal-sharing-view').on('shown.bs.modal', function() {
+		// Highlight the entire input box
+		$('#modal-share-summary-url-inputbox').select();
+
+		// Create Tweet button after modal animation (only if it doesn't exist)
+		if($('.twitter-share-button').length == 0) {
+			setTimeout(function() {
+				me.createTweetButton(1);
+			}, 300);
+		}
+	});
 
 	$(window).on({
 		'resize': function () {

@@ -58,6 +58,7 @@
             </div>
             <div class="modal-footer">
 				<span class="pull-right" id='multi-card-twitter-button'></span>
+                <img id="multi-card-twitter-load-img" src="${param['baseUrl']}/images/spinner/spinner2.gif" alt="loading twitter"/>
                 <a href="#" class="btn btn-default shareclosebutton"  data-dismiss="modal" aria-hidden="true">Close</a>
             </div>
         </div>

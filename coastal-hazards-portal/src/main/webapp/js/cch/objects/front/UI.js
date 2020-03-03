@@ -26,6 +26,9 @@ CCH.Objects.Front.UI = function (args) {
 	me.SHARE_MODAL_ID = args.shareModalId;
 	me.SHARE_URL_BUTTON_ID = args.shareUrlButtonId;
 	me.SHARE_INPUT_ID = args.shareInputId;
+	me.SHARE_TWITTER_LOADING_ID = args.shareLoadingId;
+	me.SHARE_TITLE = "";
+	me.TWEET_BUTTON_MAX_TRIES = 2;
 	me.SHARE_TWITTER_BUTTON_ID = args.shareTwitterBtnId;
 	me.ITEMS_SLIDE_CONTAINER_ID = args.slideItemsContainerId;
 	me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId;
@@ -150,34 +153,13 @@ CCH.Objects.Front.UI = function (args) {
 				shareInput = $('#' + me.SHARE_INPUT_ID);
 
 			shareInput.val(url);
+			me.SHARE_TITLE = shareTitle || 'Check out my CCH View!';
 			
 			$('#' + me.SHARE_URL_BUTTON_ID).attr({
 				'href': url
 			}).removeClass('disabled');
-			
-			twttr.widgets.createShareButton(
-				url,
-				$('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
-				{
-					hashtags: 'USGS_CCH',
-					lang: 'en',
-					size: 'large',
-					dnt: true,
-					text: shareTitle || 'Check out my CCH View!',
-					count: 'none'
-				}
-			);
-	
+
 			$('#' + me.SHARE_MODAL_ID).modal('show');
-			
-			twttr.events.bind('tweet', function () {
-				ga('send', 'event', {
-					'eventCategory': 'twitter',
-					'eventAction': 'tweeted',
-					'eventLabel': 'social events'
-				});
-				alertify.log('Your view has been tweeted. Thank you.');
-			});
 		};
 
 		CCH.Util.Util.getMinifiedEndpoint({
@@ -189,6 +171,8 @@ CCH.Objects.Front.UI = function (args) {
 		$('#' + me.SHARE_URL_BUTTON_ID).addClass('disabled');
 		$('#' + me.SHARE_INPUT_ID).val('');
 		$('#' + me.SHARE_TWITTER_BUTTON_ID).empty();
+		$('#' + me.SHARE_TWITTER_LOADING_ID).removeClass('hidden');
+		me.SHARE_TITLE = "";
 
 		args = args || {};
 
@@ -553,6 +537,34 @@ CCH.Objects.Front.UI = function (args) {
 		}
 	};
 
+	me.createTweetButton = function(currentTry) {
+		twttr.widgets.createShareButton(
+			$('#' + me.SHARE_INPUT_ID).val(),
+			$('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
+			{
+				hashtags: 'USGS_CCH',
+				lang: 'en',
+				size: 'large',
+				dnt: true,
+				text: me.SHARE_TITLE,
+				count: 'none'
+			}
+		).then(function() {
+			// Let widget render then verify that it is visible or retry
+			setTimeout(function() {
+				if($('.twitter-share-button')[0].style.width !== "1px") {
+					$('#' + me.SHARE_TWITTER_LOADING_ID).addClass('hidden');
+				} else if(currentTry < me.TWEET_BUTTON_MAX_TRIES) {
+					$('#' + me.SHARE_TWITTER_BUTTON_ID).empty();
+					me.createTweetButton(currentTry + 1);
+				} else {
+					$('#' + me.SHARE_TWITTER_LOADING_ID).addClass('hidden');
+					$('#' + me.SHARE_TWITTER_BUTTON_ID).html("Failed to load tweet button. Please close and try again.")
+				}
+			}, 200);
+		});
+	}
+
 	// Do Bindings
 	$(window).on({
 		'cch.data.items.searched': me.itemsSearchedHandler,
@@ -569,6 +581,15 @@ CCH.Objects.Front.UI = function (args) {
 				me.windowResizeHandler();
 			}, 1);
 		}
+	});
+
+	twttr.events.bind('tweet', function () {
+		ga('send', 'event', {
+			'eventCategory': 'twitter',
+			'eventAction': 'tweeted',
+			'eventLabel': 'social events'
+		});
+		alertify.log('Your view has been tweeted. Thank you.');
 	});
 
 	$(me.combinedSearch).on({
@@ -606,6 +627,11 @@ CCH.Objects.Front.UI = function (args) {
 	// easier copying in mobile
 	$('#' + me.SHARE_MODAL_ID).on('shown.bs.modal', function () {
 		$('#' + me.SHARE_INPUT_ID).select();
+
+		// Wait a bit before creating widget to allow modal to animate
+		setTimeout(function() {
+			me.createTweetButton(1);
+		}, 300);
 	});
 
 	$(window).trigger('cch.ui.initialized');
