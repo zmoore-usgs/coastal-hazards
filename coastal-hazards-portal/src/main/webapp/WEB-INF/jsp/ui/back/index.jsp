@@ -276,7 +276,7 @@
                             </div>
                             <div class="modal-footer">
                                 <span class="pull-right" id='twitter-button-span'></span>
-                                <img id="twitter-button-load" class="tweet-button-loading" src="<%=baseUrl%>/images/spinner/spinner2.gif" alt="loading twitter"/>
+                                <img id="twitter-button-load" src="<%=baseUrl%>/images/spinner/spinner2.gif" alt="loading twitter"/>
                                 <a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
                             </div>
                         </div>

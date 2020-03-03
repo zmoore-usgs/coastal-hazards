@@ -28,7 +28,7 @@ CCH.Objects.Front.UI = function (args) {
 	me.SHARE_INPUT_ID = args.shareInputId;
 	me.SHARE_TWITTER_LOADING_ID = args.shareLoadingId;
 	me.SHARE_TITLE = "";
-	me.DO_RETRY_TWEET_BUTTON = true;
+	me.TWEET_BUTTON_MAX_TRIES = 2;
 	me.SHARE_TWITTER_BUTTON_ID = args.shareTwitterBtnId;
 	me.ITEMS_SLIDE_CONTAINER_ID = args.slideItemsContainerId;
 	me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId;
@@ -537,7 +537,7 @@ CCH.Objects.Front.UI = function (args) {
 		}
 	};
 
-	me.createTweetButton = function() {
+	me.createTweetButton = function(currentTry) {
 		twttr.widgets.createShareButton(
 			$('#' + me.SHARE_INPUT_ID).val(),
 			$('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
@@ -554,14 +554,13 @@ CCH.Objects.Front.UI = function (args) {
 			setTimeout(function() {
 				if($('.twitter-share-button')[0].style.width !== "1px") {
 					$('#' + me.SHARE_TWITTER_LOADING_ID).addClass('hidden');
-				} else if(me.DO_RETRY_TWEET_BUTTON) {
+				} else if(currentTry < me.TWEET_BUTTON_MAX_TRIES) {
 					$('#' + me.SHARE_TWITTER_BUTTON_ID).empty();
-					me.createTweetButton();
+					me.createTweetButton(currentTry + 1);
 				} else {
 					$('#' + me.SHARE_TWITTER_LOADING_ID).addClass('hidden');
 					$('#' + me.SHARE_TWITTER_BUTTON_ID).html("Failed to load tweet button. Please close and try again.")
 				}
-				me.DO_RETRY_TWEET_BUTTON = false;
 			}, 200);
 		});
 	}
@@ -628,11 +627,10 @@ CCH.Objects.Front.UI = function (args) {
 	// easier copying in mobile
 	$('#' + me.SHARE_MODAL_ID).on('shown.bs.modal', function () {
 		$('#' + me.SHARE_INPUT_ID).select();
-		me.DO_RETRY_TWEET_BUTTON = true;
 
 		// Wait a bit before creating widget to allow modal to animate
 		setTimeout(function() {
-			me.createTweetButton();
+			me.createTweetButton(1);
 		}, 300);
 	});
 

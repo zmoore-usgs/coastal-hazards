@@ -18,7 +18,7 @@ CCH.Objects.Back.UI = function (args) {
 	me.isSmall = function () {
 		return $(window).outerWidth() < me.magicResizeNumber;
 	};
-	me.DO_RETRY_TWEET_BUTTON = true;
+	me.TWEET_BUTTON_MAX_TRIES = 2;
 
 	me.init = function (args) {
 		me.$qrImage = $('#qr-code-img');
@@ -415,7 +415,7 @@ CCH.Objects.Back.UI = function (args) {
 		});
 	};
 
-	me.createTweetButton = function() {
+	me.createTweetButton = function(currentTry) {
 		twttr.widgets.createShareButton(
 			$('#modal-share-summary-url-inputbox').val(),
 			$('#twitter-button-span')[0],
@@ -432,14 +432,13 @@ CCH.Objects.Back.UI = function (args) {
 			setTimeout(function() {
 				if($('.twitter-share-button')[0].style.width !== "1px") {
 					$('#twitter-button-load').addClass('hidden');
-				} else if(me.DO_RETRY_TWEET_BUTTON) {
+				} else if(currentTry < me.TWEET_BUTTON_MAX_TRIES) {
 					$('#twitter-button-span').empty();
-					me.createTweetButton();
+					me.createTweetButton(currentTry + 1);
 				} else {
 					$('#twitter-button-load').addClass('hidden');
 					$('#twitter-button-span').html("Failed to load tweet button. Please close and try again.")
 				}
-				me.DO_RETRY_TWEET_BUTTON = false;
 			}, 200);
 		});
 	}
@@ -451,8 +450,7 @@ CCH.Objects.Back.UI = function (args) {
 		// Create Tweet button after modal animation (only if it doesn't exist)
 		if($('.twitter-share-button').length == 0) {
 			setTimeout(function() {
-				me.DO_RETRY_TWEET_BUTTON = true;
-				me.createTweetButton();
+				me.createTweetButton(1);
 			}, 300);
 		}
 	});
