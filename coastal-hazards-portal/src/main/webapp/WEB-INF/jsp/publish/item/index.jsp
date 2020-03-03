@@ -83,7 +83,17 @@
     <head>
         <script type="text/javascript">
             if (window.location.pathname.indexOf("/item/") === -1) {
-                window.location = window.location.href + "/";
+                // Find query param separator
+                var argIndex = window.location.href.indexOf("?");
+                    argIndex = argIndex === -1 ? window.location.href.length : argIndex;
+                
+                // Split location into path + params and add "/" to end of path
+                var reqPath = window.location.href.substr(0, argIndex);
+                    reqPath = reqPath.endsWith("/") ? reqPath : reqPath + "/";
+                var reqParams = window.location.href.substr(argIndex, window.location.href.length);
+
+                // Navigate Window
+                window.location = reqPath + reqParams;
             }
         </script>
         <jsp:include page="../../ui/common/meta-tags.jsp">
