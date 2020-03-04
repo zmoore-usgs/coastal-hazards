@@ -82,8 +82,12 @@
 <html>
     <head>
         <script type="text/javascript">
-            if (window.location.pathname.indexOf("/item/") === -1) {
-                window.location = window.location.href + "/";
+            // Ensure URL has trailing slash (before query params)
+            var url = new URL(window.location.href)
+            url.pathname = url.pathname.endsWith('/') ? url.pathname : url.pathname + '/'
+
+            if(url.toString() !== window.location.href) {
+                window.location = url.toString()
             }
         </script>
         <jsp:include page="../../ui/common/meta-tags.jsp">
