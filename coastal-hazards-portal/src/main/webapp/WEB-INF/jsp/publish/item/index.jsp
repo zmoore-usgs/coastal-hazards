@@ -82,18 +82,12 @@
 <html>
     <head>
         <script type="text/javascript">
-            if (window.location.pathname.indexOf("/item/") === -1) {
-                // Find query param separator
-                var argIndex = window.location.href.indexOf("?");
-                    argIndex = argIndex === -1 ? window.location.href.length : argIndex;
-                
-                // Split location into path + params and add "/" to end of path
-                var reqPath = window.location.href.substr(0, argIndex);
-                    reqPath = reqPath.endsWith("/") ? reqPath : reqPath + "/";
-                var reqParams = window.location.href.substr(argIndex, window.location.href.length);
+            // Ensure URL has trailing slash (before query params)
+            var url = new URL(window.location.href)
+            url.pathname = url.pathname.endsWith('/') ? url.pathname : url.pathname + '/'
 
-                // Navigate Window
-                window.location = reqPath + reqParams;
+            if(url.toString() !== window.location.href) {
+                window.location = url.toString()
             }
         </script>
         <jsp:include page="../../ui/common/meta-tags.jsp">
