@@ -60,10 +60,12 @@ While the tests are running in a local JMeter they will create a `test_temp` dir
 While it's not possible to test every possible interaction a user can have with the system, this integration test suite attempts to cover the majority of the most common workflows that users (both admin and regular) will go through. At a high-level the process that this test plan follows is:
 
 1. As an Admin: Create seed items, layers, and aliases (vector, raster, and storm)
-2. As a User: Read created items, layers, and aliases
+2. As a User: Read created items, layers, and aliases, create and share a view (bucket)
 3. As an Admin: Modify seed items, layers, and aliases
 4. As a User: Read modified items, layers, and aliases
 5. As an Admin: Modify and delete items, layers, and aliases
 6. As a User: Read modified items, layers, and aliases and ensure deleted ones can't be read
-7. ... (This pattern repeats several times) ...
+7. ... (The above pattern repeats several times) ...
 8. As an Admin: Delete all items and aliases to put the portal into a clean state for the next run
+9. As a User (logged in): Ensure that I can't make any changes to the portal data (POST, PUT, DELETE)
+10. As a User (anonymous): Ensure that I can't make any changes to the portal data (POST, PUT, DELETE)
