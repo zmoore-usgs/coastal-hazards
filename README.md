@@ -70,7 +70,7 @@ This repo contains the many sub-components that make up the whole portal applica
 
 **Description:** The main CCH Portal project. This holds all of the code for running the portal itself including the UI and backend services that feed the UI (serving items, generating SLDs, managing items, etc.)
 
-**Language:** Java
+**Language:** Java, JavaScript
 
 **Executable:** Yes
 
@@ -95,6 +95,16 @@ This repo contains the many sub-components that make up the whole portal applica
 **Executable:** No
 
 **Used By:** coastal-hazards-portal
+
+### 9. coastal-hazards-integration-testing
+
+**Description:** A package of integration tests written with JMeter that can be used to test the behavior of a running portal stack. **Note** that these tests will result in every item being deleted on the stack they are run against so they should only ever be run against a local stack or integration testing stack. More information on these can be found in the readme in the project sub-directory.
+
+**Language:** Multiple
+
+**Executable:** Yes
+
+**Used By:** N/A
 
 ------------
 
