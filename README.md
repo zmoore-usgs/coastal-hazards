@@ -70,7 +70,7 @@ This repo contains the many sub-components that make up the whole portal applica
 
 **Description:** The main CCH Portal project. This holds all of the code for running the portal itself including the UI and backend services that feed the UI (serving items, generating SLDs, managing items, etc.)
 
-**Language:** Java
+**Language:** Java, JavaScript
 
 **Executable:** Yes
 
@@ -96,6 +96,16 @@ This repo contains the many sub-components that make up the whole portal applica
 
 **Used By:** coastal-hazards-portal
 
+### 9. coastal-hazards-integration-testing
+
+**Description:** A package of integration tests written with JMeter that can be used to test the behavior of a running portal stack. **Note** that these tests will result in every item being deleted on the stack they are run against so they should only ever be run against a local stack or integration testing stack. More information on these can be found in the readme in the project sub-directory.
+
+**Language:** Multiple
+
+**Executable:** Yes
+
+**Used By:** N/A
+
 ------------
 
 ## Using Docker For Local Deployment
@@ -103,7 +113,7 @@ This repo contains the many sub-components that make up the whole portal applica
 ### TL;DR - Just get it running
 
 1. Add a line to your operating system `hosts` (Ubuntu `/etc/hosts`) file with: `127.0.0.1 keycloak`
-2. From project root directory `docker-compose up`
+2. From project root directory `docker-compose up` or `docker-compose up -d` (for daemonized/detached mode)
 3. Visit `http://localhost:8080/coastal-hazards-portal/`
 4. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
     - Login - **Username**: `cch_admin` | **Password**: `password`
@@ -114,17 +124,18 @@ If you're going to be doing active development on the project locally it is **_h
 
 1. Add a line to your operating system `hosts` (Ubuntu `/etc/hosts`) file with: `127.0.0.1 keycloak`
 2. **Terminal 1:** From project root directory `docker-compose up cch_keycloak cch_postgres cch_rserve cch_n52_wps cch_geoserver`
+    - Add `-d` to `docker-compose up` before the service names if you want to launch them in daemonized/detached mode which will allow you to re-use the same terminal for the steps below.
     - Add `--build` to `docker-compose up` if you want to rebuild any of these images that you might already have locally
     - Once these containers are up you shouldn't have to touch them or this terminal
 3. **Terminal 2:** From project root directory `docker-compose up --build cch_portal`
+    - Add `-d` to `docker-compose up --build` before the service name if you want to launch build/launch the portal in daemonized/detached mode which will allow you to re-use the same terminal for the steps below.
 4. Visit `http://localhost:8080/coastal-hazards-portal/`
 5. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
     - Login - **Username**: `cch_admin` | **Password**: `password`
 6. Make changes to portal code...
 7. **Terminal 3:** From project root directory `docker-compose stop cch_portal`
     - After running this **Terminal 2** should become interactive again
-8. **Terminal 2:** From project root directory `docker-compose up --build cch_portal`
-9. Repeat steps 4-8...
+8. Repeat steps 4-7...
 
 ### High-Level Explanation
 
