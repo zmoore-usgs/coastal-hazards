@@ -23,9 +23,9 @@ If you will be making changes to, or would like more detail on, the tests then i
 
 To run the integration tests via Docker Compose you should first bring up the full CCH stack via:
 
-`docker-compose up`
+`docker-compose up` or `docker-compose up -d` (for daemonized/detached mode)
 
-Once the stack is fully up and running the integration tests can be run via:
+Once the stack is fully up and running the integration tests can be run in a separate shell (or the same shell if the CCH stack was launched in daemonized mode) via:
 
 `docker-compose -f docker-compose.yml -f docker-compose-it.yml up jmeter`
 
