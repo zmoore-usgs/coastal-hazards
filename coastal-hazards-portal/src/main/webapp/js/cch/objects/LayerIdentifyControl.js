@@ -366,8 +366,11 @@ return {
 							} else {
 								if (Number.isInteger(displayPoints[i])) {
 									$valueContainer.append(displayPoints[i].toFixed(0));
-								}
-								else {
+								} 
+                                                                //case specific rounding for UVVR
+                                                                else if (attr === 'UVVR') {
+                                                                        $valueContainer.append(displayPoints[i].toFixed(3));
+                                                                } else {
 									$valueContainer.append(displayPoints[i].toFixed(1));
 								}
 							}
