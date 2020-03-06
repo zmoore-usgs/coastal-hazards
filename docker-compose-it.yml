@@ -1,10 +1,10 @@
 ---
-version: '3.5'
+version: '3.7'
 
 services:
   jmeter:
     image: justb4/jmeter
-    network_mode: "host"
+    network_mode: host
     command: "-Dlog_level.jmeter=DEBUG -n -t /cch_portal_test.jmx -l /test_results/cch_portal_test.jtl -j /test_results/jmeter.log -e -o /test_results/report"
     volumes:
       - type: bind

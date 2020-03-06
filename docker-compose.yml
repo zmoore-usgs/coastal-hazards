@@ -1,5 +1,5 @@
 ---
-version: '3.5'
+version: '3.7'
 
 networks:
   cch-net:
@@ -29,7 +29,7 @@ services:
   cch_rserve:
     build:
       context: ./Docker/rserve
-    network_mode: "host"
+    network_mode: host
     image: cch_rserve
     ports:
       - "6311:6311"
@@ -47,7 +47,7 @@ services:
     build:
       context: .
       dockerfile: ./coastal-hazards-n52/Dockerfile
-    network_mode: "host"
+    network_mode: host
     image: cch_n52_wps
     ports:
       - "8082:8082"
@@ -76,7 +76,7 @@ services:
       dockerfile: ./coastal-hazards-portal/Dockerfile
     depends_on:
       - cch_keycloak
-    network_mode: "host"
+    network_mode: host
     image: cch_portal
     ports:
       - "8080:8080"
@@ -106,7 +106,7 @@ services:
     build:
       context: .
       dockerfile: ./coastal-hazards-geoserver/Dockerfile
-    network_mode: "host"
+    network_mode: host
     image: cch_geoserver
     ports:
       - "8081:8081"
