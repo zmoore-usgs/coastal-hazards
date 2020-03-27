@@ -14,7 +14,7 @@ public class SLDConfig {
 	protected final String units;
 	protected final String style;
 	protected final int strokeWidth;
-    protected final float strokeOpacity;
+        protected final float strokeOpacity;
 	protected final String[] attrs;
 	protected final float[] thresholds;
 	protected final String[] colors;
