@@ -421,10 +421,10 @@ CCH.Objects.Widget.Legend = function (args) {
 				};
 				sorter = function(a,b){return b.years - a.years;};
 			} else if ("UVVR" === item.attr) {
-				//customize the bin label
+				//customize the bin label and sorter function
 				binLabeler = function (bin, index, bins) {
 					if (index === 0) {
-                                                return "Unvegetated";
+						return "Unvegetated";
 					} else if (index === 1) {
 						return "Higher<br><br><br>";
 					} else if (index === bins.length - 1) {
@@ -434,10 +434,10 @@ CCH.Objects.Widget.Legend = function (args) {
 					}
 				};
 				sorter = function (a, b) {
-                                        if (a.upperBound === -1) return -1;
-                                        else if (b.upperBound === -1) return 1;
-                                        else return b.lowerBound-a.lowerBound;
-                                        };
+					if (a.upperBound === -1) return -1;
+					else if (b.upperBound === -1) return 1;
+					else return b.lowerBound-a.lowerBound;
+				};
 			}   
 			if(null === binLabeler){
 				throw 'Could not find a bin labeler and sorter for the item "' + me.getItemTinyText(item) + '", and the following continuous legend sld:\n\n' + JSON.stringify(sld);
