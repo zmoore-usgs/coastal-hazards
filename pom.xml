@@ -160,8 +160,11 @@
 			<url>https://repo.maven.apache.org/maven2</url>
 		</repository>
 		<repository>
-			<id>opengeo</id>
-			<url>https://repo.boundlessgeo.com/main/</url>
+			<id>osgeo1</id>
+			<name>OSGeo Release Repository</name>
+			<url>https://repo.osgeo.org/repository/release/</url>
+			<snapshots><enabled>false</enabled></snapshots>
+			<releases><enabled>true</enabled></releases>
 		</repository>
 		<repository>
 			<id>osgeo</id>
