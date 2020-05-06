@@ -434,8 +434,9 @@ CCH.Objects.Widget.Legend = function (args) {
 					}
 				};
 				sorter = function (a, b) {
-					if (a.upperBound === -1) return -1;
-					else if (b.upperBound === -1) return 1;
+                                        if (a.lowerBound === b.lowerBound) return 0;
+					if (a.lowerBound === -1) return -1;
+					if (b.lowerBound === -1) return 1;
 					else return b.lowerBound-a.lowerBound;
 				};
 			}   
