@@ -12,6 +12,13 @@ build dependencies:
     - docker build --tag $CI_REGISTRY_IMAGE:dependencies -f Docker/dependencies/Dockerfile .
   after_script:
     - docker push $CI_REGISTRY_IMAGE:dependencies
+  rules:
+    - changes:
+      - Docker/dependencies/Dockerfile
+      - coastal-hazards-geoserver/Dockerfile
+      - coastal-hazards-liquibase/Dockerfile
+      - coastal-hazards-n52/Dockerfile
+      - coastal-hazards-portal/Dockerfile.gitlab
 
 build portal:
   stage: build
@@ -21,6 +28,6 @@ build portal:
   before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-    - docker build --tag $CI_REGISTRY_IMAGE/coastal-hazards-portal:latest -f coastal-hazards-portal/Dockerfile .
+    - docker build --tag $CI_REGISTRY_IMAGE/coastal-hazards-portal:latest -f coastal-hazards-portal/Dockerfile.gitlab .
   after_script:
     - docker push $CI_REGISTRY_IMAGE/coastal-hazards-portal:latest
