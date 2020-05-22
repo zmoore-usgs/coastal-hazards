@@ -1,4 +1,4 @@
-FROM code.chs.usgs.gov:5001/cmgp/coastal-hazards:dependencies AS portal_build
+FROM code.chs.usgs.gov:5001/cmgp/coastal-hazards:dependencies AS geoserver_build
 
 WORKDIR /source
 
@@ -12,6 +12,9 @@ COPY coastal-hazards-liquibase/pom.xml coastal-hazards-liquibase/pom.xml
 COPY coastal-hazards-geoserver/pom.xml coastal-hazards-geoserver/pom.xml
 COPY coastal-hazards-portal/pom.xml coastal-hazards-portal/pom.xml
 COPY coastal-hazards-n52 coastal-hazards-n52
+COPY coastal-hazards-commons coastal-hazards-commons
+COPY coastal-hazards-wps coastal-hazards-wps
+COPY coastal-hazards-geoserver coastal-hazards-geoserver
 
 RUN mvn --settings /root/artifactory-settings.xml -B -pl coastal-hazards-geoserver -am package
 

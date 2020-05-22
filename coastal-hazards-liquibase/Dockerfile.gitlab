@@ -52,10 +52,10 @@ RUN curl -o ${LIQUIBASE_HOME}/lib/postgresql.jar https://jdbc.postgresql.org/dow
 WORKDIR /
 
 RUN mkdir -p /coastal-hazards/coastal-hazards-liquibase/
-COPY src /coastal-hazards/coastal-hazards-liquibase/src
+COPY coastal-hazards-liquibase/src /coastal-hazards/coastal-hazards-liquibase/src
 
 RUN cp -r /coastal-hazards/coastal-hazards-liquibase/src/main/resources/bootstrap .
-COPY docker/dbInit/setup_db.sh /docker-entrypoint-initdb.d/z_setup_db.sh
+COPY coastal-hazards-liquibase/docker/dbInit/setup_db.sh /docker-entrypoint-initdb.d/z_setup_db.sh
 
 RUN chmod -R 777 $LIQUIBASE_HOME
 
