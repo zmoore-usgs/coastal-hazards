@@ -1,10 +1,8 @@
 ---
 
-stages:
-  - dependencies
 
 build dependencies:
-  stage: dependencies
+  stage: .pre
   image: docker:stable-git
   services:
     - docker:stable-dind
@@ -14,3 +12,15 @@ build dependencies:
     - docker build --tag $CI_REGISTRY_IMAGE:dependencies -f Docker/dependencies/Dockerfile .
   after_script:
     - docker push $CI_REGISTRY_IMAGE:dependencies
+
+build portal:
+  stage: .pre
+  image: docker:stable-git
+  services:
+    - docker:stable-dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker build --tag $CI_REGISTRY_IMAGE/coastal-hazards-portal:latest -f coastal-hazards-portal/Dockerfile .
+  after_script:
+    - docker push $CI_REGISTRY_IMAGE/coastal-hazards-portal:latest
