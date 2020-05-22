@@ -14,7 +14,7 @@ build dependencies:
     - docker push $CI_REGISTRY_IMAGE:dependencies
 
 build portal:
-  stage: .pre
+  stage: build
   image: docker:stable-git
   services:
     - docker:stable-dind
