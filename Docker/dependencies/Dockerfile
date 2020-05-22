@@ -1,4 +1,4 @@
-FROM maven:3-openjdk-8
+FROM artifactory.wma.chs.usgs.gov/docker-official-mirror/maven:3-openjdk-8
 
 COPY Docker/dependencies/artifactory-settings.xml /root/artifactory-settings.xml
 

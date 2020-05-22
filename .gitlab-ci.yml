@@ -1,4 +1,8 @@
 ---
+include:
+  - project: "ctek/gitlab/pipeline/templates"
+    file: "linting/dockerfile-lint-template.yml"
+    ref: 1.0.12
 
 .build_functionality:
   stage: build
@@ -11,6 +15,13 @@
     - docker build --tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest -f $IMAGE_NAME/Dockerfile.gitlab .
   after_script:
     - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
+  rules:
+    - changes:
+      - $IMAGE_NAME/*
+      when: on_success
+    - if: $CI_COMMIT_TAG
+      when: always
+
 
 build dependencies:
   stage: .pre
@@ -25,12 +36,24 @@ build dependencies:
     - docker push $CI_REGISTRY_IMAGE:dependencies
   rules:
     - changes:
+      - **/pom.xml
       - Docker/dependencies/Dockerfile
       - Docker/dependencies/artifactory-settings.xml
-      - coastal-hazards-geoserver/Dockerfile
-      - coastal-hazards-liquibase/Dockerfile
-      - coastal-hazards-n52/Dockerfile
+      - coastal-hazards-geoserver/Dockerfile.gitlab
+      - coastal-hazards-liquibase/Dockerfile.gitlab
+      - coastal-hazards-n52/Dockerfile.gitlab
       - coastal-hazards-portal/Dockerfile.gitlab
+
+dockerfile:
+  stage: test
+  extends: .dockerfile-lint-template
+  allow_failure: false
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - changes:
+        - "**/Dockerfile*"
+      when: on_success
 
 portal:
   extends: .build_functionality
@@ -51,3 +74,23 @@ liquibase:
   extends: .build_functionality
   variables:
     IMAGE_NAME: coastal-hazards-liquibase
+
+rserve:
+  stage: build
+  image: docker:stable-git
+  variables:
+    IMAGE_NAME: rserve
+  services:
+    - docker:stable-dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker build --tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest -f Docker/$IMAGE_NAME/Dockerfile.gitlab .
+  after_script:
+    - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
+  rules:
+    - changes:
+      - Docker/$IMAGE_NAME/*
+      when: on_success
+    - if: $CI_COMMIT_TAG
+      when: always

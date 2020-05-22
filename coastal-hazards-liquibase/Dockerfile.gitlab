@@ -1,4 +1,4 @@
-FROM mdillon/postgis:9.6-alpine
+FROM artifactory.wma.chs.usgs.gov/docker-official-mirror/mdillon/postgis:9.6-alpine
 
 ARG LIQUIBASE_VERSION=3.4.1
 ARG POSTGRES_JDBC_VERSION=42.2.4
@@ -23,12 +23,6 @@ RUN apk update && apk upgrade \
     		curl \
     		openjdk8 && \
 	rm -rf /var/cache/apk/*;
-
-RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
-		mkdir -p /etc/ssl/certs && \
-		curl -o /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
-		update-ca-certificates; \
-	fi
 
 # Required for JRE 8 - Java 8 is required to run the Liquibase JAR - lifted from https://github.com/docker-library/openjdk
 RUN { \
