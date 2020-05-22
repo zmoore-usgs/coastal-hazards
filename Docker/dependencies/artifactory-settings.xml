@@ -93,7 +93,7 @@
         </pluginRepository>
         <pluginRepository>
           <snapshots />
-          <id>artifactory-n52</id>
+          <id>artifactory-n52-snapshots</id>
           <name>artifactory-n52-snapshots</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/n52</url>
         </pluginRepository>
