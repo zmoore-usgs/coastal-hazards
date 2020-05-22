@@ -11,12 +11,9 @@ COPY coastal-hazards-wps/pom.xml coastal-hazards-wps/pom.xml
 COPY coastal-hazards-liquibase/pom.xml coastal-hazards-liquibase/pom.xml
 COPY coastal-hazards-geoserver/pom.xml coastal-hazards-geoserver/pom.xml
 COPY coastal-hazards-portal/pom.xml coastal-hazards-portal/pom.xml
-COPY ehcache-shaded ehcache-shaded
-COPY coastal-hazards-commons/src coastal-hazards-commons/src
-COPY coastal-hazards-export/src coastal-hazards-export/src
-COPY coastal-hazards-portal/src coastal-hazards-portal/src
+COPY coastal-hazards-n52 coastal-hazards-n52
 
-RUN mvn --settings /root/artifactory-settings.xml -B -pl coastal-hazards-portal -am package
+RUN mvn --settings /root/artifactory-settings.xml -B -pl coastal-hazards-geoserver -am package
 
 FROM tomcat:8.5-jre8-alpine
 
@@ -43,18 +40,15 @@ RUN curl -o /usr/local/tomcat/webapps/probe.war "https://repo1.maven.org/maven2/
 RUN rm -rf /usr/local/tomcat/webapps/ROOT /usr/local/tomcat/webapps/docs /usr/local/tomcat/webapps/examples
 RUN rm -f /usr/local/tomcat/conf/tomcat-users.xml /usr/local/tomcat/conf/server.xml /usr/local/tomcat/conf/context.xml
 
-ARG POSTGRES_JDBC_VERSION=42.2.4
-ARG KEYCLOAK_ADAPTER_VERSION=8.0.2
+RUN mkdir -p /data/coastal-hazards/uploaded-data
 
-RUN curl -o /usr/local/tomcat/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar && \
-	curl -o /usr/local/tomcat/keycloak.tar.gz https://downloads.jboss.org/keycloak/$KEYCLOAK_ADAPTER_VERSION/adapters/keycloak-oidc/keycloak-tomcat-adapter-dist-$KEYCLOAK_ADAPTER_VERSION.tar.gz && \
-	tar xvzf /usr/local/tomcat/keycloak.tar.gz -C /usr/local/tomcat/lib/ && \
-	rm /usr/local/tomcat/keycloak.tar.gz;
-
-COPY --from=portal_build /source/coastal-hazards-portal/target/coastal-hazards-portal.war /usr/local/tomcat/webapps/coastal-hazards-portal.war
-COPY coastal-hazards-portal/docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
+COPY --from=geoserver_build /source/coastal-hazards-geoserver/target/geoserver.war /usr/local/tomcat/webapps/geoserver.war
+COPY coastal-hazards-geoserver/docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 
 RUN chmod +x /usr/local/tomcat/bin/setenv.sh
 
-HEALTHCHECK --interval=10s --timeout=2s \
-	CMD curl -s -k "https://localhost:8443/coastal-hazards-portal/diagnostics" | grep -q '<div name="getServletPath">/diagnostics</div>' || exit 1
+CMD catalina.sh run
+
+HEALTHCHECK --interval=2s --timeout=3s \
+ CMD curl -s 'https://localhost:8444/geoserver/web/wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage' -k | \
+ grep -q '<span id="version">2.11.1</span>' || exit 1

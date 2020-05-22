@@ -28,12 +28,6 @@
           <name>artifactory-geotools</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
         </repository>
-        <repository>
-          <snapshots />
-          <id>artifactory-geotools-snapshots</id>
-          <name>artifactory-geotools</name>
-          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
-        </repository>
 
         <repository>
           <snapshots>
@@ -43,11 +37,20 @@
           <name>artifactory-n52</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/n52</url>
         </repository>
+
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-cida-public-releases</id>
+          <name>artifactory-cida-public-releases</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/cidas-public-releases</url>
+        </repository>
         <repository>
           <snapshots />
-          <id>artifactory-n52-snapshots</id>
-          <name>artifactory-n52-snapshots</name>
-          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/n52</url>
+          <id>artifactory-cida-public-snapshots</id>
+          <name>artifactory-cida-public-snapshots</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/cida-public-snapshots</url>
         </repository>
 
       </repositories>
@@ -76,12 +79,6 @@
           <name>artifactory-geotools</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
         </pluginRepository>
-        <pluginRepository>
-          <snapshots />
-          <id>artifactory-geotools-snapshots</id>
-          <name>artifactory-geotools-snapshots</name>
-          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
-        </pluginRepository>
 
         <pluginRepository>
           <snapshots>
@@ -91,11 +88,20 @@
           <name>artifactory-n52</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/n52</url>
         </pluginRepository>
+
+        <pluginRepository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-cida-public-releases</id>
+          <name>artifactory-cida-public-releases</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/cida-public-releases</url>
+        </pluginRepository>
         <pluginRepository>
           <snapshots />
-          <id>artifactory-n52-snapshots</id>
-          <name>artifactory-n52-snapshots</name>
-          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/n52</url>
+          <id>artifactory-cida-public-snapshots</id>
+          <name>artifactory-cida-public-snapshots</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/cida-public-snapshots</url>
         </pluginRepository>
 
       </pluginRepositories>

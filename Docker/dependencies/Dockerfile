@@ -1,6 +1,6 @@
 FROM maven:3-openjdk-8
 
-COPY Docker/dependencies/artifactory-settings.xml artifactory-settings.xml
+COPY Docker/dependencies/artifactory-settings.xml /root/artifactory-settings.xml
 
 COPY pom.xml pom.xml
 
@@ -13,4 +13,4 @@ COPY coastal-hazards-liquibase/pom.xml coastal-hazards-liquibase/pom.xml
 COPY coastal-hazards-geoserver/pom.xml coastal-hazards-geoserver/pom.xml
 COPY coastal-hazards-portal/pom.xml coastal-hazards-portal/pom.xml
 
-RUN mvn --settings artifactory-settings.xml de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
+RUN mvn --settings /root/artifactory-settings.xml de.qaware.maven:go-offline-maven-plugin:resolve-dependencies

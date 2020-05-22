@@ -1,5 +1,16 @@
 ---
 
+.build_functionality:
+  stage: build
+  image: docker:stable-git
+  services:
+    - docker:stable-dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker build --tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest -f $IMAGE_NAME/Dockerfile.gitlab .
+  after_script:
+    - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
 
 build dependencies:
   stage: .pre
@@ -21,14 +32,22 @@ build dependencies:
       - coastal-hazards-n52/Dockerfile
       - coastal-hazards-portal/Dockerfile.gitlab
 
-build portal:
-  stage: build
-  image: docker:stable-git
-  services:
-    - docker:stable-dind
-  before_script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  script:
-    - docker build --tag $CI_REGISTRY_IMAGE/coastal-hazards-portal:latest -f coastal-hazards-portal/Dockerfile.gitlab .
-  after_script:
-    - docker push $CI_REGISTRY_IMAGE/coastal-hazards-portal:latest
+portal:
+  extends: .build_functionality
+  variables:
+    IMAGE_NAME: coastal-hazards-portal
+
+n52:
+  extends: .build_functionality
+  variables:
+    IMAGE_NAME: coastal-hazards-n52
+
+geoserver:
+  extends: .build_functionality
+  variables:
+    IMAGE_NAME: coastal-hazards-geoserver
+
+liquibase:
+  extends: .build_functionality
+  variables:
+    IMAGE_NAME: coastal-hazards-liquibase
