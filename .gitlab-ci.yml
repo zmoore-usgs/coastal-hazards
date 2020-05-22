@@ -15,6 +15,7 @@ build dependencies:
   rules:
     - changes:
       - Docker/dependencies/Dockerfile
+      - Docker/dependencies/artifactory-settings.xml
       - coastal-hazards-geoserver/Dockerfile
       - coastal-hazards-liquibase/Dockerfile
       - coastal-hazards-n52/Dockerfile

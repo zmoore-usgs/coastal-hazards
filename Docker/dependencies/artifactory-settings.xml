@@ -4,36 +4,70 @@
   <profiles>
     <profile>
       <repositories>
+
         <repository>
           <snapshots>
             <enabled>false</enabled>
           </snapshots>
-          <id>central</id>
-          <name>maven-central</name>
+          <id>artifactory-central</id>
+          <name>artifactory-maven-central</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/maven-central</url>
         </repository>
         <repository>
           <snapshots />
-          <id>snapshots</id>
-          <name>maven-central</name>
+          <id>artifactory-snapshots</id>
+          <name>artifactory-maven-central</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/maven-central</url>
         </repository>
+
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-geotools</id>
+          <name>artifactory-geotools</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
+        </repository>
+        <repository>
+          <snapshots />
+          <id>artifactory-snapshots</id>
+          <name>artifactory-geotools</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
+        </repository>
+
       </repositories>
       <pluginRepositories>
+
         <pluginRepository>
           <snapshots>
             <enabled>false</enabled>
           </snapshots>
-          <id>central</id>
-          <name>maven-central</name>
+          <id>artifactory-central</id>
+          <name>artifactory-maven-central</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/maven-central</url>
         </pluginRepository>
         <pluginRepository>
           <snapshots />
-          <id>snapshots</id>
-          <name>maven-central</name>
+          <id>artifactory-snapshots</id>
+          <name>artifactory-maven-central</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/maven-central</url>
         </pluginRepository>
+
+        <pluginRepository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-geotools</id>
+          <name>artifactory-geotools</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
+        </pluginRepository>
+        <pluginRepository>
+          <snapshots />
+          <id>artifactory-geotools</id>
+          <name>artifactory-geotools</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
+        </pluginRepository>
+
       </pluginRepositories>
       <id>artifactory</id>
     </profile>
