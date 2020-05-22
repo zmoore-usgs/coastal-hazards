@@ -4,6 +4,11 @@ include:
     file: "linting/dockerfile-lint-template.yml"
     ref: 1.0.12
 
+stages:
+  - .pre
+  - lint
+  - build
+
 .build_functionality:
   stage: build
   image: docker:stable-git
@@ -46,7 +51,7 @@ build dependencies:
       - coastal-hazards-portal/Dockerfile.gitlab
 
 dockerfile:
-  stage: test
+  stage: lint
   extends: .dockerfile-lint-template
   allow_failure: false
   rules:
