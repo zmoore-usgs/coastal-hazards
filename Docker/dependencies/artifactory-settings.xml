@@ -35,6 +35,21 @@
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
         </repository>
 
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-n52</id>
+          <name>artifactory-n52</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/n52</url>
+        </repository>
+        <repository>
+          <snapshots />
+          <id>artifactory-n52</id>
+          <name>artifactory-n52</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/n52</url>
+        </repository>
+
       </repositories>
       <pluginRepositories>
 
@@ -66,6 +81,21 @@
           <id>artifactory-geotools</id>
           <name>artifactory-geotools</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
+        </pluginRepository>
+
+        <pluginRepository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-n52</id>
+          <name>artifactory-n52</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/n52</url>
+        </pluginRepository>
+        <pluginRepository>
+          <snapshots />
+          <id>artifactory-n52</id>
+          <name>artifactory-n52</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/n52</url>
         </pluginRepository>
 
       </pluginRepositories>
