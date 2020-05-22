@@ -2,7 +2,7 @@ FROM artifactory.wma.chs.usgs.gov/docker-official-mirror/rocker/r-ver:3.3.3
 
 RUN apt-get update && \
 	apt-get install --no-install-recommends -y \
-	wget \
+	wget=1.16-1+deb8u7 \
 	telnet=0.17-36 \
 	libcurl3=7.38.0-4+deb8u16 \
 	libcurl4-openssl-dev=7.38.0-4+deb8u16 \

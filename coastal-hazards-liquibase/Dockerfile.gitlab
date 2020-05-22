@@ -12,19 +12,20 @@ ENV LIQUIBASE_HOME /opt/liquibase
 # Add Alpine 3.6 repository to get access to plpython
 RUN echo "@v3.6 http://dl-cdn.alpinelinux.org/alpine/v3.6/main/" >> /etc/apk/repositories
 
-RUN apk update && apk upgrade \
-		&& apk add --no-cache openssl \
-			ca-certificates \
-			python \
-			python-dev \
-			postgresql-plpython2@v3.6 \
-			postgresql-plpython2-contrib@v3.6 \
-			git \
-    		curl \
-    		openjdk8 && \
+RUN apk add --no-cache \
+			openssl==1.1.1g-r0 \
+			ca-certificates==20190108-r0 \
+			python==2.7.18-r0 \
+			python-dev==2.7.18-r0 \
+			postgresql-plpython2@v3.6==9.6.13-r0 \
+			postgresql-plpython2-contrib@v3.6==9.6.13-r0 \
+			git==2.20.4-r0 \
+  		curl==7.64.0-r3 \
+  		openjdk8==8.242.08-r0 && \
 	rm -rf /var/cache/apk/*;
 
 # Required for JRE 8 - Java 8 is required to run the Liquibase JAR - lifted from https://github.com/docker-library/openjdk
+
 RUN { \
 		echo '#!/bin/sh'; \
 		echo 'set -e'; \
