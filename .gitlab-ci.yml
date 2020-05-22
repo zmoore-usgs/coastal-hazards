@@ -16,9 +16,9 @@ include:
   after_script:
     - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
   rules:
-    - changes:
-      - "$IMAGE_NAME/*"
-      when: on_success
+    # - changes:
+    #   - "$IMAGE_NAME/*"
+    #   when: on_success
     - if: $CI_COMMIT_TAG
       when: always
 
@@ -34,15 +34,15 @@ build dependencies:
     - docker build --tag $CI_REGISTRY_IMAGE:dependencies -f Docker/dependencies/Dockerfile .
   after_script:
     - docker push $CI_REGISTRY_IMAGE:dependencies
-  rules:
-    - changes:
-      - "**/pom.xml"
-      - Docker/dependencies/Dockerfile
-      - Docker/dependencies/artifactory-settings.xml
-      - coastal-hazards-geoserver/Dockerfile.gitlab
-      - coastal-hazards-liquibase/Dockerfile.gitlab
-      - coastal-hazards-n52/Dockerfile.gitlab
-      - coastal-hazards-portal/Dockerfile.gitlab
+  # rules:
+  #   - changes:
+  #     - "**/pom.xml"
+  #     - Docker/dependencies/Dockerfile
+  #     - Docker/dependencies/artifactory-settings.xml
+  #     - coastal-hazards-geoserver/Dockerfile.gitlab
+  #     - coastal-hazards-liquibase/Dockerfile.gitlab
+  #     - coastal-hazards-n52/Dockerfile.gitlab
+  #     - coastal-hazards-portal/Dockerfile.gitlab
 
 dockerfile:
   stage: test
@@ -51,9 +51,9 @@ dockerfile:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - changes:
-        - "**/Dockerfile*"
-      when: on_success
+    # - changes:
+    #     - "**/Dockerfile*"
+    #   when: on_success
 
 portal:
   extends: .build_functionality
@@ -89,8 +89,8 @@ rserve:
   after_script:
     - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
   rules:
-    - changes:
-      - "Docker/$IMAGE_NAME/*"
-      when: on_success
+    # - changes:
+    #   - "Docker/$IMAGE_NAME/*"
+    #   when: on_success
     - if: $CI_COMMIT_TAG
       when: always
