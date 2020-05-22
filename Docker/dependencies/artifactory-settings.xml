@@ -78,7 +78,7 @@
         </pluginRepository>
         <pluginRepository>
           <snapshots />
-          <id>artifactory-geotools</id>
+          <id>artifactory-geotools-snapshots</id>
           <name>artifactory-geotools-snapshots</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
         </pluginRepository>
