@@ -1,0 +1,16 @@
+---
+
+stages:
+  - dependencies
+
+build dependencies:
+  stage: dependencies
+  image: docker:stable-git
+  services:
+    - docker:stable-dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker build --tag $CI_REGISTRY_IMAGE:dependencies -f Docker/dependencies/Dockerfile .
+  after_script:
+    - docker push $CI_REGISTRY_IMAGE:dependencies

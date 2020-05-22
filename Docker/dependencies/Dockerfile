@@ -1,0 +1,14 @@
+FROM maven:3-openjdk-8
+
+COPY pom.xml pom.xml
+
+COPY ehcache-shaded/pom.xml ehcache-shaded/pom.xml
+COPY coastal-hazards-commons/pom.xml coastal-hazards-commons/pom.xml
+COPY coastal-hazards-export/pom.xml coastal-hazards-export/pom.xml
+COPY coastal-hazards-n52/pom.xml coastal-hazards-n52/pom.xml
+COPY coastal-hazards-wps/pom.xml coastal-hazards-wps/pom.xml
+COPY coastal-hazards-liquibase/pom.xml coastal-hazards-liquibase/pom.xml
+COPY coastal-hazards-geoserver/pom.xml coastal-hazards-geoserver/pom.xml
+COPY coastal-hazards-portal/pom.xml coastal-hazards-portal/pom.xml
+
+RUN mvn de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
