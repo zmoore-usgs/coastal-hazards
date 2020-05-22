@@ -1,0 +1,4 @@
+---
+# See https://github.com/hadolint/hadolint#configure
+ignored:
+  - DL3003
