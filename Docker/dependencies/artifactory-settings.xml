@@ -30,7 +30,7 @@
         </repository>
         <repository>
           <snapshots />
-          <id>artifactory-snapshots</id>
+          <id>artifactory-geotools-snapshots</id>
           <name>artifactory-geotools</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
         </repository>
@@ -45,8 +45,8 @@
         </repository>
         <repository>
           <snapshots />
-          <id>artifactory-n52</id>
-          <name>artifactory-n52</name>
+          <id>artifactory-n52-snapshots</id>
+          <name>artifactory-n52-snapshots</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/n52</url>
         </repository>
 
@@ -64,7 +64,7 @@
         <pluginRepository>
           <snapshots />
           <id>artifactory-snapshots</id>
-          <name>artifactory-maven-central</name>
+          <name>artifactory-maven-central-snapshots</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/maven-central</url>
         </pluginRepository>
 
@@ -79,7 +79,7 @@
         <pluginRepository>
           <snapshots />
           <id>artifactory-geotools</id>
-          <name>artifactory-geotools</name>
+          <name>artifactory-geotools-snapshots</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
         </pluginRepository>
 
@@ -94,7 +94,7 @@
         <pluginRepository>
           <snapshots />
           <id>artifactory-n52</id>
-          <name>artifactory-n52</name>
+          <name>artifactory-n52-snapshots</name>
           <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/n52</url>
         </pluginRepository>
 
