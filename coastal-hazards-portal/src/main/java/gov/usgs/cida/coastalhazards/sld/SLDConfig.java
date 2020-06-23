@@ -53,13 +53,13 @@ public class SLDConfig {
      * @param bins 
      */
 	public SLDConfig(String jspPath, String units, String style, int strokeWidth, String[] attrs, float[] thresholds, String[] colors, List<Map<String,Object>> bins) {
-            this(jspPath, units, style, strokeWidth, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins, SLDGenerator.LEGEND_TYPE_DEFAULT);
+                this(jspPath, units, style, strokeWidth, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins, SLDGenerator.LEGEND_TYPE_DEFAULT);
 	}
-    public SLDConfig(String jspPath, String units, String style, int strokeWidth, float strokeOpacity, String[] attrs, float[] thresholds, String[] colors, List<Map<String,Object>> bins) {
-        this(jspPath, units, style, strokeWidth, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins, SLDGenerator.LEGEND_TYPE_DEFAULT);
-    }
-    public SLDConfig(String jspPath, String units, String style, int strokeWidth, float strokeOpacity, String[] attrs, float[] thresholds, String[] colors, List<Map<String,Object>> bins, LegendType legendType) {
-        this.jspPath = jspPath;
+        public SLDConfig(String jspPath, String units, String style, int strokeWidth, float strokeOpacity, String[] attrs, float[] thresholds, String[] colors, List<Map<String,Object>> bins) {
+                this(jspPath, units, style, strokeWidth, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins, SLDGenerator.LEGEND_TYPE_DEFAULT);
+        }
+        public SLDConfig(String jspPath, String units, String style, int strokeWidth, float strokeOpacity, String[] attrs, float[] thresholds, String[] colors, List<Map<String,Object>> bins, LegendType legendType) {
+                this.jspPath = jspPath;
 		this.units = units;
 		this.style = style;
 		this.strokeWidth = strokeWidth;
@@ -67,9 +67,9 @@ public class SLDConfig {
 		this.thresholds = thresholds;
 		this.colors = colors;
 		this.bins = bins;
-        this.strokeOpacity = strokeOpacity;
-        this.legendType = legendType;
-    }   
+                this.strokeOpacity = strokeOpacity;
+                this.legendType = legendType;
+        }   
 	
 	public String getJspPath() {
 		return this.jspPath;
@@ -87,21 +87,21 @@ public class SLDConfig {
 		return this.strokeWidth;
 	}
     
-    public float getStrokeOpacity() {
+        public float getStrokeOpacity() {
 		return this.strokeOpacity;
 	}
 	
 	public String[] getAttrs() {
-        return this.attrs;
-    }
+                return this.attrs;
+        }
 	
 	public float[] getThresholds() {
-        return this.thresholds;
-    }
+                return this.thresholds;
+        }
 
-    public String[] getColors() {
-        return this.colors;
-    }
+        public String[] getColors() {
+                return this.colors;
+        }
 	
 	public List<Map<String,Object>> getBins() {
 		return this.bins;
@@ -112,6 +112,6 @@ public class SLDConfig {
 	}
 	
         LegendType getLegendType(){
-            return this.legendType;
+                return this.legendType;
         }
 }
