@@ -54,6 +54,7 @@ public class SLDGenerator {
                 sideEffectMapPut(vulnerability, RasterAE.rasterConfig); //raster ae -adjusted elevation
                 sideEffectMapPut(vulnerability, RasterPAE.rasterConfig); //raster pae -probability
                 sideEffectMapPut(vulnerability, RasterCR.rasterConfig); //raster cr - coastal response
+                sideEffectMapPut(vulnerability, RasterUVVR.rasterConfig); //raster uvvr - unvegetated/vegetated ratio
                 sideEffectMapPut(vulnerability, OldSchoolOverallCVI.overallOldSchool);
                 sideEffectMapPut(vulnerability, Uvvr.uvvr);
 		gmap.put(Item.Type.vulnerability, vulnerability);
