@@ -1,13 +1,49 @@
 ---
 include:
   - project: "ctek/gitlab/pipeline/templates"
-    file: "linting/dockerfile-lint-template.yml"
-    ref: 1.0.12
+    file: "linting/all-linters.yml"
+    ref: 1.4.2
+  - project: "ctek/gitlab/pipeline/templates"
+    file: "/workflow/semantic-release-template.yml"
+    ref: 1.2.0
 
 stages:
-  - .pre
   - lint
+  - depndencies
+  - pre-staging
   - build
+
+.docker_login_call: &docker_login_call
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+.rules_not_on_tags: &rules_not_on_tags
+  if: $CI_COMMIT_TAG
+  when: never
+
+.rules_not_on_semantic_release: &rules_not_on_semantic_release
+  if: '$CI_COMMIT_MESSAGE =~ /^chore\(release\).*/'
+  when: never
+
+.rules_not_on_merge_request: &rules_not_on_merge_request
+  if: $CI_MERGE_REQUEST_ID
+  when: never
+
+.build_staging_image:
+  stage: pre-staging
+  image: docker:stable-git
+  services:
+    - docker:stable-dind
+  before_script:
+    - *docker_login_call
+  script:
+    - docker build --tag $STAGING_IMAGE_NAME .
+  after_script:
+    - docker push $STAGING_IMAGE_NAME
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
+    - when: on_success
 
 .build_functionality:
   stage: build
@@ -15,39 +51,18 @@ stages:
   services:
     - docker:stable-dind
   before_script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - *docker_login_call
   script:
     - docker build --tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest -f $IMAGE_NAME/Dockerfile.gitlab .
   after_script:
     - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
   rules:
     - changes:
-      - "$IMAGE_NAME/*"
+        - "$IMAGE_NAME/*"
       when: on_success
     - if: $CI_COMMIT_TAG
       when: always
     - when: on_success
-
-build dependencies:
-  stage: .pre
-  image: docker:stable-git
-  services:
-    - docker:stable-dind
-  before_script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  script:
-    - docker build --tag $CI_REGISTRY_IMAGE:dependencies -f Docker/dependencies/Dockerfile .
-  after_script:
-    - docker push $CI_REGISTRY_IMAGE:dependencies
-  rules:
-    - changes:
-      - "**/pom.xml"
-      - Docker/dependencies/Dockerfile
-      - Docker/dependencies/artifactory-settings.xml
-      - coastal-hazards-geoserver/Dockerfile.gitlab
-      - coastal-hazards-liquibase/Dockerfile.gitlab
-      - coastal-hazards-n52/Dockerfile.gitlab
-      - coastal-hazards-portal/Dockerfile.gitlab
 
 dockerfile:
   stage: lint
@@ -55,49 +70,71 @@ dockerfile:
   allow_failure: false
   script:
     - for f in $(find . -name "Dockerfile.gitlab"); do echo "Testing $FLAGS $f";hadolint $f;done
-  # rules:
-  #   - if: $CI_COMMIT_TAG
-  #     when: never
-  #   - changes:
-  #       - "**/Dockerfile*"
-  #     when: on_success
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - changes:
+        - "**/Dockerfile.gitlab"
+        - "**/*.yaml"
+      when: on_success
 
-portal:
-  extends: .build_functionality
-  variables:
-    IMAGE_NAME: coastal-hazards-portal
-
-n52:
-  extends: .build_functionality
-  variables:
-    IMAGE_NAME: coastal-hazards-n52
-
-geoserver:
-  extends: .build_functionality
-  variables:
-    IMAGE_NAME: coastal-hazards-geoserver
-
-liquibase:
-  extends: .build_functionality
-  variables:
-    IMAGE_NAME: coastal-hazards-liquibase
-
-rserve:
-  stage: build
+build dependencies:
+  stage: depndencies
   image: docker:stable-git
-  variables:
-    IMAGE_NAME: rserve
   services:
     - docker:stable-dind
   before_script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - *docker_login_call
   script:
-    - docker build --tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest -f Docker/$IMAGE_NAME/Dockerfile.gitlab .
+    - docker build --tag $CI_REGISTRY_IMAGE:dependencies -f Docker/dependencies/Dockerfile .
   after_script:
-    - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
+    - docker push $CI_REGISTRY_IMAGE:dependencies
   rules:
     - changes:
-      - "Docker/rserve/*"
-      when: on_success
-    - if: $CI_COMMIT_TAG
-      when: always
+        - "**/pom.xml"
+        - Docker/dependencies/Dockerfile
+        - Docker/dependencies/artifactory-settings.xml
+        - coastal-hazards-geoserver/Dockerfile.gitlab
+        - coastal-hazards-liquibase/Dockerfile.gitlab
+        - coastal-hazards-n52/Dockerfile.gitlab
+        - coastal-hazards-portal/Dockerfile.gitlab
+
+# portal:
+#   extends: .build_functionality
+#   variables:
+#     IMAGE_NAME: coastal-hazards-portal
+
+# n52:
+#   extends: .build_functionality
+#   variables:
+#     IMAGE_NAME: coastal-hazards-n52
+
+# geoserver:
+#   extends: .build_functionality
+#   variables:
+#     IMAGE_NAME: coastal-hazards-geoserver
+
+# liquibase:
+#   extends: .build_functionality
+#   variables:
+#     IMAGE_NAME: coastal-hazards-liquibase
+
+# rserve:
+#   stage: build
+#   image: docker:stable-git
+#   variables:
+#     IMAGE_NAME: rserve
+#   services:
+#     - docker:stable-dind
+#   before_script:
+#     - *docker_login_call
+#   script:
+#     - docker build --tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest -f Docker/$IMAGE_NAME/Dockerfile.gitlab .
+#   after_script:
+#     - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
+#   rules:
+#     - changes:
+#         - "Docker/rserve/*"
+#       when: on_success
+#     - if: $CI_COMMIT_TAG
+#       when: always

@@ -1,0 +1,67 @@
+---
+branches:
+  - master
+  - name: development
+    prerelease: true
+preset: conventionalcommits
+repositoryUrl: git@code.chs.usgs.gov:cmgp/coastal-hazards.git
+tagFormat: "${version}"
+plugins:
+  - - "@semantic-release/commit-analyzer"
+    - releaseRules:
+        - type: feat
+          release: minor
+        - type: fix
+          release: patch
+        - type: docs
+          release: patch
+        - type: style
+          release: patch
+        - type: refactor
+          release: patch
+        - type: perf
+          release: patch
+        - type: test
+          release: patch
+        - type: ci
+          release: patch
+        - type: breaking
+          release: major
+  - - "@semantic-release/release-notes-generator"
+    - presetConfig:
+        types:
+          - type: feat
+            section: ":sparkles: Feature"
+            hidden: false
+          - type: fix
+            section: ":bug: Bugfix"
+            hidden: false
+          - type: docs
+            section: ":memo: Documentation"
+            hidden: false
+          - type: style
+            section: ":barber: Style"
+            hidden: false
+          - type: refactor
+            section: ":zap: Refactor"
+            hidden: false
+          - type: perf
+            section: ":fast_forward: Performance"
+            hidden: false
+          - type: test
+            section: ":white_check_mark: Test"
+            hidden: false
+          - type: ci
+            section: ":repeat: CI"
+            hidden: false
+          - type: breaking
+            section: ":metal: Breaking Change"
+            hidden: false
+          - type: chore
+            hidden: true
+  - - "@semantic-release/changelog"
+    - changelogFile: CHANGELOG.md
+  - "@semantic-release/exec"
+  - - "@semantic-release/git"
+    - assets:
+        - CHANGELOG.md
