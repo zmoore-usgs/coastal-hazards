@@ -1,3 +1,10 @@
+## [1.0.0-development.3](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.2...1.0.0-development.3) (2020-07-15)
+
+
+### :repeat: CI
+
+* test build of all images ([f7773d1](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/f7773d19ab98f0307858a839e55d244c90891aea))
+
 ## [1.0.0-development.2](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.1...1.0.0-development.2) (2020-07-15)
 
 
