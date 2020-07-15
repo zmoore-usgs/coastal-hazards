@@ -1,3 +1,10 @@
+## [1.0.0-development.2](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.1...1.0.0-development.2) (2020-07-15)
+
+
+### :repeat: CI
+
+* test rserve build ([7722c4c](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/7722c4c1022fa5b179e501e58fedbb0a6495cf17))
+
 ## 1.0.0-development.1 (2020-07-15)
 
 
