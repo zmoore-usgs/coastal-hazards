@@ -12,6 +12,7 @@ stages:
   - depndencies
   - pre-staging
   - build
+  - release
 
 .docker_login_call: &docker_login_call
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
@@ -98,6 +99,21 @@ build dependencies:
         - coastal-hazards-liquibase/Dockerfile.gitlab
         - coastal-hazards-n52/Dockerfile.gitlab
         - coastal-hazards-portal/Dockerfile.gitlab
+
+semantic-release:
+  stage: release
+  extends:
+    - .semantic-release-template
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
+    - when: on_success
+  artifacts:
+    when: on_success
+    paths:
+      - .branch_identifier.txt
+        
 
 # portal:
 #   extends: .build_functionality
