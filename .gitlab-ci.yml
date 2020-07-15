@@ -54,7 +54,7 @@ stages:
   before_script:
     - *docker_login_call
   script:
-    - docker build --tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest -f $IMAGE_NAME/Dockerfile.gitlab .
+    - docker build --tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest -f $DOCKERFILE_LOCATION .
   after_script:
     - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
   rules:
@@ -91,6 +91,9 @@ build dependencies:
   after_script:
     - docker push $CI_REGISTRY_IMAGE:dependencies
   rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
     - changes:
         - "**/pom.xml"
         - Docker/dependencies/Dockerfile
@@ -119,6 +122,7 @@ staging rserve:
     - .build_staging_image
   variables:
     IMAGE_NAME: rserve
+    DOCKERFILE_LOCATION: "Docker/${IMAGE_NAME}/Dockerfile.gitlab"
     STAGING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:staging-${CI_COMMIT_BRANCH}"
 
 # portal:
