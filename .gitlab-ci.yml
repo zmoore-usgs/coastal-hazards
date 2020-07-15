@@ -33,8 +33,6 @@ stages:
   if: $CI_COMMIT_TAG
   when: always
 
-
-
 .build_staging_image:
   stage: pre-staging
   image: docker:stable-git
@@ -112,6 +110,7 @@ semantic-release:
     paths:
       - .branch_identifier.txt
 
+# Staging
 staging rserve:
   extends:
     - .build_staging_image
@@ -124,8 +123,20 @@ staging rserve:
     - *rules_not_on_semantic_release
     - *rules_not_on_merge_request
     - changes:
-      - "Docker/rserve/*"
+        - "Docker/rserve/*"
 
+staging portal:
+  extends:
+    - .build_staging_image
+  variables:
+    IMAGE_NAME: coastal-hazards-portal
+    DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
+    STAGING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:staging-${CI_COMMIT_BRANCH}"
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
+    - when: on_success
 
 build rserve:
   extends:
@@ -136,6 +147,7 @@ build rserve:
     TAGGED_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${CI_COMMIT_TAG}"
   rules:
     - *rules_always_on_tags
+
 
 # portal:
 #   extends: .build_functionality
