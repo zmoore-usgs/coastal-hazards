@@ -37,7 +37,7 @@ stages:
   before_script:
     - *docker_login_call
   script:
-    - docker build --tag $STAGING_IMAGE_NAME -f $IMAGE_NAME/Dockerfile.gitlab .
+    - docker build --tag $STAGING_IMAGE_NAME -f $DOCKERFILE_LOCATION .
   after_script:
     - docker push $STAGING_IMAGE_NAME
   rules:
