@@ -1,3 +1,10 @@
+## 1.0.0-development.1 (2020-07-15)
+
+
+### :bug: Bugfix
+
+* Double login ([258557a](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/258557a475335ebfb6355b16f6fbeed463e8e87b))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
