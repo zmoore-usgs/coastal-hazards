@@ -136,6 +136,20 @@ staging portal:
     - *rules_not_on_tags
     - *rules_not_on_semantic_release
     - *rules_not_on_merge_request
+    - changes:
+        - "coastal-hazards-portal/**/*"
+
+staging n52:
+  extends:
+    - .build_staging_image
+  variables:
+    IMAGE_NAME: coastal-hazards-n52
+    DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
+    STAGING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:staging-${CI_COMMIT_BRANCH}"
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
     - when: on_success
 
 build rserve:
@@ -148,11 +162,15 @@ build rserve:
   rules:
     - *rules_always_on_tags
 
-
-# portal:
-#   extends: .build_functionality
-#   variables:
-#     IMAGE_NAME: coastal-hazards-portal
+build portal:
+  extends:
+    - .build_image
+  variables:
+    IMAGE_NAME: coastal-hazards-portal
+    DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
+    TAGGED_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${CI_COMMIT_TAG}"
+  rules:
+    - *rules_always_on_tags
 
 # n52:
 #   extends: .build_functionality
