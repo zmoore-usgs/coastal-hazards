@@ -29,6 +29,12 @@ stages:
   if: $CI_MERGE_REQUEST_ID
   when: never
 
+.rules_always_on_tags: &rules_always_on_tags
+  if: $CI_COMMIT_TAG
+  when: always
+
+
+
 .build_staging_image:
   stage: pre-staging
   image: docker:stable-git
@@ -40,30 +46,20 @@ stages:
     - docker build --tag $STAGING_IMAGE_NAME -f $DOCKERFILE_LOCATION .
   after_script:
     - docker push $STAGING_IMAGE_NAME
-  rules:
-    - *rules_not_on_tags
-    - *rules_not_on_semantic_release
-    - *rules_not_on_merge_request
-    - when: on_success
 
-.build_functionality:
+.build_image:
   stage: build
   image: docker:stable-git
   services:
     - docker:stable-dind
   before_script:
     - *docker_login_call
+    - BRANCH_IDENTIFIER=$(cat .branch_identifier.txt)
+    - STAGING_IMAGE_NAME="${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:staging-${BRANCH_IDENTIFIER}"
+    - docker pull $STAGING_IMAGE_NAME
   script:
-    - docker build --tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest -f $DOCKERFILE_LOCATION .
-  after_script:
-    - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
-  rules:
-    - changes:
-        - "$IMAGE_NAME/*"
-      when: on_success
-    - if: $CI_COMMIT_TAG
-      when: always
-    - when: on_success
+    - docker tag $STAGING_IMAGE_NAME $TAGGED_IMAGE_NAME
+    - docker push $TAGGED_IMAGE_NAME
 
 dockerfile:
   stage: lint
@@ -76,7 +72,6 @@ dockerfile:
     - *rules_not_on_semantic_release
     - changes:
         - "**/Dockerfile.gitlab"
-        - "**/*.yaml"
       when: on_success
 
 build dependencies:
@@ -124,6 +119,23 @@ staging rserve:
     IMAGE_NAME: rserve
     DOCKERFILE_LOCATION: "Docker/${IMAGE_NAME}/Dockerfile.gitlab"
     STAGING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:staging-${CI_COMMIT_BRANCH}"
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
+    - changes:
+      - "Docker/rserve/*"
+
+
+build rserve:
+  extends:
+    - .build_image
+  variables:
+    IMAGE_NAME: rserve
+    DOCKERFILE_LOCATION: "Docker/${IMAGE_NAME}/Dockerfile.gitlab"
+    TAGGED_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${CI_COMMIT_TAG}"
+  rules:
+    - *rules_always_on_tags
 
 # portal:
 #   extends: .build_functionality
