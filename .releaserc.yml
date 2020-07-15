@@ -1,6 +1,6 @@
 ---
 branches:
-  - master
+  - production
   - name: development
     prerelease: true
 preset: conventionalcommits
