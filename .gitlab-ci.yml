@@ -150,6 +150,20 @@ staging n52:
     - *rules_not_on_tags
     - *rules_not_on_semantic_release
     - *rules_not_on_merge_request
+    - changes:
+        - "coastal-hazards-n52/**/*"
+
+staging geoserver:
+  extends:
+    - .build_staging_image
+  variables:
+    IMAGE_NAME: coastal-hazards-geoserver
+    DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
+    STAGING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:staging-${CI_COMMIT_BRANCH}"
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
     - when: on_success
 
 build rserve:
@@ -172,10 +186,15 @@ build portal:
   rules:
     - *rules_always_on_tags
 
-# n52:
-#   extends: .build_functionality
-#   variables:
-#     IMAGE_NAME: coastal-hazards-n52
+build n52:
+  extends:
+    - .build_image
+  variables:
+    IMAGE_NAME: coastal-hazards-n52
+    DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
+    TAGGED_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${CI_COMMIT_TAG}"
+  rules:
+    - *rules_always_on_tags
 
 # geoserver:
 #   extends: .build_functionality
@@ -186,23 +205,3 @@ build portal:
 #   extends: .build_functionality
 #   variables:
 #     IMAGE_NAME: coastal-hazards-liquibase
-
-# rserve:
-#   stage: build
-#   image: docker:stable-git
-#   variables:
-#     IMAGE_NAME: rserve
-#   services:
-#     - docker:stable-dind
-#   before_script:
-#     - *docker_login_call
-#   script:
-#     - docker build --tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest -f Docker/$IMAGE_NAME/Dockerfile.gitlab .
-#   after_script:
-#     - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
-#   rules:
-#     - changes:
-#         - "Docker/rserve/*"
-#       when: on_success
-#     - if: $CI_COMMIT_TAG
-#       when: always
