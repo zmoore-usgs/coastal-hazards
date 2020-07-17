@@ -114,7 +114,7 @@ public class Attributes {
         public static final String AE = "AE";  //adjusted elevation
         public static final String PAE = "PAE";  //adjusted elevation probability
         public static final String CR = "CR";  //coastal response
-	public static final String UVVR_RASTER = "UVVR_RASTER"; //unvegetated to vegetated ratio, raster
+        public static final String UVVR_RASTER = "UVVR_RASTER"; //unvegetated to vegetated ratio, raster
 
 	static {
 		Field[] fields = Attributes.class.getFields();
@@ -143,7 +143,7 @@ public class Attributes {
 		raster.add(AE);
 		raster.add(PAE);
 		raster.add(CR);
-                raster.add(UVVR_RASTER);
+		raster.add(UVVR_RASTER);
 		return raster;
 	}
         
