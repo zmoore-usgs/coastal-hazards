@@ -439,7 +439,20 @@ CCH.Objects.Widget.Legend = function (args) {
 					if (b.lowerBound === -1) return 1;
 					else return b.lowerBound-a.lowerBound;
 				};
-			}   
+			} else if ("UVVR_RASTER" === item.attr) {
+				//customize the bin label and sorter function
+				binLabeler = function (bin, index, bins) {
+					if (index === 0) {
+						return "Higher<br><br><br>";
+					} else if (index === bins.length - 1) {
+						return "Lower";
+					} else {
+						return "";
+					}
+				};
+				sorter =  function(a,b){return b.lowerBound-a.lowerBound;};
+			}
+                        
 			if(null === binLabeler){
 				throw 'Could not find a bin labeler and sorter for the item "' + me.getItemTinyText(item) + '", and the following continuous legend sld:\n\n' + JSON.stringify(sld);
 			} else {

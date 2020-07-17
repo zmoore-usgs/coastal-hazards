@@ -19,7 +19,12 @@
                     <sld:RasterSymbolizer>
                         <sld:ColorMap type="intervals" extended="true">
                             <c:forEach var="i" begin="0" end="${it.binCount-1}"> 
-                                <sld:ColorMapEntry color="${it.colors[i]}" label="label${i}" quantity="${it.thresholds[i]}" opacity="1"/>
+                                <c:if test="${(i == 0)}"> 
+                                    <sld:ColorMapEntry color="${it.colors[i]}" label="0" quantity="${it.thresholds[i]}" opacity="0"/>
+                                </c:if>
+                                <c:if test="${(i > 0)}">
+                                    <sld:ColorMapEntry color="${it.colors[i]}" label="${i}" quantity="${it.thresholds[i]}" opacity="1"/>
+                                </c:if>
                             </c:forEach>
                         </sld:ColorMap>
                     </sld:RasterSymbolizer>
