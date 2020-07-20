@@ -434,10 +434,10 @@ CCH.Objects.Widget.Legend = function (args) {
 					}
 				};
 				sorter = function (a, b) {
-                                        if (a.lowerBound === b.lowerBound) return 0;
+					if (a.lowerBound === b.lowerBound) return 0;
 					if (a.lowerBound === -1) return -1;
 					if (b.lowerBound === -1) return 1;
-					else return b.lowerBound-a.lowerBound;
+					return b.lowerBound-a.lowerBound;
 				};
 			} else if ("UVVR_RASTER" === item.attr) {
 				//customize the bin label and sorter function
