@@ -23,18 +23,20 @@ import org.glassfish.jersey.server.mvc.Viewable;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class SLDGenerator {
+
 	protected static final String style = "cch";
 	protected static final int STROKE_WIDTH_DEFAULT = 3;
 	protected static final float STROKE_OPACITY_DEFAULT = 1;
-        static final LegendType LEGEND_TYPE_DEFAULT = LegendType.DISCRETE;
+	static final LegendType LEGEND_TYPE_DEFAULT = LegendType.DISCRETE;
 	protected final Item item;
 	protected final Integer ribbon;
 	protected final SLDConfig config;
-	
-	protected static final EnumMap<Item.Type,Map<String, SLDConfig>> generatorMap;
+
+	protected static final EnumMap<Item.Type, Map<String, SLDConfig>> generatorMap;
+
 	static {
-		EnumMap<Item.Type,Map<String, SLDConfig>> gmap = new EnumMap<>(Item.Type.class); 
-		
+		EnumMap<Item.Type, Map<String, SLDConfig>> gmap = new EnumMap<>(Item.Type.class);
+
 		Map<String, SLDConfig> stormsMap = new HashMap<>();
 		sideEffectMapPut(stormsMap, Pcoi.pcoi);
 		sideEffectMapPut(stormsMap, Extreme.extreme);
@@ -43,91 +45,92 @@ public class SLDGenerator {
 		sideEffectMapPut(stormsMap, MeanWaterLevel.mean);
 		sideEffectMapPut(stormsMap, TCx.tcx);
 		gmap.put(Item.Type.storms, stormsMap);
-		
+
 		Map<String, SLDConfig> vulnerability = new HashMap<>();
 		sideEffectMapPut(vulnerability, BayesianProbablityCVI.bayes);
-                sideEffectMapPut(vulnerability, BayesianSLRCVI.rslr);
-                sideEffectMapPut(vulnerability, BayesianWaveHeightCVI.mwh);
-                sideEffectMapPut(vulnerability, BayesianTidalRangeCVI.tr);
-                sideEffectMapPut(vulnerability, BayesianErateCVI.erate);
-                sideEffectMapPut(vulnerability, OldSchoolComponentCVI.componentOldSchool);
-                sideEffectMapPut(vulnerability, RasterAE.rasterConfig); //raster ae -adjusted elevation
-                sideEffectMapPut(vulnerability, RasterPAE.rasterConfig); //raster pae -probability
-                sideEffectMapPut(vulnerability, RasterCR.rasterConfig); //raster cr - coastal response
-                sideEffectMapPut(vulnerability, RasterUVVR.rasterConfig); //raster uvvr - unvegetated/vegetated ratio
-                sideEffectMapPut(vulnerability, OldSchoolOverallCVI.overallOldSchool);
-                sideEffectMapPut(vulnerability, Uvvr.uvvr);
+		sideEffectMapPut(vulnerability, BayesianSLRCVI.rslr);
+		sideEffectMapPut(vulnerability, BayesianWaveHeightCVI.mwh);
+		sideEffectMapPut(vulnerability, BayesianTidalRangeCVI.tr);
+		sideEffectMapPut(vulnerability, BayesianErateCVI.erate);
+		sideEffectMapPut(vulnerability, OldSchoolComponentCVI.componentOldSchool);
+		sideEffectMapPut(vulnerability, RasterAE.rasterConfig); //raster ae -adjusted elevation
+		sideEffectMapPut(vulnerability, RasterPAE.rasterConfig); //raster pae -probability
+		sideEffectMapPut(vulnerability, RasterCR.rasterConfig); //raster cr - coastal response
+		sideEffectMapPut(vulnerability, RasterUvvr.rasterConfig); //raster uvvr - unvegetated/vegetated ratio
+		sideEffectMapPut(vulnerability, OldSchoolOverallCVI.overallOldSchool);
+		sideEffectMapPut(vulnerability, Uvvr.uvvr);
 		gmap.put(Item.Type.vulnerability, vulnerability);
-		
+
 		Map<String, SLDConfig> historical = new HashMap<>();
 		sideEffectMapPut(historical, Shorelines.shorelines);
 		sideEffectMapPut(historical, Rates.rates);
 		gmap.put(Item.Type.historical, historical);
-		
+
 		Map<String, SLDConfig> mixed = new HashMap<>();
 		gmap.put(Item.Type.mixed, mixed);
-		
+
 		generatorMap = gmap;
 	}
+
 	protected static void sideEffectMapPut(Map<String, SLDConfig> map, SLDConfig conf) {
 		for (String attr : conf.attrs) {
 			map.put(attr, conf);
 		}
 	}
-	
+
 	public static SLDGenerator getGenerator(Item item, String selectedId, Integer ribbon) {
 		SLDGenerator generator = null;
-        
-        Item.Type itemDotType = item.getType();
-        Item.ItemType itemType = item.getItemType();
-        if (itemType == Item.ItemType.data) {
-            String itemAttribute = item.getAttr();
 
-            Map<String, SLDConfig> typeLookup = generatorMap.get(itemDotType);
-            SLDConfig conf = typeLookup.get(StringUtils.upperCase(itemAttribute));
+		Item.Type itemDotType = item.getType();
+		Item.ItemType itemType = item.getItemType();
+		if (itemType == Item.ItemType.data) {
+			String itemAttribute = item.getAttr();
 
-            if (null != conf) {
-                generator = new SLDGenerator(item, selectedId, ribbon, conf);
-            }
-        } else if (itemType == Item.ItemType.aggregation || itemType == Item.ItemType.template) {
-            SortedSet<String> aggAttributes = ItemUtil.gatherAttributes(item);
-            Map<String, SLDConfig> typeLookup = generatorMap.get(itemDotType);
-            // TODO enforce all attributes map to same SLD type
-            SLDConfig conf = typeLookup.get(StringUtils.upperCase(aggAttributes.first()));
-            generator = new SLDGenerator(item, selectedId, ribbon, conf);
-        } else {
-            throw new BadRequestException();
-        }
-		
+			Map<String, SLDConfig> typeLookup = generatorMap.get(itemDotType);
+			SLDConfig conf = typeLookup.get(StringUtils.upperCase(itemAttribute));
+
+			if (null != conf) {
+				generator = new SLDGenerator(item, selectedId, ribbon, conf);
+			}
+		} else if (itemType == Item.ItemType.aggregation || itemType == Item.ItemType.template) {
+			SortedSet<String> aggAttributes = ItemUtil.gatherAttributes(item);
+			Map<String, SLDConfig> typeLookup = generatorMap.get(itemDotType);
+			// TODO enforce all attributes map to same SLD type
+			SLDConfig conf = typeLookup.get(StringUtils.upperCase(aggAttributes.first()));
+			generator = new SLDGenerator(item, selectedId, ribbon, conf);
+		} else {
+			throw new BadRequestException();
+		}
+
 		if (null == generator) {
 			String message = String.format("No generator available for Type %s and ItemType %s.", itemType, itemDotType);
 			throw new IllegalArgumentException(message);
 		}
-		
+
 		return generator;
 	}
-	
+
 	public static boolean isValidAttr(SLDConfig config, String attr) {
 		return ArrayUtils.contains(config.getAttrs(), attr.toUpperCase());
 	}
-	
 
 	/**
 	 * Use SLDGenerator.getGenerator(item, ribbon) instead.
+	 *
 	 * @param item
 	 * @param ribbon
-	 * @param config 
+	 * @param config
 	 */
 	protected SLDGenerator(Item item, String selectedId, Integer ribbon, SLDConfig config) {
 		this.item = item;
 		this.ribbon = ribbon;
-        if (config instanceof ShorelineConfig) {
-            ShorelineConfig slc = (ShorelineConfig)config;
-            slc.finalize(selectedId);
-            this.config = slc;
-        } else {
-            this.config = config;
-        }
+		if (config instanceof ShorelineConfig) {
+			ShorelineConfig slc = (ShorelineConfig) config;
+			slc.finalize(selectedId);
+			this.config = slc;
+		} else {
+			this.config = config;
+		}
 	}
 
 	public Response generateSLD() {
@@ -146,9 +149,9 @@ public class SLDGenerator {
 	}
 
 	public String[] getAttrs() {
-        SortedSet<String> attrSet = ItemUtil.gatherAttributes(item);
-        String[] attrs = attrSet.toArray(new String[0]);
-        return attrs;
+		SortedSet<String> attrSet = ItemUtil.gatherAttributes(item);
+		String[] attrs = attrSet.toArray(new String[0]);
+		return attrs;
 	}
 
 	public String getId() {
@@ -171,11 +174,12 @@ public class SLDGenerator {
 		return this.config.getStrokeOpacity();
 	}
 
-    /**
-     * Should deprecate this as we want to get attr from children
-     * Works now because item is mostly assumed to be leaf
-     * @return name of attribute
-     */
+	/**
+	 * Should deprecate this as we want to get attr from children Works now
+	 * because item is mostly assumed to be leaf
+	 *
+	 * @return name of attribute
+	 */
 	public String getAttr() {
 		return this.item.getAttr();
 	}
@@ -191,11 +195,11 @@ public class SLDGenerator {
 	public int getBinCount() {
 		return this.config.getColors().length;
 	}
-	
+
 	public int[] getScales() {
 		return this.config.getScales();
 	}
-	
+
 	public int getScaleCount() {
 		return this.config.getScales().length;
 	}
