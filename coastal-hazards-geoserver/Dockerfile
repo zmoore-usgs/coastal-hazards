@@ -64,6 +64,7 @@ ENV JAVA_TRUSTSTORE_PASS="changeit"
 RUN mkdir -p /data/coastal-hazards/uploaded-data
 
 COPY --from=geoserver_build /source/coastal-hazards-geoserver/target/geoserver.war /usr/local/tomcat/webapps/geoserver.war
+COPY Docker/tomcat/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 COPY Docker/tomcat/entrypoint.sh /usr/local/tomcat/entrypoint.sh
 COPY coastal-hazards-geoserver/docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 
