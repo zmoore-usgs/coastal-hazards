@@ -11,6 +11,10 @@ secrets:
     file: Docker/rserve/rserve.conf
   rserve_profile:
     file: Docker/rserve/profile.conf
+  ssl_cert:
+    file: Docker/tomcat/ssl/ssl.crt
+  ssl_key:
+    file: Docker/tomcat/ssl/ssl.key
 
 services:
   cch_postgres:
@@ -35,6 +39,10 @@ services:
       - "6311:6311"
     env_file:
       - "compose.env"
+    volumes:
+      - type: bind
+        source: ./Docker/tomcat/ssl/trust_certs
+        target: /trust_certs
     secrets:
       - source: rserve_password
         target: /rserve.pwd
@@ -42,6 +50,12 @@ services:
         target: /rserve.conf
       - source: rserve_profile
         target: /profile.conf
+
+  cch_tomcat:
+    build:
+      context: ./Docker/tomcat
+    image: cch_tomcat
+    entrypoint: /bin/true
 
   cch_n52_wps:
     build:
@@ -55,20 +69,22 @@ services:
       - cch_rserve
     volumes:
       - type: bind
-        source: ./coastal-hazards-n52/docker/key-store.jks
-        target: /usr/local/tomcat/ssl/trust-store.jks
-      - type: bind
-        source: ./coastal-hazards-n52/docker/tomcat-users.xml
-        target: /usr/local/tomcat/conf/tomcat-users.xml
-      - type: bind
-        source: ./coastal-hazards-n52/docker/context.xml
+        source: ./coastal-hazards-n52/docker/config/context.xml
         target: /usr/local/tomcat/conf/context.xml
       - type: bind
-        source: ./coastal-hazards-n52/docker/server.xml
+        source: ./coastal-hazards-n52/docker/config/server.xml
         target: /usr/local/tomcat/conf/server.xml
       - type: bind
-        source: ./coastal-hazards-n52/docker/wps_config.xml
+        source: ./coastal-hazards-n52/docker/config/wps_config.xml
         target: /wps_config.xml
+      - type: bind
+        source: ./Docker/tomcat/ssl/trust_certs
+        target: /usr/local/tomcat/ssl/trust_certs
+    secrets:
+      - source: ssl_cert
+        target: /usr/local/tomcat/ssl/server_cert/ssl.crt
+      - source: ssl_key
+        target: /usr/local/tomcat/ssl/server_cert/ssl.key
 
   cch_portal:
     build:
@@ -84,23 +100,22 @@ services:
       - "8900:8900"
     volumes:
       - type: bind
-        source: ./coastal-hazards-portal/docker/key-store.jks
-        target: /usr/local/tomcat/ssl/key-store.jks
-      - type: bind
-        source: ./coastal-hazards-portal/docker/key-store.jks
-        target: /usr/local/tomcat/ssl/trust-store.jks
-      - type: bind
-        source: ./coastal-hazards-portal/docker/tomcat-users.xml
-        target: /usr/local/tomcat/conf/tomcat-users.xml
-      - type: bind
-        source: ./coastal-hazards-portal/docker/server.xml
+        source: ./coastal-hazards-portal/docker/config/server.xml
         target: /usr/local/tomcat/conf/server.xml
       - type: bind
-        source: ./coastal-hazards-portal/docker/context.xml
+        source: ./coastal-hazards-portal/docker/config/context.xml
         target: /usr/local/tomcat/conf/context.xml
       - type: bind
-        source: ./Docker/keycloak/keycloak_tomcat_config.json
+        source: ./coastal-hazards-portal/docker/config/keycloak_tomcat_config.json
         target: /usr/local/tomcat/conf/keycloak.json
+      - type: bind
+        source: ./Docker/tomcat/ssl/trust_certs
+        target: /usr/local/tomcat/ssl/trust_certs
+    secrets:
+      - source: ssl_cert
+        target: /usr/local/tomcat/ssl/server_cert/ssl.crt
+      - source: ssl_key
+        target: /usr/local/tomcat/ssl/server_cert/ssl.key
 
   cch_geoserver:
     build:
@@ -113,20 +128,19 @@ services:
       - "8444:8444"
     volumes:
       - type: bind
-        source: ./coastal-hazards-geoserver/docker/key-store.jks
-        target: /usr/local/tomcat/ssl/key-store.jks
-      - type: bind
-        source: ./coastal-hazards-geoserver/docker/key-store.jks
-        target: /usr/local/tomcat/ssl/trust-store.jks
-      - type: bind
-        source: ./coastal-hazards-geoserver/docker/tomcat-users.xml
-        target: /usr/local/tomcat/conf/tomcat-users.xml
-      - type: bind
-        source: ./coastal-hazards-geoserver/docker/server.xml
+        source: ./coastal-hazards-geoserver/docker/config/server.xml
         target: /usr/local/tomcat/conf/server.xml
       - type: bind
-        source: ./coastal-hazards-geoserver/docker/context.xml
+        source: ./coastal-hazards-geoserver/docker/config/context.xml
         target: /usr/local/tomcat/conf/context.xml
+      - type: bind
+        source: ./Docker/tomcat/ssl/trust_certs
+        target: /usr/local/tomcat/ssl/trust_certs
+    secrets:
+      - source: ssl_cert
+        target: /usr/local/tomcat/ssl/server_cert/ssl.crt
+      - source: ssl_key
+        target: /usr/local/tomcat/ssl/server_cert/ssl.key
 
   cch_keycloak:
     image: jboss/keycloak

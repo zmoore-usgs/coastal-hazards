@@ -24,20 +24,20 @@
 	<Environment name="coastal-hazards.portal.auth.admin.role" type="java.lang.String" value="CCH_ADMIN"/>
 
 	<!-- General -->
-	<Environment name="coastal-hazards.public.url" type="java.lang.String" value="http://localhost:8080/coastal-hazards-portal"/>
-	<Environment name="coastal-hazards.base.url" type="java.lang.String" value="http://localhost:8080/coastal-hazards-portal"/>
+	<Environment name="coastal-hazards.public.url" type="java.lang.String" value="https://localhost:8443/coastal-hazards-portal"/>
+	<Environment name="coastal-hazards.base.url" type="java.lang.String" value="https://localhost:8443/coastal-hazards-portal"/>
 	<Environment name="coastal-hazards.base.secure.url" type="java.lang.String" value="https://localhost:8443/coastal-hazards-portal" override="false"/>
 	<Environment name="coastal-hazards.go.usa.gov.login" type="java.lang.String" value="AddYourOwnLogin"/>
 	<Environment name="coastal-hazards.go.usa.gov.apikey" type="java.lang.String" value="AddYourOwnApiKey"/>
-	<Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="http://go.usa.gov/api/"/>
+	<Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="https://go.usa.gov/api/"/>
 	<Environment name="coastal-hazards.stpetearcserver.endpoint" type="java.lang.String" value="http://olga.er.usgs.gov/stpgis"/>
-	<Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="http://coastalmap.marine.usgs.gov/cmgp"/>
-	<Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="http://localhost:8082/wps"/>
+	<Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="https://coastalmap.marine.usgs.gov/cmgp"/>
+	<Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="https://localhost:8445/wps"/>
 	<Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="15728640"/>
 	<Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.unzip.base" type="java.lang.String" value="/data/coastal-hazards/uploaded-data" override="false"/>
 	<Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token" type="java.lang.String" value="I_pf^-qRE~^8Sf#" override="false"/>
-	<Environment name="coastal-hazards.portal.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/geoserver"/>
-	<Environment name="coastal-hazards.portal.geoserver.external.endpoint" type="java.lang.String" value="http://localhost:8081/geoserver"/>
+	<Environment name="coastal-hazards.portal.geoserver.endpoint" type="java.lang.String" value="https://localhost:8444/geoserver"/>
+	<Environment name="coastal-hazards.portal.geoserver.external.endpoint" type="java.lang.String" value="https://localhost:8444/geoserver"/>
 	<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="admin"/>
 	<Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="geoserver"/>
 	<Environment name="production" type="java.lang.String" value="false"/>
@@ -52,7 +52,7 @@
 	<Environment name="coastal-hazards.nhc.track.bbox.west" type="java.lang.String" value="-101.84"/>
 	<Environment name="coastal-hazards.nhc.track.bbox.east" type="java.lang.String" value="-62.4"/>
 	<Environment name="coastal-hazards.nhc.track.bbox.south" type="java.lang.String" value="17.64"/>
-	<Environment name="coastal-hazards.nhc.track.wms" type="java.lang.String" value="http://nowcoast.noaa.gov/arcgis/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/WmsServer?"/>
+	<Environment name="coastal-hazards.nhc.track.wms" type="java.lang.String" value="https://nowcoast.noaa.gov/arcgis/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/WmsServer?"/>
 	<Environment name="coastal-hazards.nhc.track.attrs" type="java.lang.String" value="NHC_TRACK_POLY|NHC_TRACK_LIN|NHC_TRACK_PT"/>
 	<Environment name="coastal-hazards.nhc.track.attr.params" type="java.lang.String" value="6|3|8,7,4,9"/>
 	<Environment name="coastal-hazards.nhc.track.tiny.text" type="java.lang.String" value="NWS NHC Forecasted Tropical Cyclone"/>

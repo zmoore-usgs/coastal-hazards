@@ -27,8 +27,6 @@ RUN mvn -B -pl coastal-hazards-n52 -am package
 
 FROM tomcat:8.5-jre8-alpine
 
-ENV KEY_STORE_PASSWORD=changeit
-
 RUN apk add --update --no-cache \
 	openssl \
 	fontconfig \
@@ -50,14 +48,26 @@ RUN curl -o /usr/local/tomcat/webapps/probe.war "https://repo1.maven.org/maven2/
 RUN rm -rf /usr/local/tomcat/webapps/ROOT /usr/local/tomcat/webapps/docs /usr/local/tomcat/webapps/examples
 RUN rm -f /usr/local/tomcat/conf/tomcat-users.xml /usr/local/tomcat/conf/server.xml /usr/local/tomcat/conf/context.xml
 
+ENV JAVA_SSL_DIR="/usr/local/tomcat/ssl"
+ENV SSL_CERT_DIR="/usr/local/tomcat/ssl/server_cert"
+ENV CERT_IMPORT_DIRECTORY="/usr/local/tomcat/ssl/trust_certs"
+ENV TOMCAT_CERT_FILE="ssl.crt"
+ENV TOMCAT_CHAIN_FILE="ssl.chain"
+ENV TOMCAT_KEY_FILE="ssl.key"
+ENV JAVA_KEYSTORE="/usr/local/tomcat/ssl/key-store.jks"
+ENV JAVA_KEYSTORE_PASS="changeit"
+ENV JAVA_TRUSTSTORE="/usr/local/tomcat/ssl/trust-store.jks"
+ENV JAVA_TRUSTSTORE_PASS="changeit"
+
 RUN mkdir -p /data/coastal-hazards/uploaded-data
 
 COPY --from=n52_build /source/coastal-hazards-n52/target/wps.war /usr/local/tomcat/webapps/wps.war
-COPY coastal-hazards-n52/docker/run.sh /run.sh
+COPY Docker/tomcat/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
+COPY Docker/tomcat/entrypoint.sh /usr/local/tomcat/entrypoint.sh
+COPY coastal-hazards-n52/docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 
-RUN chmod +x /run.sh
-
-CMD /run.sh
+RUN chmod +x /usr/local/tomcat/entrypoint.sh
+RUN chmod +x /usr/local/tomcat/bin/setenv.sh
 
 HEALTHCHECK --interval=10s --timeout=5s \
  CMD curl -s "http://localhost:8082/wps/WebProcessingService?Service=WPS&Request=GetCapabilities" \
