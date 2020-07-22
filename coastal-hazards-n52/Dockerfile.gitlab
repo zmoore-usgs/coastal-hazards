@@ -55,6 +55,8 @@ COPY coastal-hazards-n52/docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 RUN chmod +x /usr/local/tomcat/entrypoint.sh
 RUN chmod +x /usr/local/tomcat/bin/setenv.sh
 
+CMD /usr/local/tomcat/entrypoint.sh
+
 HEALTHCHECK --interval=10s --timeout=5s \
  CMD curl -s "http://localhost:8082/wps/WebProcessingService?Service=WPS&Request=GetCapabilities" \
  	| grep -q "Coastal Hazards WPS Processing"

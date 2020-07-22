@@ -6,7 +6,6 @@ TOMCAT_CHAIN_PATH="$SSL_CERT_DIR/$TOMCAT_CHAIN_FILE"
 # Because I am not the root user, I cannot write to the system java keystore.
 # Therefore I copy the Java keystore to a local area. The source location
 # for the Java keystore is /etc/ssl/certs/java/cacerts for this image
-# (openjdk:8-jdk-alpine) but may differ on other images
 keytool -importkeystore -srckeystore "$JAVA_HOME/lib/security/cacerts" -srcstorepass "$JAVA_TRUSTSTORE_PASS" -destkeystore "$JAVA_TRUSTSTORE" -deststorepass "$JAVA_TRUSTSTORE_PASS" -deststoretype jks
 
 if [ -n "${TOMCAT_CERT_PATH}" ] && [ -n "${TOMCAT_KEY_PATH}" ] && [ -f "${TOMCAT_CERT_PATH}" ] && [ -f "${TOMCAT_KEY_PATH}" ]; then
@@ -30,8 +29,7 @@ if [ -n "${TOMCAT_CERT_PATH}" ] && [ -n "${TOMCAT_KEY_PATH}" ] && [ -f "${TOMCAT
   keytool -v -importkeystore -deststorepass "$JAVA_KEYSTORE_PASS" -destkeystore "$JAVA_KEYSTORE" -deststoretype JKS -srckeystore "$JAVA_SSL_DIR/tomcat.pkcs12" -srcstorepass "$JAVA_KEYSTORE_PASS" -srcstoretype PKCS12 -noprompt
   echo "Created: $JAVA_KEYSTORE"
 else
-  echo "ERROR: Tomcat SSL cert and/or key not found at '$TOMCAT_CERT_PATH' and/or '$TOMCAT_KEY_PATH'. Keystore cannot be created."
-  exit 1
+  echo "WARNING: Tomcat SSL cert and/or key not found at '$TOMCAT_CERT_PATH' and/or '$TOMCAT_KEY_PATH'. Keystore will not be created."
 fi
 
 if [ -n "${CERT_IMPORT_DIRECTORY}" ] && [ -d "${CERT_IMPORT_DIRECTORY}" ]; then
