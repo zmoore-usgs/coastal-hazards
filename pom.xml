@@ -26,8 +26,8 @@
 
 	<inceptionYear>2012</inceptionYear>
 	<organization>
-		<name>Center for Integrated Data Analytics</name>
-		<url>http://cida.usgs.gov</url>
+		<name>USGS Coastal and Marine Hazards and Resources Program</name>
+		<url>https://marine.usgs.gov/</url>
 	</organization>
 
 	<licenses>
@@ -122,7 +122,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<cida.maven.url>https://internal.cida.usgs.gov/maven</cida.maven.url>
 		<war.dir>src/main/webapp</war.dir>
 		<build.scm.version>${buildNumber}</build.scm.version>
 		<slf4j.version>1.7.13</slf4j.version>
@@ -142,35 +141,18 @@
 		<tag>coastal-hazards-1.1.39</tag>
 	</scm>
 
-	<distributionManagement>
-		<repository>
-			<id>cida-releases</id>
-			<name>CIDA Releases</name>
-			<url>${cida.maven.url}/content/repositories/cida-public-releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>cida-snapshots</id>
-			<name>CIDA Snapshots</name>
-			<url>${cida.maven.url}/content/repositories/cida-public-snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 	<repositories>
 		<repository>
 			<id>central</id>
 			<name>Maven Central</name>
-			<url>https://repo.maven.apache.org/maven2</url>
+			<url>https://artifactory.wma.chs.usgs.gov/artifactory/maven-central</url>
 		</repository>
 		<repository>
 			<id>osgeo1</id>
 			<name>OSGeo Release Repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
+			<snapshots><enabled>false</enabled></snapshots>
+			<releases><enabled>true</enabled></releases>
 		</repository>
 		<repository>
 			<id>osgeo</id>
@@ -188,9 +170,9 @@
 			<url>https://maven.geo-solutions.it/</url>
 		</repository>
 		<repository>
-			<id>cida-public</id>
-			<name>CIDA Public Nexus</name>
-			<url>https://cida.usgs.gov/maven/cida-public/</url>
+			<id>cida-public-releases</id>
+			<name>CIDA Public Releases Mirror</name>
+			<url>https://artifactory.wma.chs.usgs.gov/artifactory/cida-public-releases</url>
 		</repository>
 	</repositories>
 
@@ -198,12 +180,12 @@
 		<pluginRepository>
 			<id>central</id>
 			<name>Maven Central</name>
-			<url>https://repo.maven.apache.org/maven2</url>
+			<url>https://artifactory.wma.chs.usgs.gov/artifactory/maven-central</url>
 		</pluginRepository>
 		<pluginRepository>
-			<id>cida-public</id>
-			<name>CIDA Public Plugin repo</name>
-			<url>http://cida.usgs.gov/maven/cida-public/</url>
+			<id>cida-public-releases</id>
+			<name>CIDA Public Releases Mirror</name>
+			<url>https://artifactory.wma.chs.usgs.gov/artifactory/cida-public-releases</url>
 		</pluginRepository>
 	</pluginRepositories>
 

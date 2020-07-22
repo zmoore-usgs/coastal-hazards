@@ -51,12 +51,6 @@ services:
       - source: rserve_profile
         target: /profile.conf
 
-  cch_tomcat:
-    build:
-      context: ./Docker/tomcat
-    image: cch_tomcat
-    entrypoint: /bin/true
-
   cch_n52_wps:
     build:
       context: .
