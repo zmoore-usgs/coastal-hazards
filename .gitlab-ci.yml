@@ -91,10 +91,6 @@ build dependencies:
         - "**/pom.xml"
         - Docker/dependencies/Dockerfile
         - Docker/dependencies/artifactory-settings.xml
-        - coastal-hazards-geoserver/Dockerfile.gitlab
-        - coastal-hazards-liquibase/Dockerfile.gitlab
-        - coastal-hazards-n52/Dockerfile.gitlab
-        - coastal-hazards-portal/Dockerfile.gitlab
 
 semantic-release:
   stage: release
