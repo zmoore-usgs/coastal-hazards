@@ -13,6 +13,8 @@ stages:
   - pre-staging
   - build
   - release
+  - generate-trigger
+  - trigger
 
 .docker_login_call: &docker_login_call
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
@@ -225,5 +227,34 @@ build liquibase:
     IMAGE_NAME: coastal-hazards-liquibase
     DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
     TAGGED_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${CI_COMMIT_TAG}"
+  rules:
+    - *rules_always_on_tags
+
+generate-trigger-config:
+  stage: generate-trigger
+  script:
+    - BRANCH_IDENTIFIER=$(cat .branch_identifier.txt)
+    - |
+      cat > generated-config.yml << EOF
+      cchp deploy:
+        stage: deploy
+        variables:
+          VERSION_IDENTIFIER: $CI_COMMIT_TAG
+        trigger:
+          project: cmgp/aws/resources/coastal-hazards
+          branch: $BRANCH_IDENTIFIER
+      EOF
+  artifacts:
+    paths:
+      - generated-config.yml
+  rules:
+    - *rules_always_on_tags
+
+trigger deploy:
+  stage: trigger
+  trigger:
+    include:
+      - artifact: generated-config.yml
+        job: generate-trigger-config
   rules:
     - *rules_always_on_tags

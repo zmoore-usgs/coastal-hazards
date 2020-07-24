@@ -1,6 +1,8 @@
 ---
 branches:
   - production
+  - name: qa
+    prerelease: true
   - name: development
     prerelease: true
 preset: conventionalcommits
