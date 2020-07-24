@@ -1,3 +1,10 @@
+## [1.0.0-development.5](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.4...1.0.0-development.5) (2020-07-24)
+
+
+### :repeat: CI
+
+* test trigger ([bbb0030](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/bbb0030ada721d656d211f9f9701b799fea56055))
+
 ## [1.0.0-development.4](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.3...1.0.0-development.4) (2020-07-24)
 
 
