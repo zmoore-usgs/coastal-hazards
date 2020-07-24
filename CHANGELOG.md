@@ -1,3 +1,10 @@
+## [1.0.0-development.4](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.3...1.0.0-development.4) (2020-07-24)
+
+
+### :repeat: CI
+
+* Attempt triggering remote project ([8d1e9dc](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/8d1e9dc124e426fd1ae0321d5fd0d9091111e978))
+
 ## [1.0.0-development.3](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.2...1.0.0-development.3) (2020-07-15)
 
 
