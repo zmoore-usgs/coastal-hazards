@@ -1,53 +1,65 @@
 ---
 include:
   - project: "ctek/gitlab/pipeline/templates"
-    file: "linting/dockerfile-lint-template.yml"
-    ref: 1.0.12
+    file: "linting/all-linters.yml"
+    ref: 1.4.2
+  - project: "ctek/gitlab/pipeline/templates"
+    file: "/workflow/semantic-release-template.yml"
+    ref: 1.2.0
 
 stages:
-  - .pre
   - lint
+  - depndencies
+  - pre-staging
   - build
+  - release
+  - generate-trigger
+  - trigger
 
-.build_functionality:
+.docker_login_call: &docker_login_call
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+.rules_not_on_tags: &rules_not_on_tags
+  if: $CI_COMMIT_TAG
+  when: never
+
+.rules_not_on_semantic_release: &rules_not_on_semantic_release
+  if: '$CI_COMMIT_MESSAGE =~ /^chore\(release\).*/'
+  when: never
+
+.rules_not_on_merge_request: &rules_not_on_merge_request
+  if: $CI_MERGE_REQUEST_ID
+  when: never
+
+.rules_always_on_tags: &rules_always_on_tags
+  if: $CI_COMMIT_TAG
+  when: always
+
+.build_staging_image:
+  stage: pre-staging
+  image: docker:stable-git
+  services:
+    - docker:stable-dind
+  before_script:
+    - *docker_login_call
+  script:
+    - docker build --tag $STAGING_IMAGE_NAME -f $DOCKERFILE_LOCATION .
+  after_script:
+    - docker push $STAGING_IMAGE_NAME
+
+.build_image:
   stage: build
   image: docker:stable-git
   services:
     - docker:stable-dind
   before_script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - *docker_login_call
+    - BRANCH_IDENTIFIER=$(cat .branch_identifier.txt)
+    - STAGING_IMAGE_NAME="${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:staging-${BRANCH_IDENTIFIER}"
+    - docker pull $STAGING_IMAGE_NAME
   script:
-    - docker build --tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest -f $IMAGE_NAME/Dockerfile.gitlab .
-  after_script:
-    - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
-  rules:
-    - changes:
-      - "$IMAGE_NAME/*"
-      when: on_success
-    - if: $CI_COMMIT_TAG
-      when: always
-    - when: on_success
-
-build dependencies:
-  stage: .pre
-  image: docker:stable-git
-  services:
-    - docker:stable-dind
-  before_script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  script:
-    - docker build --tag $CI_REGISTRY_IMAGE:dependencies -f Docker/dependencies/Dockerfile .
-  after_script:
-    - docker push $CI_REGISTRY_IMAGE:dependencies
-  rules:
-    - changes:
-      - "**/pom.xml"
-      - Docker/dependencies/Dockerfile
-      - Docker/dependencies/artifactory-settings.xml
-      - coastal-hazards-geoserver/Dockerfile.gitlab
-      - coastal-hazards-liquibase/Dockerfile.gitlab
-      - coastal-hazards-n52/Dockerfile.gitlab
-      - coastal-hazards-portal/Dockerfile.gitlab
+    - docker tag $STAGING_IMAGE_NAME $TAGGED_IMAGE_NAME
+    - docker push $TAGGED_IMAGE_NAME
 
 dockerfile:
   stage: lint
@@ -55,49 +67,194 @@ dockerfile:
   allow_failure: false
   script:
     - for f in $(find . -name "Dockerfile.gitlab"); do echo "Testing $FLAGS $f";hadolint $f;done
-  # rules:
-  #   - if: $CI_COMMIT_TAG
-  #     when: never
-  #   - changes:
-  #       - "**/Dockerfile*"
-  #     when: on_success
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - changes:
+        - "**/Dockerfile.gitlab"
+      when: on_success
 
-portal:
-  extends: .build_functionality
-  variables:
-    IMAGE_NAME: coastal-hazards-portal
-
-n52:
-  extends: .build_functionality
-  variables:
-    IMAGE_NAME: coastal-hazards-n52
-
-geoserver:
-  extends: .build_functionality
-  variables:
-    IMAGE_NAME: coastal-hazards-geoserver
-
-liquibase:
-  extends: .build_functionality
-  variables:
-    IMAGE_NAME: coastal-hazards-liquibase
-
-rserve:
-  stage: build
+build dependencies:
+  stage: depndencies
   image: docker:stable-git
-  variables:
-    IMAGE_NAME: rserve
   services:
     - docker:stable-dind
   before_script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - *docker_login_call
   script:
-    - docker build --tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest -f Docker/$IMAGE_NAME/Dockerfile.gitlab .
+    - docker build --tag $CI_REGISTRY_IMAGE:dependencies -f Docker/dependencies/Dockerfile .
   after_script:
-    - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
+    - docker push $CI_REGISTRY_IMAGE:dependencies
   rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
     - changes:
-      - "Docker/rserve/*"
-      when: on_success
-    - if: $CI_COMMIT_TAG
-      when: always
+        - "**/pom.xml"
+        - Docker/dependencies/Dockerfile
+        - Docker/dependencies/artifactory-settings.xml
+
+semantic-release:
+  stage: release
+  extends:
+    - .semantic-release-template
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
+    - when: on_success
+  artifacts:
+    when: on_success
+    paths:
+      - .branch_identifier.txt
+
+# Staging
+staging rserve:
+  extends:
+    - .build_staging_image
+  variables:
+    IMAGE_NAME: rserve
+    DOCKERFILE_LOCATION: "Docker/${IMAGE_NAME}/Dockerfile.gitlab"
+    STAGING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:staging-${CI_COMMIT_BRANCH}"
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
+    - changes:
+        - "Docker/rserve/*"
+
+staging portal:
+  extends:
+    - .build_staging_image
+  variables:
+    IMAGE_NAME: coastal-hazards-portal
+    DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
+    STAGING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:staging-${CI_COMMIT_BRANCH}"
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
+    - changes:
+        - "coastal-hazards-portal/**/*"
+
+staging n52:
+  extends:
+    - .build_staging_image
+  variables:
+    IMAGE_NAME: coastal-hazards-n52
+    DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
+    STAGING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:staging-${CI_COMMIT_BRANCH}"
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
+    - changes:
+        - "coastal-hazards-n52/**/*"
+
+staging geoserver:
+  extends:
+    - .build_staging_image
+  variables:
+    IMAGE_NAME: coastal-hazards-geoserver
+    DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
+    STAGING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:staging-${CI_COMMIT_BRANCH}"
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
+    - changes:
+        - "coastal-hazards-geoserver/**/*"
+
+staging liquibase:
+  extends:
+    - .build_staging_image
+  variables:
+    IMAGE_NAME: coastal-hazards-liquibase
+    DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
+    STAGING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:staging-${CI_COMMIT_BRANCH}"
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
+    - changes:
+        - "coastal-hazards-liquibase/**/*"
+
+# Tagged builds
+build rserve:
+  extends:
+    - .build_image
+  variables:
+    IMAGE_NAME: rserve
+    DOCKERFILE_LOCATION: "Docker/${IMAGE_NAME}/Dockerfile.gitlab"
+    TAGGED_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${CI_COMMIT_TAG}"
+  rules:
+    - *rules_always_on_tags
+
+build portal:
+  extends:
+    - .build_image
+  variables:
+    IMAGE_NAME: coastal-hazards-portal
+    DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
+    TAGGED_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${CI_COMMIT_TAG}"
+  rules:
+    - *rules_always_on_tags
+
+build n52:
+  extends:
+    - .build_image
+  variables:
+    IMAGE_NAME: coastal-hazards-n52
+    DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
+    TAGGED_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${CI_COMMIT_TAG}"
+  rules:
+    - *rules_always_on_tags
+
+build geoserver:
+  extends:
+    - .build_image
+  variables:
+    IMAGE_NAME: coastal-hazards-geoserver
+    DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
+    TAGGED_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${CI_COMMIT_TAG}"
+  rules:
+    - *rules_always_on_tags
+
+build liquibase:
+  extends:
+    - .build_image
+  variables:
+    IMAGE_NAME: coastal-hazards-liquibase
+    DOCKERFILE_LOCATION: "${IMAGE_NAME}/Dockerfile.gitlab"
+    TAGGED_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${CI_COMMIT_TAG}"
+  rules:
+    - *rules_always_on_tags
+
+generate-trigger-config:
+  stage: generate-trigger
+  script:
+    - BRANCH_IDENTIFIER=$(cat .branch_identifier.txt)
+    - |
+      cat > generated-config.yml << EOF
+      cchp deploy:
+        stage: deploy
+        variables:
+          VERSION_IDENTIFIER: $CI_COMMIT_TAG
+        trigger:
+          project: cmgp/aws/resources/coastal-hazards
+          branch: $BRANCH_IDENTIFIER
+      EOF
+  artifacts:
+    paths:
+      - generated-config.yml
+  rules:
+    - *rules_always_on_tags
+
+trigger deploy:
+  stage: trigger
+  trigger:
+    include:
+      - artifact: generated-config.yml
+        job: generate-trigger-config
+  rules:
+    - *rules_always_on_tags

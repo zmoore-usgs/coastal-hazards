@@ -1,3 +1,38 @@
+## [1.0.0-development.5](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.4...1.0.0-development.5) (2020-07-24)
+
+
+### :repeat: CI
+
+* test trigger ([bbb0030](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/bbb0030ada721d656d211f9f9701b799fea56055))
+
+## [1.0.0-development.4](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.3...1.0.0-development.4) (2020-07-24)
+
+
+### :repeat: CI
+
+* Attempt triggering remote project ([8d1e9dc](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/8d1e9dc124e426fd1ae0321d5fd0d9091111e978))
+
+## [1.0.0-development.3](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.2...1.0.0-development.3) (2020-07-15)
+
+
+### :repeat: CI
+
+* test build of all images ([f7773d1](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/f7773d19ab98f0307858a839e55d244c90891aea))
+
+## [1.0.0-development.2](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.1...1.0.0-development.2) (2020-07-15)
+
+
+### :repeat: CI
+
+* test rserve build ([7722c4c](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/7722c4c1022fa5b179e501e58fedbb0a6495cf17))
+
+## 1.0.0-development.1 (2020-07-15)
+
+
+### :bug: Bugfix
+
+* Double login ([258557a](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/258557a475335ebfb6355b16f6fbeed463e8e87b))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.

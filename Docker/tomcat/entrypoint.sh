@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 TOMCAT_CERT_PATH="$SSL_CERT_DIR/$TOMCAT_CERT_FILE"
 TOMCAT_KEY_PATH="$SSL_CERT_DIR/$TOMCAT_KEY_FILE"
 TOMCAT_CHAIN_PATH="$SSL_CERT_DIR/$TOMCAT_CHAIN_FILE"
@@ -17,11 +18,11 @@ if [ -n "${TOMCAT_CERT_PATH}" ] && [ -n "${TOMCAT_KEY_PATH}" ] && [ -f "${TOMCAT
   fi
 
   # Build PEM file
-  cat "${TOMCAT_KEY_PATH}" > "$JAVA_SSL_DIR/tomcat.pem"
-  cat "${TOMCAT_CERT_PATH}" >> "$JAVA_SSL_DIR/tomcat.pem"
+  cat "${TOMCAT_KEY_PATH}" >"$JAVA_SSL_DIR/tomcat.pem"
+  cat "${TOMCAT_CERT_PATH}" >>"$JAVA_SSL_DIR/tomcat.pem"
   if [ -n "${TOMCAT_CHAIN_PATH}" ] && [ -f "${TOMCAT_CHAIN_PATH}" ]; then
     echo "Found intermediate cert, including in PEM creation."
-    cat "${TOMCAT_CHAIN_PATH}" >> "$JAVA_SSL_DIR/tomcat.pem"
+    cat "${TOMCAT_CHAIN_PATH}" >>"$JAVA_SSL_DIR/tomcat.pem"
   fi
 
   # Import the PEM
@@ -42,7 +43,7 @@ if [ -n "${CERT_IMPORT_DIRECTORY}" ] && [ -d "${CERT_IMPORT_DIRECTORY}" ]; then
       echo "Alias ${FILENAME} already exists in keystore. Skipping."
     else
       echo "Importing ${FILENAME}"
-      keytool -importcert -noprompt -trustcacerts -file "$FILENAME" -alias "$FILENAME" -keystore "$JAVA_TRUSTSTORE" -storepass "$JAVA_TRUSTSTORE_PASS" -noprompt;
+      keytool -importcert -noprompt -trustcacerts -file "$FILENAME" -alias "$FILENAME" -keystore "$JAVA_TRUSTSTORE" -storepass "$JAVA_TRUSTSTORE_PASS" -noprompt
     fi
 
   done
@@ -52,4 +53,4 @@ else
 fi
 
 # Start Tomcat
-/usr/local/tomcat/bin/catalina.sh run
+/usr/local/tomcat/bin/catalina.sh $@
