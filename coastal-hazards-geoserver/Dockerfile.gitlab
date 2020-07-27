@@ -12,22 +12,11 @@ COPY coastal-hazards-wps/pom.xml coastal-hazards-wps/pom.xml
 COPY coastal-hazards-liquibase/pom.xml coastal-hazards-liquibase/pom.xml
 COPY coastal-hazards-geoserver/pom.xml coastal-hazards-geoserver/pom.xml
 COPY coastal-hazards-portal/pom.xml coastal-hazards-portal/pom.xml
-
-RUN mvn -B -pl coastal-hazards-commons dependency:go-offline
-
 COPY coastal-hazards-commons coastal-hazards-commons
-
-RUN mvn -B -pl coastal-hazards-commons -am package install
-RUN mvn -B -nsu -pl coastal-hazards-wps dependency:go-offline
-
 COPY coastal-hazards-wps coastal-hazards-wps
-
-RUN mvn -B -nsu -pl coastal-hazards-wps -am package install
-RUN mvn -B -nsu -pl coastal-hazards-geoserver dependency:go-offline
-
 COPY coastal-hazards-geoserver coastal-hazards-geoserver
 
-RUN mvn -B -nsu -pl coastal-hazards-geoserver package
+RUN mvn --settings /root/artifactory-settings.xml -B -pl coastal-hazards-geoserver -am package
 
 FROM artifactory.wma.chs.usgs.gov/docker-official-mirror/tomcat:8.5-jre8-alpine
 
