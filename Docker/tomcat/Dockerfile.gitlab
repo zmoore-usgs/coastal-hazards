@@ -27,7 +27,7 @@ RUN curl -k -o /usr/local/tomcat/webapps/probe.war "https://artifactory.wma.chs.
 
 RUN rm -rf /usr/local/tomcat/webapps/ROOT /usr/local/tomcat/webapps/docs /usr/local/tomcat/webapps/examples
 
-COPY tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
-COPY entrypoint.sh /usr/local/tomcat/entrypoint.sh
+COPY Docker/tomcat/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
+COPY Docker/tomcat/entrypoint.sh /usr/local/tomcat/entrypoint.sh
 RUN chmod +x /usr/local/tomcat/entrypoint.sh
 CMD /usr/local/tomcat/entrypoint.sh ${TOMCAT_MODE}
