@@ -15,6 +15,19 @@ secrets:
     file: coastal-hazards-portal/docker/config/keycloak_tomcat_config.json
 
 services:
+  cch_tomcat:
+    build:
+      context: ./Docker/tomcat
+    image: cch_tomcat
+    entrypoint: /bin/true
+  
+  cch_dependencies:
+    build:
+      context: .
+      dockerfile: ./Docker/dependencies/Dockerfile
+    image: cch_dependencies
+    entrypoint: /bin/true
+
   cch_postgres:
     build:
       context: ./coastal-hazards-liquibase
@@ -48,6 +61,8 @@ services:
       - "8082:8082"
     depends_on:
       - cch_rserve
+      - cch_tomcat
+      - cch_dependencies
     volumes:
       - type: bind
         source: ./Docker/tomcat/ssl/trust_certs
@@ -66,6 +81,9 @@ services:
       dockerfile: ./coastal-hazards-portal/Dockerfile
     depends_on:
       - cch_keycloak
+      - cch_postgres
+      - cch_tomcat
+      - cch_dependencies
     network_mode: host
     image: cch_portal
     ports:
@@ -88,6 +106,9 @@ services:
     build:
       context: .
       dockerfile: ./coastal-hazards-geoserver/Dockerfile
+    depends_on:
+      - cch_tomcat
+      - cch_dependencies
     network_mode: host
     image: cch_geoserver
     ports:
