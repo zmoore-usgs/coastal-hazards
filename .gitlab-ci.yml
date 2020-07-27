@@ -94,6 +94,20 @@ build dependencies:
         - Docker/dependencies/Dockerfile
         - Docker/dependencies/artifactory-settings.xml
 
+tomcat base:
+  extends:
+    - .build_staging_image
+  variables:
+    IMAGE_NAME: tomcat
+    DOCKERFILE_LOCATION: "Docker/${IMAGE_NAME}/Dockerfile.gitlab"
+    STAGING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:staging-${CI_COMMIT_BRANCH}"
+  rules:
+    - *rules_not_on_tags
+    - *rules_not_on_semantic_release
+    - *rules_not_on_merge_request
+    # - changes:
+    #     - "Docker/tomcat/*"
+
 semantic-release:
   stage: release
   extends:
