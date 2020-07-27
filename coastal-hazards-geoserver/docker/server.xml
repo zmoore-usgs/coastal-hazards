@@ -18,7 +18,8 @@
      Documentation at /docs/config/server.html
  -->
 <Server port="8006" shutdown="SHUTDOWN">
-    <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
+    <!-- Disabled to prevent logging of secrets from system envs applied by setenv script -->
+    <!--Listener className="org.apache.catalina.startup.VersionLoggerListener" /-->
     <!-- Security listener. Documentation at /docs/config/listeners.html
   <Listener className="org.apache.catalina.security.SecurityListener" />
   -->
@@ -58,7 +59,7 @@
            protocol="org.apache.coyote.http11.Http11NioProtocol"
            port="8444" maxThreads="150"
            scheme="https" secure="true" SSLEnabled="true"
-           keystoreFile="/usr/local/tomcat/ssl/key-store.jks" keystorePass="changeit"
+           keystoreFile="${tomcat_keystoreLocation}" keystorePass="${tomcat_keystorePassword}"
            clientAuth="false" sslProtocol="TLSv1.2"
         />
         

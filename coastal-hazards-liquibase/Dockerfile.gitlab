@@ -8,6 +8,11 @@ ENV PATH $PATH:$JAVA_HOME/bin
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_DB=cchportal
 ENV LIQUIBASE_HOME /opt/liquibase
+ENV POSTGRES_HOST=postgres
+ENV POSTGRES_PORT=5432
+ENV POSTGRES_CCH_PASSWORD=cchportal_password
+ENV POSTGRES_PASSWORD=postgres_root_password
+ENV POSTGRES_LOAD_BOOTSTRAP=true
 
 # Add Alpine 3.6 repository to get access to plpython
 RUN echo "@v3.6 http://dl-cdn.alpinelinux.org/alpine/v3.6/main/" >> /etc/apk/repositories

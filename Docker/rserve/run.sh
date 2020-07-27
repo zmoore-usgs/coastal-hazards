@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Generate rserve.pwd file
+echo "$RSERVE_USERNAME $RSERVE_PASSWORD" > /rserve.pwd
+
 # Add any trust certs to R CA Stores
 if [ -n "${CERT_IMPORT_DIRECTORY}" ] && [ -d "${CERT_IMPORT_DIRECTORY}" ]; then
   # Add cert files to trust store

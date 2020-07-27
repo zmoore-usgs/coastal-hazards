@@ -27,13 +27,23 @@ RUN R -e "library(devtools);install_github('USGS-R/hazardItems');"
 
 COPY profile.conf profile.conf
 COPY rserve.conf rserve.conf
-COPY rserve.pwd rserve.pwd
+
 COPY run.sh run.sh
 RUN chmod +x ./run.sh
 
-ENV PORTAL_INTERNAL_HOST=localhost
-ENV PORTAL_INTERNAL_HTTPS_PORT=8443
 ENV CERT_IMPORT_DIRECTORY=/trust_certs
+ENV RSERVE_HOST=rserve
+ENV RSERVE_PORT=6311
+ENV PORTAL_HTTP_PORT=8080
+ENV PORTAL_INTERNAL_HTTPS_PORT=8443
+ENV PORTAL_INTERNAL_HTTP_PORT=8080
+ENV PORTAL_INTERNAL_HOST=localhost
+ENV N52_PORT=8445
+ENV GEOSERVER_PORT=8444
+ENV RSERVE_USERNAME=cchportal_rserve
+ENV RSERVE_PASSWORD=cchportal_password
+ENV GEOSERVER_USERNAME=admin
+ENV GEOSERVER_PASSWORD=geoserver
 
 CMD ./run.sh
 

@@ -19,13 +19,21 @@ COPY coastal-hazards-liquibase/pom.xml coastal-hazards-liquibase/pom.xml
 COPY coastal-hazards-geoserver/pom.xml coastal-hazards-geoserver/pom.xml
 COPY coastal-hazards-portal/pom.xml coastal-hazards-portal/pom.xml
 
-RUN mvn -B -pl coastal-hazards-geoserver -am dependency:go-offline
+RUN mvn -B -pl coastal-hazards-commons dependency:go-offline
 
 COPY coastal-hazards-commons coastal-hazards-commons
+
+RUN mvn -B -pl coastal-hazards-commons -am package install
+RUN mvn -B -nsu -pl coastal-hazards-wps dependency:go-offline
+
 COPY coastal-hazards-wps coastal-hazards-wps
+
+RUN mvn -B -nsu -pl coastal-hazards-wps -am package install
+RUN mvn -B -nsu -pl coastal-hazards-geoserver dependency:go-offline
+
 COPY coastal-hazards-geoserver coastal-hazards-geoserver
 
-RUN mvn -B -pl coastal-hazards-geoserver -am package
+RUN mvn -B -nsu -pl coastal-hazards-geoserver package
 
 FROM tomcat:8.5-jre8-alpine
 
@@ -49,7 +57,9 @@ RUN curl -o /usr/local/tomcat/webapps/probe.war "https://repo1.maven.org/maven2/
 
 RUN rm -rf /usr/local/tomcat/webapps/ROOT /usr/local/tomcat/webapps/docs /usr/local/tomcat/webapps/examples
 RUN rm -f /usr/local/tomcat/conf/tomcat-users.xml /usr/local/tomcat/conf/server.xml /usr/local/tomcat/conf/context.xml
+RUN mkdir -p /data/coastal-hazards/uploaded-data
 
+# Server ENVs
 ENV JAVA_SSL_DIR="/usr/local/tomcat/ssl"
 ENV SSL_CERT_DIR="/usr/local/tomcat/ssl/server_cert"
 ENV CERT_IMPORT_DIRECTORY="/usr/local/tomcat/ssl/trust_certs"
@@ -61,11 +71,15 @@ ENV JAVA_KEYSTORE_PASS="changeit"
 ENV JAVA_TRUSTSTORE="/usr/local/tomcat/ssl/trust-store.jks"
 ENV JAVA_TRUSTSTORE_PASS="changeit"
 
-RUN mkdir -p /data/coastal-hazards/uploaded-data
+# Context Config ENVs
+ENV CCH_WPS_FETCH_UNZIP_BASE_DIR="/data/coastal-hazards/uploaded-data"
+ENV CCH_WPS_FETCH_UNZIP_TOKEN="I_pf^-qRE~^8Sf#"
 
 COPY --from=geoserver_build /source/coastal-hazards-geoserver/target/geoserver.war /usr/local/tomcat/webapps/geoserver.war
 COPY Docker/tomcat/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 COPY Docker/tomcat/entrypoint.sh /usr/local/tomcat/entrypoint.sh
+COPY coastal-hazards-geoserver/docker/context.xml /usr/local/tomcat/conf/context.xml
+COPY coastal-hazards-geoserver/docker/server.xml /usr/local/tomcat/conf/server.xml
 COPY coastal-hazards-geoserver/docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 
 RUN chmod +x /usr/local/tomcat/entrypoint.sh

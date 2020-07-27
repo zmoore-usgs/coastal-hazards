@@ -57,6 +57,8 @@ RUN curl -o /usr/local/tomcat/lib/postgresql.jar https://jdbc.postgresql.org/dow
 COPY --from=portal_build /source/coastal-hazards-portal/target/coastal-hazards-portal.war /usr/local/tomcat/webapps/coastal-hazards-portal.war
 COPY Docker/tomcat/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 COPY Docker/tomcat/entrypoint.sh /usr/local/tomcat/entrypoint.sh
+COPY coastal-hazards-portal/docker/context.xml /usr/local/tomcat/conf/context.xml
+COPY coastal-hazards-portal/docker/server.xml /usr/local/tomcat/conf/server.xml
 COPY coastal-hazards-portal/docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
 
 RUN chmod +x /usr/local/tomcat/entrypoint.sh

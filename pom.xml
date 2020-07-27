@@ -143,8 +143,8 @@
 
 	<repositories>
 		<repository>
-			<id>central</id>
-			<name>Maven Central</name>
+			<id>central-mirror</id>
+			<name>Maven Central WMA Mirror</name>
 			<url>https://artifactory.wma.chs.usgs.gov/artifactory/maven-central</url>
 		</repository>
 		<repository>
@@ -178,8 +178,8 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>central</id>
-			<name>Maven Central</name>
+			<id>central-mirror</id>
+			<name>Maven Central WMA Mirror</name>
 			<url>https://artifactory.wma.chs.usgs.gov/artifactory/maven-central</url>
 		</pluginRepository>
 		<pluginRepository>
