@@ -19,4 +19,4 @@ COPY coastal-hazards-liquibase/pom.xml coastal-hazards-liquibase/pom.xml
 COPY coastal-hazards-geoserver/pom.xml coastal-hazards-geoserver/pom.xml
 COPY coastal-hazards-portal/pom.xml coastal-hazards-portal/pom.xml
 
-RUN mvn --settings /root/artifactory-settings.xml -nsu dependency:resolve-plugins dependency:go-offline de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
+RUN mvn --settings /root/artifactory-settings.xml -nsu de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
