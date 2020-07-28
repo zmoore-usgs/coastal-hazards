@@ -88,7 +88,6 @@ public class LayerResource {
 	}
 	
 	@POST
-	@Path("/")
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
 	@Produces(MediaType.TEXT_PLAIN)
 	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
@@ -140,7 +139,6 @@ public class LayerResource {
 	}
 	
 	@POST
-	@Path("/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.TEXT_PLAIN)
 	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)

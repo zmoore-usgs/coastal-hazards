@@ -1,4 +1,4 @@
-<Context autoDeploy="true" reloadable="true">
+<Context>
 	<WatchedResource>WEB-INF/web.xml</WatchedResource>
 	<Manager pathname=""/>
 
@@ -10,14 +10,14 @@
 		url="${cch_dbJdbcUrl}"
 		username="${cch_dbUsername}"
 		password="${cch_dbPassword}"
-		maxActive="${cch_dbMaxActive}"
+		maxTotal="${cch_dbMaxActive}"
 		maxIdle="${cch_dbMaxIdle}"
-		maxWait="${cch_dbMaxWait}"
+		maxWaitMillis="${cch_dbMaxWait}"
 		validationQuery="select version()"
-		removeAbandoned="true"
 		removeAbandonedTimeout="60"
+		removeAbandonedOnBorrow="true"
 		logAbandoned="true"
-		description="{usedBy: ['coastalhazards']}"/>
+	/>
 
 	<!-- Keycloak -->
 	<Environment name="coastal-hazards.portal.auth.config.file" type="java.lang.String" value="${cch_keycloakConfigFile}"/>
