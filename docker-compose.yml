@@ -17,7 +17,8 @@ secrets:
 services:
   cch_tomcat:
     build:
-      context: ./Docker/tomcat
+      context: .
+      dockerfile: ./Docker/tomcat/Dockerfile.gitlab
     image: cch_tomcat
     entrypoint: /bin/true
   
