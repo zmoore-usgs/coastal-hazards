@@ -27,7 +27,6 @@ RUN R -e "library(devtools);install_github('USGS-R/hazardItems');"
 
 COPY profile.conf profile.conf
 COPY rserve.conf rserve.conf
-
 COPY run.sh run.sh
 RUN chmod +x ./run.sh
 
