@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    <Manager pathname="" />
+    <Environment name="gov.usgs.cida.n52.wps.config.location" type="java.lang.String" value="${cch_wpsConfigLocation}" override="false" />
+    <Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.unzip.base" type="java.lang.String" value="${cch_wpsFetchUnzipBaseDir}" override="false"/>
+	<Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token" type="java.lang.String" value="${cch_wpsFetchUnzipToken}" override="false"/>
+</Context>

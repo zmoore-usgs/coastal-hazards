@@ -123,19 +123,24 @@ If you're going to be doing active development on the project locally it is **_h
 ### TL;DR 2 - Make changes to the portal itself and see them locally
 
 1. Add a line to your operating system `hosts` (Ubuntu `/etc/hosts`) file with: `127.0.0.1 keycloak`
-2. **Terminal 1:** From project root directory `docker-compose up cch_keycloak cch_postgres cch_rserve cch_n52_wps cch_geoserver`
+2. **Terminal 1:** From project root directory `docker-compose build cch_tomcat cch_dependencies`
+    - This will build the two base images that the rest of the portal Tomcat images (cch_portal, cch_geoserver, and cch_n52_wps) depend on. If these images have not been built locally you will see an error about not being able to pull `cch_tomcat` or `<project>_build` when building one of the portal Tomcat images.
+    - If you make changes to the pom.xml file of one of the CCH projects you should rebuild the cch_dependencies image via `docker-compose build cch_dependencies` so that the updated dependencies are cached and future builds are faster.
+    - To ensure that you always have an up-to-date cch_dependencies image you can preface any builds of cch_portal with cch_dependencies like this: `docker-compose build cch_dependencies cch_portal`
+3. **Terminal 1:** From project root directory `docker-compose up cch_keycloak cch_postgres cch_rserve cch_n52_wps cch_geoserver`
     - Add `-d` to `docker-compose up` before the service names if you want to launch them in daemonized/detached mode which will allow you to re-use the same terminal for the steps below.
     - Add `--build` to `docker-compose up` if you want to rebuild any of these images that you might already have locally
     - Once these containers are up you shouldn't have to touch them or this terminal
-3. **Terminal 2:** From project root directory `docker-compose up --build cch_portal`
+4. **Terminal 2:** From project root directory `docker-compose up --build cch_portal`
     - Add `-d` to `docker-compose up --build` before the service name if you want to launch build/launch the portal in daemonized/detached mode which will allow you to re-use the same terminal for the steps below.
-4. Visit `http://localhost:8080/coastal-hazards-portal/`
-5. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
+    - If you make changes to the pom.xml file of one of the CCH projects you should rebuild the cch_dependencies image via `docker-compose build cch_dependencies` so that the updated dependencies are cached and future builds are faster.
+5. Visit `http://localhost:8080/coastal-hazards-portal/`
+6. Visit `http://localhost:8080/coastal-hazards-portal/publish/item/`
     - Login - **Username**: `cch_admin` | **Password**: `password`
-6. Make changes to portal code...
-7. **Terminal 3:** From project root directory `docker-compose stop cch_portal`
+7. Make changes to portal code...
+8. **Terminal 3:** From project root directory `docker-compose stop cch_portal`
     - After running this **Terminal 2** should become interactive again
-8. Repeat steps 4-7...
+9. Repeat steps 4-7...
 
 ### High-Level Explanation
 
@@ -229,29 +234,14 @@ The docker images built from both the `Dockerfile` and `Dockerfile.remote` use t
 
 To build the images from local sources:
 
-1. Execute `docker-compose build`
+1. Execute `docker-compose build` to build all images
     - This should begin the process of building. This process will take some
       time, possibly in upwards of 15-20 minutes depending on network speed.
 
 2. To launch the built images into containers, execute: `docker-compose up`
     - Note: To limit output, only include the containers you want to see. For
       example, `docker-compose up cch_portal` will only show the output for
-      `cch_portal`.
-
-#### Building From Remote Sources
-
-The Dockerfiles for each project are set to build from local sources by default, so building this way uses a slightly longer command:
-
-To build the images from remote sources:
-
-1. Execute `docker-compose -f docker-compose.yml -f docker-compose-remote.yml build`
-    - This should begin the process of building. This process will take some
-      time, but should be much faster than local sources.
-
-2. To launch the built images into containers, execute: `docker-compose up`
-    - Note: To limit output, only include the containers you want to see. For
-      example, `docker-compose up cch_portal` will only show the output for
-      `cch_portal`.
+      `cch_portal`
 
 ### **Stopping the docker containers**
 
@@ -318,6 +308,8 @@ Note that running `docker-compose up` will also inherently trigger `docker-compo
 At this point all of the services required to run the portal should be up and running, so we can build and bring up the portal itself. To build the portal from our local sources open a new terminal and execute the following:
 
 `docker-compose build cch_portal`
+
+Note that if you changed the pom.xml you should also rebuild the cch_dependencies image to speed up future builds. You can do this by modifying the above command to be: `docker-compose build cch_dependencies cch_portal`
 
 This will build the portal via Maven within a build container and then copy the built artifacts from the build container into the final portal image.
 

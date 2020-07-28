@@ -1,0 +1,66 @@
+<Context autoDeploy="true" reloadable="true">
+	<WatchedResource>WEB-INF/web.xml</WatchedResource>
+	<Manager pathname=""/>
+
+	<Resource
+		name="jdbc/coastalhazards"
+		auth="Container"
+		type="javax.sql.DataSource"
+		driverClassName="${cch_dbDriverClass}"
+		url="${cch_dbJdbcUrl}"
+		username="${cch_dbUsername}"
+		password="${cch_dbPassword}"
+		maxActive="${cch_dbMaxActive}"
+		maxIdle="${cch_dbMaxIdle}"
+		maxWait="${cch_dbMaxWait}"
+		validationQuery="select version()"
+		removeAbandoned="true"
+		removeAbandonedTimeout="60"
+		logAbandoned="true"
+		description="{usedBy: ['coastalhazards']}"/>
+
+	<!-- Keycloak -->
+	<Environment name="coastal-hazards.portal.auth.config.file" type="java.lang.String" value="${cch_keycloakConfigFile}"/>
+	<Environment name="coastal-hazards.portal.auth.admin.role" type="java.lang.String" value="${cch_adminRoleName}"/>
+
+	<!-- General -->
+	<Environment name="coastal-hazards.public.url" type="java.lang.String" value="${cch_publicUrl}"/>
+	<Environment name="coastal-hazards.base.url" type="java.lang.String" value="${cch_baseUrl}"/>
+	<Environment name="coastal-hazards.base.secure.url" type="java.lang.String" value="${cch_baseUrlSecure}" override="false"/>
+	<Environment name="coastal-hazards.go.usa.gov.login" type="java.lang.String" value="${cch_goUsaLogin}"/>
+	<Environment name="coastal-hazards.go.usa.gov.apikey" type="java.lang.String" value="${cch_goUsaApiKey}"/>
+	<Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="${cch_goUsaEndpoint}"/>
+	<Environment name="coastal-hazards.stpetearcserver.endpoint" type="java.lang.String" value="${cch_stPeteArcServer}"/>
+	<Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="${cch_marineEndpoint}"/>
+	<Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="${cch_n52ServiceEndpoint}"/>
+	<Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="${cch_fileUploadMaxSize}"/>
+	<Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.unzip.base" type="java.lang.String" value="${cch_wpsFetchUnzipBaseDir}" override="false"/>
+	<Environment name="gov.usgs.cida.coastalhazards.wps.fetch.and.unzip.process.token" type="java.lang.String" value="${cch_wpsFetchUnzipToken}" override="false"/>
+	<Environment name="coastal-hazards.portal.geoserver.endpoint" type="java.lang.String" value="${cch_geoserverEndpoint}"/>
+	<Environment name="coastal-hazards.portal.geoserver.external.endpoint" type="java.lang.String" value="${cch_geoserverPublicEndpoint}"/>
+	<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="${cch_geoserverUsername}"/>
+	<Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="${cch_geoserverPassword}"/>
+	<Environment name="coastal-hazards.geoserver.layer.age.maximum" type="java.lang.Integer" value="${cch_geoserverLayerAgeMax}"/>
+	<Environment name="coastal-hazards.geoserver.workspaces.permanent" type="java.lang.String" value="${cch_geoserverWorkspacesPermanent}"/>
+	<Environment name="coastal-hazards.workspace.published" type="java.lang.String" value="${cch_geoserverWorkspacesPublished}"/>
+	<Environment name="coastal-hazards.portal.geoserver.cache.name" type="java.lang.String" value="${cch_geoserverPortalCacheName}"/>
+	<Environment name="production" type="java.lang.String" value="${cch_production}"/>
+	<Environment name="development" type="java.lang.String" value="${cch_development}"/>
+
+	<!-- NHC Track Item Defauls -->
+	<Environment name="coastal-hazards.nhc.track.bbox.north" type="java.lang.String" value="${cch_nhcBboxNorth}"/>
+	<Environment name="coastal-hazards.nhc.track.bbox.east" type="java.lang.String" value="${cch_nhcBboxEast}"/>
+	<Environment name="coastal-hazards.nhc.track.bbox.south" type="java.lang.String" value="${cch_nhcBboxSouth}"/>
+	<Environment name="coastal-hazards.nhc.track.bbox.west" type="java.lang.String" value="${cch_nhcBboxWest}"/>
+	<Environment name="coastal-hazards.nhc.track.wms" type="java.lang.String" value="${cch_nhcWmsUrl}"/>
+	<Environment name="coastal-hazards.nhc.track.attrs" type="java.lang.String" value="${cch_nhcAttrs}"/>
+	<Environment name="coastal-hazards.nhc.track.attr.params" type="java.lang.String" value="${cch_nhcAttrParams}"/>
+	<Environment name="coastal-hazards.nhc.track.tiny.text" type="java.lang.String" value="${cch_nhcTinyText}"/>
+	<Environment name="coastal-hazards.nhc.track.med.title" type="java.lang.String" value="${cch_nhcMedTitle}"/>
+	<Environment name="coastal-hazards.nhc.track.med.text" type="java.lang.String" value="${cch_nhcMedText}"/>
+	<Environment name="coastal-hazards.nhc.track.full.title" type="java.lang.String" value="${cch_nhcFullTitle}"/>
+	<Environment name="coastal-hazards.nhc.track.full.text" type="java.lang.String" value="${cch_nhcFullText}"/>
+	<Environment name="coastal-hazards.nhc.track.keywords" type="java.lang.String" value="${cch_nhcKeywords}"/>
+	<Environment name="coastal-hazards.nhc.track.res.titles" type="java.lang.String" value="${cch_nhcResTitles}"/>
+	<Environment name="coastal-hazards.nhc.track.res.links" type="java.lang.String" value="${cch_nhcResLinks}"/>
+</Context>
