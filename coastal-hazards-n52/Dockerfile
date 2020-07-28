@@ -22,7 +22,7 @@ RUN mkdir -p /data/coastal-hazards/uploaded-data
 # Context Config ENVs
 ENV CCH_WPS_CONFIG_LOCATION="/wps_config.xml"
 ENV CCH_WPS_FETCH_UNZIP_BASE_DIR="/data/coastal-hazards/uploaded-data"
-ENV CCH_WPS_FETCH_UNZIP_TOKEN="I_pf^-qRE~^8Sf#"
+ENV CCH_WPS_FETCH_UNZIP_TOKEN="changeme"
 
 COPY --from=n52_build /source/coastal-hazards-n52/target/wps.war /usr/local/tomcat/webapps/wps.war
 COPY coastal-hazards-n52/docker/context.xml /usr/local/tomcat/conf/context.xml

@@ -20,17 +20,21 @@ RUN mvn --settings /root/artifactory-settings.xml -B -nsu -pl coastal-hazards-ge
 FROM cch_tomcat:latest
 
 RUN mkdir -p /data/coastal-hazards/uploaded-data
+RUN mkdir -p /data/geoserver
 
 # Context Config ENVs
+ENV CCH_GEOSERVER_DATA_DIR="/data/geoserver"
 ENV CCH_WPS_FETCH_UNZIP_BASE_DIR="/data/coastal-hazards/uploaded-data"
-ENV CCH_WPS_FETCH_UNZIP_TOKEN="I_pf^-qRE~^8Sf#"
+ENV CCH_WPS_FETCH_UNZIP_TOKEN="changeme"
 
 COPY --from=geoserver_build /source/coastal-hazards-geoserver/target/geoserver.war /usr/local/tomcat/webapps/geoserver.war
 COPY coastal-hazards-geoserver/docker/context.xml /usr/local/tomcat/conf/context.xml
 COPY coastal-hazards-geoserver/docker/server.xml /usr/local/tomcat/conf/server.xml
 COPY coastal-hazards-geoserver/docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
+COPY coastal-hazards-geoserver/docker/startup.sh /usr/local/tomcat/startup.sh
 
 RUN chmod +x /usr/local/tomcat/bin/setenv.sh
+RUN chmod +x /usr/local/tomcat/startup.sh
 
 HEALTHCHECK --interval=2s --timeout=3s \
  CMD curl -s 'https://localhost:8444/geoserver/web/wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage' -k | \

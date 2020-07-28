@@ -52,5 +52,10 @@ else
   echo "WARNING: Cert import directory not found at '$CERT_IMPORT_DIRECTORY'. No additional certs will be imported into '$JAVA_TRUSTSTORE'."
 fi
 
+# Execute app-specific setup script if one exists
+if [ -f "$APP_STARTUP_SCRIPT" ]; then
+  $APP_STARTUP_SCRIPT
+fi
+
 # Start Tomcat
 /usr/local/tomcat/bin/catalina.sh $@

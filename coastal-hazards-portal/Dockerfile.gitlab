@@ -23,8 +23,8 @@ FROM code.chs.usgs.gov:5001/cmgp/coastal-hazards/tomcat:staging-development
 ARG POSTGRES_JDBC_VERSION=42.2.4
 ARG KEYCLOAK_ADAPTER_VERSION=8.0.2
 
-RUN wget -q -O /usr/local/tomcat/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar && \
-	wget -q -O /usr/local/tomcat/keycloak.tar.gz https://downloads.jboss.org/keycloak/$KEYCLOAK_ADAPTER_VERSION/adapters/keycloak-oidc/keycloak-tomcat-adapter-dist-$KEYCLOAK_ADAPTER_VERSION.tar.gz && \
+RUN curl -k -o /usr/local/tomcat/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-$POSTGRES_JDBC_VERSION.jar && \
+	curl -k -o /usr/local/tomcat/keycloak.tar.gz https://downloads.jboss.org/keycloak/$KEYCLOAK_ADAPTER_VERSION/adapters/keycloak-oidc/keycloak-tomcat-adapter-dist-$KEYCLOAK_ADAPTER_VERSION.tar.gz && \
 	tar xvzf /usr/local/tomcat/keycloak.tar.gz -C /usr/local/tomcat/lib/ && \
 	rm /usr/local/tomcat/keycloak.tar.gz;
 
@@ -40,7 +40,7 @@ ENV CCH_MARINE_ENDPOINT="https://coastalmap.marine.usgs.gov/cmgp"
 ENV CCH_N52_SERVICE_ENDPOINT="https://localhost:8445/wps"
 ENV CCH_FILE_UPLOAD_MAX_SIZE="15728640"
 ENV CCH_WPS_FETCH_UNZIP_BASE_DIR="/data/coastal-hazards/uploaded-data"
-ENV CCH_WPS_FETCH_UNZIP_TOKEN="I_pf^-qRE~^8Sf#"
+ENV CCH_WPS_FETCH_UNZIP_TOKEN="changeme"
 ENV CCH_GEOSERVER_INTERNAL_ENDPOINT="https://localhost:8444/geoserver"
 ENV CCH_GEOSERVER_PUBLIC_ENDPOINT="https://localhost:8444/geoserver"
 ENV CCH_GEOSERVER_USERNAME="admin"
