@@ -1,3 +1,10 @@
+## [1.0.0-development.7](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.6...1.0.0-development.7) (2020-07-29)
+
+
+### :repeat: CI
+
+* bump version ([394a5b3](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/394a5b3df9f4fc83871a23f258d2ec79829646fb))
+
 ## [1.0.0-development.6](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.5...1.0.0-development.6) (2020-07-29)
 
 
