@@ -75,6 +75,8 @@ ENV CCH_NHC_FULL_TITLE="NWS NHC Forecasted Tropical Cyclone"
 ENV CCH_NHC_KEYWORDS="Hurricane|Track|NOAA|nowCOAST"
 ENV CCH_NHC_RES_TITLES="NOAA nowCOAST"
 ENV CCH_NHC_RES_LINKS="https://nowcoast.noaa.gov/"
+ENV CATALINA_OPTS_XMX="1024m"
+ENV CATALINA_OPTS_XMS="1024m"
 
 COPY --from=portal_build /source/coastal-hazards-portal/target/coastal-hazards-portal.war /usr/local/tomcat/webapps/coastal-hazards-portal.war
 COPY coastal-hazards-portal/docker/context.xml /usr/local/tomcat/conf/context.xml
