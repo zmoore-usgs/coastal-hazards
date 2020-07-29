@@ -34,7 +34,6 @@ import javax.ws.rs.core.Response;
 public class ThumbnailResource {
 
 	@GET
-	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getList(@QueryParam("dirty") @DefaultValue("false") boolean dirty) {
 		Response response = null;
