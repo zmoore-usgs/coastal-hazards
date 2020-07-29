@@ -17,7 +17,7 @@ COPY coastal-hazards-geoserver/src coastal-hazards-geoserver/src
 
 RUN mvn --settings /root/artifactory-settings.xml -B -nsu -pl coastal-hazards-geoserver -am package install
 
-FROM code.chs.usgs.gov:5001/cmgp/coastal-hazards/tomcat:staging-development
+FROM code.chs.usgs.gov:5001/cmgp/tomcat/tomcat:1.0.0
 
 RUN mkdir -p /data/coastal-hazards/uploaded-data
 RUN mkdir -p /data/geoserver
