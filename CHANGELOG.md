@@ -1,3 +1,10 @@
+## [1.0.0-development.6](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.5...1.0.0-development.6) (2020-07-29)
+
+
+### :sparkles: Feature
+
+* Removing tomcat building and config from this repo ([060647c](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/060647cd329c7630cfa6d005cc045481196d2c83))
+
 ## [1.0.0-development.5](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.4...1.0.0-development.5) (2020-07-24)
 
 
