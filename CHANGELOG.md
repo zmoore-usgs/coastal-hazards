@@ -1,3 +1,10 @@
+## [1.0.0-development.11](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.10...1.0.0-development.11) (2020-07-30)
+
+
+### :sparkles: Feature
+
+* Remove unused JVM options ([1edf316](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/1edf31678a4ee343e263cda50c6b4fdef280863b))
+
 ## [1.0.0-development.10](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.9...1.0.0-development.10) (2020-07-30)
 
 
