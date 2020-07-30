@@ -1,3 +1,10 @@
+## [1.0.0-development.8](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.7...1.0.0-development.8) (2020-07-30)
+
+
+### :bug: Bugfix
+
+* Cleanup catalina opts ([e6163ae](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/e6163ae188e30409da05cf40d540d4377e526152))
+
 ## [1.0.0-development.7](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.6...1.0.0-development.7) (2020-07-29)
 
 
