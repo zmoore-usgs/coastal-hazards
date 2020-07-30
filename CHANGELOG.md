@@ -1,3 +1,10 @@
+## [1.0.0-development.9](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.8...1.0.0-development.9) (2020-07-30)
+
+
+### :sparkles: Feature
+
+* Add some java opts ([4b278c6](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/4b278c6d937e9128dcb9eaa2188f7d68b8f7b65f))
+
 ## [1.0.0-development.8](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.7...1.0.0-development.8) (2020-07-30)
 
 
