@@ -1,3 +1,10 @@
+## [1.0.0-development.12](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.11...1.0.0-development.12) (2020-07-30)
+
+
+### :sparkles: Feature
+
+* Fix setenv for all the things ([4810795](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/481079505ec38114f0cf36b9217060cdcf41912a))
+
 ## [1.0.0-development.11](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.10...1.0.0-development.11) (2020-07-30)
 
 
