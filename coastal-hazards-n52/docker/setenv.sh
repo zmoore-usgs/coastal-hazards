@@ -11,8 +11,6 @@ export CATALINA_OPTS="$CATALINA_OPTS -server"
 export CATALINA_OPTS="$CATALINA_OPTS -Djava.awt.headless=true"
 export CATALINA_OPTS="$CATALINA_OPTS -Djavax.net.ssl.trustStore=$JAVA_TRUSTSTORE -Djavax.net.ssl.trustStorePassword=$JAVA_TRUSTSTORE_PASS"
 export CATALINA_OPTS="$CATALINA_OPTS -Dtomcat_keystoreLocation=$JAVA_KEYSTORE -Dtomcat_keystorePassword=$JAVA_KEYSTORE_PASS"
-export JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=/heapdumps"
-export JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
 
 # Context Config Values
 export JAVA_OPTS="$JAVA_OPTS -Dcch_wpsConfigLocation='$CCH_WPS_CONFIG_LOCATION'"

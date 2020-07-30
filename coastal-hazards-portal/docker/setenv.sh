@@ -9,11 +9,8 @@ export CATALINA_OPTS="$CATALINA_OPTS -XX:+UseParallelGC"
 export CATALINA_OPTS="$CATALINA_OPTS -XX:MaxPermSize=${CATALINA_OPTS_MAXPERMSIZE}"
 export CATALINA_OPTS="$CATALINA_OPTS -server"
 export CATALINA_OPTS="$CATALINA_OPTS -Djava.awt.headless=true"
-export CATALINA_OPTS="$CATALINA_OPTS -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8900,suspend=n"
 export CATALINA_OPTS="$CATALINA_OPTS -Djavax.net.ssl.trustStore=$JAVA_TRUSTSTORE -Djavax.net.ssl.trustStorePassword=$JAVA_TRUSTSTORE_PASS"
 export CATALINA_OPTS="$CATALINA_OPTS -Dtomcat_keystoreLocation=$JAVA_KEYSTORE -Dtomcat_keystorePassword=$JAVA_KEYSTORE_PASS"
-export JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=/heapdumps"
-export JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
 
 # Context Config Values
 export JAVA_OPTS="$JAVA_OPTS -Dcch_publicUrl='$CCH_PUBLIC_URL'"
