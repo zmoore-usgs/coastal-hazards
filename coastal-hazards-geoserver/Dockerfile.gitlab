@@ -28,6 +28,7 @@ ENV CCH_WPS_FETCH_UNZIP_BASE_DIR="/data/coastal-hazards/uploaded-data"
 ENV CCH_WPS_FETCH_UNZIP_TOKEN="changeme"
 ENV CATALINA_OPTS_XMX="1024m"
 ENV CATALINA_OPTS_XMS="1024m"
+ENV CATALINA_OPTS_MAXPERMSIZE="256m"
 
 COPY --from=geoserver_build /source/coastal-hazards-geoserver/target/geoserver.war /usr/local/tomcat/webapps/geoserver.war
 COPY coastal-hazards-geoserver/docker/context.xml /usr/local/tomcat/conf/context.xml
