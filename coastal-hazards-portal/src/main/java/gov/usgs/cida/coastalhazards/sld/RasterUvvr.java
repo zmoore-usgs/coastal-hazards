@@ -12,8 +12,8 @@ public final class RasterUvvr {
 	protected static final String jspPath = "/SLD/raster_uvvr.jsp";
 	protected static final String units = "Vulnerability Index"; //unvegetated to vegetated ratio
 	protected static final List<Map<String, Object>> bins;
-	protected static final float[] thresholds = {0f, 0.025f, 0.050f, 0.075f, 0.100f, 0.200f, 0.300f, 0.400f, 0.500f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.0f, 999999999f}; //used to evaluate what color the pixel should receive. (gray_index) 
-	protected static final String[] colors = {"#2B41FF", "#2B41FF", "#386DFF", "#3B9DFF", "#30CFFF", "#00FFFF", "#70FFD2", "#A1FFA4", "#C7FF78", "#E7FF4A", "#FFFF00", "#FFD500", "#FFA600", "#FF7B00", "#FF4D00", "#FF0000"};
+	protected static final float[] thresholds = {0f, 1f, 25f, 50f, 100f, 250f, 500f, 1000f, 1500f, 2000f, 2001f}; //used to evaluate what color the pixel should receive. (gray_index) 
+	protected static final String[] colors = {"#276419", "#276419", "#4D9221", "#7FBC41", "#B8E186", "#E6F5D0", "#FDE0EF", "#F1B6DA", "#DE77AE", "#C51B7D", "#8E0152"};
 	//protected static final float[] range = {-1f, 0f, 0.025f, 0.050f, 0.075f, 0.100f, 0.200f, 0.300f, 0.400f, 0.500f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.0f, 999999999f};  //this will be used to create the legend in the map with the ranges etc 
 	protected static final String[] categories;
 

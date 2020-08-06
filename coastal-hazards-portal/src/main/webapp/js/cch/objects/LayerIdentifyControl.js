@@ -365,7 +365,11 @@ return {
 								$valueContainer.append(displayPoints[i].toFixed(0));
 							} else {
 								if (Number.isInteger(displayPoints[i])) {
-									$valueContainer.append(displayPoints[i].toFixed(0));
+									if (item.attr === 'UVVR_RASTER'){
+										$valueContainer.append(displayPoints[i].toFixed(0)/1000);
+									} else {
+										$valueContainer.append(displayPoints[i].toFixed(0));
+									}
 								} else if (attr === 'UVVR'|| item.attr === 'UVVR_RASTER') {
 									//case specific rounding for UVVR
 									$valueContainer.append(displayPoints[i].toFixed(3));
