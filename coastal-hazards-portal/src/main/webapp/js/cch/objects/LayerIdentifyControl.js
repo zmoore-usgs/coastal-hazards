@@ -370,7 +370,7 @@ return {
 									} else {
 										$valueContainer.append(displayPoints[i].toFixed(0));
 									}
-								} else if (attr === 'UVVR'|| item.attr === 'UVVR_RASTER') {
+								} else if (attr === 'UVVR') {
 									//case specific rounding for UVVR
 									$valueContainer.append(displayPoints[i].toFixed(3));
 								} else {
