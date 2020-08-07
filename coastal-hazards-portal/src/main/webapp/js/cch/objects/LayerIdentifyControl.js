@@ -494,7 +494,7 @@ return {
 				});
 			},
 			isMissing = function(val) {
-				return isNaN(val) || val === -999;
+				return isNaN(val) || val === -999 || (val ===  65535 && val % 1 === 0);
 			};
 
 		if (item.type.toLowerCase() === 'vulnerability' ||
