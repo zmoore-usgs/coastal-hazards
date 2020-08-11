@@ -365,8 +365,12 @@ return {
 								$valueContainer.append(displayPoints[i].toFixed(0));
 							} else {
 								if (Number.isInteger(displayPoints[i])) {
-									$valueContainer.append(displayPoints[i].toFixed(0));
-								} else if (attr === 'UVVR'|| item.attr === 'UVVR_RASTER') {
+									if (item.attr === 'UVVR_RASTER'){
+										$valueContainer.append(displayPoints[i].toFixed(0)/1000);
+									} else {
+										$valueContainer.append(displayPoints[i].toFixed(0));
+									}
+								} else if (attr === 'UVVR') {
 									//case specific rounding for UVVR
 									$valueContainer.append(displayPoints[i].toFixed(3));
 								} else {
@@ -490,7 +494,7 @@ return {
 				});
 			},
 			isMissing = function(val) {
-				return isNaN(val) || val === -999;
+				return isNaN(val) || val === -999 || (val ===  65535 && val % 1 === 0);
 			};
 
 		if (item.type.toLowerCase() === 'vulnerability' ||
