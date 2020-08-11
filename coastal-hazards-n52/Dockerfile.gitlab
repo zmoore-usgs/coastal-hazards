@@ -15,7 +15,7 @@ COPY coastal-hazards-n52/src coastal-hazards-n52/src
 
 RUN mvn --settings /root/artifactory-settings.xml -B -nsu -pl coastal-hazards-n52 -am package install
 
-FROM code.chs.usgs.gov:5001/cmgp/tomcat/tomcat:1.0.0
+FROM code.chs.usgs.gov:5001/cmgp/tomcat/tomcat:1.1.0
 
 RUN mkdir -p /data/coastal-hazards/uploaded-data
 

@@ -18,7 +18,7 @@ COPY coastal-hazards-portal/src coastal-hazards-portal/src
 
 RUN mvn --settings /root/artifactory-settings.xml -B -nsu -pl coastal-hazards-portal -am package install
 
-FROM code.chs.usgs.gov:5001/cmgp/tomcat/tomcat:1.0.0
+FROM code.chs.usgs.gov:5001/cmgp/tomcat/tomcat:1.1.0
 
 ARG POSTGRES_JDBC_VERSION=42.2.4
 ARG KEYCLOAK_ADAPTER_VERSION=8.0.2
