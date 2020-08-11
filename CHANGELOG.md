@@ -1,3 +1,10 @@
+## [1.0.0-development.13](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.12...1.0.0-development.13) (2020-08-11)
+
+
+### :sparkles: Feature
+
+* Update to new version of base Tomcat image ([7bf0237](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/7bf0237a6a73ef68eb6acc6adb2cb48d8ae614d5))
+
 ## [1.0.0-development.12](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.11...1.0.0-development.12) (2020-07-30)
 
 
