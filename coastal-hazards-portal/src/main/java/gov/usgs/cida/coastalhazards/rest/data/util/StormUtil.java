@@ -99,8 +99,8 @@ public class StormUtil {
 	private static String buildSurgeDescription(List<String> srcUsed) {
 		String desc = "The storm surge elevations along the open coast were obtained from the " +
 		"National Oceanic and Atmospheric Administration";
-
-		if (srcUsed.stream().anyMatch("psurge"::equalsIgnoreCase)) {
+		
+		if (srcUsed.stream().anyMatch("psurge"::equalsIgnoreCase) || srcUsed.stream().anyMatch("p-surge"::equalsIgnoreCase)) {
 			desc += "'s (NOAA) probabilistic surge forecast (psurge), which is based on conditions specific to the " +
 			"landfalling storm. Errors in hurricane forecasts are included in order to identify probable surge levels. " +
 			"The 10% exceedance surge level was used to represent the worst-case scenario.";
