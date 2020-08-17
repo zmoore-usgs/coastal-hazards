@@ -1,11 +1,15 @@
 <%@page import="java.io.File"%>
 <%@ page isErrorPage="true"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
+<%@page import="gov.usgs.cida.coastalhazards.rest.data.DataRestApplication"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
+<%@page import="org.slf4j.Logger"%>
+<%@page import="org.slf4j.LoggerFactory"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%!
 	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
+	protected Logger log = LoggerFactory.getLogger(DataRestApplication.class);
 
 	{
 		try {
@@ -20,11 +24,21 @@
 <%
 	String baseUrlJndiString = props.getProperty("coastal-hazards.public.url");
 	String baseUrl = StringUtils.isNotBlank(baseUrlJndiString) ? baseUrlJndiString : request.getContextPath();
-        Object errorMessageObject = request.getAttribute("javax.servlet.error.exception");
-        String errorMessage = "";
-        if (null != errorMessageObject) {
-            errorMessage = errorMessageObject.toString().replaceAll("\n", " ").replaceAll("'", "").replaceAll("\r", " ");
-        }
+	Object errorCode = request.getAttribute("javax.servlet.error.status_code");
+	Object errorPath = request.getAttribute("javax.servlet.error.request_uri");
+	Object errorMessageObject = request.getAttribute("javax.servlet.error.exception");
+	String errorMessage = "";
+	log.debug("Request error. Request '" + errorPath.toString() + "' failed with code: '" + errorCode.toString() + "'");
+
+	if (null != errorMessageObject) {
+		errorMessage = errorMessageObject.toString().replaceAll("\n", " ").replaceAll("'", "").replaceAll("\r", " ");
+
+		if(errorMessageObject instanceof Exception) {
+			log.error("An error occurred while executing the request: ", errorMessageObject);
+		} else {
+			log.error("An error occurred while executing the request: " + errorMessage);
+		}			
+	}
 %>
 <!DOCTYPE html>
 <html lang="en">
