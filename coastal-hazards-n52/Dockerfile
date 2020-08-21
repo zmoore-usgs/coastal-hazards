@@ -20,19 +20,26 @@ FROM code.chs.usgs.gov:5001/cmgp/tomcat/tomcat:1.0.0
 RUN mkdir -p /data/coastal-hazards/uploaded-data
 
 # Context Config ENVs
-ENV CCH_WPS_CONFIG_LOCATION="/wps_config.xml"
+ENV CCH_WPS_CONFIG_LOCATION="/usr/local/tomcat/conf/wps_config.xml"
 ENV CCH_WPS_FETCH_UNZIP_BASE_DIR="/data/coastal-hazards/uploaded-data"
 ENV CCH_WPS_FETCH_UNZIP_TOKEN="changeme"
+ENV CCH_WPS_RSERVE_HOST="127.0.0.1"
+ENV CCH_WPS_RSERVE_PORT="6311"
+ENV CCH_WPS_RSERVE_USER="cchportal_rserve"
+ENV CCH_WPS_RSERVE_PASSWORD="cchportal_password"
 ENV CATALINA_OPTS_XMX="1024m"
 ENV CATALINA_OPTS_XMS="1024m"
 ENV CATALINA_OPTS_MAXPERMSIZE="256m"
 
 COPY --from=n52_build /source/coastal-hazards-n52/target/wps.war /usr/local/tomcat/webapps/wps.war
+COPY coastal-hazards-n52/docker/wps_config.xml /usr/local/tomcat/conf/wps_config.xml
 COPY coastal-hazards-n52/docker/context.xml /usr/local/tomcat/conf/context.xml
 COPY coastal-hazards-n52/docker/server.xml /usr/local/tomcat/conf/server.xml
 COPY coastal-hazards-n52/docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
+COPY coastal-hazards-n52/docker/startup.sh /usr/local/tomcat/startup.sh
 
 RUN chmod +x /usr/local/tomcat/bin/setenv.sh
+RUN chmod +x /usr/local/tomcat/startup.sh
 
 HEALTHCHECK --interval=10s --timeout=5s \
  CMD curl -s "http://localhost:8082/wps/WebProcessingService?Service=WPS&Request=GetCapabilities" \

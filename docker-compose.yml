@@ -9,8 +9,6 @@ secrets:
     file: Docker/tomcat/ssl/ssl.crt
   ssl_key:
     file: Docker/tomcat/ssl/ssl.key
-  wps_config:
-    file: coastal-hazards-n52/docker/config/wps_config.xml
   keycloak_json:
     file: coastal-hazards-portal/docker/config/keycloak_tomcat_config.json
 
@@ -65,8 +63,6 @@ services:
         target: /usr/local/tomcat/ssl/server_cert/ssl.crt
       - source: ssl_key
         target: /usr/local/tomcat/ssl/server_cert/ssl.key
-      - source: wps_config
-        target: /wps_config.xml
 
   cch_portal:
     build:
