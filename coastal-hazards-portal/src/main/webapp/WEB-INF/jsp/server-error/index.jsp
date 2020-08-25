@@ -32,12 +32,7 @@
 
 	if (null != errorMessageObject) {
 		errorMessage = errorMessageObject.toString().replaceAll("\n", " ").replaceAll("'", "").replaceAll("\r", " ");
-
-		if(errorMessageObject instanceof Exception) {
-			log.error("An error occurred while executing the request: ", errorMessageObject);
-		} else {
-			log.error("An error occurred while executing the request: " + errorMessage);
-		}			
+		log.error("An error occurred while executing the request: " + errorMessage);		
 	}
 %>
 <!DOCTYPE html>

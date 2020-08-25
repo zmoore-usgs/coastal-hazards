@@ -102,19 +102,21 @@ public class Attributes {
 	public static final String NHC_TRACK_PT_120WLBL = "NHC_TRACK_PT_120WLBL";
 	public static final String NHC_TRACK_PT_72CAT = "NHC_TRACK_PT_72CAT";
 	public static final String NHC_TRACK_PT_120CAT = "NHC_TRACK_PT_120CAT";
-        
-        public static final String UVVR = "UVVR"; //vulnerability index
-	
+
+	public static final String UVVR = "UVVR"; //vulnerability index
+
 	public static final String TCT = "TCT";
 	public static final String TC2 = "TC2";
 	public static final String TC5 = "TC5";
-        
-        //raster attr
-        public static final String GRAY_INDEX = "GRAY_INDEX";
-        public static final String AE = "AE";  //adjusted elevation
-        public static final String PAE = "PAE";  //adjusted elevation probability
-        public static final String CR = "CR";  //coastal response
-        public static final String UVVR_RASTER = "UVVR_RASTER"; //unvegetated to vegetated ratio, raster
+
+	public static final String FL_MASK_ID = "FL_MASK_ID";
+
+	//raster attr
+	public static final String GRAY_INDEX = "GRAY_INDEX";
+	public static final String AE = "AE";  //adjusted elevation
+	public static final String PAE = "PAE";  //adjusted elevation probability
+	public static final String CR = "CR";  //coastal response
+	public static final String UVVR_RASTER = "UVVR_RASTER"; //unvegetated to vegetated ratio, raster
 
 	static {
 		Field[] fields = Attributes.class.getFields();
@@ -136,7 +138,7 @@ public class Attributes {
 	public static Set<String> getAllAttrs() {
 		return set;
 	}
-        
+
 	public static Set<String> getRasterAttrs() {
 		Set<String> raster = new HashSet<>();
 		raster.add(GRAY_INDEX);
@@ -146,7 +148,7 @@ public class Attributes {
 		raster.add(UVVR_RASTER);
 		return raster;
 	}
-        
+
 	public static Set<String> getStormTrackAttrs() {
 		Set<String> tracks = new HashSet<>();
 		tracks.add(NHC_TRACK_POLY);
@@ -212,10 +214,11 @@ public class Attributes {
 		ribbonableAttrs.add(MEAN5);
 		return ribbonableAttrs;
 	}
-        
-        public static Set<String> getPolygonAttrs() {
+
+	public static Set<String> getPolygonAttrs() {
 		Set<String> polys = new HashSet<>();
 		polys.add(UVVR);
+		polys.add(FL_MASK_ID);
 		return polys;
 	}
 }
