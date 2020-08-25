@@ -59,6 +59,7 @@ public class SLDGenerator {
 		sideEffectMapPut(vulnerability, RasterUvvr.rasterConfig); //raster uvvr - unvegetated/vegetated ratio
 		sideEffectMapPut(vulnerability, OldSchoolOverallCVI.overallOldSchool);
 		sideEffectMapPut(vulnerability, Uvvr.uvvr);
+		sideEffectMapPut(vulnerability, FloodMask.floodMask);
 		gmap.put(Item.Type.vulnerability, vulnerability);
 
 		Map<String, SLDConfig> historical = new HashMap<>();

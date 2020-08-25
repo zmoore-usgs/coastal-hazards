@@ -517,7 +517,7 @@ return {
 			}
 		}
 		
-		if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK", "AE"].indexOf(item.attr.toUpperCase()) !== -1) {
+		if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK", "AE", "FLOODMASK"].indexOf(item.attr.toUpperCase()) !== -1) {
 			for(var i = 0; i < displayPoints.length; i++){
 				displayColors.push(sld.bins[Math.ceil(displayPoints[i]) - 1].color);
 
@@ -525,6 +525,8 @@ return {
 				
 				if("AE" === item.attr.toUpperCase()){
 					category += "&nbsp;" + units;
+				} else if("FLOODMASK" === item.attr.toUpperCase()) {
+					category = units + "&nbsp;" + category;
 				}
 				
 				displayCategories.push(category);
