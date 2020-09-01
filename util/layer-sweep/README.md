@@ -1,6 +1,6 @@
 # Layer Sweeping
 
-CCH does not always clean up after itself. Sometimes CCH Items that are deleted in the Portal UI are not removed from GeoServer. This directory contains two scripts to help clean up.
+CCH does not always clean up after itself. Sometimes CCH Items that are deleted in the Portal UI are not removed from GeoServer. This directory contains two scripts for Python 3 to help clean up.
 
  1. find_dangling_layers.py
  1. delete_layers.py 
@@ -10,8 +10,7 @@ CCH does not always clean up after itself. Sometimes CCH Items that are deleted 
 Optionally, create and activate a virtualenv to ensure isolation from other pojects.
 
 ```bash
-$> virtualenv --python python2.7 env
-$> . env/bin/activate
+$> virtualenv --python python3.8 env
 ```
 
 Required: install the dependencies described in requirements.txt.
@@ -19,7 +18,7 @@ Required: install the dependencies described in requirements.txt.
 To use pip to install the dependencies...
 
 ```bash
-$> pip install -r requirements.txt
+$> ./env/bin/pip install -r requirements.txt
 ```
 
 # Finding Layers to Delete
@@ -95,6 +94,7 @@ retrieving CCH items from http://192.168.99.100:8080/coastal-hazards-portal/data
 
 Total Layers Retrieved From GeoServer: 43
 Total Items Retrieved From CCH Portal: 4
+Total Relevant Layres Extracted From CCH Items: 0
 Total Dangling Layers: 43
 
 $> #now manually inspect and modify the list of layers to delete
