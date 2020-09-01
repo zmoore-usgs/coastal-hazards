@@ -48,7 +48,7 @@ def get_only_cch_geoserver_services(services):
 			if 'csw' != service['type']
 			and (
 				service_parameter_prefix_proxied in service['serviceParameter']
-				or service_parameter_prefix_proxied in service['serviceParameter']
+				or service_parameter_prefix_published in service['serviceParameter']
 			)
  	]
 
