@@ -26,7 +26,7 @@ def get_cch_items(cch_url):
 def item_filter(item):
 	"""
 	returns true if `item` has 'itemType' == 'data' and has some service
-	endpoints that point to the CCH geoserver
+	endpoints that use CCH-geoserver-like parameters
 	"""
 	cch_geoserver_services = get_only_cch_geoserver_services(item['services'])
 	has_cch_geoserver_services = 0 != len(cch_geoserver_services)
@@ -36,28 +36,19 @@ def item_filter(item):
 def get_only_cch_geoserver_services(services):
 	"""
 	Filters the parameterized list of services (dicts). The returned list
-	should only contain services (dicts) that have `endpoint`s that look
+	should only contain services (dicts) that have parameters that look
 	like they are from a cch geoserver.
 	"""
-	#match hostnames of format:
-	# cida-eros-...
-	# cidasd...
-	# cida-test.er.usgs.gov...
-	# cida.usgs.gov
-	#
-	#This pattern matches either http or https
-	cida_pattern = re.compile('//cida.*usgs\.gov')
 
-	#Also match CCH-specific urls on marine.usgs.gov.
-	#This string matches either http or https.
-	marine_string = '://marine.usgs.gov/coastalchangehazardsportal/geoserver'
+	service_parameter_prefix_proxied = 'proxied'
+	service_parameter_prefix_published = 'published'
 
 	return [
 		service for service in services
 			if 'csw' != service['type']
 			and (
-				marine_string in service['endpoint']
-				or cida_pattern.search(service['endpoint'])
+				service_parameter_prefix_proxied in service['serviceParameter']
+				or service_parameter_prefix_published in service['serviceParameter']
 			)
  	]
 
@@ -132,9 +123,11 @@ def find_dangling_layers(geoserver_url, geoserver_username, geoserver_password, 
 	eprint(
 		("\nTotal Layers Retrieved From GeoServer: {}\n" +
 		"Total Items Retrieved From CCH Portal: {}\n" +
+		"Total Relevant Layers Extracted from CCH Items: {}\n" +
 		"Total Dangling Layers: {}\n").format(
 			len(all_gs_layers),
 			len(cch_items),
+			len(registered_geoserver_layer_names ),
 			len(dangling_gs_layers)
 		)
 	)
@@ -146,9 +139,10 @@ def parse_cmd_args(argv):
 	"""
 	if len(argv) != 5:
 		raise Exception(
-			'Usage: find_dangling_layers.py $INTERNAL_GEOSERVER_URL $GEOSERVER_USERNAME $GEOSERVER_PASSWORD $CCH_URL'
-			+ '\nExample:\n' +
-			'find_dangling_layers.py http://my-internal-geoserver-host.usgs.gov:8081/geoserver/ ralph t0pS3crEt https://marine.usgs.gov/coastalchangehazardsportal/'
+			'\n\nUsage: find_dangling_layers.py $INTERNAL_GEOSERVER_REST_URL $GEOSERVER_USERNAME $GEOSERVER_PASSWORD $CCH_URL'
+			+ '\n\tNote: URLs MUST include a trailing slash.'
+			+ '\n\nExample:\n' +
+			'\tfind_dangling_layers.py http://my-internal-geoserver-host.usgs.gov:8081/geoserver/rest/ admin t0pS3crEt https://marine.usgs.gov/coastalchangehazardsportal/'
 		)
 	else:
 		args = {
