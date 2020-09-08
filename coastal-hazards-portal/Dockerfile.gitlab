@@ -52,6 +52,11 @@ ENV CCH_GEOSERVER_PORTAL_CACHE_NAME="cchGeoserverCache"
 ENV CCH_IS_PRODUCTION="false"
 ENV CCH_IS_DEVELOPMENT="true"
 ENV CCH_KEYCLOAK_CONFIG_FILE="/usr/local/tomcat/conf/keycloak.json"
+ENV CCH_KEYCLOAK_REALM="CCH"
+ENV CCH_KEYCLOAK_AUTH_URL="http://keycloak:8083/auth"
+ENV CCH_KEYCLOAK_RESOURCE="cch_local"
+ENV CCH_KEYCLOAK_PUBLIC_CLIENT=false
+ENV CCH_KEYCLOAK_SECRET="changeme"
 ENV CCH_ADMIN_ROLE_NAME="CCH_ADMIN"
 ENV CCH_DB_DRIVER_CLASS="org.postgresql.Driver"
 ENV CCH_DB_MAX_ACTIVE="200"
@@ -82,9 +87,12 @@ ENV CATALINA_OPTS_MAXPERMSIZE="256m"
 COPY --from=portal_build /source/coastal-hazards-portal/target/coastal-hazards-portal.war /usr/local/tomcat/webapps/coastal-hazards-portal.war
 COPY coastal-hazards-portal/docker/context.xml /usr/local/tomcat/conf/context.xml
 COPY coastal-hazards-portal/docker/server.xml /usr/local/tomcat/conf/server.xml
+COPY coastal-hazards-portal/docker/keycloak.json /usr/local/tomcat/conf/keycloak.json
 COPY coastal-hazards-portal/docker/setenv.sh /usr/local/tomcat/bin/setenv.sh
+COPY coastal-hazards-portal/docker/startup.sh /usr/local/tomcat/startup.sh
 
 RUN chmod +x /usr/local/tomcat/bin/setenv.sh
+RUN chmod +x /usr/local/tomcat/startup.sh
 
 HEALTHCHECK --interval=10s --timeout=2s \
 	CMD curl -s -k "https://localhost:8443/coastal-hazards-portal/diagnostics" | grep -q '<div name="getServletPath">/diagnostics</div>' || exit 1
