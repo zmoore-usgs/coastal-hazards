@@ -9,8 +9,6 @@ secrets:
     file: Docker/tomcat/ssl/ssl.crt
   ssl_key:
     file: Docker/tomcat/ssl/ssl.key
-  keycloak_json:
-    file: coastal-hazards-portal/docker/config/keycloak_tomcat_config.json
 
 services:  
   cch_dependencies:
@@ -87,8 +85,6 @@ services:
         target: /usr/local/tomcat/ssl/server_cert/ssl.crt
       - source: ssl_key
         target: /usr/local/tomcat/ssl/server_cert/ssl.key
-      - source: keycloak_json
-        target: /usr/local/tomcat/conf/keycloak.json
 
   cch_geoserver:
     build:

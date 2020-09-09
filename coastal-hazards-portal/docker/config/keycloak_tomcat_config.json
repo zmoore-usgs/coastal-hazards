@@ -1,8 +1,0 @@
-{
-   "realm": "CCH",
-   "auth-server-url": "http://keycloak:8083/auth",
-   "ssl-required": "external",
-   "resource": "cch_local",
-   "public-client": true,
-   "confidential-port": 0
-}
