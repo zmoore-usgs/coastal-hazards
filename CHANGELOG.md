@@ -1,3 +1,10 @@
+## [1.0.0-development.17](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.16...1.0.0-development.17) (2020-09-09)
+
+
+### :sparkles: Feature
+
+* Make HTTP connector 'secure' and add confiurable keycloak redirect rewrite rules. ([274e1f3](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/274e1f3f85078ec5702df55df2183191144b6f19))
+
 ## [1.0.0-development.16](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.15...1.0.0-development.16) (2020-09-09)
 
 
