@@ -1,4 +1,4 @@
-FROM cch_dependencies:latest AS geoserver_build
+FROM code.chs.usgs.gov:5001/cmgp/coastal-hazards:dependencies AS geoserver_build
 
 WORKDIR /source
 

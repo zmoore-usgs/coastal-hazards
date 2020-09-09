@@ -1,4 +1,4 @@
-FROM cch_dependencies:latest AS n52_build
+FROM code.chs.usgs.gov:5001/cmgp/coastal-hazards:dependencies AS n52_build
 
 WORKDIR /source
 

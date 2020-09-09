@@ -1,4 +1,4 @@
-FROM cch_dependencies:latest AS portal_build
+FROM code.chs.usgs.gov:5001/cmgp/coastal-hazards:dependencies AS portal_build
 
 WORKDIR /source
 
@@ -16,7 +16,7 @@ COPY coastal-hazards-commons/src coastal-hazards-commons/src
 COPY coastal-hazards-export/src coastal-hazards-export/src
 COPY coastal-hazards-portal/src coastal-hazards-portal/src
 
-RUN mvn --settings /root/artifactory-settings.xml -B -nsu -pl coastal-hazards-portal -am package install
+RUN mvn --settings /root/artifactory-settings.xml -B -nsu -pl coastal-hazards-portal -am package
 
 FROM code.chs.usgs.gov:5001/cmgp/tomcat/tomcat:1.1.0
 
@@ -55,8 +55,8 @@ ENV CCH_KEYCLOAK_CONFIG_FILE="/usr/local/tomcat/conf/keycloak.json"
 ENV CCH_KEYCLOAK_REALM="CCH"
 ENV CCH_KEYCLOAK_AUTH_URL="http://keycloak:8083/auth"
 ENV CCH_KEYCLOAK_RESOURCE="cch_local"
-ENV CCH_KEYCLOAK_PUBLIC_CLIENT=true
-ENV CCH_KEYCLOAK_SECRET=""
+ENV CCH_KEYCLOAK_PUBLIC_CLIENT=false
+ENV CCH_KEYCLOAK_SECRET="changeme"
 ENV CCH_KEYCLOAK_CONFIDENTIAL_PORT=0
 ENV CCH_KEYCLOAK_REDIRECT_RULES=""
 ENV CCH_ADMIN_ROLE_NAME="CCH_ADMIN"

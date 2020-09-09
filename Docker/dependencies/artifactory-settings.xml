@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <profiles>
+    <profile>
+      <repositories>
+
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-central</id>
+          <name>artifactory-maven-central</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/maven-central</url>
+        </repository>
+        <repository>
+          <snapshots />
+          <id>artifactory-snapshots</id>
+          <name>artifactory-maven-central</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/maven-central</url>
+        </repository>
+
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-geotools</id>
+          <name>artifactory-geotools</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
+        </repository>
+
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-n52</id>
+          <name>artifactory-n52</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/n52</url>
+        </repository>
+
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-cida-public-releases</id>
+          <name>artifactory-cida-public-releases</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/cidas-public-releases</url>
+        </repository>
+        <repository>
+          <snapshots />
+          <id>artifactory-cida-public-snapshots</id>
+          <name>artifactory-cida-public-snapshots</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/cida-public-snapshots</url>
+        </repository>
+
+      </repositories>
+      <pluginRepositories>
+
+        <pluginRepository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-central</id>
+          <name>artifactory-maven-central</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/maven-central</url>
+        </pluginRepository>
+        <pluginRepository>
+          <snapshots />
+          <id>artifactory-snapshots</id>
+          <name>artifactory-maven-central-snapshots</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/maven-central</url>
+        </pluginRepository>
+
+        <pluginRepository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-geotools</id>
+          <name>artifactory-geotools</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/geotools</url>
+        </pluginRepository>
+
+        <pluginRepository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-n52</id>
+          <name>artifactory-n52</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/n52</url>
+        </pluginRepository>
+
+        <pluginRepository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>artifactory-cida-public-releases</id>
+          <name>artifactory-cida-public-releases</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/cida-public-releases</url>
+        </pluginRepository>
+        <pluginRepository>
+          <snapshots />
+          <id>artifactory-cida-public-snapshots</id>
+          <name>artifactory-cida-public-snapshots</name>
+          <url>https://artifactory.wma.chs.usgs.gov:443/artifactory/cida-public-snapshots</url>
+        </pluginRepository>
+
+      </pluginRepositories>
+      <id>artifactory</id>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>artifactory</activeProfile>
+  </activeProfiles>
+</settings>
