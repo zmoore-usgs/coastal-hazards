@@ -1,3 +1,10 @@
+## [1.0.0-development.14](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.13...1.0.0-development.14) (2020-09-09)
+
+
+### :sparkles: Feature
+
+* Made KeyCloak config file configurable via ENVs. ([ad77258](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/ad77258a3df0d049c66cc93759462a12b7cecc86))
+
 ## [1.0.0-development.13](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.12...1.0.0-development.13) (2020-08-11)
 
 
