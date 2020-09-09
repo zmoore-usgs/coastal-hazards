@@ -7,5 +7,5 @@
       "secret": "%%CCH_KEYCLOAK_SECRET%%"
    },
    "public-client": %%CCH_KEYCLOAK_PUBLIC_CLIENT%%,
-   "confidential-port": 0
+   "confidential-port": %%CCH_KEYCLOAK_CONFIDENTIAL_PORT%%
 }
