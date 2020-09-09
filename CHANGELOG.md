@@ -1,3 +1,10 @@
+## [1.0.0-development.16](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.15...1.0.0-development.16) (2020-09-09)
+
+
+### :sparkles: Feature
+
+* Disable HTTP --> HTTPS redirect ([9199f03](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/9199f03f6b756f0fdbbf764ae8bb33af028f1287))
+
 ## [1.0.0-development.15](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.14...1.0.0-development.15) (2020-09-09)
 
 
