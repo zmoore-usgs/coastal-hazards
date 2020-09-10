@@ -1,3 +1,10 @@
+## [1.0.0-development.18](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.17...1.0.0-development.18) (2020-09-10)
+
+
+### :sparkles: Feature
+
+* Cleanup portal logging dependencies. Remove file appender from lgoback. Make logback levels configurable via ENV. ([3ed4eee](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/3ed4eee119c9f5422589ba76fc0e269f00daa3c1))
+
 ## [1.0.0-development.17](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.16...1.0.0-development.17) (2020-09-09)
 
 
