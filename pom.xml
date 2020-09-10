@@ -554,4 +554,93 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	<profiles>
+        <profile>
+            <id>security-scan</id>
+            <properties>
+                <owasp.dependency.check.version>5.2.4</owasp.dependency.check.version>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>${owasp.dependency.check.version}</version>
+                        <executions>
+                            <execution>
+                                <configuration>
+                                    <!--
+                                    plugin config documentation
+                                    https://jeremylong.github.io/DependencyCheck/dependency-check-maven/configuration.html
+                                    -->
+                                    <formats>HTML,XML</formats>
+                                    <outputDirectory>target/dependency-check</outputDirectory>
+                                    <autoUpdate>true</autoUpdate>
+                                    <cveValidForHours>24</cveValidForHours>
+                                    <jarAnalyzerEnabled>true</jarAnalyzerEnabled>
+                                    <retireJsAnalyzerEnabled>true</retireJsAnalyzerEnabled>
+
+                                    <!-- disable analyzer that has a known stability problem https://github.com/jeremylong/DependencyCheck/issues/1908 -->
+                                    <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
+
+                                    <!-- explicitly disable irrelevant analyzers to improve performance -->
+
+                                    <archiveAnalyzerEnabled>false</archiveAnalyzerEnabled> <!-- This scans all types of archives. We mostly care about JARs and WARs. The jarAnalyzer handles those -->
+                                    <centralAnalyzerEnabled>false</centralAnalyzerEnabled> <!-- the ossindexAnalyzer is sufficient -->
+                                    <nexusAnalyzerEnabled>false</nexusAnalyzerEnabled> <!-- the ossindexAnalyzer is sufficient -->
+                                    <artifactoryAnalyzerEnabled>false</artifactoryAnalyzerEnabled> <!-- the ossindexAnalyzer is sufficient -->
+
+                                    <!-- none of the following languages apply -->
+                                    <pyDistributionAnalyzerEnabled>false</pyDistributionAnalyzerEnabled>
+                                    <pyPackageAnalyzerEnabled>false</pyPackageAnalyzerEnabled>
+                                    <rubygemsAnalyzerEnabled>false</rubygemsAnalyzerEnabled>
+                                    <opensslAnalyzerEnabled>false</opensslAnalyzerEnabled>
+                                    <cmakeAnalyzerEnabled>false</cmakeAnalyzerEnabled>
+                                    <autoconfAnalyzerEnabled>false</autoconfAnalyzerEnabled>
+                                    <composerAnalyzerEnabled>false</composerAnalyzerEnabled>
+                                    <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
+                                    <nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
+                                    <nuspecAnalyzerEnabled>false</nuspecAnalyzerEnabled>
+                                    <nugetconfAnalyzerEnabled>false</nugetconfAnalyzerEnabled>
+                                    <cocoapodsAnalyzerEnabled>false</cocoapodsAnalyzerEnabled>
+                                    <bundleAuditAnalyzerEnabled>false</bundleAuditAnalyzerEnabled>
+                                    <swiftPackageManagerAnalyzerEnabled>false</swiftPackageManagerAnalyzerEnabled>
+                                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                                    <!-- Add a suppression file to the root of the project called 
+									dependency-check-suppression.xml and uncomment the following line 
+									to enable suppressions of specific false-postive vulnerabilties. -->
+									<!--
+                                    <suppressionFile>dependency-check-suppression.xml</suppressionFile>
+									-->
+									<!-- More info on analyzers:
+                                    	 https://jeremylong.github.io/DependencyCheck/analyzers/index.html
+                                    -->
+                                </configuration>
+								<phase>test</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>${owasp.dependency.check.version}</version>
+                        <reportSets>
+                            <reportSet>
+                                <reports>
+                                    <report>aggregate</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
+                    </plugin>
+                </plugins>
+            </reporting>
+        </profile>
+    </profiles>
 </project>
