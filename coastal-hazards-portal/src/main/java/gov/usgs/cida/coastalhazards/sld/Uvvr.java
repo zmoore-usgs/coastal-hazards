@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  *
- * @author Kathryn Schoephoester <kmschoep@usgs.gov>
+ * @author Zehao Xue <zxue@usgs.gov>
  */
 public final class Uvvr {
 

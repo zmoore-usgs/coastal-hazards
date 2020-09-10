@@ -10,7 +10,7 @@ import java.util.Map;
  *
  * @author Zehao Xue <zxue@usgs.gov>
  */
-public final class Forecast {
+public final class ForecastUncy {
 
 //Line thickness:  2.0
 //
@@ -23,14 +23,13 @@ public final class Forecast {
 //
 //20-yr line:  R 166, G 97, B 26 #A6601A
 //20-yr polygon:  R 223, G 194, B 125 #DFC27D
-	protected static final String[] attrs = new String[]{FORECASTPE};
-	protected static final float[] thresholds = new float[]{10f, 20f};
+	protected static final String[] attrs = new String[]{FORECASTPE_U};
+	protected static final float[] thresholds = new float[]{1f, 2f};
 	protected static final String[] categories = {"10-year", "20-year"};
-	protected static final String[] colors = {"#018571", "#80CDC1"};
-//	protected static final float strokeOpacity = 0.5f;
-	protected static final int strokeWidth = 2;
-
-	protected static final String jspPath = "/SLD/categorical_line.jsp";
+	protected static final String[] colors = {"#80CDC1", "#DFC27D"};
+	protected static final float strokeOpacity = 0.5f;
+	
+	protected static final String jspPath = "/SLD/categorical_polygon.jsp";
 	protected static final String units = "year";
 	protected static final List<Map<String, Object>> bins;
 
@@ -42,12 +41,11 @@ public final class Forecast {
 			binMap.put("color", colors[i]);
 			binsResult.add(binMap);
 		}
-
 		bins = binsResult;
 	}
 
-	public static final SLDConfig forecast = new SLDConfig(
-		jspPath, units, SLDGenerator.style, strokeWidth, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins
+	public static final SLDConfig forecastUncy = new SLDConfig(
+		jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, strokeOpacity, attrs, thresholds, colors, bins, LegendType.DISCRETE
 	);
-
+	
 }

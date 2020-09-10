@@ -105,9 +105,8 @@ public class Attributes {
 
 	public static final String UVVR = "UVVR"; //vulnerability index
 
-	
-	public static final String FORECAST= ""; //shoreline forecast
-	public static final String FORECAST_UNCY = ""; //shoreline forecast uncertainty
+	public static final String FORECASTPE = "FORECASTPE"; //shoreline forecast
+	public static final String FORECASTPE_U = "FORECASTPE_U"; //U - Uncertainty, shapefile fields 10-character limit
 	
 	public static final String TCT = "TCT";
 	public static final String TC2 = "TC2";
