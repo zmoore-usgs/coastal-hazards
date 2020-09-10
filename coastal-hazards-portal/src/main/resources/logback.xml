@@ -5,24 +5,10 @@
 			<pattern>%d{HH:mm:ss} %p %c{1}: %m%n</pattern>
 		</encoder>
 	</appender>
-	<appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>${catalina.base}/logs/coastal-hazards/coastal-hazards-portal.log</File>
-		<encoder>
-			<pattern>%d{HH:mm:ss} %p %c{1}: %m%n</pattern>
-		</encoder>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${catalina.base}/logs/coastal-hazards/coastal-hazards-portal.%d{yyyy-MM-dd}.gz</fileNamePattern>
-			<maxHistory>30</maxHistory>
-		</rollingPolicy>
-	</appender>
-
-	<root level="INFO">
+	<root level="${cch_logLevelRoot:-INFO}">
 		<appender-ref ref="stdout"/>
-		<appender-ref ref="file"/>
 	</root>
-
-	<logger name="org.apache.http.wire" level="WARN" />
-	<logger name="org.hibernate" level="WARN" />
-	<logger name="it.geosolutions.geoserver.rest" level="WARN" />
-	
+	<logger name="org.apache.http.wire" level="${cch_logLevelHttp:-WARN}" />
+	<logger name="org.hibernate" level="${cch_logLevelHibernate:-WARN}" />
+	<logger name="it.geosolutions.geoserver.rest" level="${cch_logLevelGeoserver:-WARN}" />
 </configuration>
