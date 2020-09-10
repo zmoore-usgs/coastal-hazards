@@ -23,8 +23,8 @@ public final class ForecastUncy {
 //
 //20-yr line:  R 166, G 97, B 26 #A6601A
 //20-yr polygon:  R 223, G 194, B 125 #DFC27D
-	protected static final String[] attrs = new String[]{FORECASTPE_U};
-	protected static final float[] thresholds = new float[]{1f, 2f};
+	protected static final String[] attrs = new String[]{FORECAST_U};
+	protected static final float[] thresholds = new float[]{10f, 20f};
 	protected static final String[] categories = {"10-year", "20-year"};
 	protected static final String[] colors = {"#80CDC1", "#DFC27D"};
 	protected static final float strokeOpacity = 0.5f;

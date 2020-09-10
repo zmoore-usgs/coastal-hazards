@@ -12,23 +12,11 @@ import java.util.Map;
  */
 public final class Forecast {
 
-//Line thickness:  2.0
-//
-//Polygon outline thickness:  1.0
-//Polygon outline color:  R G B all 110
-//Polygon transparency:  50%  (in Arc, rt click on shp layer, Properties - Display)
-//
-//10-yr line:  R 1, G 133, B 113 #018571
-//10-yr polygon:  R 128, G 205, B 193 #80CDC1
-//
-//20-yr line:  R 166, G 97, B 26 #A6601A
-//20-yr polygon:  R 223, G 194, B 125 #DFC27D
 	protected static final String[] attrs = new String[]{FORECASTPE};
 	protected static final float[] thresholds = new float[]{10f, 20f};
 	protected static final String[] categories = {"10-year", "20-year"};
-	protected static final String[] colors = {"#018571", "#80CDC1"};
-//	protected static final float strokeOpacity = 0.5f;
-	protected static final int strokeWidth = 2;
+	protected static final String[] colors = {"#018571", "#A6601A"};
+	protected static final int strokeWidth = 1;
 
 	protected static final String jspPath = "/SLD/categorical_line.jsp";
 	protected static final String units = "year";
