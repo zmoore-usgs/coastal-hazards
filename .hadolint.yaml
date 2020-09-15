@@ -1,0 +1,5 @@
+---
+# See https://github.com/hadolint/hadolint#configure
+ignored:
+  - DL3025
+  - SC2016

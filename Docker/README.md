@@ -56,6 +56,14 @@ containers should automatically be able to detect when being built on the DOI
 Network and will make the necessary modifications to be able to pull
 dependencies when this is the case.
 
+### Configuring SSL
+
+================
+
+To run the containers locally you must first create local development self-signed
+SSL certificates. These can be easily created by running the `create_keys.sh`
+script included in the `Docker/tomcat/ssl` directory.
+
 ### Running The Portal and GeoServer locally with all other services in containers
 
 ================

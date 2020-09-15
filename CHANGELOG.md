@@ -1,3 +1,129 @@
+## [1.0.0-development.18](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.17...1.0.0-development.18) (2020-09-10)
+
+
+### :sparkles: Feature
+
+* Cleanup portal logging dependencies. Remove file appender from lgoback. Make logback levels configurable via ENV. ([3ed4eee](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/3ed4eee119c9f5422589ba76fc0e269f00daa3c1))
+
+## [1.0.0-development.17](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.16...1.0.0-development.17) (2020-09-09)
+
+
+### :sparkles: Feature
+
+* Make HTTP connector 'secure' and add confiurable keycloak redirect rewrite rules. ([274e1f3](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/274e1f3f85078ec5702df55df2183191144b6f19))
+
+## [1.0.0-development.16](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.15...1.0.0-development.16) (2020-09-09)
+
+
+### :sparkles: Feature
+
+* Disable HTTP --> HTTPS redirect ([9199f03](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/9199f03f6b756f0fdbbf764ae8bb33af028f1287))
+
+## [1.0.0-development.15](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.14...1.0.0-development.15) (2020-09-09)
+
+
+### :sparkles: Feature
+
+* Add keycloak stuff ([7e328cb](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/7e328cbaa51f731597bf75f9971827a0110f544a))
+
+## [1.0.0-development.14](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.13...1.0.0-development.14) (2020-09-09)
+
+
+### :sparkles: Feature
+
+* Made KeyCloak config file configurable via ENVs. ([ad77258](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/ad77258a3df0d049c66cc93759462a12b7cecc86))
+
+## [1.0.0-development.13](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.12...1.0.0-development.13) (2020-08-11)
+
+
+### :sparkles: Feature
+
+* Update to new version of base Tomcat image ([7bf0237](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/7bf0237a6a73ef68eb6acc6adb2cb48d8ae614d5))
+
+## [1.0.0-development.12](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.11...1.0.0-development.12) (2020-07-30)
+
+
+### :sparkles: Feature
+
+* Fix setenv for all the things ([4810795](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/481079505ec38114f0cf36b9217060cdcf41912a))
+
+## [1.0.0-development.11](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.10...1.0.0-development.11) (2020-07-30)
+
+
+### :sparkles: Feature
+
+* Remove unused JVM options ([1edf316](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/1edf31678a4ee343e263cda50c6b4fdef280863b))
+
+## [1.0.0-development.10](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.9...1.0.0-development.10) (2020-07-30)
+
+
+### :sparkles: Feature
+
+* Add more java options ([6afa935](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/6afa93518f29326201b550484e36636c2f26f59d))
+
+## [1.0.0-development.9](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.8...1.0.0-development.9) (2020-07-30)
+
+
+### :sparkles: Feature
+
+* Add some java opts ([4b278c6](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/4b278c6d937e9128dcb9eaa2188f7d68b8f7b65f))
+
+## [1.0.0-development.8](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.7...1.0.0-development.8) (2020-07-30)
+
+
+### :bug: Bugfix
+
+* Cleanup catalina opts ([e6163ae](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/e6163ae188e30409da05cf40d540d4377e526152))
+
+## [1.0.0-development.7](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.6...1.0.0-development.7) (2020-07-29)
+
+
+### :repeat: CI
+
+* bump version ([394a5b3](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/394a5b3df9f4fc83871a23f258d2ec79829646fb))
+
+## [1.0.0-development.6](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.5...1.0.0-development.6) (2020-07-29)
+
+
+### :sparkles: Feature
+
+* Removing tomcat building and config from this repo ([060647c](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/060647cd329c7630cfa6d005cc045481196d2c83))
+
+## [1.0.0-development.5](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.4...1.0.0-development.5) (2020-07-24)
+
+
+### :repeat: CI
+
+* test trigger ([bbb0030](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/bbb0030ada721d656d211f9f9701b799fea56055))
+
+## [1.0.0-development.4](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.3...1.0.0-development.4) (2020-07-24)
+
+
+### :repeat: CI
+
+* Attempt triggering remote project ([8d1e9dc](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/8d1e9dc124e426fd1ae0321d5fd0d9091111e978))
+
+## [1.0.0-development.3](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.2...1.0.0-development.3) (2020-07-15)
+
+
+### :repeat: CI
+
+* test build of all images ([f7773d1](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/f7773d19ab98f0307858a839e55d244c90891aea))
+
+## [1.0.0-development.2](https://code.chs.usgs.gov/cmgp/coastal-hazards/compare/1.0.0-development.1...1.0.0-development.2) (2020-07-15)
+
+
+### :repeat: CI
+
+* test rserve build ([7722c4c](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/7722c4c1022fa5b179e501e58fedbb0a6495cf17))
+
+## 1.0.0-development.1 (2020-07-15)
+
+
+### :bug: Bugfix
+
+* Double login ([258557a](https://code.chs.usgs.gov/cmgp/coastal-hazards/commit/258557a475335ebfb6355b16f6fbeed463e8e87b))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
