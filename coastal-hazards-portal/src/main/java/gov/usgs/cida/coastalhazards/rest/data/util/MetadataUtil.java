@@ -3,46 +3,27 @@ package gov.usgs.cida.coastalhazards.rest.data.util;
 import gov.usgs.cida.coastalhazards.metadata.CRSParameters;
 import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.summary.Publication;
+import gov.usgs.cida.coastalhazards.model.util.ParsedMetadata;
 import gov.usgs.cida.coastalhazards.xml.model.Bounding;
 import gov.usgs.cida.coastalhazards.xml.model.Horizsys;
 import gov.usgs.cida.coastalhazards.xml.model.Idinfo;
 import gov.usgs.cida.coastalhazards.xml.model.Metadata;
 import gov.usgs.cida.coastalhazards.xml.model.Spdom;
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
-import gov.usgs.cida.utilities.properties.JNDISingleton;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.jxpath.JXPathContext;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -51,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.xml.sax.InputSource;
 
 /**
  *
@@ -60,16 +41,70 @@ import org.xml.sax.SAXException;
 public class MetadataUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(MetadataUtil.class);
-
-	private static final String cchn52Endpoint;
-	private static final DynamicReadOnlyProperties props;
 	
 	public static final String[] XML_PROLOG_PATTERNS = {"<\\?xml[^>]*>", "<!DOCTYPE[^>]*>"};
 
-	static {
-		props = JNDISingleton.getInstance();
-		cchn52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
-	}
+    public static Document parseMetadataBody(String postBody) {
+        try {
+            Document doc = null;
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(postBody)));
+            doc.getDocumentElement().normalize();
+            return doc;
+        } catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static ParsedMetadata parseMetadataXmlFile(String postBody) {
+		List<String> title = new ArrayList<>();
+		List<String> srcUsed = new ArrayList<>();
+		List<String> keywords = new ArrayList<>();
+		List<Publication> data = new ArrayList<>();
+		List<Publication> publication = new ArrayList<>();
+		List<Publication> resource = new ArrayList<>();
+        Bbox box = new Bbox();
+        
+        try {
+
+            Document doc = parseMetadataBody(postBody);
+            
+            title.addAll(extractStringsFromCswDoc(doc, "/metadata/idinfo/citation/citeinfo/title"));
+            srcUsed.addAll(extractStringsFromCswDoc(doc, "/metadata/dataqual/lineage/procstep/srcused"));
+            
+            box = getBoundingBoxFromFgdcMetadata(postBody);
+            keywords.addAll(extractStringsFromCswDoc(doc, "//*/placekey"));
+            keywords.addAll(extractStringsFromCswDoc(doc, "//*/themekey"));
+            
+            data.addAll(getResourcesFromXml(doc, "citation"));
+            publication.addAll(getResourcesFromXml(doc, "lworkcit"));
+            resource.addAll(getResourcesFromXml(doc, "crossref"));
+            resource.addAll(getResourcesFromXml(doc, "srccite"));		
+            
+            ParsedMetadata metadata = new ParsedMetadata();
+            metadata.setTitle(title);
+            metadata.setSrcUsed(srcUsed);
+            metadata.setBox(box);
+            metadata.setKeywords(keywords);
+            metadata.setData(data);
+            metadata.setPublications(publication);
+            metadata.setResources(resource);
+
+            // Only some, generally raster, metadata xml files will include EPSG data
+            try {
+                String epsgCode = CRS.lookupIdentifier(getCrsFromFgdcMetadata(postBody), true);
+                metadata.setEPSGCode(epsgCode);
+            } catch (Exception e) {
+                log.info("Unable to extract an EPSG code from metadata XML; This is not an error. Returning null. Reason: " + e.getMessage());
+            }
+
+            return metadata;
+        } catch (Exception e) {
+            log.error("Failed to parse metadata xml document. Error: " + e.getMessage() + ". Stack Trace: " + e.toString());
+        }
+        
+        return null;
+    }
 	
 	public static String stripXMLProlog(String xml) {
 		String xmlWithoutHeader = xml;
@@ -96,206 +131,145 @@ public class MetadataUtil {
         }
         
         return result;
-	}
-
-	/**
-	 * I really don't like this in its current form, we should rethink this
-	 * process and move this around
-	 *
-	 * @param metadataEndpoint metadata endpoint for retreival
-	 * @param attr attribute summary is for
-	 * @return
-	 * @throws IOException
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 */
-	static public String getSummaryFromWPS(String metadataEndpoint, String attr) throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-		String wpsRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-				+ "<wps:Execute xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" service=\"WPS\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd\">"
-				+ "<ows:Identifier>org.n52.wps.server.r.item.summary</ows:Identifier>"
-				+ "<wps:DataInputs>"
-				+ "<wps:Input>"
-				+ "<ows:Identifier>input</ows:Identifier>"
-				+ "<wps:Data>"
-				+ "<wps:LiteralData><![CDATA["
-				+ metadataEndpoint
-				+ "]]></wps:LiteralData>"
-				+ "</wps:Data>"
-				+ "</wps:Input>";
-
-				if(attr != null && attr.length() > 0) {
-					wpsRequest += "<wps:Input>"
-					+ "<ows:Identifier>attr</ows:Identifier>"
-					+ "<wps:Data>"
-					+ "<wps:LiteralData>" + attr + "</wps:LiteralData>"
-					+ "</wps:Data>"
-					+ "</wps:Input>";
-				}
-
-				wpsRequest += "</wps:DataInputs>"
-				+ "<wps:ResponseForm>"
-				+ "<wps:RawDataOutput>"
-				+ "<ows:Identifier>output</ows:Identifier>"
-				+ "</wps:RawDataOutput>"
-				+ "</wps:ResponseForm>"
-				+ "</wps:Execute>";
-
-		HttpUriRequest req = new HttpPost(cchn52Endpoint + "/WebProcessingService");
-		HttpClient client = new DefaultHttpClient();
-		req.addHeader("Content-Type", "text/xml");
-		if (!StringUtils.isBlank(wpsRequest) && req instanceof HttpEntityEnclosingRequestBase) {
-			StringEntity contentEntity = new StringEntity(wpsRequest);
-			((HttpEntityEnclosingRequestBase) req).setEntity(contentEntity);
-		}
-		HttpResponse resp = client.execute(req);
-		StatusLine statusLine = resp.getStatusLine();
-
-		if (statusLine.getStatusCode() != 200) {
-			throw new IOException("Error in response from wps");
-		}
-		String data = IOUtils.toString(resp.getEntity().getContent(), "UTF-8");
-		if (data.contains("ExceptionReport")) {
-			String error = "Error in response from wps";
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			factory.setNamespaceAware(true);
-			Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(data.getBytes()));
-			JXPathContext ctx = JXPathContext.newContext(doc.getDocumentElement());
-			ctx.registerNamespace("ows", "http://www.opengis.net/ows/1.1");
-			List<Node> nodes = ctx.selectNodes("ows:Exception/ows:ExceptionText/text()");
-			if (nodes != null && !nodes.isEmpty()) {
-				StringBuilder builder = new StringBuilder();
-				for (Node node : nodes) {
-					builder.append(node.getTextContent()).append(System.lineSeparator());
-				}
-				error = builder.toString();
-			}
-			throw new RuntimeException(error);
-		}
-		return data;
-	}
-
-	public static String extractMetadataFromShp(InputStream is) {
-		String metadata = null;
-		ZipInputStream zip = new ZipInputStream(is, Charset.forName("UTF-8"));
-		
-		try {
-			ZipEntry entry = null;
-			while (null != (entry = zip.getNextEntry())) {
-				String name = entry.getName();
-				if (name.endsWith(".xml")) {
-					BufferedReader buf = new BufferedReader(new InputStreamReader(zip, Charset.forName("UTF-8")));
-					StringWriter writer = new StringWriter();
-					String line = null;
-					while (null != (line = buf.readLine())) {
-						writer.write(line);
-					}
-					metadata = writer.toString();
-					zip.closeEntry();
-				} else {
-					zip.closeEntry();
-				}
-			}
-		} catch (IOException e) {
-			log.error("Error with shapefile", e);
-		} finally {
-			IOUtils.closeQuietly(zip);
-		}
-		return metadata;
-	}
+    }
+    
+    public static String extractCollectionDateFromXml(Document xml, String attr) {
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
         
-        public static Bbox getBoundingBoxFromFgdcMetadata(String inMetadata) throws JAXBException, UnsupportedEncodingException{
-            
-                Bbox bbox = new Bbox();
-                //parse out the WGS84 bbox from the metadata xml
-                Metadata metadata = null;
+        try {
+            XPathExpression expr = xpath.compile("//eainfo/detailed/attr");
+			NodeList nl = (NodeList) expr.evaluate(xml, XPathConstants.NODESET);
+			for(int i = 0; i < nl.getLength(); i++) {
+                String nodeAttr = "";
+                String nodeDefStr = "";
 
-                // JAXB will require jaxb-api.jar and jaxb-impl.jar part of java 1.6. Much safer way to interrogate xml and maintain than regex
-                try {
-                        JAXBContext jaxbContext = JAXBContext.newInstance(Metadata.class);
+                // Extract Attr Node Details
+				for(int j = 0; j < nl.item(i).getChildNodes().getLength(); j++) {
+                    Node curChild = nl.item(i).getChildNodes().item(j);
+                    if("attrlabl".equals(curChild.getNodeName())) {
+                        nodeAttr = curChild.getTextContent().toLowerCase();
+                    } else if("attrdef".equals(curChild.getNodeName())) {
+                        nodeDefStr = curChild.getTextContent().toLowerCase();
+                    }
+                }
 
-                        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-                        metadata = (Metadata) jaxbUnmarshaller.unmarshal(new ByteArrayInputStream(inMetadata.getBytes("UTF-8")));               
+                // If this Attr Node is for our attr then parse out the collection date
+                if(nodeAttr.equals(attr.toLowerCase())) {
+                    String regex = ".*?(\\w+ \\d{4} to \\w+ \\d{4})\\.?";
+                    Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+                    Matcher matcher = pattern.matcher(nodeDefStr);
 
-                }     catch (JAXBException e) { //schema used https: www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd
-                            log.error("Unable to parse xml file. Has the schema changed? https://www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd :" + e.getMessage());
-                            throw e;
-                }  
-         
-                Idinfo idinfo = metadata.getIdinfo();
-                Spdom spdom = idinfo.getSpdom();
-                Bounding bounding = spdom.getBounding();
-        
-                double minx = bounding.getWestbc();
-                double miny = bounding.getSouthbc();
-                double maxx = bounding.getEastbc();
-                double maxy = bounding.getNorthbc();
-        
-                bbox.setBbox(minx, miny, maxx, maxy);
-            
-                return bbox;
+                    //Populate Matches
+                    while(matcher.find()) {
+                        if(matcher.groupCount() >= 1) {
+                            return matcher.group(1);
+                        }
+                    }
+                }
+            }
+
+            log.error("Failed to find matching Attr node in metadata xml for attr: " + attr);
+        } catch (Exception e) {
+            log.error("Failed to parse CSW Document while extracing collection date for attr: " + attr);
         }
         
-        public static CoordinateReferenceSystem getCrsFromFgdcMetadata(String inMetadata) throws FactoryException, JAXBException, UnsupportedEncodingException{
-           //create the WKT to instantiate a CRS object from org.geotools.referencing
-                
-                CRSParameters crsParms = new CRSParameters();
-                
-                Metadata metadata = null;
-                try {
-                        JAXBContext jaxbContext = JAXBContext.newInstance(Metadata.class);
+        return null;
+    }
+        
+    public static Bbox getBoundingBoxFromFgdcMetadata(String inMetadata) throws JAXBException, UnsupportedEncodingException{
+        
+            Bbox bbox = new Bbox();
+            //parse out the WGS84 bbox from the metadata xml
+            Metadata metadata = null;
 
-                        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-                        metadata = (Metadata) jaxbUnmarshaller.unmarshal(new ByteArrayInputStream(inMetadata.getBytes("UTF-8")));               
+            // JAXB will require jaxb-api.jar and jaxb-impl.jar part of java 1.6. Much safer way to interrogate xml and maintain than regex
+            try {
+                    JAXBContext jaxbContext = JAXBContext.newInstance(Metadata.class);
 
-                }     catch (JAXBException e) { //schema used https: www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd
-                            log.error("Unable to parse xml file. Has the schema changed? https:www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd :" + e.getMessage());
-                            throw e;
-                }  
-                
-                Horizsys horizsys = metadata.getSpref().getHorizsys();
-                               
-                String ellips = horizsys.getGeodetic().getEllips();
-                String horizdn = horizsys.getGeodetic().getHorizdn();
-                double denflat = horizsys.getGeodetic().getDenflat();
-                double semiaxis = horizsys.getGeodetic().getSemiaxis();
-                
-                String mapprojn = horizsys.getPlanar().getMapproj().getMapprojn();
-                double feast = horizsys.getPlanar().getMapproj().getMapprojp().getFeast();
-                double fnorth = horizsys.getPlanar().getMapproj().getMapprojp().getFnorth();
-                double latprjo = horizsys.getPlanar().getMapproj().getMapprojp().getLatprjo();
-                double longcm = horizsys.getPlanar().getMapproj().getMapprojp().getLongcm();
-                double stdparll = horizsys.getPlanar().getMapproj().getMapprojp().getStdparll();
-                
-                // these defaults were derived from the first 3 raster files meta-data CR, AE, PAE
-                // Hoping that these can be optional or located in future metadata in which case 
-                // an if check should be performed and the value replaced if it doesn't match the default
-                String defaultGcs = "GCS_North_American_1983";
-                String defaultPrimeM = "Greenwich\",0.0]";
-                String defaultUnit = "Degree\",0.0174532925199433]]";
-                String defaultProjection = "Albers";
-                String defaultLengthUnit = "Meter";
-                double defaultLengthValue = 1.0;                
-                
-                crsParms.setEllips(ellips);
-                crsParms.setHorizdn(horizdn);
-                crsParms.setDenflat(denflat);
-                crsParms.setSemiaxis(semiaxis);
-                crsParms.setMapprojn(mapprojn);
-                crsParms.setFeast(feast);
-                crsParms.setFnorth(fnorth);
-                crsParms.setLatprjo(latprjo);
-                crsParms.setLongcm(longcm);
-                crsParms.setStdparll(stdparll);
-                
-                crsParms.setGcs(defaultGcs);
-                crsParms.setPrimeM(defaultPrimeM);
-                crsParms.setUnit(defaultUnit);
-                crsParms.setProjection(defaultProjection);
-                crsParms.setLengthUnit(defaultLengthUnit);
-                crsParms.setLengthValue(defaultLengthValue);
-                              
-                // to look up the EPSG code use Integer eCode = CRS.lookupEpsgCode(crs, true); yields 5070 and/or String idCode = CRS.lookupIdentifier(crs, true); yields EPSG:5070 
-                return CRS.parseWKT(buildWkt(crsParms));// same as FactoryFinder.getCRSFactory(null).createFromWKT(wkt);
+                    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+                    metadata = (Metadata) jaxbUnmarshaller.unmarshal(new ByteArrayInputStream(inMetadata.getBytes("UTF-8")));               
+
+            }     catch (JAXBException e) { //schema used https: www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd
+                        log.error("Unable to parse xml file. Has the schema changed? https://www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd :" + e.getMessage());
+                        throw e;
+            }  
+        
+            Idinfo idinfo = metadata.getIdinfo();
+            Spdom spdom = idinfo.getSpdom();
+            Bounding bounding = spdom.getBounding();
+    
+            double minx = bounding.getWestbc();
+            double miny = bounding.getSouthbc();
+            double maxx = bounding.getEastbc();
+            double maxy = bounding.getNorthbc();
+    
+            bbox.setBbox(minx, miny, maxx, maxy);
+        
+            return bbox;
+    }
+    
+    public static CoordinateReferenceSystem getCrsFromFgdcMetadata(String inMetadata) throws FactoryException, JAXBException, UnsupportedEncodingException{
+        //create the WKT to instantiate a CRS object from org.geotools.referencing
+            
+            CRSParameters crsParms = new CRSParameters();
+            
+            Metadata metadata = null;
+            try {
+                    JAXBContext jaxbContext = JAXBContext.newInstance(Metadata.class);
+
+                    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+                    metadata = (Metadata) jaxbUnmarshaller.unmarshal(new ByteArrayInputStream(inMetadata.getBytes("UTF-8")));               
+
+            }     catch (JAXBException e) { //schema used https: www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd
+                        log.error("Unable to parse xml file. Has the schema changed? https:www.fgdc.gov/schemas/metadata/fgdc-std-001-1998-sect01.xsd :" + e.getMessage());
+                        throw e;
+            }  
+            
+            Horizsys horizsys = metadata.getSpref().getHorizsys();
+                            
+            String ellips = horizsys.getGeodetic().getEllips();
+            String horizdn = horizsys.getGeodetic().getHorizdn();
+            double denflat = horizsys.getGeodetic().getDenflat();
+            double semiaxis = horizsys.getGeodetic().getSemiaxis();
+            
+            String mapprojn = horizsys.getPlanar().getMapproj().getMapprojn();
+            double feast = horizsys.getPlanar().getMapproj().getMapprojp().getFeast();
+            double fnorth = horizsys.getPlanar().getMapproj().getMapprojp().getFnorth();
+            double latprjo = horizsys.getPlanar().getMapproj().getMapprojp().getLatprjo();
+            double longcm = horizsys.getPlanar().getMapproj().getMapprojp().getLongcm();
+            double stdparll = horizsys.getPlanar().getMapproj().getMapprojp().getStdparll();
+            
+            // these defaults were derived from the first 3 raster files meta-data CR, AE, PAE
+            // Hoping that these can be optional or located in future metadata in which case 
+            // an if check should be performed and the value replaced if it doesn't match the default
+            String defaultGcs = "GCS_North_American_1983";
+            String defaultPrimeM = "Greenwich\",0.0]";
+            String defaultUnit = "Degree\",0.0174532925199433]]";
+            String defaultProjection = "Albers";
+            String defaultLengthUnit = "Meter";
+            double defaultLengthValue = 1.0;                
+            
+            crsParms.setEllips(ellips);
+            crsParms.setHorizdn(horizdn);
+            crsParms.setDenflat(denflat);
+            crsParms.setSemiaxis(semiaxis);
+            crsParms.setMapprojn(mapprojn);
+            crsParms.setFeast(feast);
+            crsParms.setFnorth(fnorth);
+            crsParms.setLatprjo(latprjo);
+            crsParms.setLongcm(longcm);
+            crsParms.setStdparll(stdparll);
+            
+            crsParms.setGcs(defaultGcs);
+            crsParms.setPrimeM(defaultPrimeM);
+            crsParms.setUnit(defaultUnit);
+            crsParms.setProjection(defaultProjection);
+            crsParms.setLengthUnit(defaultLengthUnit);
+            crsParms.setLengthValue(defaultLengthValue);
+                            
+            // to look up the EPSG code use Integer eCode = CRS.lookupEpsgCode(crs, true); yields 5070 and/or String idCode = CRS.lookupIdentifier(crs, true); yields EPSG:5070 
+            return CRS.parseWKT(buildWkt(crsParms));// same as FactoryFinder.getCRSFactory(null).createFromWKT(wkt);
         }       
        
         private static String buildWkt(CRSParameters parms)
