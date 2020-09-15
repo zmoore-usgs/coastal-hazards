@@ -70,7 +70,7 @@ public class TreeResource {
 			root.add("items", rootItems);
 			response = Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
 		} catch (Exception e) {
-			log.error(e.toString());
+			log.error(e.toString(), e);
 		}
 		return response;
 	}
@@ -102,7 +102,7 @@ public class TreeResource {
 			root.add("items", orphans);
 			response = Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
 		} catch (Exception e) {
-			log.error(e.toString() + curItem.getId());
+			log.error(e.toString() + " - " + curItem.getId(), e);
 		}
 		return response;
 	}
@@ -116,7 +116,7 @@ public class TreeResource {
 		try (ItemManager itemManager = new ItemManager()) {
 			item = itemManager.load(id);
 		} catch (Exception e) {
-			log.error(e.toString());
+			log.error(e.toString(), e);
 		}
 
 		if (item == null) {
@@ -311,7 +311,7 @@ public class TreeResource {
 						log.warn("Status Manager did not update the structure status after updating items. This could lead to inconsistencies in the data");
 					}
 				} catch (Exception e) {
-					log.error(e.toString());
+					log.error(e.toString(), e);
 				}
 			} else {
 				log.warn("Could not update {} items.", itemList.size());

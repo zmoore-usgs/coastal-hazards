@@ -7,6 +7,8 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Item;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -16,6 +18,8 @@ import java.util.List;
  */
 public class ItemTreeAdapter implements JsonSerializer<Item> {
 
+	private static final Logger log = LoggerFactory.getLogger(ItemTreeAdapter.class);
+
 	@Override
 	public JsonElement serialize(Item src, Type typeOfSrc, JsonSerializationContext context) {
 		JsonElement fullItem = GsonUtil.getDefault().toJsonTree(src, typeOfSrc);
@@ -24,7 +28,12 @@ public class ItemTreeAdapter implements JsonSerializer<Item> {
 			JsonObject json = (JsonObject) fullItem;
 			simplified.add("id", json.get("id"));
 			simplified.add("itemType", json.get("itemType"));
-			simplified.add("title", json.getAsJsonObject("summary").getAsJsonObject("full").get("title"));
+			if(json.getAsJsonObject("summary") != null && json.getAsJsonObject("summary").getAsJsonObject("full") != null) {
+				simplified.add("title", json.getAsJsonObject("summary").getAsJsonObject("full").get("title"));
+			} else {
+				simplified.add("title", null);
+				log.warn("Item " + src.getId() + " had null full summary so setting title to null.");
+			}
 			simplified.add("displayedChildren", json.getAsJsonArray("displayedChildren"));
 			
 			List<Item> items = src.getChildren();
