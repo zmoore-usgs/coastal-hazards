@@ -2090,18 +2090,18 @@ CCH.Objects.Publish.UI = function () {
 	var applyAdditionalMetadataToRasterForm = function(layerFormData) {
 		if(newLayerMetadata != null) {
 			if($rasterModalExtractSrsBox.is(':checked')) {
-				if(newLayerMetadata.EPSGCode != null) {
-					layerFormData.set("epsgCode", newLayerMetadata.EPSGCode);
+				if(newLayerMetadata.epsgCode != null) {
+					layerFormData.set("epsgCode", newLayerMetadata.epsgCode);
 				} else {
 					layerFormData.set("epsgCode", "");
 				}		
 			}
 			
-			if(newLayerMetadata.Box != null && newLayerMetadata.Box.length == 4) {
-				layerFormData.set("bboxw", newLayerMetadata.Box[0]);
-				layerFormData.set("bboxs", newLayerMetadata.Box[1]);
-				layerFormData.set("bboxe", newLayerMetadata.Box[2]);
-				layerFormData.set("bboxn", newLayerMetadata.Box[3]);
+			if(newLayerMetadata.box != null && newLayerMetadata.box.length == 4) {
+				layerFormData.set("bboxw", newLayerMetadata.box[0]);
+				layerFormData.set("bboxs", newLayerMetadata.box[1]);
+				layerFormData.set("bboxe", newLayerMetadata.box[2]);
+				layerFormData.set("bboxn", newLayerMetadata.box[3]);
 			}
 		}
 
@@ -2215,38 +2215,38 @@ CCH.Objects.Publish.UI = function () {
 				$('.form-publish-info-item-panel-button-add').removeAttr(CCH.CONFIG.strings.disabled, CCH.CONFIG.strings.disabled);
 				
 				//Publications
-				if(newLayerMetadata.hasOwnProperty("Publications")) {
-					newLayerMetadata.Publications.forEach(function (publication) {
+				if(newLayerMetadata.hasOwnProperty("publications")) {
+					newLayerMetadata.publications.forEach(function (publication) {
 						me.createPublicationRow(publication.link, publication.title, "publications");
 					});
 				}
 
 				//Data
-				if(newLayerMetadata.hasOwnProperty("Data")) {
-					newLayerMetadata.Data.forEach(function (data) {
+				if(newLayerMetadata.hasOwnProperty("data")) {
+					newLayerMetadata.data.forEach(function (data) {
 						me.createPublicationRow(data.link, data.title, "data");
 					});
 				}
 
 				//Resources
-				if(newLayerMetadata.hasOwnProperty("Resources")) {
-					newLayerMetadata.Resources.forEach(function (resource) {
+				if(newLayerMetadata.hasOwnProperty("resources")) {
+					newLayerMetadata.resources.forEach(function (resource) {
 						me.createPublicationRow(resource.link, resource.title, "resources");
 					});
 				}
 			}
 
 			// Apply Keywords
-			if(applyKeywords && newLayerMetadata.hasOwnProperty("Keywords")) {
-				newLayerMetadata.Keywords.forEach(function (keyword) {
+			if(applyKeywords && newLayerMetadata.hasOwnProperty("keywords")) {
+				newLayerMetadata.keywords.forEach(function (keyword) {
 					me.addKeywordGroup(keyword);
 				});
 			}
 
 			// Apply Bbox
-			if(applyBbox && newLayerMetadata.hasOwnProperty("Box")) {
+			if(applyBbox && newLayerMetadata.hasOwnProperty("box")) {
 				//Bbox
-				var newBbox = newLayerMetadata.Box;
+				var newBbox = newLayerMetadata.box;
 				$bboxWest.val(newBbox[0]);
 				$bboxSouth.val(newBbox[1]);
 				$bboxEast.val(newBbox[2]);
@@ -2579,48 +2579,38 @@ CCH.Objects.Publish.UI = function () {
 	me.createStormTemplate = function($result, layerId, newAlias, copyType, copyText, trackId) {
 		$result.empty();
 		$result.append('Working... (Step 5/5)<br/><br/>');
+		var formData = new FormData($newStormMetadata[0]);
+		formData.append("layerId", layerId);
+		formData.append("activeStorm", $newStormModalActiveBox.is(':checked'));
+		formData.append("alias", newAlias);
+		formData.append("copyType", copyType);
+		formData.append("copyVal", copyText);
+		formData.append("trackId", trackId);
 		$.ajax({
-			url: CCH.baseUrl + "/data/metadata",
-			type: 'POST',
-			data: new FormData($newStormMetadata[0]),
+			url: CCH.CONFIG.contextPath + '/data/template/storm/',
 			contentType: false,
-			processData: false
+			processData: false,
+			data: formData,
+			method: 'POST'
 		})
-		.success(function(data, textStatus, jqXHR) {
-			$.ajax({
-				url: CCH.CONFIG.contextPath + '/data/template/storm/',
-				traditional: true,
-				data: {
-					layerId: layerId,
-					activeStorm: $newStormModalActiveBox.is(':checked'),
-					alias: newAlias,
-					copyType: copyType,
-					copyVal: copyText,
-					trackId: trackId,
-					title: data.title,
-					srcUsed: data.srcUsed
-				},
-				method: "GET"
-			})
-			.success(function(data) {
-				var id = data.id;
+		.success(function(data) {
+			var id = data.id;
 
-				if(id != null) {
-					$(window).on('generate.image.complete', function (evt, id) {
-						window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
-					});
+			if(id != null) {
+				$(window).on('generate.image.complete', function (evt, id) {
+					window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
+				});
 
-					// Do not image gen if no bbox
-					if ([$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()].join('')) {
-						CCH.ui.generateImage(id);
-					} else {
-						window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
-					}
+				// Do not image gen if no bbox
+				if ([$bboxWest.val(), $bboxSouth.val(), $bboxEast.val(), $bboxNorth.val()].join('')) {
+					CCH.ui.generateImage(id);
 				} else {
-					$result.append('An unknown error occurred while saving the storm. It may not have been created successfully.');
-					me.enableNewStormButtons();
+					window.location = CCH.CONFIG.contextPath + '/publish/item/' + id;
 				}
-			})
+			} else {
+				$result.append('An unknown error occurred while saving the storm. It may not have been created successfully.');
+				me.enableNewStormButtons();
+			}
 		})
 		.fail(function(data) {
 			$result.append('Failed to create storm item and associated child items. Storm creation aborted.');

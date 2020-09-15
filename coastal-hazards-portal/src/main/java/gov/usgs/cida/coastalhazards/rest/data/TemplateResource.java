@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Arrays;
@@ -20,24 +19,22 @@ import javax.annotation.security.PermitAll;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
+import org.w3c.dom.Document;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -62,20 +59,21 @@ import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.summary.Full;
 import gov.usgs.cida.coastalhazards.model.summary.Publication;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
+import gov.usgs.cida.coastalhazards.model.util.ParsedMetadata;
 import gov.usgs.cida.coastalhazards.model.util.Status;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.StormUtil;
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.WFSIntrospector;
-import gov.usgs.cida.utilities.properties.JNDISingleton;
 import jersey.repackaged.com.google.common.collect.Lists;
 
 /**
- *
+ * TODO (Zack) - This concept was never utilized beyond Storms and is now full of a lot of storm-specific logic. 
+ * We should probably just drop this whole generic template item concept and replace it with a storm item.
+ * 
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path(DataURI.TEMPLATE_PATH)
@@ -83,12 +81,6 @@ import jersey.repackaged.com.google.common.collect.Lists;
 public class TemplateResource {
 
 	private static final Logger log = LoggerFactory.getLogger(TemplateResource.class);
-	private static final DynamicReadOnlyProperties props;
-	private static final String metadataEndpoint;
-	static {
-		props = JNDISingleton.getInstance();
-		metadataEndpoint = props.getProperty("coastal-hazards.base.url") + DataURI.DATA_SERVICE_ENDPOINT + DataURI.METADATA_PATH + "/latest";
-	}
 
 	@GET
 	@Path("/item/{id}")
@@ -97,11 +89,7 @@ public class TemplateResource {
 		return new ItemResource().getItem(id, false, request);
 	}
 
-	@POST
-	@Path("/item/{id}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
-	public Response instantiateTemplate(@PathParam("id") String id, String content) {
+	public Response instantiateTemplate(Document metadataXml, ParsedMetadata parsedMetadata, String id, String content) {
 		Response response = null;
 		try (ItemManager itemMan = new ItemManager(); LayerManager layerMan = new LayerManager()) {
 			Item template = itemMan.load(id);
@@ -126,7 +114,7 @@ public class TemplateResource {
 				if (layer != null) {
 					String layerId = layer.getAsString();
 					try {
-						newItemList = makeItemsFromLayer(template, layerId, layerMan);
+						newItemList = makeItemsFromLayer(metadataXml, parsedMetadata, template, layerId, layerMan);
 						retainedItems = findItemsToRetain(template, retainAggregations);
 						newAndOldList = new LinkedList<>(retainedItems);
 						newAndOldList.addAll(newItemList);
@@ -142,7 +130,7 @@ public class TemplateResource {
 			} else {
 				Map<String, Item> childMap = makeChildItemMap(childItems);
 				JsonArray children = parsed.get("children").getAsJsonArray();
-				newItemList = makeItemsFromDocument(template, children, childMap, itemMan, layerMan);
+				newItemList = makeItemsFromDocument(metadataXml, parsedMetadata, template, children, childMap, itemMan, layerMan);
 				List<String> visibleItems = visibleItems(children, newItemList, childMap);
 				displayed.addAll(visibleItems);
 				newAndOldList = newItemList;
@@ -196,13 +184,13 @@ public class TemplateResource {
 		}
 	}
 	
-	protected Response instantiateStormAndHandleResponse(String templateId, String childJson, String alias, boolean active, AliasManager aliasMan, ItemManager itemMan){
+	protected Response instantiateStormAndHandleResponse(Document metadataXml, ParsedMetadata parsedMetadata, String templateId, String childJson, String alias, boolean active, AliasManager aliasMan, ItemManager itemMan){
 		Response response;
 		if (StringUtils.isEmpty(templateId)) {
 			//this is the server's fault rather than the client's
 			response = Response.status(500).build();
 		} else {
-			response = instantiateTemplate(templateId, childJson);
+			response = instantiateTemplate(metadataXml, parsedMetadata, templateId, childJson);
 
 			if (response.getStatus() == HttpStatus.SC_OK) {
 				if (active) {
@@ -273,24 +261,23 @@ public class TemplateResource {
 		return copies;
 	}
 	
-	@GET
+	@POST
 	@Path("/storm")
 	@Produces(MediaType.APPLICATION_JSON)
 	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response instantiateStormTemplate(
-			@QueryParam("layerId") String layerId,
-			@QueryParam("activeStorm") String active,
-			@QueryParam("alias") String alias,
-			@QueryParam("copyType") String copyType,
-			@QueryParam("copyVal") String copyVal,
-			@QueryParam("trackId") String trackId,
-			@QueryParam("title") List<String> title,
-			@QueryParam("srcUsed") List<String> srcUsed) {
+			@FormDataParam("layerId") String layerId,
+			@FormDataParam("activeStorm") String active,
+			@FormDataParam("alias") String alias,
+			@FormDataParam("copyType") String copyType,
+			@FormDataParam("copyVal") String copyVal,
+			@FormDataParam("trackId") String trackId,
+			@FormDataParam("file") String metadataFile) {
 		Response response;
 		//validate parameters
-		if (StringUtils.isEmpty(layerId) || StringUtils.isEmpty(active)) {
+		if (StringUtils.isEmpty(layerId) || StringUtils.isEmpty(active) || StringUtils.isEmpty(metadataFile)) {
 			response = Response.status(400).build();
-			log.error("The client failed to specify values for layerId ({}) or active ({}).", layerId, active);
+			log.error("The client failed to specify values for layerId ({}) or active ({}) or failed to provide a metadata xml file.", layerId, active);
 		} else {
 			try (
 				ItemManager itemMan = new ItemManager();
@@ -300,6 +287,13 @@ public class TemplateResource {
 				boolean isActive = Boolean.parseBoolean(active);
 				Layer layer = layerMan.load(layerId);
 				Gson gson = GsonUtil.getDefault();
+				Document metadataXml = MetadataUtil.parseMetadataBody(metadataFile);
+				ParsedMetadata parsedMetadata = MetadataUtil.parseMetadataXmlFile(metadataFile);
+
+				if(parsedMetadata == null) {
+					throw new RuntimeException("Failed to parse storm metadata.");
+				}
+
 				String childJson = gson.toJson(StormUtil.createStormChildMap(layerId, isActive, trackId));
 				
 				//validate that objects could be loaded/constructed based on the parameters to the web service
@@ -311,7 +305,7 @@ public class TemplateResource {
 					if ("item".equalsIgnoreCase(copyType) || "alias".equalsIgnoreCase(copyType)) {
 						summary = copyExistingSummary(copyType, copyVal, itemMan, aliasMan);
 					} else {
-						summary = StormUtil.buildStormTemplateSummary(title, srcUsed);
+						summary = StormUtil.buildStormTemplateSummary(parsedMetadata.getTitle(), parsedMetadata.getSrcUsed());
 					}
 					if (null == summary) {
 						response = Response.status(HttpStatus.SC_BAD_REQUEST).build();
@@ -319,11 +313,11 @@ public class TemplateResource {
 						List<Service> serviceCopies = getCopyOfServices(layer);
 						Item baseTemplate = baseTemplateItem(Boolean.parseBoolean(active), layer.getBbox(), serviceCopies, summary);
 						String templateId = itemMan.persist(baseTemplate);
-						response = instantiateStormAndHandleResponse(templateId, childJson, alias, isActive, aliasMan, itemMan);
+						response = instantiateStormAndHandleResponse(metadataXml, parsedMetadata, templateId, childJson, alias, isActive, aliasMan, itemMan);
 					}
 				}
 			} catch (Exception e) {
-				log.error(e.toString());
+				log.error(e.toString(), e);
 				response = Response.status(500).build();
 			}
 		}
@@ -384,7 +378,7 @@ public class TemplateResource {
 		return result;
 	}
 	
-	private List<Item> makeItemsFromDocument(Item template, JsonArray children, Map<String, Item> childMap, ItemManager itemMan, LayerManager layerMan) {
+	private List<Item> makeItemsFromDocument(Document metadataXml, ParsedMetadata parsedMetadata, Item template, JsonArray children, Map<String, Item> childMap, ItemManager itemMan, LayerManager layerMan) {
 		Iterator<JsonElement> iterator = children.iterator();
 
 		while (iterator.hasNext()) {
@@ -415,7 +409,7 @@ public class TemplateResource {
 				} else {
 					throw new BadRequestException("Must specify child or attribute to replace/use");
 				}
-				Summary summary = makeSummary(attr);
+				Summary summary = makeChildSummary(metadataXml, parsedMetadata, attr);
 				Item newItem = templateItem(template, attr, layer, summary);
 				if (replaceId == null) {
 					replaceId = newItem.getId();
@@ -434,7 +428,7 @@ public class TemplateResource {
 		return new LinkedList<>(childMap.values());
 	}
 	
-	private List<Item> makeItemsFromLayer(Item template, String layerId, LayerManager layerMan) throws IOException {
+	private List<Item> makeItemsFromLayer(Document metadataXml, ParsedMetadata parsedMetadata, Item template, String layerId, LayerManager layerMan) throws IOException {
 		List<Item> items = new LinkedList<>();
 		
 		Layer layer = layerMan.load(layerId);
@@ -442,7 +436,7 @@ public class TemplateResource {
 		List<String> attrs = WFSIntrospector.getAttrs(wfs);
 		for (String attr : attrs) {
 			if (Attributes.contains(attr)) {
-				Summary summary = makeSummary(attr);
+				Summary summary = makeChildSummary(metadataXml, parsedMetadata, attr);
 				Item item = templateItem(template, attr, layer, summary);
 				items.add(item);
 			}
@@ -475,18 +469,14 @@ public class TemplateResource {
 		return newItem;
 	}
 
-	private Summary makeSummary(String attr) throws JsonSyntaxException {
-		String summaryJson = null;
+	private Summary makeChildSummary(Document metadataXml, ParsedMetadata parsedMetadata, String attr) throws JsonSyntaxException {
+		Summary summary = null;
 		try {
-			summaryJson = MetadataUtil.getSummaryFromWPS(metadataEndpoint, attr);
-			log.debug("summaryJsonMetadataUtil {}", summaryJson);
-		} catch (IOException | ParserConfigurationException | SAXException | URISyntaxException ex) {
+			summary = StormUtil.buildStormChildSummary(metadataXml, parsedMetadata, attr);
+			log.debug("Template Child Summary {}", new Gson().toJson(summary));
+		} catch (Exception ex) {
 			log.error("Problem getting summary from item", ex);
 		}
-		Gson gson = GsonUtil.getDefault();
-		log.debug(String.valueOf(gson));
-		Summary summary = gson.fromJson(summaryJson, Summary.class);
-		log.debug(String.valueOf(summary));
 		return summary;
 	}
 	
@@ -529,8 +519,10 @@ public class TemplateResource {
 				Set<String> childKeywords = keywordsFromString(item.getSummary().getKeywords());
 				keywordSet.addAll(childKeywords);
 				List<Publication> childPubs = item.getSummary().getFull().getPublications();
-				for (Publication pub : childPubs) {
-					publicationSet.add(Publication.copyValues(pub, null));
+				if(childPubs != null && !childPubs.isEmpty()) {
+					for (Publication pub : childPubs) {
+						publicationSet.add(Publication.copyValues(pub, null));
+					}
 				}
 			}
 		}
