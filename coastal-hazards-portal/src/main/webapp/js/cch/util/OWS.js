@@ -137,50 +137,6 @@ CCH.Util.OWS = function () {
 				url: CCH.CONFIG.contextPath + '/geoserver/wps'
 			});
 		},
-		generateThumbnail: function (args) {
-			args = args || {};
-			var id = args.id,
-				callbacks = args.callbacks || {
-					success: [],
-					error: []
-				},
-			wpsFormat = new OpenLayers.Format.WPSExecute(),
-				doc = wpsFormat.write({
-					identifier: "org.n52.wps.server.r.thumbnail.service",
-					dataInputs: [{
-							identifier: "url",
-							data: {
-								literalData: {
-									value: CCH.CONFIG.publicUrl + '/data/item/' + id
-								}
-							}
-						}],
-					responseForm: {
-						rawDataOutput: {
-							encoding: "base64",
-							identifier: "output"
-						}
-					}
-				});
-
-			OpenLayers.Request.POST({
-				url: CCH.CONFIG.contextPath + '/52n/WebProcessingService',
-				data: doc,
-				success: function (response) {
-					var trimmedResponse = response.responseText.trim();
-					if (trimmedResponse.indexOf('ExceptionText') !== -1) {
-						var errorText = $(trimmedResponse).find('ows\\:ExceptionText');
-						callbacks.error.forEach(function (cb) {
-							cb(errorText.text());
-						});
-					} else {
-						callbacks.success.forEach(function (cb) {
-							cb(trimmedResponse);
-						});
-					}
-				}
-			});
-		},
 		postWPS: function (args) {
 			args = args || {};
 
@@ -387,83 +343,6 @@ CCH.Util.OWS = function () {
 					});
 				}
 			});
-		},
-		requestSummaryByAttribute: function (args) {
-			args = args || {};
-			var url = args.url ? args.url : '',
-				attribute = args.attribute,
-				callbacks = args.callbacks || {
-					success: [],
-					error: []
-				},
-			wpsFormat = new OpenLayers.Format.WPSExecute(),
-				wpsRequest;
-
-			wpsRequest = wpsFormat.write({
-				identifier: "org.n52.wps.server.r.item.summary",
-				dataInputs: [{
-						identifier: "input",
-						data: {
-							literalData: {
-								value: url
-							}
-						}
-					},
-					{
-						identifier: "attr",
-						data: {
-							literalData: {
-								value: attribute
-							}
-						}
-					}],
-				responseForm: {
-					rawDataOutput: {
-						identifier: "output"
-					}
-				}
-			});
-
-			OpenLayers.Request.POST({
-				url: CCH.CONFIG.contextPath + '/52n/WebProcessingService',
-				data: wpsRequest,
-				success: function (response) {
-					var responseText = response.responseText;
-					if (responseText.charAt(0) === '{') {
-						callbacks.success.forEach(function (cb) {
-							cb(JSON.parse(responseText));
-						});
-					} else {
-						callbacks.error.forEach(function (cb) {
-							cb(responseText);
-						});
-					}
-				}
-			});
-		},
-		buildServiceEndpoint: function (endpoint) {
-			var updatedEndpoint = null,
-				urlIndex = 0;
-			if (endpoint && endpoint.toLowerCase().indexOf('http') !== -1) {
-				if (endpoint.toLowerCase().has('coastalmap.marine.usgs.gov')) {
-					urlIndex = endpoint.indexOf('cmgp/') + 5;
-					updatedEndpoint = contextPath + '/marine/' + endpoint.substring(urlIndex);
-					CCH.config.endpoint.servertype = 'arcgis';
-				} else if (endpoint.toLowerCase().has('olga.er.usgs.gov')) {
-					urlIndex = endpoint.indexOf('services') + 8;
-					updatedEndpoint = contextPath + '/stpgis/' + endpoint.substring(urlIndex);
-					CCH.config.endpoint.servertype = 'arcgis';
-				} else if (endpoint.toLowerCase().has('cida.usgs.gov')) {
-					urlIndex = endpoint.indexOf('geoserver') + 10;
-					updatedEndpoint = contextPath + '/cidags/' + endpoint.substring(urlIndex);
-					CCH.config.endpoint.servertype = 'geoserver';
-				}
-				var indexOfQueryStart = updatedEndpoint ? updatedEndpoint.indexOf('?') : -1;
-				if (indexOfQueryStart !== -1) {
-					return updatedEndpoint.substring(0, indexOfQueryStart);
-				}
-			}
-			return updatedEndpoint;
 		}
 	});
 };
