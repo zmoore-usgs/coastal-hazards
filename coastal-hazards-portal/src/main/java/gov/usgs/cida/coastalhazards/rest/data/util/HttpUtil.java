@@ -3,11 +3,15 @@ package gov.usgs.cida.coastalhazards.rest.data.util;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
+import javax.imageio.ImageIO;
 import javax.ws.rs.core.UriBuilder;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 
 import org.apache.http.client.utils.DateUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -66,5 +70,23 @@ public class HttpUtil {
 		}
 
 		return data;
+	}
+
+	public static BufferedImage fetchImageFromUri(String endpoint) {
+
+		try(CloseableHttpClient client = HttpClientBuilder.create().build()) {
+			HttpUriRequest req = new HttpGet(endpoint);
+			log.debug("FetchImage - About to grab image from URL: " + endpoint);
+			HttpResponse response = client.execute(req);
+			try(ByteArrayInputStream bytes = new ByteArrayInputStream(EntityUtils.toByteArray(response.getEntity()))) {
+				return ImageIO.read(bytes);
+			} catch(Exception e) {
+				log.error("Failed to parse response bytes as image: ", e);
+			}
+		} catch(Exception e) {
+			log.error("Failed to retrieve image from URL: ", e);
+		}
+
+		return null;
 	}
 }

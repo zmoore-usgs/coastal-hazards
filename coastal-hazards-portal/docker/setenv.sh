@@ -33,6 +33,7 @@ export JAVA_OPTS="$JAVA_OPTS -Dcch_geoserverLayerAgeMax='$CCH_GEOSERVER_LAYER_AG
 export JAVA_OPTS="$JAVA_OPTS -Dcch_geoserverWorkspacesPermanent='$CCH_GEOSERVER_WORKSPACES_PERMANENT'"
 export JAVA_OPTS="$JAVA_OPTS -Dcch_geoserverWorkspacesPublished='$CCH_GEOSERVER_WORKSPACES_PUBLISHED'"
 export JAVA_OPTS="$JAVA_OPTS -Dcch_geoserverPortalCacheName='$CCH_GEOSERVER_PORTAL_CACHE_NAME'"
+export JAVA_OPTS="$JAVA_OPTS -Dcch_thumbnailBasemapWms='$CCH_THUMBNAIL_BASEMAP_WMS'"
 export JAVA_OPTS="$JAVA_OPTS -Dcch_production='$CCH_IS_PRODUCTION'"
 export JAVA_OPTS="$JAVA_OPTS -Dcch_development='$CCH_IS_DEVELOPMENT'"
 export JAVA_OPTS="$JAVA_OPTS -Dcch_keycloakConfigFile='$CCH_KEYCLOAK_CONFIG_FILE'"

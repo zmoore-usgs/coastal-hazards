@@ -44,6 +44,7 @@
 	<Environment name="coastal-hazards.geoserver.workspaces.permanent" type="java.lang.String" value="${cch_geoserverWorkspacesPermanent}"/>
 	<Environment name="coastal-hazards.workspace.published" type="java.lang.String" value="${cch_geoserverWorkspacesPublished}"/>
 	<Environment name="coastal-hazards.portal.geoserver.cache.name" type="java.lang.String" value="${cch_geoserverPortalCacheName}"/>
+	<Environment name="coastal-hazards.thumbnail.basemap.wms" type="java.lang.String" value="${cch_thumbnailBasemapWms}"/>
 	<Environment name="production" type="java.lang.String" value="${cch_production}"/>
 	<Environment name="development" type="java.lang.String" value="${cch_development}"/>
 

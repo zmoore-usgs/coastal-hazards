@@ -127,6 +127,13 @@ public class GeoserverUtil {
 		return service;
 	}
 
+	public static String buildGeoServerWMSRequest(String layerParam, String bboxParam, String sldParam, String sizeParam, String crsParam) {
+		String url = geoserverInternalEndpoint + (geoserverInternalEndpoint.endsWith("/") ? "" : "/") + "proxied/wms?";
+		String basicParams = "FORMAT=image/png&TRANSPARENT=TRUE&STYLE=cch&VERSION=1.3.0&SERVICE=WMS&EXCEPTIONS=application%2Fvnd.ogc.se_blank&REQUEST=GetMap";
+		url += basicParams + "&" + sizeParam + "&" + layerParam + "&" + bboxParam + "&" + sldParam + "&" + crsParam;
+		return url;
+	}
+
 	private static String importUsingWPS(String workspaceName, String storeName, String layerName, InputStream shapefile) throws IOException {
 		log.debug("Sending WPS to import {} into {}/{}", layerName, workspaceName, storeName);
 		String layerCreated = "";

@@ -1,9 +1,13 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
+import org.apache.commons.httpclient.HttpStatus;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
+import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
+import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Thumbnail;
+import gov.usgs.cida.coastalhazards.rest.data.util.ThumbnailUtil;
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowed;
 import gov.usgs.cida.coastalhazards.rest.security.ConfiguredRolesAllowedDynamicFeature;
 import gov.usgs.cida.utilities.HTTPCachingUtil;
@@ -70,6 +74,31 @@ public class ThumbnailResource {
 		}
 		return response;
 	}
+
+	@GET
+	@Path("/item/{id}/generate")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response genImage(@PathParam("id") String id, @Context HttpServletRequest request) {
+		Response response = null;
+		try(ItemManager manager = new ItemManager()) {
+			Item item = manager.load(id);
+
+			if(item == null) {
+				response = Response.status(HttpStatus.SC_NOT_FOUND).build();
+			} else {
+				String imageBase64 = ThumbnailUtil.generateBase64Thumbnail(item);
+
+				if(imageBase64 != null && !imageBase64.isEmpty()) {
+					response = Response.ok(imageBase64, MediaType.TEXT_PLAIN).build();
+				} else {
+					response = Response.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).build();
+				}
+			}
+		}
+		return response;
+	}
+
 
 	@PUT
 	@Path("/item/{id}")
