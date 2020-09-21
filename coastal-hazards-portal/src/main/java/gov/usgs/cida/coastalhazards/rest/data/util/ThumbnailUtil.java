@@ -62,7 +62,8 @@ public class ThumbnailUtil {
             
             // If basemap WMS param configured try to pull base map image
             if(thumbanilBaseWmsUrl != null && !thumbanilBaseWmsUrl.isEmpty()) {
-                baseMap = fetchBaseMap(bboxVal);
+                baseMap = new BufferedImage(THUMBNAIL_SIZE, THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
+                baseMap.getGraphics().drawImage(fetchBaseMap(bboxVal), 0, 0, THUMBNAIL_SIZE, THUMBNAIL_SIZE, null);
             }
 
             // Basemap fallback to white background
@@ -170,7 +171,7 @@ public class ThumbnailUtil {
     private static BufferedImage fetchBaseMap(String bboxVal) {
         String url = thumbanilBaseWmsUrl;
         String crsParam = "CRS=" + thumbnailCRS;
-        String sizeParam = "WIDTH=" + THUMBNAIL_SIZE + "&" + "HEIGHT=" + THUMBNAIL_SIZE;
+        String sizeParam = "WIDTH=500" + "&" + "HEIGHT=500";
         String bboxParam = "BBOX=" + bboxToWMSParam(bboxVal);
         url += "&" + sizeParam + "&" + bboxParam + "&" + crsParam;
         return HttpUtil.fetchImageFromUri(url);
