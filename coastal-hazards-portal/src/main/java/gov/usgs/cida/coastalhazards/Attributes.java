@@ -139,6 +139,13 @@ public class Attributes {
 		return set;
 	}
 
+	public static Set<String> getDomainAttrs() {
+		Set<String> domains = new HashSet<>();
+		domains.add(DATE);
+		domains.add(DATE_);
+		return domains;
+	}
+
 	public static Set<String> getRasterAttrs() {
 		Set<String> raster = new HashSet<>();
 		raster.add(GRAY_INDEX);

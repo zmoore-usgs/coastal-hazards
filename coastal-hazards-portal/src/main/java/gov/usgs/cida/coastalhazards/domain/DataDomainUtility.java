@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.domain;
 
+import gov.usgs.cida.coastalhazards.Attributes;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import java.io.IOException;
@@ -18,34 +19,34 @@ import org.apache.log4j.Logger;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class DataDomainUtility {
-    
     private static final Logger log = Logger.getLogger(DataDomainUtility.class);
 
     public static SortedSet<String> retrieveDomainFromWFS(Item item)  {
         SortedSet<String> domain = new TreeSet<>();
-        
+
         WFSGetDomain client = new WFSGetDomain();
         if (item == null) {
             throw new IllegalArgumentException("Item must be valid data item");
         } else if (item.getItemType() == Item.ItemType.aggregation || item.getItemType() == Item.ItemType.template) {
-	    List<String> displayedIds = item.getDisplayedChildren();
-	    
+            List<String> displayedIds = item.getDisplayedChildren();
             for (Item child : item.getChildren()) {
-		if(displayedIds.contains(child.getId())){
-		    Set<String> childDomain = retrieveDomainFromWFS(child); // recurse (again, avoiding cycles is important)
-		    domain.addAll(childDomain);
-		}
+                if(displayedIds.contains(child.getId())){
+                    Set<String> childDomain = retrieveDomainFromWFS(child); // recurse (again, avoiding cycles is important)
+                    domain.addAll(childDomain);
+                }
             }
-        } else if (item.getItemType() == Item.ItemType.data) {
+        } else if (item.getItemType() == Item.ItemType.data && Attributes.getDomainAttrs().contains(item.getAttr().toUpperCase())) {
             WFSService service = item.fetchWfsService();
             try {
                 Set<String> domainValuesAsStrings = client.getDomainValuesAsStrings(service, item.getAttr());
                 domain.addAll(domainValuesAsStrings);
             } catch (IOException e) {
-                log.error("unable to get domain from wfs", e);
+                log.error("Unable to get domain from wfs", e);
+            } catch(UnsupportedOperationException e) {
+                log.error("Unable to get domain for item :" + item.getId() + "(attr: " + item.getAttr() + ")", e);
             }
         }
-        
+
         return domain;
     }
     
@@ -61,9 +62,9 @@ public class DataDomainUtility {
             } catch (ParseException ex) {
                 log.error("Invalid date format in data", ex);
             }
-            
+
         }
-        
+
         return yearDomain;
     }
 }
