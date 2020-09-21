@@ -204,7 +204,10 @@ CCH.Objects.Publish.UI = function () {
 		$emphasisItemSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$emphasisAggregationSpan.removeClass(CCH.CONFIG.strings.enabled);
 		$isActiveStormRow.addClass('hidden');
-		
+
+		if(CCH.CONFIG && CCH.CONFIG.item) {
+			delete CCH.CONFIG.item;
+		}
 	};
 
 	me.enableNewItemForm = function () {
@@ -1441,34 +1444,31 @@ CCH.Objects.Publish.UI = function () {
 
 	me.generateImage = function (id) {
 		var imageEndpoint = CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id;
+		var imageGenEndpoint = imageEndpoint + "/generate";
 
-		CCH.ows.generateThumbnail({
-			id: id,
-			callbacks: {
-				success: [
-					function (base64Image) {
-						$.ajax({
-							url: imageEndpoint,
-							method: 'PUT',
-							data: base64Image,
-							contentType: 'text/plain',
-							success: function () {
-								me.loadItemImage(id);
-								$(window).trigger('generate.image.complete', [id]);
-							},
-							error: function () {
-								$itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
-								$(window).trigger('generate.image.complete', [id]);
-							}
-						});
-					}
-				],
-				error: [
-					function () {
+		$.ajax({
+			url: imageGenEndpoint,
+			method: 'GET',
+			contentType: 'text/plain',
+			success: function (base64Image) {
+				$.ajax({
+					url: imageEndpoint,
+					method: 'PUT',
+					data: base64Image,
+					contentType: 'text/plain',
+					success: function () {
+						me.loadItemImage(id);
+						$(window).trigger('generate.image.complete', [id]);
+					},
+					error: function () {
 						$itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
 						$(window).trigger('generate.image.complete', [id]);
 					}
-				]
+				});
+			},
+			error: function () {
+				$itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+				$(window).trigger('generate.image.complete', [id]);
 			}
 		});
 	};
