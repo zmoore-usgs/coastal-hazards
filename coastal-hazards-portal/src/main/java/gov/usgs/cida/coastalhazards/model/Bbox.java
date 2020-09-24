@@ -92,9 +92,7 @@ public class Bbox implements Serializable {
 				double minY = Double.parseDouble(matcher.group(2));
 				double maxX = Double.parseDouble(matcher.group(3));
 				double maxY = Double.parseDouble(matcher.group(4));
-				Pair<Double,Double> minPoint = new ImmutablePair<>(minX,minY);
-				Pair<Double,Double> maxPoint = new ImmutablePair<>(maxX,maxY);
-				return new ImmutablePair<>(minPoint, maxPoint);
+				return new ImmutablePair<>(new ImmutablePair<>(minX,minY), new ImmutablePair<>(maxX,maxY));
 			}
 		}
 
@@ -145,12 +143,15 @@ public class Bbox implements Serializable {
 			double distLong = calc.getOrthodromicDistance();
 			double angleLong = calc.getAzimuth();
 
+			// Reset calculator
+			calc = new GeodeticCalculator();
+
 			// Extend short dimension
+
 			if(distLong > distLat) {
 				// Extend latitude 50% in both directions
 				log.debug("Expand lat: " + distLat + " | " + distLong);
 				double expandDist = (distLong - distLat)/2;
-				calc = new GeodeticCalculator();
 				calc.setStartingGeographicPoint(points.getLeft().getLeft(), points.getLeft().getRight());
 				calc.setDirection(angleLat, -expandDist);
 				double newMinX = calc.getDestinationGeographicPoint().getX();
@@ -162,7 +163,6 @@ public class Bbox implements Serializable {
 				// Extend longitude 50% in both directions
 				log.debug("Expand long: " + distLat + " | " + distLong);
 				double expandDist = (distLat - distLong)/2;
-				calc = new GeodeticCalculator();
 				calc.setStartingGeographicPoint(points.getLeft().getLeft(), points.getLeft().getRight());
 				calc.setDirection(angleLong, -expandDist);
 				double newMinY = calc.getDestinationGeographicPoint().getY();

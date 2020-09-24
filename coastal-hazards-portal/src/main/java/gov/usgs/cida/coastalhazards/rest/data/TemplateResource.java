@@ -185,35 +185,36 @@ public class TemplateResource {
 	}
 	
 	protected Response instantiateStormAndHandleResponse(Document metadataXml, ParsedMetadata parsedMetadata, String templateId, String childJson, String alias, boolean active, AliasManager aliasMan, ItemManager itemMan){
-		Response response;
 		if (StringUtils.isEmpty(templateId)) {
 			//this is the server's fault rather than the client's
-			response = Response.status(500).build();
-		} else {
-			response = instantiateTemplate(metadataXml, parsedMetadata, templateId, childJson);
-
-			if (response.getStatus() == HttpStatus.SC_OK) {
-				if (active) {
-					hoistNewTemplateToTopLevel(templateId, itemMan);
-				}
-				if (!StringUtils.isEmpty(alias)) {
-					String originalTemplateId = updateStormAlias(alias, aliasMan, templateId);
-					if (active) {
-						//only orphan the item the alias initially pointed to if the new storm is active
-						orphanOriginalStormTemplate(originalTemplateId, itemMan);
-					}
-				}
-				
-				Map<String, Object> ok = new HashMap<String, Object>() {
-					private static final long serialVersionUID = 2398472L;
-					{
-						put("id", templateId);
-					}
-				};
-				String responseText = GsonUtil.getDefault().toJson(ok, HashMap.class);
-				response = Response.ok(responseText, MediaType.APPLICATION_JSON_TYPE).build();
-			}
+			return Response.status(500).build();
 		}
+
+		Response response = instantiateTemplate(metadataXml, parsedMetadata, templateId, childJson);
+
+		if (response.getStatus() == HttpStatus.SC_OK) {
+			if (active) {
+				hoistNewTemplateToTopLevel(templateId, itemMan);
+			}
+
+			if (!StringUtils.isEmpty(alias)) {
+				String originalTemplateId = updateStormAlias(alias, aliasMan, templateId);
+				if (active) {
+					//only orphan the item the alias initially pointed to if the new storm is active
+					orphanOriginalStormTemplate(originalTemplateId, itemMan);
+				}
+			}
+			
+			Map<String, Object> ok = new HashMap<String, Object>() {
+				private static final long serialVersionUID = 2398472L;
+				{
+					put("id", templateId);
+				}
+			};
+			String responseText = GsonUtil.getDefault().toJson(ok, HashMap.class);
+			response = Response.ok(responseText, MediaType.APPLICATION_JSON_TYPE).build();
+		}
+
 		return response;
 	}
 	
@@ -307,8 +308,10 @@ public class TemplateResource {
 					} else {
 						summary = StormUtil.buildStormTemplateSummary(parsedMetadata.getTitle(), parsedMetadata.getSrcUsed());
 					}
+
 					if (null == summary) {
 						response = Response.status(HttpStatus.SC_BAD_REQUEST).build();
+						log.warn("Failed to get summary when instantiating template.");
 					} else {
 						List<Service> serviceCopies = getCopyOfServices(layer);
 						Item baseTemplate = baseTemplateItem(Boolean.parseBoolean(active), layer.getBbox(), serviceCopies, summary);
@@ -519,7 +522,7 @@ public class TemplateResource {
 				Set<String> childKeywords = keywordsFromString(item.getSummary().getKeywords());
 				keywordSet.addAll(childKeywords);
 				List<Publication> childPubs = item.getSummary().getFull().getPublications();
-				if(childPubs != null && !childPubs.isEmpty()) {
+				if(childPubs != null) {
 					for (Publication pub : childPubs) {
 						publicationSet.add(Publication.copyValues(pub, null));
 					}

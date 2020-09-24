@@ -47,8 +47,7 @@ public class MetadataUtil {
     public static Document parseMetadataBody(String postBody) {
         try {
             Document doc = null;
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(postBody)));
+            doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(postBody)));
             doc.getDocumentElement().normalize();
             return doc;
         } catch(Exception e) {
@@ -95,7 +94,7 @@ public class MetadataUtil {
                 String epsgCode = CRS.lookupIdentifier(getCrsFromFgdcMetadata(postBody), true);
                 metadata.setEPSGCode(epsgCode);
             } catch (Exception e) {
-                log.info("Unable to extract an EPSG code from metadata XML; This is not an error. Returning null. Reason: " + e.getMessage());
+                log.info("Unable to extract an EPSG code from metadata XML; This is not an error. Setting null EPSG code. Reason: " + e.getMessage());
             }
 
             return metadata;

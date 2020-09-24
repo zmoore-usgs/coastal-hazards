@@ -29,15 +29,11 @@ public class MetadataResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response getMetadata(@Context HttpServletRequest req, @FormDataParam("file") String postBody) {
-		Response response;
 		ParsedMetadata result = MetadataUtil.parseMetadataXmlFile(postBody);
 
 		if(result != null) {
-			response = Response.ok(GsonUtil.getDefault().toJson(result)).build();
-		} else {
-			response = Response.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).build();
+			return Response.ok(GsonUtil.getDefault().toJson(result)).build();
 		}
-
-		return response;
+		return Response.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).build();
 	}
 }

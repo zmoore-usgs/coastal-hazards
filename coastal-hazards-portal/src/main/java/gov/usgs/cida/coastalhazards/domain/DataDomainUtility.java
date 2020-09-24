@@ -35,15 +35,13 @@ public class DataDomainUtility {
                     domain.addAll(childDomain);
                 }
             }
-        } else if (item.getItemType() == Item.ItemType.data && Attributes.getDomainAttrs().contains(item.getAttr().toUpperCase())) {
+        } else if (item.getItemType() == Item.ItemType.data && Attributes.getDomainAttrs().stream().anyMatch(item.getAttr()::equalsIgnoreCase)) {
             WFSService service = item.fetchWfsService();
             try {
                 Set<String> domainValuesAsStrings = client.getDomainValuesAsStrings(service, item.getAttr());
                 domain.addAll(domainValuesAsStrings);
-            } catch (IOException e) {
-                log.error("Unable to get domain from wfs", e);
-            } catch(UnsupportedOperationException e) {
-                log.error("Unable to get domain for item :" + item.getId() + "(attr: " + item.getAttr() + ")", e);
+            } catch (IOException | UnsupportedOperationException e) {
+                log.error(String.format("Unable to get domain for item: %s (attr: %s)", item.getId(), item.getAttr()), e);
             }
         }
 
