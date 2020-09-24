@@ -25,9 +25,9 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>cida-public</id>
-			<name>CIDA plugin repository</name>
-			<url>https://cida.usgs.gov/maven/cida-public/</url>
+			<id>cida-public-releases</id>
+			<name>CIDA Public Releases Mirror</name>
+			<url>https://artifactory.wma.chs.usgs.gov/artifactory/cida-public-releases</url>
 		</pluginRepository>
 	</pluginRepositories>
     

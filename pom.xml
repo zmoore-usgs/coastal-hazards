@@ -6,7 +6,7 @@
 	<version>1.1.73-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Coastal Hazards</name>
-  
+
 	<modules>
 		<module>coastal-hazards-commons</module>
 		<module>coastal-hazards-n52</module>
@@ -17,37 +17,39 @@
 		<module>coastal-hazards-export</module>
 		<module>ehcache-shaded</module>
 	</modules>
-  
+
 	<issueManagement>
 		<system>Trello</system>
 	</issueManagement>
-	
+
 	<url>http://marine.usgs.gov/coastalchangehazardsportal</url>
-	
+
 	<inceptionYear>2012</inceptionYear>
 	<organization>
-		<name>Center for Integrated Data Analytics</name>
-		<url>http://cida.usgs.gov</url>
+		<name>USGS Coastal and Marine Hazards and Resources Program</name>
+		<url>https://marine.usgs.gov/</url>
 	</organization>
-	
+
 	<licenses>
 		<license>
 			<name>Public Domain</name>
 			<url>http://water.usgs.gov/software/help/notice/</url>
 			<comments>
-				U.S.Geological Survey Software User Rights Notice
-				Copied from http://water.usgs.gov/software/help/notice/ on December 6, 2013.  Please check webpage for updates.
-				Software and related material (data and (or) documentation), contained in or furnished in connection with a software distribution, are made available by the U.S. Geological Survey (USGS) to be used in the public interest and in the advancement of science. You may, without any fee or cost, use, copy, modify, or distribute this software, and any derivative works thereof, and its supporting documentation, subject to the following restrictions and understandings.
-				If you distribute copies or modifications of the software and related material, make sure the recipients receive a copy of this notice and receive or can get a copy of the original distribution. If the software and (or) related material are modified and distributed, it must be made clear that the recipients do not have the original and they must be informed of the extent of the modifications. For example, modified files must include a prominent notice stating the modifications made, the author of the modifications, and the date the modifications were made. This restriction is necessary to guard against problems introduced in the software by others, reflecting negatively on the reputation of the USGS.
-				The software is public property and you therefore have the right to the source code, if desired.
-				You may charge fees for distribution, warranties, and services provided in connection with the software or derivative works thereof. The name USGS can be used in any advertising or publicity to endorse or promote any products or commercial entity using this software if specific written permission is obtained from the USGS.
-				The user agrees to appropriately acknowledge the authors and the USGS in publications that result from the use of this software or in products that include this software in whole or in part.
-				Because the software and related material are free (other than nominal materials and handling fees) and provided "as is," the authors, the USGS, and the United States Government have made no warranty, express or implied, as to accuracy or completeness and are not obligated to provide the user with any support, consulting, training or assistance of any kind with regard to the use, operation, and performance of this software nor to provide the user with any updates, revisions, new versions or "bug fixes".
-				The user assumes all risk for any damages whatsoever resulting from loss of use, data, or profits arising in connection with the access, use, quality, or performance of this software.
+				U.S.Geological Survey Software User Rights Notice Copied from http://water.usgs.gov/software/help/notice/ on December 6, 2013. Please check webpage for updates. Software and related material (data and (or) documentation), contained in or furnished in
+				connection with a software distribution, are made available by the U.S. Geological Survey (USGS) to be used in the public interest and in the advancement of science. You may, without any fee or cost, use, copy, modify, or distribute this software,
+				and any derivative works thereof, and its supporting documentation, subject to the following restrictions and understandings. If you distribute copies or modifications of the software and related material, make sure the recipients receive a copy of
+				this notice and receive or can get a copy of the original distribution. If the software and (or) related material are modified and distributed, it must be made clear that the recipients do not have the original and they must be informed of the extent
+				of the modifications. For example, modified files must include a prominent notice stating the modifications made, the author of the modifications, and the date the modifications were made. This restriction is necessary to guard against problems
+				introduced in the software by others, reflecting negatively on the reputation of the USGS. The software is public property and you therefore have the right to the source code, if desired. You may charge fees for distribution, warranties, and services
+				provided in connection with the software or derivative works thereof. The name USGS can be used in any advertising or publicity to endorse or promote any products or commercial entity using this software if specific written permission is obtained
+				from the USGS. The user agrees to appropriately acknowledge the authors and the USGS in publications that result from the use of this software or in products that include this software in whole or in part. Because the software and related material
+				are free (other than nominal materials and handling fees) and provided "as is," the authors, the USGS, and the United States Government have made no warranty, express or implied, as to accuracy or completeness and are not obligated to provide the
+				user with any support, consulting, training or assistance of any kind with regard to the use, operation, and performance of this software nor to provide the user with any updates, revisions, new versions or "bug fixes". The user assumes all risk for
+				any damages whatsoever resulting from loss of use, data, or profits arising in connection with the access, use, quality, or performance of this software.
 			</comments>
 		</license>
 	</licenses>
-	
+
 	<developers>
 		<developer>
 			<id>dmsibley</id>
@@ -93,7 +95,7 @@
 			<organizationUrl>http://cida.usgs.gov</organizationUrl>
 			<timezone>-6</timezone>
 		</developer>
-                <developer>
+		<developer>
 			<id>mwernimont</id>
 			<name>Marty Wernimont</name>
 			<email>mwernimont@usgs.gov</email>
@@ -104,7 +106,7 @@
 			<organizationUrl>http://cida.usgs.gov</organizationUrl>
 			<timezone>-6</timezone>
 		</developer>
-                <developer>
+		<developer>
 			<id>wcondon</id>
 			<name>Bill Condon</name>
 			<email>wcondon@usgs.gov</email>
@@ -115,12 +117,11 @@
 			<organizationUrl>http://usgs.gov/centers/whcmsc</organizationUrl>
 			<timezone>-5</timezone>
 		</developer>
-			</developers>
-	
+	</developers>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<cida.maven.url>https://internal.cida.usgs.gov/maven</cida.maven.url>
 		<war.dir>src/main/webapp</war.dir>
 		<build.scm.version>${buildNumber}</build.scm.version>
 		<slf4j.version>1.7.13</slf4j.version>
@@ -137,27 +138,14 @@
 		<connection>scm:git:https://github.com/USGS-CIDA/coastal-hazards.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/USGS-CIDA/coastal-hazards.git</developerConnection>
 		<url>https://github.com/USGS-CIDA/coastal-hazards</url>
-	  <tag>coastal-hazards-1.1.39</tag>
-  </scm>
-	
-	<distributionManagement>
-		<repository>
-			<id>cida-releases</id>
-			<name>CIDA Releases</name>
-			<url>${cida.maven.url}/content/repositories/cida-public-releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>cida-snapshots</id>
-			<name>CIDA Snapshots</name>
-			<url>${cida.maven.url}/content/repositories/cida-public-snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+		<tag>coastal-hazards-1.1.39</tag>
+	</scm>
 
 	<repositories>
 		<repository>
-			<id>central</id>
-			<name>Maven Central</name>
-			<url>https://repo.maven.apache.org/maven2</url>
+			<id>central-mirror</id>
+			<name>Maven Central WMA Mirror</name>
+			<url>https://artifactory.wma.chs.usgs.gov/artifactory/maven-central</url>
 		</repository>
 		<repository>
 			<id>osgeo1</id>
@@ -182,25 +170,25 @@
 			<url>https://maven.geo-solutions.it/</url>
 		</repository>
 		<repository>
-			<id>cida-public</id>
-			<name>CIDA Public Nexus</name>
-			<url>https://cida.usgs.gov/maven/cida-public/</url>
+			<id>cida-public-releases</id>
+			<name>CIDA Public Releases Mirror</name>
+			<url>https://artifactory.wma.chs.usgs.gov/artifactory/cida-public-releases</url>
 		</repository>
 	</repositories>
-	
+
 	<pluginRepositories>
 		<pluginRepository>
-			<id>central</id>
-			<name>Maven Central</name>
-			<url>https://repo.maven.apache.org/maven2</url>
+			<id>central-mirror</id>
+			<name>Maven Central WMA Mirror</name>
+			<url>https://artifactory.wma.chs.usgs.gov/artifactory/maven-central</url>
 		</pluginRepository>
-                <pluginRepository>
-			<id>cida-public</id>
-			<name>CIDA Public Plugin repo</name>
-			<url>http://cida.usgs.gov/maven/cida-public/</url>
+		<pluginRepository>
+			<id>cida-public-releases</id>
+			<name>CIDA Public Releases Mirror</name>
+			<url>https://artifactory.wma.chs.usgs.gov/artifactory/cida-public-releases</url>
 		</pluginRepository>
 	</pluginRepositories>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -367,7 +355,7 @@
 				<artifactId>openlayers</artifactId>
 				<version>${version.openlayers}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>gov.usgs.cida.jslibs</groupId>
 				<artifactId>bootstrojs</artifactId>
@@ -435,28 +423,28 @@
 				<version>2.17</version>
 			</dependency>
 			<dependency>
-			    <groupId>org.glassfish.jersey.ext</groupId>
-			    <artifactId>jersey-mvc-bean-validation</artifactId>
-			    <version>2.17</version>
+				<groupId>org.glassfish.jersey.ext</groupId>
+				<artifactId>jersey-mvc-bean-validation</artifactId>
+				<version>2.17</version>
 			</dependency>
 			<dependency>
-			    <groupId>org.glassfish.jersey.ext</groupId>
-			    <artifactId>jersey-mvc-jsp</artifactId>
-			    <version>2.17</version>
+				<groupId>org.glassfish.jersey.ext</groupId>
+				<artifactId>jersey-mvc-jsp</artifactId>
+				<version>2.17</version>
 			</dependency>
 			<dependency>
 				<groupId>com.vividsolutions</groupId>
 				<artifactId>jts</artifactId>
 				<version>1.13</version>
 			</dependency>
-	        <dependency>
-	            <groupId>net.sf.ehcache</groupId>
-	            <artifactId>ehcache</artifactId>
-	            <version>2.8.1</version>
-	        </dependency>
+			<dependency>
+				<groupId>net.sf.ehcache</groupId>
+				<artifactId>ehcache</artifactId>
+				<version>2.8.1</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -474,27 +462,18 @@
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.5</version>
 				<executions>
-					<!--
-					    Prepares the property pointing to the JaCoCo runtime agent which
-					    is passed as VM argument when Maven the Surefire plugin is executed.
-					-->
+					<!-- Prepares the property pointing to the JaCoCo runtime agent which is passed as VM argument when Maven the Surefire plugin is executed. -->
 					<execution>
 						<id>pre-unit-test</id>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
 						<configuration>
-							<!--
-							    Sets the name of the property containing the settings
-							    for JaCoCo runtime agent.
-							-->
+							<!-- Sets the name of the property containing the settings for JaCoCo runtime agent. -->
 							<propertyName>surefireArgLine</propertyName>
 						</configuration>
 					</execution>
-					<!--
-					    Ensures that the code coverage report for unit tests is created after
-					    unit tests have been run.
-					-->
+					<!-- Ensures that the code coverage report for unit tests is created after unit tests have been run. -->
 					<execution>
 						<id>post-unit-test</id>
 						<phase>test</phase>
@@ -513,7 +492,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		
+
 		<pluginManagement>
 			<plugins>
 				<plugin>

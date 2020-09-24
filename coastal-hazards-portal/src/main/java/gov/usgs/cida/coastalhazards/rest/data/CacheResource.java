@@ -46,7 +46,6 @@ public class CacheResource {
 		cacheName = props.getProperty(CACHE_NAME_PROP, CACHE_NAME);
 	}
 
-	@Path("/")
 	@DELETE
 	@ConfiguredRolesAllowed(ConfiguredRolesAllowedDynamicFeature.CCH_ADMIN_USER_PROP)
 	public Response deleteCache() {

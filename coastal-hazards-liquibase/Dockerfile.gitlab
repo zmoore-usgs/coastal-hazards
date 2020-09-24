@@ -1,6 +1,5 @@
-FROM mdillon/postgis:9.6-alpine
+FROM artifactory.wma.chs.usgs.gov/docker-official-mirror/mdillon/postgis:9.6-alpine
 
-ARG PORTAL_LIQUIBASE_TAG=master
 ARG LIQUIBASE_VERSION=3.4.1
 ARG POSTGRES_JDBC_VERSION=42.2.4
 
@@ -9,29 +8,29 @@ ENV PATH $PATH:$JAVA_HOME/bin
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_DB=cchportal
 ENV LIQUIBASE_HOME /opt/liquibase
+ENV POSTGRES_HOST=postgres
+ENV POSTGRES_PORT=5432
+ENV POSTGRES_CCH_PASSWORD=cchportal_password
+ENV POSTGRES_PASSWORD=postgres_root_password
+ENV POSTGRES_LOAD_BOOTSTRAP=true
 
 # Add Alpine 3.6 repository to get access to plpython
 RUN echo "@v3.6 http://dl-cdn.alpinelinux.org/alpine/v3.6/main/" >> /etc/apk/repositories
 
-RUN apk update && apk upgrade \
-		&& apk add --no-cache openssl \
-			ca-certificates \
-			python \
-			python-dev \
-			postgresql-plpython2@v3.6 \
-			postgresql-plpython2-contrib@v3.6 \
-			git \
-    		curl \
-    		openjdk8 && \
+RUN apk add --no-cache \
+			openssl==1.1.1g-r0 \
+			ca-certificates==20190108-r0 \
+			python==2.7.18-r0 \
+			python-dev==2.7.18-r0 \
+			postgresql-plpython2@v3.6==9.6.13-r0 \
+			postgresql-plpython2-contrib@v3.6==9.6.13-r0 \
+			git==2.20.4-r0 \
+  		curl==7.64.0-r3 \
+  		openjdk8==8.252.09-r0 && \
 	rm -rf /var/cache/apk/*;
 
-RUN if getent ahosts "sslhelp.doi.net" > /dev/null 2>&1; then \
-		mkdir -p /etc/ssl/certs && \
-		curl -o /usr/local/share/ca-certificates/DOIRootCA.crt "http://sslhelp.doi.net/docs/DOIRootCA2.cer" && \
-		update-ca-certificates; \
-	fi
-
 # Required for JRE 8 - Java 8 is required to run the Liquibase JAR - lifted from https://github.com/docker-library/openjdk
+
 RUN { \
 		echo '#!/bin/sh'; \
 		echo 'set -e'; \
@@ -50,13 +49,13 @@ RUN tar -xzf liquibase-bin.tar.gz -C "${LIQUIBASE_HOME}/" && \
 	rm liquibase-bin.tar.gz
 RUN curl -o ${LIQUIBASE_HOME}/lib/postgresql.jar https://jdbc.postgresql.org/download/postgresql-${POSTGRES_JDBC_VERSION}.jar
 
-RUN git clone https://github.com/USGS-CIDA/coastal-hazards.git coastal-hazards
-WORKDIR coastal-hazards
-RUN git checkout ${PORTAL_LIQUIBASE_TAG}
 WORKDIR /
 
+RUN mkdir -p /coastal-hazards/coastal-hazards-liquibase/
+COPY coastal-hazards-liquibase/src /coastal-hazards/coastal-hazards-liquibase/src
+
 RUN cp -r /coastal-hazards/coastal-hazards-liquibase/src/main/resources/bootstrap .
-COPY docker/dbInit/setup_db.sh /docker-entrypoint-initdb.d/z_setup_db.sh
+COPY coastal-hazards-liquibase/docker/dbInit/setup_db.sh /docker-entrypoint-initdb.d/z_setup_db.sh
 
 RUN chmod -R 777 $LIQUIBASE_HOME
 

@@ -1,0 +1,14 @@
+{
+   "realm": "%%CCH_KEYCLOAK_REALM%%",
+   "auth-server-url": "%%CCH_KEYCLOAK_AUTH_URL%%",
+   "ssl-required": "external",
+   "resource": "%%CCH_KEYCLOAK_RESOURCE%%",
+   "credentials": {
+      "secret": "%%CCH_KEYCLOAK_SECRET%%"
+   },
+   "redirect-rewrite-rules": {
+      %%CCH_KEYCLOAK_REDIRECT_RULES%%
+   },
+   "public-client": %%CCH_KEYCLOAK_PUBLIC_CLIENT%%,
+   "confidential-port": %%CCH_KEYCLOAK_CONFIDENTIAL_PORT%%
+}

@@ -47,6 +47,9 @@ dependency-reduced-pom.xml
 
 Docker/compose*.env
 .vscode/
+/Docker/tomcat/ssl/**/*.crt
+/Docker/tomcat/ssl/**/*.chain
+/Docker/tomcat/ssl/**/*.key
 
 ### Python ###
 *.pyc
