@@ -367,6 +367,8 @@ return {
 								if (Number.isInteger(displayPoints[i])) {
 									if (item.attr === 'UVVR_RASTER'){
 										$valueContainer.append(displayPoints[i].toFixed(0)/1000);
+									} else if (attr === 'FORECASTPE' || attr === 'FORECAST_U') {
+										$valueContainer.append(displayPoints[i].toFixed(0) + "-year");
 									} else {
 										$valueContainer.append(displayPoints[i].toFixed(0));
 									}

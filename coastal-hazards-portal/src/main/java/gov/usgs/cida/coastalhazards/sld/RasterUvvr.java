@@ -6,6 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ *
+ * @author Zehao Xue <zxue@usgs.gov>
+ */
 public final class RasterUvvr {
 
 	private static final String[] attrs = {UVVR_RASTER};
