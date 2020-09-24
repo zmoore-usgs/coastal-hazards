@@ -10,13 +10,16 @@ import java.util.Map;
  *
  * @author Zehao Xue <zxue@usgs.gov>
  */
-public final class Uvvr {
+public final class ForecastUncy {
 
-	protected static final String[] attrs = new String[]{UVVR};
-	protected static final float[] thresholds = new float[]{-1f, 0f, 0.001f, 0.025f, 0.050f, 0.100f, 0.250f, 0.500f, 1.0f, 1.5f, 1.999f, 99999999f};
-	protected static final String[] colors = {"#8e0152", "#276419", "#4d9221", "#7fbc41", "#b8e186", "#e6f5d0", "#f7f7f7", "#fde0ef", "#f1b6da", "#de77ae", "#c51b7d"};
+	protected static final String[] attrs = new String[]{FORECAST_U};
+	protected static final float[] thresholds = new float[]{0f, 10.1f, 20.1f};
+	protected static final String[] categories = {"10-year", "20-year"};
+	protected static final String[] colors = {"#80CDC1", "#DFC27D"};
+	protected static final float strokeOpacity = 0.5f;
+	
 	protected static final String jspPath = "/SLD/bins_polygon.jsp";
-	protected static final String units = "Vulnerability Index";
+	protected static final String units = "Forecast Period";
 	protected static final List<Map<String, Object>> bins;
 
 	static {
@@ -28,13 +31,15 @@ public final class Uvvr {
 				binMap.put("upperBound", thresholds[i + 1]);
 			}
 			binMap.put("color", colors[i]);
+			binMap.put("category", categories[i]);
 			binsResult.add(binMap);
 		}
 
 		bins = binsResult;
 	}
 
-	public static final SLDConfig uvvr = new SLDConfig(
-			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins, LegendType.CONTINUOUS
+	public static final SLDConfig forecastUncy = new SLDConfig(
+		jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, strokeOpacity, attrs, thresholds, colors, bins, LegendType.DISCRETE
 	);
+	
 }

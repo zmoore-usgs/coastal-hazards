@@ -60,6 +60,8 @@ public class SLDGenerator {
 		sideEffectMapPut(vulnerability, OldSchoolOverallCVI.overallOldSchool);
 		sideEffectMapPut(vulnerability, Uvvr.uvvr);
 		sideEffectMapPut(vulnerability, FloodMask.floodMask);
+		sideEffectMapPut(vulnerability, Forecast.forecast);
+		sideEffectMapPut(vulnerability, ForecastUncy.forecastUncy);
 		gmap.put(Item.Type.vulnerability, vulnerability);
 
 		Map<String, SLDConfig> historical = new HashMap<>();
