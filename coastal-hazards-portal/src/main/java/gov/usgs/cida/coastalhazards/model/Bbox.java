@@ -161,7 +161,7 @@ public class Bbox implements Serializable {
 				newBox.setBbox(newMinX, points.getLeft().getRight(), newMaxX, points.getRight().getRight());
 			} else if(distLat > distLong) {
 				// Extend longitude 50% in both directions
-				log.debug("Expand long: " + distLat + " | " + distLong);
+				log.debug("Expand long: " + distLong + " | " + distLat);
 				double expandDist = (distLat - distLong)/2;
 				calc.setStartingGeographicPoint(points.getLeft().getLeft(), points.getLeft().getRight());
 				calc.setDirection(angleLong, -expandDist);

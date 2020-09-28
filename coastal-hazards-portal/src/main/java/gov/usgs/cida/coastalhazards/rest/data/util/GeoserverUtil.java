@@ -45,24 +45,25 @@ public class GeoserverUtil {
 
 	private static final Logger log = LoggerFactory.getLogger(GeoserverUtil.class);
 
-	private static final String geoserverInternalEndpoint;
-	private static final String geoserverExternalEndpoint;
+	private static final String GEOSERVER_INTERNAL_ENDPOINT;
+	private static final String GEOSERVER_EXTERNAL_ENDPOINT;
 
-	private static final String geoserverUser;
-	private static final String geoserverPass;
+	private static final String GEOSERVER_USER;
+	private static final String GEOSERVER_PASS;
 	private static final DynamicReadOnlyProperties props;
 
 	// TODO move these centrally or into configuration
 	private static final String PROXY_STORE = "proxied";
 	private static final String PROXY_WORKSPACE = "proxied";
 	private static final String DEFAULT_RASTER_STYLE = "raster";
+	private static final String DEFAULT_WMS_PARAMS = "FORMAT=image/png&TRANSPARENT=TRUE&STYLE=cch&VERSION=1.3.0&SERVICE=WMS&EXCEPTIONS=application%2Fvnd.ogc.se_blank&REQUEST=GetMap";
 
 	static {
 		props = JNDISingleton.getInstance();
-		geoserverInternalEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
-		geoserverExternalEndpoint = props.getProperty("coastal-hazards.portal.geoserver.external.endpoint");
-		geoserverUser = props.getProperty("coastal-hazards.geoserver.username");
-		geoserverPass = props.getProperty("coastal-hazards.geoserver.password");
+		GEOSERVER_INTERNAL_ENDPOINT = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
+		GEOSERVER_EXTERNAL_ENDPOINT = props.getProperty("coastal-hazards.portal.geoserver.external.endpoint");
+		GEOSERVER_USER = props.getProperty("coastal-hazards.geoserver.username");
+		GEOSERVER_PASS = props.getProperty("coastal-hazards.geoserver.password");
 	}
 
 	/**
@@ -103,7 +104,7 @@ public class GeoserverUtil {
 	private static Service wfsService(String layer) {
 		log.info("createWfsService using layer: " + layer);
 		Service service = new Service();
-		URI uri = UriBuilder.fromUri(geoserverExternalEndpoint).path(PROXY_WORKSPACE).path("wfs").build();
+		URI uri = UriBuilder.fromUri(GEOSERVER_EXTERNAL_ENDPOINT).path(PROXY_WORKSPACE).path("wfs").build();
 		service.setType(Service.ServiceType.proxy_wfs);
 		service.setEndpoint(uri.toString());
 		service.setServiceParameter(layer);
@@ -120,19 +121,17 @@ public class GeoserverUtil {
 	private static Service wmsService(String layer) {
 		log.info("createWmsService using layer: " + layer);
 		Service service = new Service();
-		URI uri = UriBuilder.fromUri(geoserverExternalEndpoint).path(PROXY_WORKSPACE).path("wms").build();
+		URI uri = UriBuilder.fromUri(GEOSERVER_EXTERNAL_ENDPOINT).path(PROXY_WORKSPACE).path("wms").build();
 		service.setType(Service.ServiceType.proxy_wms);
 		service.setEndpoint(uri.toString());
 		service.setServiceParameter(layer);
 		return service;
 	}
 
-	public static String buildGeoServerWMSRequest(String layerParam, String bboxParam, String sldParam, String sizeParam, String crsParam) {
-		String url = geoserverInternalEndpoint + (geoserverInternalEndpoint.endsWith("/") ? "" : "/") + "proxied/wms?";
-		String params = String.format(
-			"FORMAT=image/png&TRANSPARENT=TRUE&STYLE=cch&VERSION=1.3.0&SERVICE=WMS&EXCEPTIONS=application%2Fvnd.ogc.se_blank&REQUEST=GetMap&%s&%s&%s&%s&%s",
-			sizeParam, layerParam, bboxParam, sldParam, crsParam
-		);
+	public static String buildGeoServerWMSRequest(String layerParam, String bboxValue, String sldUrl, Integer sizeValue, String crsValue) {
+		String url = GEOSERVER_INTERNAL_ENDPOINT + (GEOSERVER_INTERNAL_ENDPOINT.endsWith("/") ? "" : "/") + "proxied/wms?";
+		String params = DEFAULT_WMS_PARAMS + 
+			String.format("&WIDTH=%d&HEIGHT=%d&LAYER=%s&BBOX=%s&SLD=%s&CRS=%s",sizeValue, sizeValue,layerParam, bboxValue, sldUrl, crsValue);
 		return url + params;
 	}
 
@@ -227,8 +226,8 @@ public class GeoserverUtil {
 					+ "</wps:ResponseForm>"
 					+ "</wps:Execute>").getBytes());
 			
-			layerCreated = postToWPS(geoserverInternalEndpoint + (geoserverInternalEndpoint.endsWith("/") ? "" : "/") +
-					"wps/WebProcessingService", geoserverUser, geoserverPass, wpsRequestFile);
+			layerCreated = postToWPS(GEOSERVER_INTERNAL_ENDPOINT + (GEOSERVER_INTERNAL_ENDPOINT.endsWith("/") ? "" : "/") +
+					"wps/WebProcessingService", GEOSERVER_USER, GEOSERVER_PASS, wpsRequestFile);
 		}
 		finally {
 			IOUtils.closeQuietly(wpsRequestOutputStream);
@@ -332,8 +331,8 @@ public class GeoserverUtil {
                                             + "</wps:ResponseForm>"
                                             + "</wps:Execute>").getBytes());
                                                        
-                            urlString = postToWPS(geoserverInternalEndpoint + (geoserverInternalEndpoint.endsWith("/") ? "" : "/") +
-                                            "wps/WebProcessingService", geoserverUser, geoserverPass, wpsRequestFile);
+                            urlString = postToWPS(GEOSERVER_INTERNAL_ENDPOINT + (GEOSERVER_INTERNAL_ENDPOINT.endsWith("/") ? "" : "/") +
+                                            "wps/WebProcessingService", GEOSERVER_USER, GEOSERVER_PASS, wpsRequestFile);
                     }
                     finally {
                             IOUtils.closeQuietly(wpsRequestOutputStream);
@@ -387,7 +386,7 @@ public class GeoserverUtil {
                     String fileName = unzippedFile.getName();
                                         
                     // Publish the raster tiff as a layer on Geoserver  
-                    GeoServerRESTPublisher publisher = new GeoServerRESTPublisher(geoServerEndpoint, geoserverUser, geoserverPass);
+                    GeoServerRESTPublisher publisher = new GeoServerRESTPublisher(geoServerEndpoint, GEOSERVER_USER, GEOSERVER_PASS);
                     //Then use the GeoServerRESTPublisher to create the stores and layers. 
                     
                     GSCoverageEncoder coverageEncoder = new GSCoverageEncoder();

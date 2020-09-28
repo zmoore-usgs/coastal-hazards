@@ -197,7 +197,7 @@ public class TemplateResource {
 				hoistNewTemplateToTopLevel(templateId, itemMan);
 			}
 
-			if (!StringUtils.isEmpty(alias)) {
+			if (StringUtils.isNotEmpty(alias)) {
 				String originalTemplateId = updateStormAlias(alias, aliasMan, templateId);
 				if (active) {
 					//only orphan the item the alias initially pointed to if the new storm is active

@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.domain;
 
 import gov.usgs.cida.coastalhazards.Attributes;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.Item.ItemType;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import java.io.IOException;
 import java.text.ParseException;
@@ -27,7 +28,11 @@ public class DataDomainUtility {
         WFSGetDomain client = new WFSGetDomain();
         if (item == null) {
             throw new IllegalArgumentException("Item must be valid data item");
-        } else if (item.getItemType() == Item.ItemType.aggregation || item.getItemType() == Item.ItemType.template) {
+        } 
+        
+        ItemType itemType = item.getItemType();
+
+        if (Item.ItemType.aggregation == itemType || Item.ItemType.template == itemType) {
             List<String> displayedIds = item.getDisplayedChildren();
             for (Item child : item.getChildren()) {
                 if(displayedIds.contains(child.getId())){
@@ -35,7 +40,7 @@ public class DataDomainUtility {
                     domain.addAll(childDomain);
                 }
             }
-        } else if (item.getItemType() == Item.ItemType.data && Attributes.getDomainAttrs().stream().anyMatch(item.getAttr()::equalsIgnoreCase)) {
+        } else if (Item.ItemType.data == itemType && Attributes.getDomainAttrs().stream().anyMatch(item.getAttr()::equalsIgnoreCase)) {
             WFSService service = item.fetchWfsService();
             try {
                 Set<String> domainValuesAsStrings = client.getDomainValuesAsStrings(service, item.getAttr());

@@ -2,6 +2,8 @@ package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.lang.StringUtils;
+
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
@@ -80,7 +82,8 @@ public class ThumbnailResource {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response genImage(@PathParam("id") String id, @Context HttpServletRequest request) {
-		Response response = null;
+		Response response;
+
 		try(ItemManager manager = new ItemManager()) {
 			Item item = manager.load(id);
 
@@ -89,7 +92,7 @@ public class ThumbnailResource {
 			} else {
 				String imageBase64 = ThumbnailUtil.generateBase64Thumbnail(item);
 
-				if(imageBase64 != null && !imageBase64.isEmpty()) {
+				if(StringUtils.isNotEmpty(imageBase64)) {
 					response = Response.ok(imageBase64, MediaType.TEXT_PLAIN).build();
 				} else {
 					response = Response.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).build();
