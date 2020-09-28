@@ -138,7 +138,7 @@ public class ThumbnailUtil {
 						log.warn("Supplied template or aggregation: " + item.getId() + " has no visible child items for thumbnail generation.");
 					}
 				} else {
-					log.debug("Reched max child depth when rednering thumbnail for: " + selectedItem);
+					log.debug("Reached max child depth when rendering thumbnail for: " + selectedItem);
 				}
 				break;
 			case data:
